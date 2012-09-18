@@ -1,5 +1,6 @@
+package mhs.src;
 
-public class MHS {
+public class Mhs {
 	public static void main(String[] args) {
 		UserInterface ui = new UserInterface();
 		ui.open();
