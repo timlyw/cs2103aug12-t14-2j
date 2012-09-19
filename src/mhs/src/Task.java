@@ -5,11 +5,18 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
-enum TaskCategory {
-	FLOATING_TASK, TIMED_TASK, DEADLINE_TASK
-}
-
 public class Task {
+
+	enum TaskCategory {
+		FLOATING("FLOATING"), TIMED("TIMED"), DEADLINE("DEADLINE");
+		private final String value;
+		private TaskCategory(String category) {
+			this.value = category;
+		}
+		public String getValue() {
+			return value;
+		}
+	}
 
 	private Integer taskId;
 	private String taskName;
@@ -23,9 +30,28 @@ public class Task {
 	private Boolean isDone;
 	private Boolean isDeleted;
 
-	public Task(int taskId, String taskName, DateTime startDt, DateTime endDt,
-			DateTime createdDt, DateTime updatedDt, DateTime syncDt,
-			String gCalTaskId, boolean isDone, boolean isDeleted) {
+	public Task(int taskId, String taskName, String taskCategory,
+			DateTime startDt, DateTime endDt, DateTime createdDt,
+			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
+			boolean isDone, boolean isDeleted) {
+
+		setTaskId(taskId);
+		setTaskName(taskName);
+		setTaskCategory(taskCategory);
+		setStartDateTime(new DateTime(startDt));
+		setEndDateTime(endDt);
+		setTaskCreated(createdDt);
+		setTaskUpdated(updatedDt);
+		setTaskLastSync(syncDt);
+		setgCalTaskId(gCalTaskId);
+		setDone(isDone);
+		setDeleted(isDeleted);
+	}
+
+	public Task(int taskId, String taskName, TaskCategory taskCategory,
+			DateTime startDt, DateTime endDt, DateTime createdDt,
+			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
+			boolean isDone, boolean isDeleted) {
 
 		setTaskId(taskId);
 		setTaskName(taskName);
@@ -43,7 +69,7 @@ public class Task {
 	 * Display Methods
 	 */
 	public String toString() {
-
+		//TODO
 		return null;
 	}
 
@@ -61,6 +87,7 @@ public class Task {
 
 		taskProperties.put("taskId", taskId.toString());
 		taskProperties.put("taskName", taskName);
+		taskProperties.put("taskCategory", taskCategory.getValue());
 		taskProperties.put("startDateTime", startDateTime.toString());
 		taskProperties.put("endDateTime", endDateTime.toString());
 		taskProperties.put("taskCreated", taskCreated.toString());
@@ -159,6 +186,23 @@ public class Task {
 
 	public TaskCategory getTaskCategory() {
 		return taskCategory;
+	}
+
+	public void setTaskCategory(String taskCategory) {
+		switch (taskCategory.toLowerCase()) {
+		case "timed":
+			this.taskCategory = TaskCategory.TIMED;
+			break;
+		case "deadline":
+			this.taskCategory = TaskCategory.DEADLINE;
+			break;
+		case "floating":
+			this.taskCategory = TaskCategory.FLOATING;
+			break;
+		default:
+			this.taskCategory = TaskCategory.FLOATING;
+			break;
+		}
 	}
 
 	public void setTaskCategory(TaskCategory taskCategory) {
