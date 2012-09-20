@@ -10,9 +10,11 @@ public class Task {
 	enum TaskCategory {
 		FLOATING("FLOATING"), TIMED("TIMED"), DEADLINE("DEADLINE");
 		private final String value;
+
 		private TaskCategory(String category) {
 			this.value = category;
 		}
+
 		public String getValue() {
 			return value;
 		}
@@ -30,15 +32,29 @@ public class Task {
 	private Boolean isDone;
 	private Boolean isDeleted;
 
+	/**
+	 * 
+	 * @param taskId
+	 * @param taskName
+	 * @param taskCategory
+	 * @param startDt
+	 * @param endDt
+	 * @param createdDt
+	 * @param updatedDt
+	 * @param syncDt
+	 * @param gCalTaskId
+	 * @param isDone
+	 * @param isDeleted
+	 */
 	public Task(int taskId, String taskName, String taskCategory,
 			DateTime startDt, DateTime endDt, DateTime createdDt,
 			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
 			boolean isDone, boolean isDeleted) {
-
+				
 		setTaskId(taskId);
 		setTaskName(taskName);
 		setTaskCategory(taskCategory);
-		setStartDateTime(new DateTime(startDt));
+		setStartDateTime(startDt);
 		setEndDateTime(endDt);
 		setTaskCreated(createdDt);
 		setTaskUpdated(updatedDt);
@@ -48,6 +64,20 @@ public class Task {
 		setDeleted(isDeleted);
 	}
 
+	/**
+	 * 
+	 * @param taskId
+	 * @param taskName
+	 * @param taskCategory
+	 * @param startDt
+	 * @param endDt
+	 * @param createdDt
+	 * @param updatedDt
+	 * @param syncDt
+	 * @param gCalTaskId
+	 * @param isDone
+	 * @param isDeleted
+	 */
 	public Task(int taskId, String taskName, TaskCategory taskCategory,
 			DateTime startDt, DateTime endDt, DateTime createdDt,
 			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
@@ -55,7 +85,7 @@ public class Task {
 
 		setTaskId(taskId);
 		setTaskName(taskName);
-		setStartDateTime(new DateTime(startDt));
+		setStartDateTime(startDt);
 		setEndDateTime(endDt);
 		setTaskCreated(createdDt);
 		setTaskUpdated(updatedDt);
@@ -69,7 +99,7 @@ public class Task {
 	 * Display Methods
 	 */
 	public String toString() {
-		//TODO
+		// TODO
 		return null;
 	}
 

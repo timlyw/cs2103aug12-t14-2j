@@ -1,7 +1,9 @@
 package mhs.src;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -27,13 +29,12 @@ public class Database {
 		googleCalendar = new GoogleCalendar();
 
 		taskList = taskRecordFile.fetchTasks();
-		sortedTasks = new TreeMap<DateTime, Task>();
-
-		createSortedTaskList();
-		
 	}
 
 	private void createSortedTaskList() {
+		Comparator<DateTime> TaskLatestCmp = new CompareTaskLatest();
+		sortedTasks = new TreeMap<DateTime, Task>(TaskLatestCmp);
+
 		Iterator<Task> iterator = taskList.iterator();
 		while (iterator.hasNext()) {
 			Task task = iterator.next();
@@ -46,28 +47,31 @@ public class Database {
 		// TODO
 	}
 
-	public List<Task> query(int taskId) {
-		// TODO
-		// fetch records
-		// perform query operations on recordset
-		// return list of tasks
-		return null;
+	public Task query(int taskId) throws IOException {
+		// fetch record
+		return taskRecordFile.fetchTask(taskId);
 	}
 
 	public List<Task> query(String taskName) {
-		// TODO
-		// fetch records
-		// perform query operations on recordset
-		// return list of tasks
-		return null;
+		List<Task> queriedTaskRecordset = new LinkedList<Task>();
+		Iterator<Task> iterator = taskList.iterator();
+		while (iterator.hasNext()) {
+			if(iterator.next().getTaskName().contains(taskName)){
+				queriedTaskRecordset.add(iterator.next());
+			}		
+		}		
+		return queriedTaskRecordset;
 	}
 
 	public List<Task> query(TaskCategory taskCategory) {
-		// TODO
-		// fetch records
-		// perform query operations on recordset
-		// return list of tasks
-		return null;
+		List<Task> queriedTaskRecordset = new LinkedList<Task>();
+		Iterator<Task> iterator = taskList.iterator();
+		while (iterator.hasNext()) {
+			if(iterator.next().getTaskCategory().equals(taskCategory)){
+				queriedTaskRecordset.add(iterator.next());
+			}		
+		}		
+		return queriedTaskRecordset;
 	}
 
 	public List<Task> query(String taskName, TaskCategory taskCategory,
@@ -98,12 +102,16 @@ public class Database {
 	public void printTasks() {
 		Iterator<Task> iterator = taskList.iterator();
 		while (iterator.hasNext()) {
-			System.out.println(iterator.next().getTaskName());
+			Task task = iterator.next();
+			System.out.println(task.getTaskName());
+			System.out.println(task.getStartDateTime().toString());
 		}
 	}
 
 	public void printSortedTasks() {
-
+		
+		createSortedTaskList();
+		
 		for (Entry<DateTime, Task> entry : sortedTasks.entrySet()) {
 			DateTime key = entry.getKey();
 			Task value = entry.getValue();
