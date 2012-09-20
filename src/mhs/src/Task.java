@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
-public abstract class Task {
+public class Task {
 
 	enum TaskCategory {
 		FLOATING("FLOATING"), TIMED("TIMED"), DEADLINE("DEADLINE");
@@ -29,6 +29,10 @@ public abstract class Task {
 	protected Boolean isDone;
 	protected Boolean isDeleted;
 
+	public Task() {
+
+	}
+
 	/**
 	 * 
 	 * @param taskId
@@ -43,9 +47,9 @@ public abstract class Task {
 	 * @param isDone
 	 * @param isDeleted
 	 */
-	public Task(int taskId, String taskName, String taskCategory, DateTime createdDt,
-			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
-			boolean isDone, boolean isDeleted) {
+	public Task(int taskId, String taskName, String taskCategory,
+			DateTime createdDt, DateTime updatedDt, DateTime syncDt,
+			String gCalTaskId, boolean isDone, boolean isDeleted) {
 
 		setTaskId(taskId);
 		setTaskName(taskName);
