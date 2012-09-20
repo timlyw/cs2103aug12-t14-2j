@@ -7,25 +7,19 @@ import org.joda.time.DateTime;
 
 public class DeadlineTask extends Task {
 
-	private DateTime startDateTime;
 	private DateTime endDateTime;
 
 	public DeadlineTask(int taskId, String taskName, String taskCategory,
-			DateTime startDt, DateTime endDt, DateTime createdDt,
-			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
-			boolean isDone, boolean isDeleted) {
-		super(taskId, taskName, taskCategory, startDt, endDt, createdDt,
+			DateTime endDt, DateTime createdDt, DateTime updatedDt,
+			DateTime syncDt, String gCalTaskId, boolean isDone,
+			boolean isDeleted) {
+		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
 				gCalTaskId, isDone, isDeleted);
-		setStartDateTime(startDt);
 		setEndDateTime(endDt);
 	}
 
 	public DateTime getStartDateTime() {
-		return startDateTime;
-	}
-
-	public void setStartDateTime(DateTime startDateTime) {
-		this.startDateTime = startDateTime;
+		return null;
 	}
 
 	public DateTime getEndDateTime() {
@@ -51,7 +45,6 @@ public class DeadlineTask extends Task {
 		taskProperties.put("taskId", taskId.toString());
 		taskProperties.put("taskName", taskName);
 		taskProperties.put("taskCategory", taskCategory.getValue());
-		taskProperties.put("startDateTime", startDateTime.toString());
 		taskProperties.put("endDateTime", endDateTime.toString());
 		taskProperties.put("taskCreated", taskCreated.toString());
 		taskProperties.put("taskUpdated", taskUpdated.toString());
