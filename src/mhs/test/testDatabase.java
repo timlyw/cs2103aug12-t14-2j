@@ -43,6 +43,7 @@ public class testDatabase {
 		System.out.println("Printing sorted tasks...");
 		database.printSortedTasks();
 	}
+
 	@Test
 	public void testRecordQueryDatabase() throws IOException {
 		System.out.println("Fetching record index 1...");
@@ -50,41 +51,46 @@ public class testDatabase {
 		queriedTask = database.query(1);
 		System.out.println(queriedTask.getTaskName());
 	}
+
 	@Test
 	public void testRecordsQueryDatabase() throws IOException {
 		System.out.println("Fetching records with 'task 1'...");
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		queriedTaskRecordset = database.query("Task 1"); 
+		queriedTaskRecordset = database.query("Task 1");
 
 		Iterator<Task> iterator = queriedTaskRecordset.iterator();
 		while (iterator.hasNext()) {
 			System.out.println(iterator.next().getTaskName());
-		}		
+		}
 	}
+
 	@Test
 	public void testRecordsQueryByCategoryDatabase() throws IOException {
 		System.out.println("Fetching records with category timed task...");
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		TaskCategory taskCategory = null;		
+		TaskCategory taskCategory = null;
 		queriedTaskRecordset = database.query(taskCategory.TIMED);
-		
+
 		Iterator<Task> iterator = queriedTaskRecordset.iterator();
 		while (iterator.hasNext()) {
 			System.out.println(iterator.next().getTaskName());
-		}		
+		}
 	}
-	
+
 	@Test
 	public void testAddDatabase() {
 	}
+
 	@Test
 	public void testUpdateDatabase() {
 	}
+
 	@Test
 	public void testDeleteDatabase() {
 	}
-	@After 
-	public void testAfter(){
+
+	@After
+	public void testAfter() {
 		System.out.println(System.lineSeparator());
 	}
 }

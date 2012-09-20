@@ -214,18 +214,48 @@ public class TaskRecordFile {
 	public Task fetchTask(int taskId) throws IOException {
 
 		Map<String, String> recordRow = fetchRecord(taskId);
+		// TODO Task creator
+		Task task = null;
 
-		Task task = new Task(Integer.parseInt(recordRow.get("taskId")),
-				recordRow.get("taskName"), recordRow.get("taskCategory"),
-				new DateTime(recordRow.get("startDateTime")), new DateTime(
-						recordRow.get("endDateTime")), new DateTime(
-						recordRow.get("taskCreated")), new DateTime(
-						recordRow.get("taskUpdated")), new DateTime(
-						recordRow.get("taskLastSync")),
-				recordRow.get("gCalTaskId"), Boolean.parseBoolean(recordRow
-						.get("isDone")), Boolean.parseBoolean(recordRow
-						.get("isDeleted")));
+		switch (recordRow.get("taskCategory")) {
+		case "TIMED":
+			task = new DeadlineTask(Integer.parseInt(recordRow.get("taskId")),
+					recordRow.get("taskName"), recordRow.get("taskCategory"),
+					new DateTime(recordRow.get("startDateTime")), new DateTime(
+							recordRow.get("endDateTime")), new DateTime(
+							recordRow.get("taskCreated")), new DateTime(
+							recordRow.get("taskUpdated")), new DateTime(
+							recordRow.get("taskLastSync")),
+					recordRow.get("gCalTaskId"), Boolean.parseBoolean(recordRow
+							.get("isDone")), Boolean.parseBoolean(recordRow
+							.get("isDeleted")));
+			break;
+		case "DEADLINE":
+			task = new DeadlineTask(Integer.parseInt(recordRow.get("taskId")),
+					recordRow.get("taskName"), recordRow.get("taskCategory"),
+					new DateTime(recordRow.get("startDateTime")), new DateTime(
+							recordRow.get("endDateTime")), new DateTime(
+							recordRow.get("taskCreated")), new DateTime(
+							recordRow.get("taskUpdated")), new DateTime(
+							recordRow.get("taskLastSync")),
+					recordRow.get("gCalTaskId"), Boolean.parseBoolean(recordRow
+							.get("isDone")), Boolean.parseBoolean(recordRow
+							.get("isDeleted")));
+			break;
+		case "FLOATING":
+			task = new FloatingTask(Integer.parseInt(recordRow.get("taskId")),
+					recordRow.get("taskName"), recordRow.get("taskCategory"),
+					new DateTime(recordRow.get("taskCreated")), new DateTime(
+							recordRow.get("taskUpdated")), new DateTime(
+							recordRow.get("taskLastSync")),
+					recordRow.get("gCalTaskId"), Boolean.parseBoolean(recordRow
+							.get("isDone")), Boolean.parseBoolean(recordRow
+							.get("isDeleted")));
+			break;
+		default:
+			break;
 
+		}
 		return task;
 	}
 
@@ -258,7 +288,7 @@ public class TaskRecordFile {
 	private Map<String, String> fetchRecord(int recordIndex) throws IOException {
 
 		Map<String, String> recordRow = new LinkedHashMap<String, String>();
-
+		
 		recordFile.seek(seekRecordPosition(recordIndex));
 
 		// read in record entry fields
