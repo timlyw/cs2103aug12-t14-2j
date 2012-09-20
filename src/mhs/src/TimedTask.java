@@ -9,7 +9,6 @@ public class TimedTask extends Task {
 
 	private DateTime startDateTime;
 	private DateTime endDateTime;
-	public TimedTask(){}
 
 	public TimedTask(int taskId, String taskName, String taskCategory,
 			DateTime startDt, DateTime endDt, DateTime createdDt,

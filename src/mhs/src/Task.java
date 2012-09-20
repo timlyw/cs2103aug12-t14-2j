@@ -180,8 +180,18 @@ public class Task {
 		}
 	}
 
+	public DateTime getEndDateTime() {
+		return null;
+	}
+
+	public void setEndDateTime() {
+	}
+
 	public DateTime getStartDateTime() {
 		return null;
+	}
+
+	public void setStartDateTime() {
 	}
 
 	public Map<String, String> getTaskProperties() {
