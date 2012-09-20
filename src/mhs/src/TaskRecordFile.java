@@ -168,9 +168,9 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	public void removeRecord(int recordIndex) throws IOException {
-		//TODO
+		// TODO
 	}
-	
+
 	/**
 	 * Fetch all records as tasks
 	 * 
@@ -217,13 +217,14 @@ public class TaskRecordFile {
 
 		Task task = new Task(Integer.parseInt(recordRow.get("taskId")),
 				recordRow.get("taskName"), recordRow.get("taskCategory"),
-				new DateTime(recordRow.get("startDt")), new DateTime(
-						recordRow.get("endDt")), new DateTime(
-						recordRow.get("createdDt")), new DateTime(
-						recordRow.get("updatedDt")), new DateTime(
-						recordRow.get("syncDt")), recordRow.get("gCalTaskId"),
-				Boolean.parseBoolean(recordRow.get("isDone")),
-				Boolean.parseBoolean(recordRow.get("isDeleted")));
+				new DateTime(recordRow.get("startDateTime")), new DateTime(
+						recordRow.get("endDateTime")), new DateTime(
+						recordRow.get("taskCreated")), new DateTime(
+						recordRow.get("taskUpdated")), new DateTime(
+						recordRow.get("taskLastSync")),
+				recordRow.get("gCalTaskId"), Boolean.parseBoolean(recordRow
+						.get("isDone")), Boolean.parseBoolean(recordRow
+						.get("isDeleted")));
 
 		return task;
 	}
@@ -281,7 +282,9 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	private String readRecordField(int fieldLength) throws IOException {
-		return recordFile.readLine().trim();
+		String field = recordFile.readLine().trim();
+		// System.out.println(field);
+		return field;
 	}
 
 	/*
