@@ -1,6 +1,7 @@
 package mhs.src;
 
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Iterator;
@@ -11,6 +12,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.joda.time.DateTime;
+
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 public class TaskRecordFile {
 
@@ -25,7 +30,13 @@ public class TaskRecordFile {
 	private final static String REGEX_DOUBLE_LINE_LENGTH_100 = "(=)\\1*{100}";
 	private final static String REGEX_WHITESPACE = "\\s+";
 
+	private Gson gson;
+	private JsonWriter jsonWriter;
+	private JsonReader jsonReader;
+	
 	public TaskRecordFile() throws IOException {
+		gson = new Gson();
+
 		initalizeRecordFile(DEFAULT_TASK_RECORD_FILENAME);
 		initializeRecordParameters();
 		countRecords();
@@ -38,6 +49,14 @@ public class TaskRecordFile {
 	}
 
 	private void initalizeRecordFile(String recordFileName) {
+		//TODO - new json file
+		try {
+			jsonWriter = new JsonWriter(new FileWriter(recordFileName));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		try {
 			recordFile = new RandomAccessFile(recordFileName, "rw");
 		} catch (FileNotFoundException e) {
