@@ -9,6 +9,20 @@ public class DeadlineTask extends Task {
 
 	private DateTime endDateTime;
 
+	/**
+	 * Constructor with String taskCategory
+	 * 
+	 * @param taskId
+	 * @param taskName
+	 * @param taskCategory
+	 * @param endDt
+	 * @param createdDt
+	 * @param updatedDt
+	 * @param syncDt
+	 * @param gCalTaskId
+	 * @param isDone
+	 * @param isDeleted
+	 */
 	public DeadlineTask(int taskId, String taskName, String taskCategory,
 			DateTime endDt, DateTime createdDt, DateTime updatedDt,
 			DateTime syncDt, String gCalTaskId, boolean isDone,
@@ -16,6 +30,40 @@ public class DeadlineTask extends Task {
 		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
 				gCalTaskId, isDone, isDeleted);
 		setEndDateTime(endDt);
+	}
+
+	/**
+	 * Constructor with TaskCategory taskCategory
+	 * 
+	 * @param taskId
+	 * @param taskName
+	 * @param taskCategory
+	 * @param endDt
+	 * @param createdDt
+	 * @param updatedDt
+	 * @param syncDt
+	 * @param gCalTaskId
+	 * @param isDone
+	 * @param isDeleted
+	 */
+	public DeadlineTask(int taskId, String taskName, TaskCategory taskCategory,
+			DateTime endDt, DateTime createdDt, DateTime updatedDt,
+			DateTime syncDt, String gCalTaskId, boolean isDone,
+			boolean isDeleted) {
+		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
+				gCalTaskId, isDone, isDeleted);
+		setEndDateTime(endDt);
+	}
+
+	/**
+	 * Copy Constructor
+	 * @param sourceTask
+	 */
+	public DeadlineTask(DeadlineTask sourceTask) {
+	    this(sourceTask.getTaskId(), sourceTask.getTaskName(), sourceTask
+				.getTaskCategory(), sourceTask.getEndDateTime(), sourceTask.getTaskCreated(), sourceTask
+				.getTaskUpdated(), sourceTask.getTaskLastSync(), sourceTask
+				.getgCalTaskId(), sourceTask.isDone(), sourceTask.isDeleted());
 	}
 
 	public DateTime getStartDateTime() {
@@ -28,6 +76,19 @@ public class DeadlineTask extends Task {
 
 	public void setEndDateTime(DateTime endDateTime) {
 		this.endDateTime = endDateTime;
+	}
+
+	public String toString() {
+		String taskToString = "taskId=" + taskId + "taskName=" + taskName
+				+ "taskCategory=" + taskCategory.getValue() + "endDateTime="
+				+ endDateTime.toString() + "taskCreated="
+				+ taskCreated.toString() + "taskUpdated="
+				+ taskUpdated.toString() + "taskLastSync="
+				+ taskLastSync.toString() + "gCalTaskId=" + gCalTaskId
+				+ "isDone=" + isDone.toString() + "isDeleted="
+				+ isDeleted.toString();
+
+		return taskToString;
 	}
 
 	/*
@@ -55,5 +116,4 @@ public class DeadlineTask extends Task {
 
 		return taskProperties;
 	}
-
 }

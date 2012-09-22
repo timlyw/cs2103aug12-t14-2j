@@ -9,33 +9,27 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 public class TaskTypeConverter implements JsonSerializer<Task>,
 		JsonDeserializer<Task> {
 
-	private static final String CLASSNAME = "CLASSNAME";
-	private static final String INSTANCE = "INSTANCE";
-
 	@Override
 	public JsonElement serialize(Task src, Type typeOfSrc,
 			JsonSerializationContext context) {
 
 		JsonObject retValue = new JsonObject();
-		String className = src.getClass().getCanonicalName();
-		retValue.addProperty(CLASSNAME, className);
 		JsonElement elem = context.serialize(src);
-		retValue.add(INSTANCE, elem);
-		System.out.println("!" + retValue);
-		return retValue;
+		return elem;
 	}
 
 	@Override
 	public Task deserialize(JsonElement json, Type type,
 			JsonDeserializationContext context) throws JsonParseException {
 
-		JsonObject jobject = (JsonObject) json;
+		JsonObject jobject = (JsonObject) json.getAsJsonObject();
 
 		switch (jobject.get("taskCategory").getAsString()) {
 		case "DEADLINE":
@@ -71,6 +65,6 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 		default:
 			break;
 		}
-		return null;
+		return new Task();
 	}
 }

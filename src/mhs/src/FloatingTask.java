@@ -14,6 +14,26 @@ public class FloatingTask extends Task {
 				gCalTaskId, isDone, isDeleted);
 	}
 
+	public FloatingTask(int taskId, String taskName, TaskCategory taskCategory,
+			DateTime createdDt, DateTime updatedDt, DateTime syncDt,
+			String gCalTaskId, boolean isDone, boolean isDeleted) {
+		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
+				gCalTaskId, isDone, isDeleted);
+	}
+
+	/**
+	 * Copy Constructor
+	 * 
+	 * @param sourceTask
+	 */
+	public FloatingTask(FloatingTask sourceTask) {
+		super(sourceTask.getTaskId(), sourceTask.getTaskName(), sourceTask
+				.getTaskCategory(), sourceTask.getTaskCreated(), sourceTask
+				.getTaskUpdated(), sourceTask.getTaskLastSync(), sourceTask
+				.getgCalTaskId(), sourceTask.isDone(), sourceTask.isDeleted());
+		System.out.println("deep copy");
+	}
+
 	/*
 	 * Record methods
 	 */

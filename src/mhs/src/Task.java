@@ -6,19 +6,6 @@ import org.joda.time.DateTime;
 
 public class Task {
 
-	enum TaskCategory {
-		FLOATING("FLOATING"), TIMED("TIMED"), DEADLINE("DEADLINE");
-		private final String value;
-
-		private TaskCategory(String category) {
-			this.value = category;
-		}
-
-		public String getValue() {
-			return value;
-		}
-	}
-
 	protected Integer taskId;
 	protected String taskName;
 	protected TaskCategory taskCategory;
@@ -29,11 +16,14 @@ public class Task {
 	protected Boolean isDone;
 	protected Boolean isDeleted;
 
+	/**
+	 * Default Constructor
+	 */
 	public Task() {
-
 	}
 
 	/**
+	 * Constructor with String taskCategory
 	 * 
 	 * @param taskId
 	 * @param taskName
@@ -63,6 +53,7 @@ public class Task {
 	}
 
 	/**
+	 * Constructor with enumerated type TaskCategory
 	 * 
 	 * @param taskId
 	 * @param taskName
@@ -77,18 +68,42 @@ public class Task {
 	 * @param isDeleted
 	 */
 	public Task(int taskId, String taskName, TaskCategory taskCategory,
-			DateTime startDt, DateTime endDt, DateTime createdDt,
-			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
-			boolean isDone, boolean isDeleted) {
+			DateTime createdDt, DateTime updatedDt, DateTime syncDt,
+			String gCalTaskId, boolean isDone, boolean isDeleted) {
 
 		setTaskId(taskId);
 		setTaskName(taskName);
+		setTaskCategory(taskCategory);
 		setTaskCreated(createdDt);
 		setTaskUpdated(updatedDt);
 		setTaskLastSync(syncDt);
 		setgCalTaskId(gCalTaskId);
 		setDone(isDone);
 		setDeleted(isDeleted);
+	}
+
+	public Task(Task sourceTask){
+		setTaskId(sourceTask.getTaskId());
+		setTaskName(sourceTask.getTaskName());
+		setTaskCategory(sourceTask.getTaskCategory());
+		setTaskCreated(sourceTask.getTaskCreated());
+		setTaskUpdated(sourceTask.getTaskUpdated());
+		setTaskLastSync(sourceTask.getTaskLastSync());
+		setgCalTaskId(sourceTask.getgCalTaskId());
+		setDone(sourceTask.isDone());
+		setDeleted(sourceTask.isDeleted());		
+	}
+	
+	public String toString() {
+		String taskToString = "taskId=" + taskId + "taskName=" + taskName
+				+ "taskCategory=" + taskCategory.getValue() + "taskCreated="
+				+ taskCreated.toString() + "taskUpdated="
+				+ taskUpdated.toString() + "taskLastSync="
+				+ taskLastSync.toString() + "gCalTaskId=" + gCalTaskId
+				+ "isDone=" + isDone.toString() + "isDeleted="
+				+ isDeleted.toString();
+
+		return taskToString;
 	}
 
 	/*
@@ -109,6 +124,32 @@ public class Task {
 
 	public void setTaskName(String taskName) {
 		this.taskName = taskName;
+	}
+
+	public TaskCategory getTaskCategory() {
+		return taskCategory;
+	}
+
+	public void setTaskCategory(String taskCategory) {
+		switch (taskCategory.toLowerCase()) {
+		case "timed":
+			this.taskCategory = TaskCategory.TIMED;
+			break;
+		case "deadline":
+			this.taskCategory = TaskCategory.DEADLINE;
+			break;
+		case "floating":
+			this.taskCategory = TaskCategory.FLOATING;
+			break;
+		default:
+			this.taskCategory = TaskCategory.FLOATING;
+			break;
+		}
+	}
+
+	public void setTaskCategory(TaskCategory taskCategory) {
+		this.taskCategory = taskCategory;
+
 	}
 
 	public DateTime getTaskUpdated() {
@@ -157,27 +198,6 @@ public class Task {
 
 	public void setgCalTaskId(String gCalTaskId) {
 		this.gCalTaskId = gCalTaskId;
-	}
-
-	public TaskCategory getTaskCategory() {
-		return taskCategory;
-	}
-
-	public void setTaskCategory(String taskCategory) {
-		switch (taskCategory.toLowerCase()) {
-		case "timed":
-			this.taskCategory = TaskCategory.TIMED;
-			break;
-		case "deadline":
-			this.taskCategory = TaskCategory.DEADLINE;
-			break;
-		case "floating":
-			this.taskCategory = TaskCategory.FLOATING;
-			break;
-		default:
-			this.taskCategory = TaskCategory.FLOATING;
-			break;
-		}
 	}
 
 	public DateTime getEndDateTime() {
