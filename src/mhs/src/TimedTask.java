@@ -10,6 +10,21 @@ public class TimedTask extends Task {
 	private DateTime startDateTime;
 	private DateTime endDateTime;
 
+	/**
+	 * Constructor with TaskCategory taskCategory
+	 * 
+	 * @param taskId
+	 * @param taskName
+	 * @param taskCategory
+	 * @param startDt
+	 * @param endDt
+	 * @param createdDt
+	 * @param updatedDt
+	 * @param syncDt
+	 * @param gCalTaskId
+	 * @param isDone
+	 * @param isDeleted
+	 */
 	public TimedTask(int taskId, String taskName, TaskCategory taskCategory,
 			DateTime startDt, DateTime endDt, DateTime createdDt,
 			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
@@ -21,20 +36,36 @@ public class TimedTask extends Task {
 
 	}
 
+	/**
+	 * Constructor with String taskCategory
+	 * 
+	 * @param taskId
+	 * @param taskName
+	 * @param taskCategory
+	 * @param startDt
+	 * @param endDt
+	 * @param createdDt
+	 * @param updatedDt
+	 * @param syncDt
+	 * @param gCalTaskId
+	 * @param isDone
+	 * @param isDeleted
+	 */
 	public TimedTask(int taskId, String taskName, String taskCategory,
 
-		DateTime startDt, DateTime endDt, DateTime createdDt,
-			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
-			boolean isDone, boolean isDeleted) {
+	DateTime startDt, DateTime endDt, DateTime createdDt, DateTime updatedDt,
+			DateTime syncDt, String gCalTaskId, boolean isDone,
+			boolean isDeleted) {
 		super(taskId, taskName, taskCategory, startDt, endDt, createdDt,
 				gCalTaskId, isDone, isDeleted);
 		setStartDateTime(startDt);
 		setEndDateTime(endDt);
 
 	}
-	
+
 	/**
 	 * Copy Constructor
+	 * 
 	 * @param sourceTask
 	 */
 	public TimedTask(TimedTask sourceTask) {
@@ -45,9 +76,8 @@ public class TimedTask extends Task {
 		setStartDateTime(sourceTask.getStartDateTime());
 		setEndDateTime(sourceTask.getEndDateTime());
 		System.out.println("deep copy");
-		
-	}
 
+	}
 
 	public DateTime getStartDateTime() {
 		return startDateTime;
@@ -77,33 +107,6 @@ public class TimedTask extends Task {
 				+ isDeleted.toString();
 
 		return taskToString;
-	}
-
-	/*
-	 * Record methods
-	 */
-	/**
-	 * Return task properties for record file insertion
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getTaskProperties() {
-
-		Map<String, String> taskProperties = new LinkedHashMap<String, String>();
-
-		taskProperties.put("taskId", taskId.toString());
-		taskProperties.put("taskName", taskName);
-		taskProperties.put("taskCategory", taskCategory.getValue());
-		taskProperties.put("startDateTime", startDateTime.toString());
-		taskProperties.put("endDateTime", endDateTime.toString());
-		taskProperties.put("taskCreated", taskCreated.toString());
-		taskProperties.put("taskUpdated", taskUpdated.toString());
-		taskProperties.put("taskLastSync", taskLastSync.toString());
-		taskProperties.put("gCalTaskId", gCalTaskId);
-		taskProperties.put("isDone", isDone.toString());
-		taskProperties.put("isDeleted", isDeleted.toString());
-
-		return taskProperties;
 	}
 
 }

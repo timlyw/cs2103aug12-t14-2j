@@ -1,7 +1,5 @@
 package mhs.src;
 
-import java.util.Map;
-
 import org.joda.time.DateTime;
 
 import com.google.gson.Gson;
@@ -85,28 +83,19 @@ public class Task {
 		setDeleted(isDeleted);
 	}
 
-	public Task(Task sourceTask){
-		setTaskId(sourceTask.getTaskId());
-		setTaskName(sourceTask.getTaskName());
-		setTaskCategory(sourceTask.getTaskCategory());
-		setTaskCreated(sourceTask.getTaskCreated());
-		setTaskUpdated(sourceTask.getTaskUpdated());
-		setTaskLastSync(sourceTask.getTaskLastSync());
-		setgCalTaskId(sourceTask.getgCalTaskId());
-		setDone(sourceTask.isDone());
-		setDeleted(sourceTask.isDeleted());		
-	}
-	
-	public Task clone(){
+	/**
+	 * Returns cloned Task
+	 */
+	public Task clone() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(DateTime.class,
 				new DateTimeTypeConverter());
 		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
 		Gson gson = gsonBuilder.create();
-		
+
 		return gson.fromJson(gson.toJson(this), Task.class);
 	}
-	
+
 	public String toString() {
 		String taskToString = "taskId=" + taskId + "taskName=" + taskName
 				+ "taskCategory=" + taskCategory.getValue() + "taskCreated="
@@ -225,10 +214,6 @@ public class Task {
 	}
 
 	public void setStartDateTime() {
-	}
-
-	public Map<String, String> getTaskProperties() {
-		return null;
 	}
 
 }

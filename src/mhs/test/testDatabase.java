@@ -99,6 +99,8 @@ public class testDatabase {
 		database.add(task4);
 		database.add(task5);
 		Task queriedTask = database.query(1);
+		System.out.println(task.toString());
+		System.out.println(queriedTask.toString());
 		assertEquals(task.toString(), queriedTask.toString());
 	}
 
@@ -166,18 +168,43 @@ public class testDatabase {
 	public void testQueryDateDatabase() throws IOException {
 		System.out.println("Query Task by Date");
 
+		DateTime testStartDt = new DateTime().now().minusDays(1).minusHours(1);
+		DateTime testEndDt = new DateTime().now().minusDays(1);
+
+		task = new TimedTask(1, "task 1 - a meeting", "TIMED", testStartDt,
+				testEndDt, testStartDt, testStartDt, testStartDt, "null",
+				false, false);
+
 		database.add(task);
 		database.add(task2);
 		database.add(task3);
 		database.add(task4);
 		database.add(task5);
 
-		queryList = database.query(task2.getStartDateTime(),
-				task2.getEndDateTime());
+		queryList = database.query(testStartDt, testEndDt);
 
 		Iterator<Task> iterator = queryList.iterator();
 		while (iterator.hasNext()) {
 			Task matchedTask = iterator.next();
+			assertEquals(matchedTask.getTaskId(), 1);
+			assertFalse(matchedTask.getTaskId() == 2);
+			assertFalse(matchedTask.getTaskId() == 3);
+			assertFalse(matchedTask.getTaskId() == 4);
+			assertFalse(matchedTask.getTaskId() == 5);
+			System.out.println(matchedTask.toString());
+		}
+
+		queryList = database.query(testStartDt.minusMinutes(10),
+				testEndDt.plusMinutes(10));
+
+		Iterator<Task> iterator2 = queryList.iterator();
+		while (iterator2.hasNext()) {
+			Task matchedTask = iterator2.next();
+			assertEquals(matchedTask.getTaskId(), 1);
+			assertFalse(matchedTask.getTaskId() == 2);
+			assertFalse(matchedTask.getTaskId() == 3);
+			assertFalse(matchedTask.getTaskId() == 4);
+			assertFalse(matchedTask.getTaskId() == 5);
 			System.out.println(matchedTask.toString());
 		}
 	}
@@ -195,13 +222,13 @@ public class testDatabase {
 		database.add(task2);
 
 		Task addedTask = database.query(1);
-		//System.out.println(task.toString());
-		//System.out.println(addedTask.toString());
+		// System.out.println(task.toString());
+		// System.out.println(addedTask.toString());
 		assertEquals(task.toString(), addedTask.toString());
 
 		Task addedTask2 = database.query(2);
-		//System.out.println(task2.toString());
-		//System.out.println(addedTask2.toString());
+		// System.out.println(task2.toString());
+		// System.out.println(addedTask2.toString());
 		assertEquals(task2.toString(), addedTask2.toString());
 
 	}
@@ -221,7 +248,8 @@ public class testDatabase {
 		}
 
 		Task editTask = task.clone();
-		editTask.setTaskName("edited! task 1 - meeting");
+		String newTaskName = "edited! task 1 - meeting";
+		editTask.setTaskName(newTaskName);
 		editTask.setTaskCreated(new DateTime().now().plusDays(1));
 
 		database.update(editTask);
@@ -234,6 +262,7 @@ public class testDatabase {
 			System.out.println(matchedTask.toString());
 		}
 
+		assertEquals(newTaskName, queryList.get(0).getTaskName());
 	}
 
 	@Test
@@ -245,7 +274,7 @@ public class testDatabase {
 		database.add(task3);
 		database.add(task4);
 		database.add(task5);
-		
+
 		System.out.println("before delete");
 		queryList = database.query();
 		Iterator<Task> iterator = queryList.iterator();
@@ -254,22 +283,26 @@ public class testDatabase {
 			System.out.println(matchedTask.toString());
 		}
 
-		System.out.println("after deleting task 1 and 2");		
+		System.out.println("after deleting task 1 and 2");
 		database.delete(1);
 		database.delete(2);
-		
+
 		queryList = database.query();
 		Iterator<Task> iterator2 = queryList.iterator();
 		while (iterator2.hasNext()) {
 			Task matchedTask = iterator2.next();
+			assertFalse(matchedTask.getTaskId() == 1
+					|| matchedTask.getTaskId() == 2);
+			assertTrue(matchedTask.getTaskId() == 3
+					|| matchedTask.getTaskId() == 4
+					|| matchedTask.getTaskId() == 5);
 			System.out.println(matchedTask.toString());
 		}
-		
 	}
 
 	@After
 	public void testAfter() throws IOException {
 		database.clearDatabase();
-		// System.out.println(System.lineSeparator());
+		System.out.println(System.lineSeparator());
 	}
 }

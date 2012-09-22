@@ -3,16 +3,10 @@ package mhs.test;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import mhs.src.DeadlineTask;
 import mhs.src.FloatingTask;
@@ -68,45 +62,27 @@ public class testTaskRecordFile {
 
 	}
 
-	/*
-	 * @Test public void testAddTask() throws IOException { // Create Records
-	 * taskRecordFile.addRecord(task); taskRecordFile.addRecord(task2);
-	 * taskRecordFile.addRecord(task3); taskRecordFile.addRecord(task4);
-	 * taskRecordFile.addRecord(task5); }
-	 */
-
 	@Test
-	public void testSaveTasks() throws IOException {
-
-		taskRecordFile.saveTaskList(taskList);
-
-	}
-
-	@Test
-	public void testLoadTasks() throws IOException {
-
-		taskRecordFile.saveTaskList(taskList);
+	public void testSaveAndLoadTasks() throws IOException {
 
 		Map<Integer, Task> loadTaskList = new LinkedHashMap<Integer, Task>();
+
+		taskRecordFile.saveTaskList(taskList);
+
 		loadTaskList = taskRecordFile.loadTaskList();
 
-		for (Map.Entry<Integer, Task> loadedEntry : loadTaskList.entrySet()) {
-			for (Map.Entry<Integer, Task> savedEntry : taskList.entrySet()) {
-
-				// assertEquals(savedEntry.getValue().toString(),loadedEntry.getValue().toString());
-				System.out.println(loadedEntry.getValue().getTaskName() + " "
-						+ savedEntry.getValue().getTaskName());
-			}
+		for (int i = 1; i <= taskList.size(); i++) {
+			assertTrue(taskList.get(i).toString()
+					.equals(loadTaskList.get(i).toString()));
+			assertTrue(taskList.get(i).toString()
+					.equals(loadTaskList.get(i).toString()));
+			assertTrue(taskList.get(i).toString()
+					.equals(loadTaskList.get(i).toString()));
+			assertTrue(taskList.get(i).toString()
+					.equals(loadTaskList.get(i).toString()));
+			assertTrue(taskList.get(i).toString()
+					.equals(loadTaskList.get(i).toString()));
 		}
-		Set<Task> savedListSet = new LinkedHashSet<Task>(taskList.values());
-		Set<Task> loadTaskListSet = new LinkedHashSet<Task>(
-				loadTaskList.values());
-
-		System.out.println(savedListSet);
-		System.out.println(loadTaskListSet);
-
-		// assertEquals(savedListSet,loadTaskListSet);
-
 	}
 
 }

@@ -1,12 +1,6 @@
 package mhs.src;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.joda.time.DateTime;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class DeadlineTask extends Task {
 
@@ -58,17 +52,6 @@ public class DeadlineTask extends Task {
 		setEndDateTime(endDt);
 	}
 
-	/**
-	 * Copy Constructor
-	 * @param sourceTask
-	 */
-	public DeadlineTask(DeadlineTask sourceTask) {
-	    this(sourceTask.getTaskId(), sourceTask.getTaskName(), sourceTask
-				.getTaskCategory(), sourceTask.getEndDateTime(), sourceTask.getTaskCreated(), sourceTask
-				.getTaskUpdated(), sourceTask.getTaskLastSync(), sourceTask
-				.getgCalTaskId(), sourceTask.isDone(), sourceTask.isDeleted());
-	}
-	
 	public DateTime getStartDateTime() {
 		return null;
 	}
@@ -92,31 +75,5 @@ public class DeadlineTask extends Task {
 				+ isDeleted.toString();
 
 		return taskToString;
-	}
-
-	/*
-	 * Record methods
-	 */
-	/**
-	 * Return task properties for record file insertion
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getTaskProperties() {
-
-		Map<String, String> taskProperties = new LinkedHashMap<String, String>();
-
-		taskProperties.put("taskId", taskId.toString());
-		taskProperties.put("taskName", taskName);
-		taskProperties.put("taskCategory", taskCategory.getValue());
-		taskProperties.put("endDateTime", endDateTime.toString());
-		taskProperties.put("taskCreated", taskCreated.toString());
-		taskProperties.put("taskUpdated", taskUpdated.toString());
-		taskProperties.put("taskLastSync", taskLastSync.toString());
-		taskProperties.put("gCalTaskId", gCalTaskId);
-		taskProperties.put("isDone", isDone.toString());
-		taskProperties.put("isDeleted", isDeleted.toString());
-
-		return taskProperties;
 	}
 }
