@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/user/Desktop/joda-time-2.1/joda-time-2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/user/Desktop/joda-time-2.1/joda-time-2.1-javadoc.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/user/Desktop/joda-time-2.1/joda-time-2.1-sources.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/joda-time-2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/joda-time-2.1-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/joda-time-2.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/cloning-1.8.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/cloning-1.8.1-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
