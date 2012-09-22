@@ -1,3 +1,4 @@
+package mhs.src;
 
 public class CommandExtractor {
 	enum commands {
