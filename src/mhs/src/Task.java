@@ -4,6 +4,9 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class Task {
 
 	protected Integer taskId;
@@ -92,6 +95,16 @@ public class Task {
 		setgCalTaskId(sourceTask.getgCalTaskId());
 		setDone(sourceTask.isDone());
 		setDeleted(sourceTask.isDeleted());		
+	}
+	
+	public Task clone(){
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(DateTime.class,
+				new DateTimeTypeConverter());
+		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
+		Gson gson = gsonBuilder.create();
+		
+		return gson.fromJson(gson.toJson(this), Task.class);
 	}
 	
 	public String toString() {

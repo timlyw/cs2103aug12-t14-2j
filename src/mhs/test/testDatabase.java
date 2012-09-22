@@ -195,47 +195,39 @@ public class testDatabase {
 		database.add(task2);
 
 		Task addedTask = database.query(1);
-		System.out.println(task.toString());
-		System.out.println(addedTask.toString());
+		//System.out.println(task.toString());
+		//System.out.println(addedTask.toString());
+		assertEquals(task.toString(), addedTask.toString());
 
 		Task addedTask2 = database.query(2);
-		System.out.println(task2.toString());
-		System.out.println(addedTask2.toString());
-
-		assertEquals(task.toString(), addedTask.toString());
+		//System.out.println(task2.toString());
+		//System.out.println(addedTask2.toString());
 		assertEquals(task2.toString(), addedTask2.toString());
 
 	}
 
 	@Test
 	public void testUpdateDatabase() throws IOException {
-		System.out.println("Updating record...");
+		System.out.println("Test update Database...");
 
 		database.add(task);
 
+		System.out.println("before update");
 		queryList = database.query();
-
 		Iterator<Task> iterator = queryList.iterator();
 		while (iterator.hasNext()) {
 			Task matchedTask = iterator.next();
 			System.out.println(matchedTask.toString());
 		}
 
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(DateTime.class,
-				new DateTimeTypeConverter());
-		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
-		Gson gson = gsonBuilder.create();
-
-		Task editTask = gson.fromJson(gson.toJson(task), Task.class);
-
-		editTask.setTaskName("task 5 - assignment du!");
+		Task editTask = task.clone();
+		editTask.setTaskName("edited! task 1 - meeting");
 		editTask.setTaskCreated(new DateTime().now().plusDays(1));
 
-		database.add(editTask);
-		
-		queryList = database.query();
+		database.update(editTask);
 
+		System.out.println("after update");
+		queryList = database.query();
 		Iterator<Task> iterator2 = queryList.iterator();
 		while (iterator2.hasNext()) {
 			Task matchedTask = iterator2.next();
@@ -245,11 +237,39 @@ public class testDatabase {
 	}
 
 	@Test
-	public void testDeleteDatabase() {
+	public void testDeleteDatabase() throws IOException {
+		System.out.println("Adding to database...");
+
+		database.add(task);
+		database.add(task2);
+		database.add(task3);
+		database.add(task4);
+		database.add(task5);
+		
+		System.out.println("before delete");
+		queryList = database.query();
+		Iterator<Task> iterator = queryList.iterator();
+		while (iterator.hasNext()) {
+			Task matchedTask = iterator.next();
+			System.out.println(matchedTask.toString());
+		}
+
+		System.out.println("after deleting task 1 and 2");		
+		database.delete(1);
+		database.delete(2);
+		
+		queryList = database.query();
+		Iterator<Task> iterator2 = queryList.iterator();
+		while (iterator2.hasNext()) {
+			Task matchedTask = iterator2.next();
+			System.out.println(matchedTask.toString());
+		}
+		
 	}
 
 	@After
 	public void testAfter() throws IOException {
+		database.clearDatabase();
 		// System.out.println(System.lineSeparator());
 	}
 }

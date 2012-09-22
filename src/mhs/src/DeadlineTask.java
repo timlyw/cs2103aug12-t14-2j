@@ -5,6 +5,9 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class DeadlineTask extends Task {
 
 	private DateTime endDateTime;
@@ -65,7 +68,7 @@ public class DeadlineTask extends Task {
 				.getTaskUpdated(), sourceTask.getTaskLastSync(), sourceTask
 				.getgCalTaskId(), sourceTask.isDone(), sourceTask.isDeleted());
 	}
-
+	
 	public DateTime getStartDateTime() {
 		return null;
 	}
