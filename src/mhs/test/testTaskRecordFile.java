@@ -4,6 +4,15 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import mhs.src.DeadlineTask;
 import mhs.src.FloatingTask;
@@ -18,128 +27,86 @@ import org.junit.Test;
 public class testTaskRecordFile {
 
 	TaskRecordFile taskRecordFile;
+	Map<Integer, Task> taskList;
 	Task task;
 	Task task2;
 	Task task3;
 	Task task4;
 	Task task5;
-	private final static String TEST_TASK_RECORD_FILENAME = "testTaskRecordFile.txt";
+
+	private final static String TEST_TASK_RECORD_FILENAME = "testTaskRecordFile.json";
 
 	@Before
 	public void initTestFile() throws IOException {
 
-		RandomAccessFile raf = new RandomAccessFile(TEST_TASK_RECORD_FILENAME,
-				"rw");
-
-		raf.setLength(0);
-
-		raf.writeBytes("taskId 		11" + System.lineSeparator());
-		raf.writeBytes("taskName 	50" + System.lineSeparator());
-		raf.writeBytes("taskCategory 	50" + System.lineSeparator());
-		raf.writeBytes("startDateTime 	35" + System.lineSeparator());
-		raf.writeBytes("endDateTime	35" + System.lineSeparator());
-		raf.writeBytes("taskCreated 	35" + System.lineSeparator());
-		raf.writeBytes("taskUpdated  	35" + System.lineSeparator());
-		raf.writeBytes("taskLastSync 	11" + System.lineSeparator());
-		raf.writeBytes("gCalTaskId	11" + System.lineSeparator());
-		raf.writeBytes("isDone 		11" + System.lineSeparator());
-		raf.writeBytes("isDeleted 	11" + System.lineSeparator());
-		raf.writeBytes("=================================================="
-				+ System.lineSeparator());
-
-		raf.close();
 		taskRecordFile = new TaskRecordFile(TEST_TASK_RECORD_FILENAME);
 
-		DateTime dt = new DateTime();
-		DateTime dt2 = new DateTime();
-		DateTime dt3 = new DateTime();
-		DateTime dt4 = new DateTime();
-		DateTime dt5 = new DateTime();
+		DateTime dt = new DateTime().now();
+		DateTime dt2 = new DateTime().now();
+		DateTime dt3 = new DateTime().now();
+		DateTime dt4 = new DateTime().now();
+		DateTime dt5 = new DateTime().now();
 
-		task = new TimedTask(
-				1,
-				"task 1 - task 1task 1task 1task 1task 1task 1task 1task 1task 1task 1task 1task 1task 1task 1task 1task 1task 1task 1task 1",
-				"TIMED", dt, dt2, dt3, dt4, dt5, "null", false, false);
+		task = new TimedTask(1, "task 1", "TIMED", dt, dt2, dt3, dt4, dt5,
+				"null", false, false);
 		task2 = new TimedTask(2, "task 2", "TIMED", dt, dt2, dt3, dt4, dt5,
 				"null", false, false);
-		task3 = new DeadlineTask(3, "task 3", "DEADLINE", dt, dt2, dt3, dt4, dt5,
+		task3 = new DeadlineTask(3, "task 3", "DEADLINE", dt, dt2, dt3, dt4,
 				"null", false, false);
-		task4 = new DeadlineTask(4, "task 4", "DEADLINE", dt, dt2, dt3, dt4, dt5,
+		task4 = new DeadlineTask(4, "task 4", "DEADLINE", dt, dt2, dt3, dt4,
 				"null", false, false);
-		task5 = new FloatingTask(5, "task 5", "FLOATING", dt, dt2, dt3, "null", false, false);
+		task5 = new FloatingTask(5, "task 5", "FLOATING", dt, dt2, dt3, "null",
+				false, false);
 
-		// Create Records
-		taskRecordFile.addRecord(task);
-		taskRecordFile.addRecord(task2);
-		taskRecordFile.addRecord(task3);
-		taskRecordFile.addRecord(task4);
-		taskRecordFile.addRecord(task5);
+		taskList = new LinkedHashMap<Integer, Task>();
+
+		taskList.put(task.getTaskId(), task);
+		taskList.put(task2.getTaskId(), task2);
+		taskList.put(task3.getTaskId(), task3);
+		taskList.put(task4.getTaskId(), task4);
+		taskList.put(task5.getTaskId(), task5);
+
+	}
+
+	/*
+	 * @Test public void testAddTask() throws IOException { // Create Records
+	 * taskRecordFile.addRecord(task); taskRecordFile.addRecord(task2);
+	 * taskRecordFile.addRecord(task3); taskRecordFile.addRecord(task4);
+	 * taskRecordFile.addRecord(task5); }
+	 */
+
+	@Test
+	public void testSaveTasks() throws IOException {
+
+		taskRecordFile.saveTaskList(taskList);
 
 	}
 
 	@Test
-	public void testInitRecordFile() throws IOException {
+	public void testLoadTasks() throws IOException {
 
-		System.out.println("Setting up records field attributes...");
-		taskRecordFile.printRecordFieldAttributes();
-		System.out.println();
+		taskRecordFile.saveTaskList(taskList);
 
-		// Print existing records
-		System.out.println("Printing records...");
-		taskRecordFile.printRecords();
-		System.out.println();
+		Map<Integer, Task> loadTaskList = new LinkedHashMap<Integer, Task>();
+		loadTaskList = taskRecordFile.loadTaskList();
 
-	}
+		for (Map.Entry<Integer, Task> loadedEntry : loadTaskList.entrySet()) {
+			for (Map.Entry<Integer, Task> savedEntry : taskList.entrySet()) {
 
-	@Test
-	public void testFetchRecords() throws IOException {
-
-		// Fetch Record
-		System.out.println("Fetching Records...");
-		for (int i = 0; i < 5; i++) {
-			Task myTask = taskRecordFile.fetchTask(i + 1);
-			System.out.printf("Fetching Task %s : %s\n", i + 1,
-					myTask.getTaskName());
+				// assertEquals(savedEntry.getValue().toString(),loadedEntry.getValue().toString());
+				System.out.println(loadedEntry.getValue().getTaskName() + " "
+						+ savedEntry.getValue().getTaskName());
+			}
 		}
-		System.out.println();
-	}
+		Set<Task> savedListSet = new LinkedHashSet<Task>(taskList.values());
+		Set<Task> loadTaskListSet = new LinkedHashSet<Task>(
+				loadTaskList.values());
 
-	@Test
-	public void testUpdateRecords() throws IOException {
+		System.out.println(savedListSet);
+		System.out.println(loadTaskListSet);
 
-		// Update Record
-		System.out.println("Updating Records...");
-		task.setTaskName("Task 1 EDITED");
-		taskRecordFile.updateRecord(task);
+		// assertEquals(savedListSet,loadTaskListSet);
 
-		// Print existing records
-		Task myTask = taskRecordFile.fetchTask(1);
-		assertEquals(myTask.getTaskName(), "Task 1 EDITED");
-	}
-
-	@Test
-	public void testDeleteRecord() throws IOException {
-		// Delete Task (set delete flag)
-		System.out.println("Delete task 4...");
-		task4.setDeleted(true);
-		taskRecordFile.updateRecord(task4);
-
-		// Fetch Record
-		Task myTask = taskRecordFile.fetchTask(4);
-		assertTrue(myTask.isDeleted());
-	}
-
-	@Test
-	public void testMarkDone() throws IOException {
-
-		// Mark Done Record
-		System.out.println("Mark task 5 done...");
-		task5.setDone(true);
-		taskRecordFile.updateRecord(task5);
-
-		// Fetch Record
-		Task myTask = taskRecordFile.fetchTask(5);
-		assertTrue(myTask.isDone());
 	}
 
 }

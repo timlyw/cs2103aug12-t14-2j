@@ -1,22 +1,27 @@
 package mhs.src;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.TreeMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 
 public class Database {
 
-	TaskRecordFile taskRecordFile;
-	GoogleCalendar googleCalendar;
+	private TaskRecordFile taskRecordFile;
+	private GoogleCalendar googleCalendar;
 
-	List<Task> taskList;
-	TreeMap<DateTime, Task> sortedTasks;
+	private Map<Integer, Task> taskList;
+
+	public Database(String taskRecordFileName) throws IOException {
+		initalizeDatabase(taskRecordFileName);
+		// syncronize local and web databases
+		syncronizeDatabases();
+	}
 
 	public Database() throws IOException {
 		initalizeDatabase();
@@ -24,99 +29,159 @@ public class Database {
 		syncronizeDatabases();
 	}
 
+	private void initalizeDatabase(String taskRecordFileName)
+			throws IOException {
+		taskRecordFile = new TaskRecordFile(taskRecordFileName);
+		googleCalendar = new GoogleCalendar();
+
+		taskList = taskRecordFile.loadTaskList();
+	}
+
 	private void initalizeDatabase() throws IOException {
 		taskRecordFile = new TaskRecordFile();
 		googleCalendar = new GoogleCalendar();
 
-		taskList = taskRecordFile.fetchTasks();
-	}
-
-	private void createSortedTaskList() {
-		Comparator<DateTime> TaskLatestCmp = new CompareTaskLatest();
-		sortedTasks = new TreeMap<DateTime, Task>(TaskLatestCmp);
-
-		Iterator<Task> iterator = taskList.iterator();
-		while (iterator.hasNext()) {
-			Task task = iterator.next();
-			sortedTasks
-			.put(task.getStartDateTime(), task);
-		}
+		taskList = taskRecordFile.loadTaskList();
 	}
 
 	private void syncronizeDatabases() {
 		// TODO
 	}
 
+	/**
+	 * Returns List of all tasks
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public List<Task> query() throws IOException {
+		List<Task> queryTaskList = new LinkedList<Task>(taskList.values());
+		return queryTaskList;
+	}
+
 	public Task query(int taskId) throws IOException {
-		// fetch record
-		return taskRecordFile.fetchTask(taskId);
+		return taskList.get(taskId);
 	}
 
 	public List<Task> query(String taskName) {
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		Iterator<Task> iterator = taskList.iterator();
-		while (iterator.hasNext()) {
-			if(iterator.next().getTaskName().contains(taskName)){
-				queriedTaskRecordset.add(iterator.next());
-			}		
-		}		
+		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
+			if (entry.getValue().getTaskName().toLowerCase()
+					.contains(taskName.toLowerCase())) {
+				queriedTaskRecordset.add(entry.getValue());
+			}
+		}
 		return queriedTaskRecordset;
 	}
 
-	public List<Task> query(TaskCategory taskCategory) {
+	public List<Task> query(TaskCategory queryTaskCategory) {
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		Iterator<Task> iterator = taskList.iterator();
-		while (iterator.hasNext()) {
-			if(iterator.next().getTaskCategory().equals(taskCategory)){
-				queriedTaskRecordset.add(iterator.next());
-			}		
-		}		
+		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
+			TaskCategory taskCategory = entry.getValue().getTaskCategory();
+			if (taskCategory.compareTo(queryTaskCategory) == 0) {
+				queriedTaskRecordset.add(entry.getValue());
+			}
+		}
+		return queriedTaskRecordset;
+	}
+
+	/**
+	 * Returns tasks that is within startTime or endTime inclusive
+	 * 
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<Task> query(DateTime startTime, DateTime endTime) {
+		List<Task> queriedTaskRecordset = new LinkedList<Task>();
+
+		Interval dateTimeInterval = new Interval(startTime,
+				endTime.plusMillis(1));
+
+		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
+			switch (entry.getValue().getTaskCategory()) {
+			case TIMED:
+				if (dateTimeInterval.contains(entry.getValue()
+						.getStartDateTime())
+						|| dateTimeInterval.contains(entry.getValue()
+								.getEndDateTime())) {
+					queriedTaskRecordset.add(entry.getValue());
+				}
+				break;
+			case DEADLINE:
+				if (dateTimeInterval
+						.contains(entry.getValue().getEndDateTime())) {
+					queriedTaskRecordset.add(entry.getValue());
+				}
+				break;
+			case FLOATING:
+			default:
+				break;
+			}
+		}
+
 		return queriedTaskRecordset;
 	}
 
 	public List<Task> query(String taskName, TaskCategory taskCategory,
 			DateTime startTime, DateTime endTime) {
-		// TODO
-		// fetch records
-		// perform query operations on recordset
-		// return list of tasks
+		List<Task> queriedTaskRecordset = new LinkedList<Task>();
+
+		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
+			if (entry.getValue().getTaskName().toLowerCase()
+					.contains(taskName.toLowerCase())) {
+				queriedTaskRecordset.add(entry.getValue());
+			}
+		}
 		return null;
 	}
 
 	public void add(Task task) throws IOException {
-		taskRecordFile.addRecord(task);
+		int newTaskId = getNewTaskId();
+		task.setTaskId(newTaskId);
+		taskList.put(newTaskId, task);
+		saveTaskRecordFile();
+	}
+
+	private void saveTaskRecordFile() throws IOException {
+		taskRecordFile.saveTaskList(taskList);
 	}
 
 	public void delete(int taskId) throws IOException {
 		// check if task exists
-		taskRecordFile.deleteRecord(taskId);
+		if (taskList.containsKey(taskId)) {
+			taskList.remove(taskId);
+			saveTaskRecordFile();
+		} else {
+			throw new Error("Invalid Task");
+		}
 	}
 
 	public void update(Task task) throws IOException {
-		taskRecordFile.updateRecord(task);
+		// check if task exists
+		if (taskList.containsKey(task.getTaskId())) {
+			taskList.put(task.getTaskId(), task);
+			saveTaskRecordFile();
+		} else {
+			throw new Error("Invalid Task");
+		}
 	}
 
-	/*
-	 * Debug Helpers
-	 */
-	public void printTasks() {
-		Iterator<Task> iterator = taskList.iterator();
+	public void clearDatabase() throws IOException {
+		taskList.clear();
+		saveTaskRecordFile();
+	}
+
+	private int getNewTaskId() {
+		Set<Integer> taskKeySet = taskList.keySet();
+
+		int getNewTaskId = 0;
+		Iterator<Integer> iterator = taskKeySet.iterator();
 		while (iterator.hasNext()) {
-			Task task = iterator.next();
-			System.out.println(task.getTaskName());
-			System.out.println(task.getStartDateTime().toString());
+			getNewTaskId = iterator.next();
 		}
+		getNewTaskId++;
+		return getNewTaskId;
 	}
 
-	public void printSortedTasks() {
-		
-		createSortedTaskList();
-		
-		for (Entry<DateTime, Task> entry : sortedTasks.entrySet()) {
-			DateTime key = entry.getKey();
-			Task value = entry.getValue();
-			System.out.println(key + " => " + value.getTaskName());
-		}
-
-	}
 }

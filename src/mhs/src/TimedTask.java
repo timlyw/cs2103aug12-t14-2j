@@ -10,7 +10,7 @@ public class TimedTask extends Task {
 	private DateTime startDateTime;
 	private DateTime endDateTime;
 
-	public TimedTask(int taskId, String taskName, String taskCategory,
+	public TimedTask(int taskId, String taskName, TaskCategory taskCategory,
 			DateTime startDt, DateTime endDt, DateTime createdDt,
 			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
 			boolean isDone, boolean isDeleted) {
@@ -20,6 +20,34 @@ public class TimedTask extends Task {
 		setEndDateTime(endDt);
 
 	}
+
+	public TimedTask(int taskId, String taskName, String taskCategory,
+
+		DateTime startDt, DateTime endDt, DateTime createdDt,
+			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
+			boolean isDone, boolean isDeleted) {
+		super(taskId, taskName, taskCategory, startDt, endDt, createdDt,
+				gCalTaskId, isDone, isDeleted);
+		setStartDateTime(startDt);
+		setEndDateTime(endDt);
+
+	}
+	
+	/**
+	 * Copy Constructor
+	 * @param sourceTask
+	 */
+	public TimedTask(TimedTask sourceTask) {
+		super(sourceTask.getTaskId(), sourceTask.getTaskName(), sourceTask
+				.getTaskCategory(), sourceTask.getTaskCreated(), sourceTask
+				.getTaskUpdated(), sourceTask.getTaskLastSync(), sourceTask
+				.getgCalTaskId(), sourceTask.isDone(), sourceTask.isDeleted());
+		setStartDateTime(sourceTask.getStartDateTime());
+		setEndDateTime(sourceTask.getEndDateTime());
+		System.out.println("deep copy");
+		
+	}
+
 
 	public DateTime getStartDateTime() {
 		return startDateTime;
@@ -35,6 +63,20 @@ public class TimedTask extends Task {
 
 	public void setEndDateTime(DateTime endDateTime) {
 		this.endDateTime = endDateTime;
+	}
+
+	public String toString() {
+		String taskToString = "taskId=" + taskId + "taskName=" + taskName
+				+ "taskCategory=" + taskCategory.getValue() + "startDateTime="
+				+ startDateTime.toString() + "endDateTime="
+				+ endDateTime.toString() + "taskCreated="
+				+ taskCreated.toString() + "taskUpdated="
+				+ taskUpdated.toString() + "taskLastSync="
+				+ taskLastSync.toString() + "gCalTaskId=" + gCalTaskId
+				+ "isDone=" + isDone.toString() + "isDeleted="
+				+ isDeleted.toString();
+
+		return taskToString;
 	}
 
 	/*
