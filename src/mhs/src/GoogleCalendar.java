@@ -27,9 +27,7 @@ public class GoogleCalendar {
 	static String userEmail = "cs2103mhs@gmail.com";
 	static String userPassword = "myhotsec2103";
 
-	static String authToken; // TODO create userAccessToken refresh
-								// mechanism
-
+	static String authToken;
 	private CalendarService calendarService;
 	private List<CalendarEventEntry> eventList;
 
@@ -122,7 +120,6 @@ public class GoogleCalendar {
 			ServiceException {
 		CalendarEventEntry event = getEvent(taskId);
 		event.setTitle(new PlainTextConstruct(newTitle));
-
 		URL editUrl = new URL(event.getEditLink().getHref());
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
 				.update(editUrl, event);

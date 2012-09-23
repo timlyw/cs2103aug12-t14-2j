@@ -14,6 +14,7 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
+	private ConfigFile configFile;
 	private TaskRecordFile taskRecordFile;
 	private GoogleCalendar googleCalendar;
 
@@ -24,9 +25,10 @@ public class Database {
 	 * 
 	 * @param taskRecordFileName
 	 * @throws IOException
-	 * @throws ServiceException 
+	 * @throws ServiceException
 	 */
-	public Database(String taskRecordFileName) throws IOException, ServiceException {
+	public Database(String taskRecordFileName) throws IOException,
+			ServiceException {
 		initalizeDatabase(taskRecordFileName);
 		// syncronize local and web databases
 		syncronizeDatabases();
@@ -36,7 +38,7 @@ public class Database {
 	 * Database default constructor
 	 * 
 	 * @throws IOException
-	 * @throws ServiceException 
+	 * @throws ServiceException
 	 */
 	public Database() throws IOException, ServiceException {
 		initalizeDatabase();
@@ -49,10 +51,11 @@ public class Database {
 	 * 
 	 * @param taskRecordFileName
 	 * @throws IOException
-	 * @throws ServiceException 
+	 * @throws ServiceException
 	 */
 	private void initalizeDatabase(String taskRecordFileName)
 			throws IOException, ServiceException {
+		configFile = new ConfigFile();
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
 		googleCalendar = new GoogleCalendar();
 
@@ -63,9 +66,10 @@ public class Database {
 	 * Initialize database
 	 * 
 	 * @throws IOException
-	 * @throws ServiceException 
+	 * @throws ServiceException
 	 */
 	private void initalizeDatabase() throws IOException, ServiceException {
+		configFile = new ConfigFile();
 		taskRecordFile = new TaskRecordFile();
 		googleCalendar = new GoogleCalendar();
 
