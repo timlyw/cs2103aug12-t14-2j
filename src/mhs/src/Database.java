@@ -10,6 +10,7 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
+import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.ServiceException;
 
 public class Database {
@@ -18,7 +19,9 @@ public class Database {
 	private TaskRecordFile taskRecordFile;
 	private GoogleCalendar googleCalendar;
 
-	private Map<Integer, Task> taskList;
+	// Data Views
+	private Map<Integer, Task> taskList; // primary task list with index as key
+	private Map<String, Task> gCalTaskList; // task list with gCalId as key
 
 	/**
 	 * Database constructor
@@ -59,7 +62,8 @@ public class Database {
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
 		googleCalendar = new GoogleCalendar();
 
-		taskList = taskRecordFile.loadTaskList();
+		taskList = taskRecordFile.getTaskList();
+		gCalTaskList = taskRecordFile.getGCalTaskList();
 	}
 
 	/**
@@ -76,8 +80,59 @@ public class Database {
 		taskList = taskRecordFile.loadTaskList();
 	}
 
-	private void syncronizeDatabases() {
+	public void syncronizeDatabases() throws IOException {
 		// TODO
+		List<CalendarEventEntry> googleCalendarEvents = googleCalendar
+				.getEventList();
+		Iterator<CalendarEventEntry> iterator = googleCalendarEvents.iterator();
+
+		while (iterator.hasNext()) {
+			// pull sync remote tasks
+			CalendarEventEntry gCalEntry = iterator.next();
+			if (gCalTaskList.containsKey(gCalEntry.getId())) {
+				// remote task is newer
+				if (gCalTaskList.get(gCalEntry.getId()).getTaskLastSync()
+						.compareTo(new DateTime(gCalEntry.getUpdated())) < 1) {
+
+				}
+
+			}
+		}
+
+		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
+			// push sync tasks from local to google calendar
+			try {
+				// add updated tasks
+				if (entry.getValue().getTaskUpdated()
+						.isAfter(entry.getValue().getTaskLastSync())) {
+					// TODO
+					googleCalendar.updateEvent(
+							entry.getValue().getgCalTaskId(), entry.getValue()
+									.getTaskName(), entry.getValue()
+									.getStartDateTime().toString(), entry
+									.getValue().getEndDateTime().toString());
+				}
+
+				// add unsynced tasks
+				if (entry.getValue().getgCalTaskId() == null) {
+					String eventGCalId = googleCalendar.createEvent(entry
+							.getValue().getTaskName(), entry.getValue()
+							.getStartDateTime().toString(), entry.getValue()
+							.getEndDateTime().toString());
+
+					entry.getValue().setgCalTaskId(eventGCalId);
+				}
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		saveTaskRecordFile();
 	}
 
 	/**
@@ -277,6 +332,15 @@ public class Database {
 		} else {
 			throw new Error("Invalid Task");
 		}
+	}
+
+	/**
+	 * Clears expired and deleted tasks
+	 * 
+	 * @throws IOException
+	 */
+	public void clearExpiredTasks() throws IOException {
+		// TODO
 	}
 
 	/**

@@ -31,19 +31,22 @@ public class TaskRecordFile {
 	private static String RECORD_FILE_NAME;
 	private final static String DEFAULT_TASK_RECORD_FILENAME = "taskRecordFile.json";
 
+	private Map<Integer, Task> taskList;
+	private Map<String, Task> gCalTaskList;
+
 	public TaskRecordFile() throws IOException {
 		RECORD_FILE_NAME = DEFAULT_TASK_RECORD_FILENAME;
 		initalizeRecordFile();
-
+		loadAllTaskLists();
 	}
 
 	public TaskRecordFile(String taskRecordFileName) throws IOException {
 		RECORD_FILE_NAME = taskRecordFileName;
 		initalizeRecordFile();
+		loadAllTaskLists();
 	}
 
 	private void initalizeRecordFile() throws IOException {
-
 		initializeGson();
 	}
 
@@ -56,11 +59,34 @@ public class TaskRecordFile {
 
 	}
 
+	public void loadAllTaskLists() throws IOException {
+
+		inputStream = new FileInputStream(RECORD_FILE_NAME);
+		jsonReader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+
+		taskList = new LinkedHashMap<Integer, Task>();
+		gCalTaskList = new LinkedHashMap<String, Task>();
+
+		JsonParser parser = new JsonParser();
+		JsonArray Jarray = parser.parse(jsonReader).getAsJsonArray();
+
+		for (JsonElement obj : Jarray) {
+			Task newTask = gson.fromJson(obj, Task.class);
+			taskList.put(newTask.taskId, newTask);
+			if (newTask.gCalTaskId != null) {
+				gCalTaskList.put(newTask.gCalTaskId, newTask);
+			}
+		}
+
+		jsonReader.close();
+		inputStream.close();
+	}
+
 	public Map<Integer, Task> loadTaskList() throws IOException {
 
 		inputStream = new FileInputStream(RECORD_FILE_NAME);
 		jsonReader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-		Map<Integer, Task> taskList = new LinkedHashMap<Integer, Task>();
+		taskList = new LinkedHashMap<Integer, Task>();
 
 		JsonParser parser = new JsonParser();
 		JsonArray Jarray = parser.parse(jsonReader).getAsJsonArray();
@@ -93,4 +119,10 @@ public class TaskRecordFile {
 
 	}
 
+	public Map<Integer, Task> getTaskList() {
+		return taskList;
+	}
+	public Map<String, Task> getGCalTaskList() {
+		return gCalTaskList;
+	}
 }

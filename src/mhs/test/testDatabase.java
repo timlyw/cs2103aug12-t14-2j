@@ -77,8 +77,8 @@ public class testDatabase {
 	}
 
 	@Test
-	public void testSyncDatabase() {
-		fail("Not yet implemented");
+	public void testSyncDatabase() throws IOException {
+		database.syncronizeDatabases();
 	}
 
 	@Test
