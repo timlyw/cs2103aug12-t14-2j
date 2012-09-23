@@ -24,8 +24,8 @@ public class GoogleCalendar {
 	static final String URL_EVENT_FEED = "https://www.google.com/calendar/feeds/default/private/full";
 	static final String URL_CREATE_EVENT = "http://www.google.com/calendar/feeds/%1$s/private/full";
 
-	static String _userEmail = "cs2103mhs@gmail.com";
-	static String _userPassword = "myhotsec2103";
+	static String userEmail = "cs2103mhs@gmail.com";
+	static String userPassword = "myhotsec2103";
 
 	static String authToken; // TODO create userAccessToken refresh
 								// mechanism
@@ -33,8 +33,8 @@ public class GoogleCalendar {
 	private CalendarService _calendarService;
 	private List<CalendarEventEntry> _eventList;
 
-	String _minStartTime = "2012-09-01T00:00:00";
-	String _maxStartTime = "2012-09-29T23:59:59";
+	String minStartTime = "2012-09-01T00:00:00";
+	String maxStartTime = "2012-09-29T23:59:59";
 
 	/**
 	 * Constructor
@@ -98,7 +98,7 @@ public class GoogleCalendar {
 	 */
 	public String createEvent(String taskTitle, String taskStartStr,
 			String taskEndStr) throws IOException, ServiceException {
-		URL postURL = new URL(String.format(URL_CREATE_EVENT, _userEmail));
+		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
 		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
 				taskEndStr);
 
@@ -160,8 +160,8 @@ public class GoogleCalendar {
 	public void pullEvents() throws IOException, ServiceException {
 		URL feedUrl = new URL(URL_EVENT_FEED);
 		CalendarQuery myQuery = new CalendarQuery(feedUrl);
-		myQuery.setMinimumStartTime(DateTime.parseDateTime(_minStartTime));
-		myQuery.setMaximumStartTime(DateTime.parseDateTime(_maxStartTime));
+		myQuery.setMinimumStartTime(DateTime.parseDateTime(minStartTime));
+		myQuery.setMaximumStartTime(DateTime.parseDateTime(maxStartTime));
 
 		// Send the request and receive the response:
 		CalendarEventFeed eventFeed = _calendarService.query(myQuery,
@@ -223,7 +223,7 @@ public class GoogleCalendar {
 	// _calendarService is initialized with userEmail and userPassword
 	private void initializeCalendarService() throws AuthenticationException {
 		_calendarService = new CalendarService(APP_NAME);
-		_calendarService.setUserCredentials(_userEmail, _userPassword);
+		_calendarService.setUserCredentials(userEmail, userPassword);
 		setAuthToken();
 	}
 
