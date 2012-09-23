@@ -9,5 +9,8 @@
 	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2-javadoc.jar"/>
 	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/joda-time-2.1/joda-time-2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/joda-time-2.1/joda-time-2.1-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/joda-time-2.1/joda-time-2.1-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
