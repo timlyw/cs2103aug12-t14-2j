@@ -9,5 +9,7 @@
 	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2-javadoc.jar"/>
 	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/guava-r09.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/gdata-src.java-1.47.1/gdata/java/lib/gdata-calendar-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
