@@ -10,6 +10,8 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
+import com.google.gdata.util.ServiceException;
+
 public class Database {
 
 	private TaskRecordFile taskRecordFile;
@@ -22,8 +24,9 @@ public class Database {
 	 * 
 	 * @param taskRecordFileName
 	 * @throws IOException
+	 * @throws ServiceException 
 	 */
-	public Database(String taskRecordFileName) throws IOException {
+	public Database(String taskRecordFileName) throws IOException, ServiceException {
 		initalizeDatabase(taskRecordFileName);
 		// syncronize local and web databases
 		syncronizeDatabases();
@@ -33,8 +36,9 @@ public class Database {
 	 * Database default constructor
 	 * 
 	 * @throws IOException
+	 * @throws ServiceException 
 	 */
-	public Database() throws IOException {
+	public Database() throws IOException, ServiceException {
 		initalizeDatabase();
 		// syncronize local and web databases
 		syncronizeDatabases();
@@ -45,9 +49,10 @@ public class Database {
 	 * 
 	 * @param taskRecordFileName
 	 * @throws IOException
+	 * @throws ServiceException 
 	 */
 	private void initalizeDatabase(String taskRecordFileName)
-			throws IOException {
+			throws IOException, ServiceException {
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
 		googleCalendar = new GoogleCalendar();
 
@@ -58,8 +63,9 @@ public class Database {
 	 * Initialize database
 	 * 
 	 * @throws IOException
+	 * @throws ServiceException 
 	 */
-	private void initalizeDatabase() throws IOException {
+	private void initalizeDatabase() throws IOException, ServiceException {
 		taskRecordFile = new TaskRecordFile();
 		googleCalendar = new GoogleCalendar();
 

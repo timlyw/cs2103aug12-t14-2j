@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.runners.statements.Fail;
 
+import com.google.gdata.util.ServiceException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -44,7 +45,7 @@ public class testDatabase {
 	private final static String TEST_TASK_RECORD_FILENAME = "testTaskRecordFile.json";
 
 	@Before
-	public void testDatabase() throws IOException {
+	public void testDatabase() throws IOException, ServiceException {
 
 		database = new Database(TEST_TASK_RECORD_FILENAME);
 		database.clearDatabase();
