@@ -30,8 +30,8 @@ public class GoogleCalendar {
 	static String authToken; // TODO create userAccessToken refresh
 								// mechanism
 
-	private CalendarService _calendarService;
-	private List<CalendarEventEntry> _eventList;
+	private CalendarService calendarService;
+	private List<CalendarEventEntry> eventList;
 
 	String minStartTime = "2012-09-01T00:00:00";
 	String maxStartTime = "2012-09-29T23:59:59";
@@ -76,8 +76,8 @@ public class GoogleCalendar {
 	public CalendarEventEntry getEvent(String taskId)
 			throws MalformedURLException, IOException, ServiceException {
 		CalendarEventEntry event;
-		for (int i = 0; i < _eventList.size(); i++) {
-			event = _eventList.get(i);
+		for (int i = 0; i < eventList.size(); i++) {
+			event = eventList.get(i);
 			if (isIdEqual(event.getId(), taskId)) {
 				return event;
 			}
@@ -102,7 +102,7 @@ public class GoogleCalendar {
 		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
 				taskEndStr);
 
-		CalendarEventEntry insertedEntry = _calendarService.insert(postURL,
+		CalendarEventEntry insertedEntry = calendarService.insert(postURL,
 				event);
 		return insertedEntry.getId();
 	}
@@ -122,8 +122,9 @@ public class GoogleCalendar {
 			ServiceException {
 		CalendarEventEntry event = getEvent(taskId);
 		event.setTitle(new PlainTextConstruct(newTitle));
+
 		URL editUrl = new URL(event.getEditLink().getHref());
-		CalendarEventEntry updatedEntry = (CalendarEventEntry) _calendarService
+		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
 				.update(editUrl, event);
 		return updatedEntry;
 	}
@@ -148,7 +149,7 @@ public class GoogleCalendar {
 	 * @return
 	 */
 	public List<CalendarEventEntry> getEventList() {
-		return _eventList;
+		return eventList;
 	}
 
 	/**
@@ -164,9 +165,9 @@ public class GoogleCalendar {
 		myQuery.setMaximumStartTime(DateTime.parseDateTime(maxStartTime));
 
 		// Send the request and receive the response:
-		CalendarEventFeed eventFeed = _calendarService.query(myQuery,
+		CalendarEventFeed eventFeed = calendarService.query(myQuery,
 				CalendarEventFeed.class);
-		_eventList = eventFeed.getEntries();
+		eventList = eventFeed.getEntries();
 
 	}
 
@@ -174,9 +175,9 @@ public class GoogleCalendar {
 	 * Display Events
 	 */
 	public void displayEvents() {
-		for (int i = 0; i < _eventList.size(); i++) {
+		for (int i = 0; i < eventList.size(); i++) {
 			// displayLine(_eventList.get(i).getId().toString());
-			displayLine(_eventList.get(i).getTitle().getPlainText());
+			displayLine(eventList.get(i).getTitle().getPlainText());
 		}
 	}
 
@@ -187,10 +188,9 @@ public class GoogleCalendar {
 		return shortId1.equals(shortId2);
 	}
 
-	public String getIdWithoutParentUrl(String taskId) {
+	private String getIdWithoutParentUrl(String taskId) {
 		int beginIndex = taskId.lastIndexOf(URL_SEPARATOR);
 		String shortTaskId = taskId.substring(beginIndex);
-
 		return shortTaskId;
 	}
 
@@ -222,13 +222,13 @@ public class GoogleCalendar {
 
 	// _calendarService is initialized with userEmail and userPassword
 	private void initializeCalendarService() throws AuthenticationException {
-		_calendarService = new CalendarService(APP_NAME);
-		_calendarService.setUserCredentials(userEmail, userPassword);
+		calendarService = new CalendarService(APP_NAME);
+		calendarService.setUserCredentials(userEmail, userPassword);
 		setAuthToken();
 	}
 
 	private void setAuthToken() {
-		UserToken auth_token = (UserToken) _calendarService
+		UserToken auth_token = (UserToken) calendarService
 				.getAuthTokenFactory().getAuthToken();
 		authToken = auth_token.getValue();
 	}
@@ -240,9 +240,9 @@ public class GoogleCalendar {
 	 * @param accessToken
 	 */
 	private void initializeCalendarServiceWithAuthToken(String accessToken) {
-		_calendarService.setUserToken(accessToken);
+		calendarService.setUserToken(accessToken);
 
-		UserToken auth_token = (UserToken) _calendarService
+		UserToken auth_token = (UserToken) calendarService
 				.getAuthTokenFactory().getAuthToken();
 		authToken = auth_token.getValue();
 	}
