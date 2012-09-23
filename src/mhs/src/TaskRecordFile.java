@@ -29,7 +29,6 @@ public class TaskRecordFile {
 	private OutputStream outputStream;
 
 	private static String RECORD_FILE_NAME;
-
 	private final static String DEFAULT_TASK_RECORD_FILENAME = "taskRecordFile.json";
 
 	public TaskRecordFile() throws IOException {
@@ -63,9 +62,7 @@ public class TaskRecordFile {
 		jsonReader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
 		Map<Integer, Task> taskList = new LinkedHashMap<Integer, Task>();
 
-		// JSON Object model access - FASTER
 		JsonParser parser = new JsonParser();
-
 		JsonArray Jarray = parser.parse(jsonReader).getAsJsonArray();
 
 		for (JsonElement obj : Jarray) {
