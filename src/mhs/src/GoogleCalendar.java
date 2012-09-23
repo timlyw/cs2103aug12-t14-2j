@@ -1,5 +1,6 @@
 package mhs.src;
 
+import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
 import com.google.gdata.client.calendar.*;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.PlainTextConstruct;
@@ -22,17 +23,43 @@ public class GoogleCalendar {
 
 	static final String URL_EVENT_FEED = "https://www.google.com/calendar/feeds/default/private/full";
 	static final String URL_CREATE_EVENT = "http://www.google.com/calendar/feeds/%1$s/private/full";
-	String _userEmail = "cs2103mhs@gmail.com";
-	String _userPassword = "myhotsec2103";
-	CalendarService _calendarService;
-	List<CalendarEventEntry> _eventList;
+
+	static String _userEmail = "cs2103mhs@gmail.com";
+	static String _userPassword = "myhotsec2103";
+
+	static String authToken; // TODO create userAccessToken refresh
+								// mechanism
+
+	private CalendarService _calendarService;
+	private List<CalendarEventEntry> _eventList;
 
 	String _minStartTime = "2012-09-01T00:00:00";
 	String _maxStartTime = "2012-09-29T23:59:59";
 
+	/**
+	 * Constructor
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	public GoogleCalendar() throws IOException, ServiceException {
 		// setup the calendar service with userEmail and userPassword
 		initializeCalendarService();
+		// pull events from user's calendar
+		pullEvents();
+	}
+
+	/**
+	 * Constructor with accessToken provided
+	 * 
+	 * @param accessToken
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public GoogleCalendar(String accessToken) throws IOException,
+			ServiceException {
+		// setup the calendar service with userEmail and userPassword
+		initializeCalendarServiceWithAuthToken(accessToken);
 		// pull events from user's calendar
 		pullEvents();
 	}
@@ -160,12 +187,7 @@ public class GoogleCalendar {
 		return shortId1.equals(shortId2);
 	}
 
-	private String getCalendarId(String IcalUID) {
-		String[] IcalUIDTokens = IcalUID.split("@google.com");
-		return IcalUIDTokens[0];
-	}
-
-	private String getIdWithoutParentUrl(String taskId) {
+	public String getIdWithoutParentUrl(String taskId) {
 		int beginIndex = taskId.lastIndexOf(URL_SEPARATOR);
 		String shortTaskId = taskId.substring(beginIndex);
 
@@ -202,6 +224,27 @@ public class GoogleCalendar {
 	private void initializeCalendarService() throws AuthenticationException {
 		_calendarService = new CalendarService(APP_NAME);
 		_calendarService.setUserCredentials(_userEmail, _userPassword);
+		setAuthToken();
+	}
+
+	private void setAuthToken() {
+		UserToken auth_token = (UserToken) _calendarService
+				.getAuthTokenFactory().getAuthToken();
+		authToken = auth_token.getValue();
+	}
+
+	/**
+	 * Initializes google service with auth token (valid after first credential
+	 * setting)
+	 * 
+	 * @param accessToken
+	 */
+	private void initializeCalendarServiceWithAuthToken(String accessToken) {
+		_calendarService.setUserToken(accessToken);
+
+		UserToken auth_token = (UserToken) _calendarService
+				.getAuthTokenFactory().getAuthToken();
+		authToken = auth_token.getValue();
 	}
 
 	private void displayLine(String displayString) {
