@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import com.google.gdata.data.calendar.CalendarEventEntry;
+
 public class TimedTask extends Task {
 
 	private DateTime startDateTime;
@@ -64,18 +66,20 @@ public class TimedTask extends Task {
 	}
 
 	/**
-	 * Copy Constructor
+	 * Constructor from Google CalendarEventEntry
 	 * 
-	 * @param sourceTask
+	 * @param taskId
+	 * @param gCalEntry
 	 */
-	public TimedTask(TimedTask sourceTask) {
-		super(sourceTask.getTaskId(), sourceTask.getTaskName(), sourceTask
-				.getTaskCategory(), sourceTask.getTaskCreated(), sourceTask
-				.getTaskUpdated(), sourceTask.getTaskLastSync(), sourceTask
-				.getgCalTaskId(), sourceTask.isDone(), sourceTask.isDeleted());
-		setStartDateTime(sourceTask.getStartDateTime());
-		setEndDateTime(sourceTask.getEndDateTime());
-		System.out.println("deep copy");
+	public TimedTask(int taskId, CalendarEventEntry gCalEntry,
+			DateTime syncDateTime) {
+		super(taskId, gCalEntry.getTitle().getPlainText(), TaskCategory.TIMED,
+				syncDateTime, syncDateTime, syncDateTime, gCalEntry.getId(),
+				false, false);
+		setStartDateTime(new DateTime(gCalEntry.getTimes().get(0)
+				.getStartTime().toString()));
+		setEndDateTime(new DateTime(gCalEntry.getTimes().get(0).getEndTime()
+				.toString()));
 
 	}
 

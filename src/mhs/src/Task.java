@@ -206,14 +206,14 @@ public class Task {
 		return null;
 	}
 
-	public void setEndDateTime() {
+	public void setEndDateTime(DateTime dateTime) {
 	}
 
 	public DateTime getStartDateTime() {
 		return null;
 	}
 
-	public void setStartDateTime() {
+	public void setStartDateTime(DateTime dateTime) {
 	}
 
 }

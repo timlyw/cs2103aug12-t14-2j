@@ -120,6 +120,39 @@ public class GoogleCalendar {
 			ServiceException {
 		CalendarEventEntry event = getEvent(taskId);
 		event.setTitle(new PlainTextConstruct(newTitle));
+		When eventUpdatedTimes = new When();
+		eventUpdatedTimes.setStartTime(DateTime.parseDateTime(newStartTime));
+		eventUpdatedTimes.setEndTime(DateTime.parseDateTime(newEndTime));
+		URL editUrl = new URL(event.getEditLink().getHref());
+		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
+				.update(editUrl, event);
+		return updatedEntry;
+	}
+
+	/**
+	 * Add synced CalendarEventEntry
+	 * 
+	 * @param taskId
+	 * @param newTitle
+	 * @param newStartTime
+	 * @param newEndTime
+	 * @param syncDateTime
+	 * @return
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public CalendarEventEntry updateEvent(String taskId, String newTitle,
+			String newStartTime, String newEndTime, String syncDateTime)
+			throws IOException, ServiceException {
+		CalendarEventEntry event = getEvent(taskId);
+		event.setTitle(new PlainTextConstruct(newTitle));
+
+		When eventUpdatedTimes = new When();
+		eventUpdatedTimes.setStartTime(DateTime.parseDateTime(newStartTime));
+		eventUpdatedTimes.setEndTime(DateTime.parseDateTime(newEndTime));
+
+		event.setUpdated(DateTime.parseDateTime(syncDateTime));
+
 		URL editUrl = new URL(event.getEditLink().getHref());
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
 				.update(editUrl, event);
@@ -247,4 +280,5 @@ public class GoogleCalendar {
 	private void displayLine(String displayString) {
 		System.out.println(displayString);
 	}
+
 }
