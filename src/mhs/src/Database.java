@@ -63,9 +63,10 @@ public class Database {
 	 */
 	private void initalizeDatabase(String taskRecordFileName)
 			throws IOException, ServiceException {
+
 		configFile = new ConfigFile();
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
-		googleCalendar = new GoogleCalendar();
+		initializeGoogleCalendarService();
 
 		taskList = taskRecordFile.getTaskList();
 		gCalTaskList = taskRecordFile.getGCalTaskList();
@@ -79,10 +80,21 @@ public class Database {
 	 */
 	private void initalizeDatabase() throws IOException, ServiceException {
 		configFile = new ConfigFile();
-		taskRecordFile = new TaskRecordFile();
-		googleCalendar = new GoogleCalendar();
 
+		taskRecordFile = new TaskRecordFile();
 		taskList = taskRecordFile.loadTaskList();
+
+		initializeGoogleCalendarService();
+	}
+
+	private void initializeGoogleCalendarService() throws IOException,
+			ServiceException {
+		if (configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")) {
+			googleCalendar = new GoogleCalendar(
+					configFile.getConfigParameter("GOOGLE_AUTH_TOKEN"));
+		} else if (configFile.hasConfigParameter("USER_GOOGLE_EMAIL")) {
+			// TODO prompt user password
+		}
 	}
 
 	// TODO BATCH OPERATIONS FOR DATABASE
@@ -110,7 +122,7 @@ public class Database {
 					.equals(TaskCategory.FLOATING)) {
 				continue;
 			}
-			
+
 			// add unsynced tasks
 			if (entry.getValue().getgCalTaskId().equalsIgnoreCase("null")) {
 				System.out.println("push unsync event : "
@@ -181,11 +193,13 @@ public class Database {
 							+ new DateTime(gCalEntry.getUpdated().getValue()));
 
 					// update remote task
-					CalendarEventEntry updatedEvent = googleCalendar.updateEvent(gCalEntry.getId(), gCalEntry
-							.getTitle().getPlainText(), gCalEntry.getTimes()
-							.get(0).getStartTime().toString(), gCalEntry
-							.getTimes().get(0).getStartTime().toString(),
-							syncDateTime.toString());
+					CalendarEventEntry updatedEvent = googleCalendar
+							.updateEvent(gCalEntry.getId(), gCalEntry
+									.getTitle().getPlainText(), gCalEntry
+									.getTimes().get(0).getStartTime()
+									.toString(), gCalEntry.getTimes().get(0)
+									.getStartTime().toString(), syncDateTime
+									.toString());
 
 					// edit local task
 					localTaskEntry.setTaskName(gCalEntry.getTitle()
@@ -196,10 +210,10 @@ public class Database {
 							.getTimes().get(0).getEndTime().toString()));
 					localTaskEntry.setTaskLastSync(syncDateTime);
 					localTaskEntry.setTaskUpdated(syncDateTime);
-					
+
 					System.out.println(syncDateTime + " "
 							+ updatedEvent.getUpdated());
-					
+
 				}
 			} else {
 				// pull new remote task
@@ -211,13 +225,14 @@ public class Database {
 				taskList.put(newTask.getTaskId(), newTask);
 
 				System.out.println(newTask.getTaskLastSync());
-				
+
 				// update remote task
-				CalendarEventEntry updatedEvent = googleCalendar.updateEvent(gCalEntry.getId(), gCalEntry
-						.getTitle().getPlainText(), gCalEntry.getTimes().get(0)
-						.getStartTime().toString(), gCalEntry.getTimes().get(0)
-						.getStartTime().toString(), syncDateTime.toString());
-				
+				CalendarEventEntry updatedEvent = googleCalendar.updateEvent(
+						gCalEntry.getId(), gCalEntry.getTitle().getPlainText(),
+						gCalEntry.getTimes().get(0).getStartTime().toString(),
+						gCalEntry.getTimes().get(0).getStartTime().toString(),
+						syncDateTime.toString());
+
 				System.out.println(updatedEvent.getUpdated());
 
 			}
