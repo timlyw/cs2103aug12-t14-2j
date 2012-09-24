@@ -1,5 +1,6 @@
 package mhs.src;
 
+import Command;
 import CommandExtractor;
 import DateExtractor;
 import TimeExtractor;
@@ -9,6 +10,8 @@ import java.util.Queue;
 import java.util.Scanner;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.joda.time.Partial;
 
 public class CommandParser {
@@ -46,26 +49,55 @@ public class CommandParser {
 			} 
 			else if (nameExtractor.checkNameFormat(processArray[i])) {
 			} 
-			else if (TimeExtractor.checkTimeFormat(processArray[i])) {
+			else if (timeParser.checkTimeFormat(processArray[i])) {
 				System.out.println(processArray[i] + " is a time");
 				if(!timeFlag){
-				startTime = TimeExtractor.processTime(processArray[i]);
+				startTime = timeParser.processTime(processArray[i]);
 				timeFlag = true;
 				}
 				else if(timeFlag){
-				endTime = TimeExtractor.processTime(processArray[i]);
+				endTime = timeParser.processTime(processArray[i]);
 				}
 				System.out.println("output is " + startTime.toString());
 
-			} else if (DateExtractor.checkDateFormat(processArray[i])) {
+			} else if (dateParser.checkDateFormat(processArray[i])) {
+				Queue<String> commandQueue = new LinkedList<String>();
+				for (j = i; j < processArray.length; j++) {
+					if (dateParser.checkDateFormat(processArray[j])) {
+						System.out.println(processArray[j] + " is a date");
+						commandQueue.add(processArray[j]);
+					} else {
+						break;
+					}
+				}
 
+				//int counter = dateParser.getCounter();
+				i = j - 1;
+				//i -= counter;
+				if(!dateFlag){
+				startDate = dateParser.processDate(commandQueue);
+				dateFlag = true;
+				}
+				else if(dateFlag){
+				endDate = dateParser.processDate(commandQueue);
+				}
+				System.out.println("output is " + startDate.toString());
 
 			} else {
 				System.out.println("invalid command");
 			}
 
 		}
-		return null;
+
+		setUpCommandObject(command, taskName, edittedName, startDate, startTime, endDate, endTime);
 	}
 
+
+	private static void setUpCommandObject(String command, String taskName,
+			String edittedName, LocalDate startDate, LocalTime startTime,
+			LocalDate endDate, LocalTime endTime) {
+		
+		Command object = new Command(command, taskName, edittedName, startDate, startTime, endDate, endTime);
+		
+	}
 }
