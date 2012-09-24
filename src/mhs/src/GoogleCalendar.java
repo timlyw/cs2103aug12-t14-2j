@@ -84,12 +84,37 @@ public class GoogleCalendar {
 	}
 
 	/**
-	 * create an event in user's calendar with specified title, start and end
+	 * Create an event in user's calendar with specified title, start, end time,
+	 * updated datetime for sync
+	 * 
+	 * @param taskTitle
+	 * @param taskStartStr
+	 * @param taskEndStr
+	 * @param taskUpdated
+	 * @return
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public String createEvent(String taskTitle, String taskStartStr,
+			String taskEndStr, String taskUpdated) throws IOException,
+			ServiceException {
+		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
+		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
+				taskEndStr);
+		event.setUpdated(DateTime.parseDateTime(taskUpdated));
+		CalendarEventEntry insertedEntry = calendarService.insert(postURL,
+				event);
+		return insertedEntry.getId();
+	}
+
+	/**
+	 * Create an event in user's calendar with specified title, start and end
 	 * time
 	 * 
 	 * @param taskTitle
 	 * @param taskStartStr
 	 * @param taskEndStr
+	 * @param taskUpdated
 	 * @return
 	 * @throws IOException
 	 * @throws ServiceException
@@ -99,7 +124,6 @@ public class GoogleCalendar {
 		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
 		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
 				taskEndStr);
-
 		CalendarEventEntry insertedEntry = calendarService.insert(postURL,
 				event);
 		return insertedEntry.getId();
@@ -130,7 +154,7 @@ public class GoogleCalendar {
 	}
 
 	/**
-	 * Add synced CalendarEventEntry
+	 * Update synced CalendarEventEntry
 	 * 
 	 * @param taskId
 	 * @param newTitle
@@ -144,7 +168,9 @@ public class GoogleCalendar {
 	public CalendarEventEntry updateEvent(String taskId, String newTitle,
 			String newStartTime, String newEndTime, String syncDateTime)
 			throws IOException, ServiceException {
+
 		CalendarEventEntry event = getEvent(taskId);
+
 		event.setTitle(new PlainTextConstruct(newTitle));
 
 		When eventUpdatedTimes = new When();

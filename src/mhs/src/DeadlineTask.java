@@ -52,8 +52,13 @@ public class DeadlineTask extends Task {
 		setEndDateTime(endDt);
 	}
 
+	/**
+	 * Return endDateTime for startDateTime
+	 */
 	public DateTime getStartDateTime() {
-		return null;
+		return endDateTime;
+	}
+	public void setStartDateTime(DateTime endDateTime) {
 	}
 
 	public DateTime getEndDateTime() {

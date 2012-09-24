@@ -47,25 +47,21 @@ public class testDatabase {
 	@Before
 	public void testDatabase() throws IOException, ServiceException {
 
-		database = new Database(TEST_TASK_RECORD_FILENAME);
-		database.clearDatabase();
+		database = new Database(TEST_TASK_RECORD_FILENAME, true);
+		//database.clearDatabase();
 
 		DateTime dt = new DateTime().now();
-		DateTime dt2 = new DateTime().now();
-		DateTime dt3 = new DateTime().now();
-		DateTime dt4 = new DateTime().now();
-		DateTime dt5 = new DateTime().now();
 
-		task = new TimedTask(1, "task 1 - a meeting", "TIMED", dt, dt2, dt3,
-				dt4, dt5, "null", false, false);
+		task = new TimedTask(1, "task 1 - a meeting", "TIMED", dt, dt, dt,
+				dt, dt, "null", false, false);
 		task2 = new TimedTask(2, "task 2 - a project meeting", "TIMED", dt,
-				dt2, dt3, dt4, dt5, "null", false, false);
+				dt, dt, dt, dt, "null", false, false);
 		task3 = new DeadlineTask(3, "task 3 - assignment due", "DEADLINE", dt,
-				dt2, dt3, dt4, "null", false, false);
+				dt, dt, dt, "null", false, false);
 		task4 = new DeadlineTask(4, "task 4 - project due", "DEADLINE", dt,
-				dt2, dt3, dt4, "null", false, false);
+				dt, dt, dt, "null", false, false);
 		task5 = new FloatingTask(5, "task 5 - play more games", "FLOATING", dt,
-				dt2, dt3, "null", false, false);
+				dt, dt, "null", false, false);
 
 		taskList = new LinkedHashMap<Integer, Task>();
 
@@ -78,10 +74,23 @@ public class testDatabase {
 
 	@Test
 	public void testSyncDatabase() throws IOException, ServiceException {
-		System.out.println("Sync Test");
-		database.add(task);
+		System.out.println("Sync Test");		
+		database.syncronizeDatabases();
+		
+		// update task to push
+		List<Task> tempTasks = database.query();
+		
+		System.out.println(tempTasks.size());
+		
+		tempTasks.get(0).setTaskUpdated(new DateTime().now().plusDays(5));
+		database.update(tempTasks.get(0));
+		
+		// update task to pull
+		tempTasks.get(1).setTaskLastSync(new DateTime().now().minusDays(5));
+		database.update(tempTasks.get(1));
 
 		database.syncronizeDatabases();
+		//database.clearDatabase();
 	}
 
 	@Test
@@ -306,7 +315,7 @@ public class testDatabase {
 
 	@After
 	public void testAfter() throws IOException {
-		database.clearDatabase();
+		//database.clearDatabase();
 		System.out.println(System.lineSeparator());
 	}
 }
