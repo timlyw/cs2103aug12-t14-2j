@@ -77,7 +77,10 @@ public class testDatabase {
 	}
 
 	@Test
-	public void testSyncDatabase() throws IOException {
+	public void testSyncDatabase() throws IOException, ServiceException {
+		System.out.println("Sync Test");
+		database.add(task);
+
 		database.syncronizeDatabases();
 	}
 
