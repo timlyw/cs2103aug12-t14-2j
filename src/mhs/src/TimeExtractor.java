@@ -1,8 +1,10 @@
+package mhs.src;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTimeFieldType;
-import org.joda.time.Partial;
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
 
 public class TimeExtractor {
@@ -24,9 +26,9 @@ public class TimeExtractor {
 	            DateTimeFieldType.minuteOfHour(),
 	   };
 		
-		private static Partial startTime = null;
+		private static LocalTime startTime = null;
 		
-	public static Partial processTime(String time) {
+	public static LocalTime processTime(String time) {
 		if (is24HrFormat(time)) {
 			process24hrFormat(time);
 		} else if (is12HrFormat(time)) {
@@ -39,7 +41,7 @@ public class TimeExtractor {
 
 		String[] timeArray = new String[2];
 		timeArray = time.split(":");
-		startTime = new Partial(types, new int[] {Integer.parseInt(timeArray[0]),Integer.parseInt(timeArray[1])});
+		startTime = new LocalTime(Integer.parseInt(timeArray[0]),Integer.parseInt(timeArray[1]));
 
 	}
 
@@ -65,7 +67,7 @@ public class TimeExtractor {
 			minute = Integer.parseInt(timeArray[1]);
 		}
 		
-		startTime = new Partial(types , new int[]{hour, minute});
+		startTime = new LocalTime(hour, minute);
 
 	}
 

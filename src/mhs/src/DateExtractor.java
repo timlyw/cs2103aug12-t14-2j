@@ -3,14 +3,15 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.joda.time.DateTime;
-
+import org.joda.time.LocalDate;
 
 public class DateExtractor {
+	
 	private static Date newDate;
 	private static int counter;
-	static DateTime startDate = null;
 
+	static LocalDate startDate = null;
+	
 	private enum Day{
 		monday(1) ,mon(1),
 		tuesday(2),tue(2),tues(2),
@@ -52,29 +53,130 @@ public class DateExtractor {
 		newDate= new Date(true);
 		counter = 0;
 	}
-	public static DateTime processDate(Queue<String> commandQueue) {
+	public LocalDate processDate(Queue<String> commandQueue) {
 		
+		boolean monthFlag = false;
+		boolean dayFlag = false; 
+		boolean yearFlag = false;
+		boolean dateFlag = false;
 		
+		int parameters; 
+
+		while(!commandQueue.isEmpty()){
+			String command = commandQueue.poll();
+			
+			if(isInteger(command)){
+				parameters = Integer.parseInt(command);
+				
+				if(isNumberOfDaysInMonth(parameters) && !dayFlag){
+					newDate.setDay(parameters);
+					dayFlag = true;
+				}
+
+				else if(isMonthFormatInt(parameters) && !monthFlag){
+					newDate.setMonth(parameters);
+					monthFlag = true;
+				}
+				
+				else if(isYearFormat(parameters) && !yearFlag){
+					newDate.setYear(parameters);
+					yearFlag = true;
+				}
+				else{
+					System.out.println("error not numerical date!");
+					
+				}
+			}
+			
+			else if (isDateStandardFormat(command) && !dateFlag) {
+				setDate(command);
+
+				dateFlag = true;
+			}
+			
+			else if (isDateWithMonthSpelled(command) && !monthFlag) {
+				parameters = getMontParameters(command);
+				newDate.setMonth(parameters);
+				monthFlag = true;
+			}
+			
+			else if(isDayOfWeek(command) && !dayFlag){
+				parameters = getDayParameters(command);
+				setDay(parameters);
+				dayFlag = true;
+			}
+			
+			//only first word or check once
+			//if(isDateCommand(parameters)){
+				
+			//}
+			
+			
+			/*if(dateFlag ||(dayFlag && monthFlag && yearFlag)){
+				counter++;
+			}*/
+		}
+		if(newDate.DateValidator()){
+			startDate = new LocalDate(newDate.getYear(), newDate.getMonth(), newDate.getDay());
+	
+		
+		}
+		else{
+			System.out.println("Error! date does not exist!");
+		}
 		return startDate;
+	
 	}
 	
 
 	private static void setDay(int parameters) {
-
+		
+		if(parameters < newDate.getCurrentDayOfWeek()){
+			newDate.setDay((7 - newDate.getCurrentDayOfWeek() + parameters + newDate.getCurrentDayOfMonth()));
+		}
+		else if(parameters > newDate.getCurrentDayOfWeek()){
+			newDate.setDay(parameters + newDate.getCurrentDayOfMonth() - 1);
+		}
+		else if(parameters == newDate.getCurrentDayOfWeek()){
+			newDate.setDay(7 + newDate.getCurrentDayOfMonth());
+		}
 	}
 	private static int getDayParameters(String command) {
-
-		return 0;
+		
+		int dayOfWeek=0;
+		
+		for(Day d : Day.values()){
+			if(command.equals(d.name())){
+				dayOfWeek = d.dayOfWeek;
+			}
+		}
+		return dayOfWeek;
 	}
 
 	private static int getMontParameters(String command) {
 
+		for(Month m : Month.values()){
+			if(command.equals(m.name())){
+				return m.monthOfYear;
+			}
+		}
 		return 0;
 	}
 
 	private static void setDate(String command) {
-
 		
+		int[] dateParameters = new int[3];
+		String[] dateArray = command.split("\\W");
+		
+		for(int i=0; i<dateArray.length; i++){
+			dateParameters[i] = Integer.parseInt(dateArray[i]);
+		}
+
+		newDate.setDay(dateParameters[0]);
+		newDate.setMonth(dateParameters[1]);
+		if(dateParameters[2]!=0){
+		newDate.setYear(dateParameters[2]);
+		}
 	}
 
 	private static boolean isNumberOfDaysInMonth(int number) {
@@ -148,7 +250,7 @@ public class DateExtractor {
 	}
 
 	private static boolean isDateStandardFormat(String printString) {
-		String dateFormat = "(0?[1-9]|[12][0-9]|3[01])(.*)(0?[1-9]|1[012])(.*)(((20)\\d\\d))";
+		String dateFormat = "(0?[1-9]|[12][0-9]|3[01])(.*)(0?[1-9]|1[012])(.*)(((20)\\d\\d)?)";
 		Pattern patternDateStandardFormat = Pattern.compile(dateFormat);
 		Matcher matcherDateStandardFormat = patternDateStandardFormat.matcher(printString);
 		if (matcherDateStandardFormat.matches()) {
