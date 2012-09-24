@@ -1,5 +1,6 @@
 package mhs.src;
 
+import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
 import com.google.gdata.client.calendar.*;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.PlainTextConstruct;
@@ -16,135 +17,294 @@ public class GoogleCalendar {
 	static final String APP_NAME = "My Hot Secretary";
 	static final String TAB = "\t";
 	static final String URL_SEPARATOR = "/";
-	
+
 	static final String MESSAGE_YOUR_CALENDARS = "Your calendars:";
 	static final String MESSAGE_NEW_TASK_ID = "Inserted task id:";
 
 	static final String URL_EVENT_FEED = "https://www.google.com/calendar/feeds/default/private/full";
 	static final String URL_CREATE_EVENT = "http://www.google.com/calendar/feeds/%1$s/private/full";
-	String _userEmail = "cs2103mhs@gmail.com";
-	String _userPassword = "myhotsec2103";
-	CalendarService _calendarService;
-	List<CalendarEventEntry> _eventList;
 
-    String _minStartTime = "2012-09-01T00:00:00";
-    String _maxStartTime = "2012-09-29T23:59:59";
-	
-    // setup the calendar service with userEmail and userPassword
-    // pull events from user's calendar
-	public void setup() throws IOException, ServiceException {
+	static String userEmail = "cs2103mhs@gmail.com";
+	static String userPassword = "myhotsec2103";
+
+	static String authToken;
+	private CalendarService calendarService;
+	private List<CalendarEventEntry> eventList;
+
+	String minStartTime = "2012-09-01T00:00:00";
+	String maxStartTime = "2012-09-29T23:59:59";
+
+	/**
+	 * Constructor
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public GoogleCalendar() throws IOException, ServiceException {
+		// setup the calendar service with userEmail and userPassword
 		initializeCalendarService();
-        pullEvents();
+		// pull events from user's calendar
+		pullEvents();
 	}
-	
-	// returns an event with taskId matching input parameter
-	public CalendarEventEntry getEvent(String taskId) throws MalformedURLException, IOException, ServiceException {
+
+	/**
+	 * Constructor with accessToken provided
+	 * 
+	 * @param accessToken
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public GoogleCalendar(String accessToken) throws IOException,
+			ServiceException {
+		// setup the calendar service with userEmail and userPassword
+		initializeCalendarServiceWithAuthToken(accessToken);
+		// pull events from user's calendar
+		pullEvents();
+	}
+
+	/**
+	 * Returns an event with taskId matching input parameter
+	 * 
+	 * @param taskId
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public CalendarEventEntry getEvent(String taskId)
+			throws MalformedURLException, IOException, ServiceException {
 		CalendarEventEntry event;
-		for(int i = 0; i < _eventList.size(); i++) {
-			event = _eventList.get(i);
-			if(isIdEqual(event.getId(), taskId)) {
+		for (int i = 0; i < eventList.size(); i++) {
+			event = eventList.get(i);
+			if (isIdEqual(event.getId(), taskId)) {
 				return event;
 			}
 		}
 		return null;
 	}
-	
-	// create an event in user's calendar with specified title, start and end time
-	public String createEvent(String taskTitle, String taskStartStr, String taskEndStr) throws IOException, ServiceException {
-		URL postURL = new URL(String.format(URL_CREATE_EVENT, _userEmail));
-		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr, taskEndStr);
-		
-		CalendarEventEntry insertedEntry = _calendarService.insert(postURL, event);
+
+	/**
+	 * Create an event in user's calendar with specified title, start, end time,
+	 * updated datetime for sync
+	 * 
+	 * @param taskTitle
+	 * @param taskStartStr
+	 * @param taskEndStr
+	 * @param taskUpdated
+	 * @return
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public String createEvent(String taskTitle, String taskStartStr,
+			String taskEndStr, String taskUpdated) throws IOException,
+			ServiceException {
+		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
+		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
+				taskEndStr);
+		event.setUpdated(DateTime.parseDateTime(taskUpdated));
+		CalendarEventEntry insertedEntry = calendarService.insert(postURL,
+				event);
 		return insertedEntry.getId();
 	}
-	
-	public CalendarEventEntry updateEvent(String taskId, String newTitle, String newStartTime, String newEndTime) throws IOException, ServiceException {
+
+	/**
+	 * Create an event in user's calendar with specified title, start and end
+	 * time
+	 * 
+	 * @param taskTitle
+	 * @param taskStartStr
+	 * @param taskEndStr
+	 * @param taskUpdated
+	 * @return
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public String createEvent(String taskTitle, String taskStartStr,
+			String taskEndStr) throws IOException, ServiceException {
+		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
+		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
+				taskEndStr);
+		CalendarEventEntry insertedEntry = calendarService.insert(postURL,
+				event);
+		return insertedEntry.getId();
+	}
+
+	/**
+	 * 
+	 * @param taskId
+	 * @param newTitle
+	 * @param newStartTime
+	 * @param newEndTime
+	 * @return
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public CalendarEventEntry updateEvent(String taskId, String newTitle,
+			String newStartTime, String newEndTime) throws IOException,
+			ServiceException {
 		CalendarEventEntry event = getEvent(taskId);
 		event.setTitle(new PlainTextConstruct(newTitle));
+		When eventUpdatedTimes = new When();
+		eventUpdatedTimes.setStartTime(DateTime.parseDateTime(newStartTime));
+		eventUpdatedTimes.setEndTime(DateTime.parseDateTime(newEndTime));
 		URL editUrl = new URL(event.getEditLink().getHref());
-		CalendarEventEntry updatedEntry = (CalendarEventEntry)_calendarService.update(editUrl, event);
+		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
+				.update(editUrl, event);
 		return updatedEntry;
 	}
-	
-	// delete the event matching the specified taskId
+
+	/**
+	 * Update synced CalendarEventEntry
+	 * 
+	 * @param taskId
+	 * @param newTitle
+	 * @param newStartTime
+	 * @param newEndTime
+	 * @param syncDateTime
+	 * @return
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public CalendarEventEntry updateEvent(String taskId, String newTitle,
+			String newStartTime, String newEndTime, String syncDateTime)
+			throws IOException, ServiceException {
+
+		CalendarEventEntry event = getEvent(taskId);
+
+		event.setTitle(new PlainTextConstruct(newTitle));
+
+		When eventUpdatedTimes = new When();
+		eventUpdatedTimes.setStartTime(DateTime.parseDateTime(newStartTime));
+		eventUpdatedTimes.setEndTime(DateTime.parseDateTime(newEndTime));
+
+		event.setUpdated(DateTime.parseDateTime(syncDateTime));
+
+		URL editUrl = new URL(event.getEditLink().getHref());
+		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
+				.update(editUrl, event);
+		return updatedEntry;
+	}
+
+	/**
+	 * delete the event matching the specified taskId
+	 * 
+	 * @param taskId
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	public void deleteEvent(String taskId) throws IOException, ServiceException {
 		CalendarEventEntry event = getEvent(taskId);
-		
-		if(event != null) {
+		if (event != null) {
 			event.delete();
 		}
 	}
-	
+
+	/**
+	 * Get event list from google calendar
+	 * 
+	 * @return
+	 */
 	public List<CalendarEventEntry> getEventList() {
-		return _eventList;
+		return eventList;
 	}
-	
-	// get user's events from his calendar
+
+	/**
+	 * get user's events from calendar
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	public void pullEvents() throws IOException, ServiceException {
 		URL feedUrl = new URL(URL_EVENT_FEED);
 		CalendarQuery myQuery = new CalendarQuery(feedUrl);
-		myQuery.setMinimumStartTime(DateTime.parseDateTime(_minStartTime));
-		myQuery.setMaximumStartTime(DateTime.parseDateTime(_maxStartTime));
+		myQuery.setMinimumStartTime(DateTime.parseDateTime(minStartTime));
+		myQuery.setMaximumStartTime(DateTime.parseDateTime(maxStartTime));
 
 		// Send the request and receive the response:
-		CalendarEventFeed eventFeed = _calendarService.query(myQuery, CalendarEventFeed.class);
-		_eventList = eventFeed.getEntries();
-		
+		CalendarEventFeed eventFeed = calendarService.query(myQuery,
+				CalendarEventFeed.class);
+		eventList = eventFeed.getEntries();
+
 	}
-	
+
+	/**
+	 * Display Events
+	 */
 	public void displayEvents() {
-		for(int i = 0; i < _eventList.size(); i++) {
-			//displayLine(_eventList.get(i).getId().toString());
-			displayLine(_eventList.get(i).getTitle().getPlainText());
+		for (int i = 0; i < eventList.size(); i++) {
+			// displayLine(_eventList.get(i).getId().toString());
+			displayLine(eventList.get(i).getTitle().getPlainText());
 		}
 	}
-	
+
 	private boolean isIdEqual(String id1, String id2) {
 		String shortId1 = getIdWithoutParentUrl(id1);
 		String shortId2 = getIdWithoutParentUrl(id2);
-		
+
 		return shortId1.equals(shortId2);
 	}
-	
+
 	private String getIdWithoutParentUrl(String taskId) {
 		int beginIndex = taskId.lastIndexOf(URL_SEPARATOR);
 		String shortTaskId = taskId.substring(beginIndex);
-		
 		return shortTaskId;
 	}
-	
+
 	// returns an event with the specified title, start and end time
-	private CalendarEventEntry constructEvent(String taskTitle, String taskStartStr, String taskEndStr) {
+	private CalendarEventEntry constructEvent(String taskTitle,
+			String taskStartStr, String taskEndStr) {
 		CalendarEventEntry event = new CalendarEventEntry();
 
 		event.setTitle(new PlainTextConstruct(taskTitle));
 		DateTime startTime = new DateTime();
-		
-		if(taskStartStr != null) {
+
+		if (taskStartStr != null) {
 			startTime = DateTime.parseDateTime(taskStartStr);
 		}
-		
+
 		DateTime endTime = new DateTime();
-		
-		if(taskEndStr != null) {
+
+		if (taskEndStr != null) {
 			endTime = DateTime.parseDateTime(taskEndStr);
 		}
-		
+
 		When eventTimes = new When();
 		eventTimes.setStartTime(startTime);
 		eventTimes.setEndTime(endTime);
 		event.addTime(eventTimes);
-		
+
 		return event;
 	}
-	
+
 	// _calendarService is initialized with userEmail and userPassword
 	private void initializeCalendarService() throws AuthenticationException {
-		_calendarService = new CalendarService(APP_NAME);
-		_calendarService.setUserCredentials(_userEmail, _userPassword);
+		calendarService = new CalendarService(APP_NAME);
+		calendarService.setUserCredentials(userEmail, userPassword);
+		setAuthToken();
+	}
+
+	private void setAuthToken() {
+		UserToken auth_token = (UserToken) calendarService
+				.getAuthTokenFactory().getAuthToken();
+		authToken = auth_token.getValue();
+	}
+
+	/**
+	 * Initializes google service with auth token (valid after first credential
+	 * setting)
+	 * 
+	 * @param accessToken
+	 */
+	private void initializeCalendarServiceWithAuthToken(String accessToken) {
+		calendarService.setUserToken(accessToken);
+
+		UserToken auth_token = (UserToken) calendarService
+				.getAuthTokenFactory().getAuthToken();
+		authToken = auth_token.getValue();
 	}
 
 	private void displayLine(String displayString) {
 		System.out.println(displayString);
 	}
+
 }
