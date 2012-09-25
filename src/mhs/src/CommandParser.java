@@ -1,18 +1,10 @@
 package mhs.src;
 
-import CommandExtractor;
-import DateExtractor;
-import NameExtractor;
-import TimeExtractor;
-
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.joda.time.Partial;
 
 public class CommandParser {
 
@@ -74,7 +66,6 @@ public class CommandParser {
 				Queue<String> commandQueue = new LinkedList<String>();
 				for (j = i; j < processArray.length; j++) {
 					if (nameParser.checkNameFormat(processArray[j])) {
-						System.out.println(processArray[j] + " is a name");
 						commandQueue.add(processArray[j]);
 					} else {
 						break;
@@ -92,15 +83,12 @@ public class CommandParser {
 			
 			}
 			else if (timeParser.checkTimeFormat(processArray[i])) {
-				System.out.println(processArray[i] + " is a time");
 				if(!timeFlag){
 				startTime = timeParser.processTime(processArray[i]);
-				System.out.println("output is " + startTime.toString());
 				timeFlag = true;
 				}
 				else if(timeFlag){
 				endTime = timeParser.processTime(processArray[i]);
-				System.out.println("output is " + endTime.toString());
 				}
 				
 
@@ -108,7 +96,6 @@ public class CommandParser {
 				Queue<String> commandQueue = new LinkedList<String>();
 				for (j = i; j < processArray.length; j++) {
 					if (dateParser.checkDateFormat(processArray[j])) {
-						System.out.println(processArray[j] + " is a date");
 						commandQueue.add(processArray[j]);
 					} else {
 						break;
@@ -117,12 +104,10 @@ public class CommandParser {
 				i = j - 1;
 				if(!dateFlag){
 				startDate = dateParser.processDate(commandQueue);
-				System.out.println("output is " + startDate.toString());
 				dateFlag = true;
 				}
 				else if(dateFlag){
 				endDate = dateParser.processDate(commandQueue);
-				System.out.println("output is " + endDate.toString());
 				}
 				
 

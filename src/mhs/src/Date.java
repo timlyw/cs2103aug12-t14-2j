@@ -50,17 +50,14 @@ public class Date {
 
 	public void setDay(int day) {
 		Day = day;
-		System.out.println("day " + day + " set");
 	}
 
 	public void setMonth(int month) {
 		Month = month;
-		System.out.println("month " + month + " set");
 	}
 
 	public void setYear(int year) {
 		Year = year;
-		System.out.println("year " + year + " set");
 	}
 
 	public int getCurrentYear() {
