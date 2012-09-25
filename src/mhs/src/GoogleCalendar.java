@@ -87,30 +87,6 @@ public class GoogleCalendar {
 	}
 
 	/**
-	 * Create an event in user's calendar with specified title, start, end time,
-	 * updated datetime for sync
-	 * 
-	 * @param taskTitle
-	 * @param taskStartStr
-	 * @param taskEndStr
-	 * @param taskUpdated
-	 * @return
-	 * @throws IOException
-	 * @throws ServiceException
-	 */
-	public String createEvent(String taskTitle, String taskStartStr,
-			String taskEndStr, String taskUpdated) throws IOException,
-			ServiceException {
-		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
-		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
-				taskEndStr);
-		event.setUpdated(DateTime.parseDateTime(taskUpdated));
-		CalendarEventEntry insertedEntry = calendarService.insert(postURL,
-				event);
-		return insertedEntry.getId();
-	}
-
-	/**
 	 * Create an event in user's calendar with specified title, start and end
 	 * time
 	 * 
@@ -122,30 +98,27 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public String createEvent(String taskTitle, String taskStartStr,
-			String taskEndStr) throws IOException, ServiceException {
+	public CalendarEventEntry createEvent(String taskTitle,
+			String taskStartStr, String taskEndStr) throws IOException,
+			ServiceException {
 		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
 		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
 				taskEndStr);
-		CalendarEventEntry insertedEntry = calendarService.insert(postURL,
-				event);
-		return insertedEntry.getId();
+		pullEvents();
+		return calendarService.insert(postURL, event);
 	}
 
-	public String createEvent(Task taskToAdd) throws IOException,
+	public CalendarEventEntry createEvent(Task taskToAdd) throws IOException,
 			ServiceException {
 		if (taskToAdd.taskCategory.equals(TaskCategory.FLOATING)) {
 			return null;
 		}
-		// TODO Auto-generated method stub
 		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
 		CalendarEventEntry event = constructEvent(taskToAdd.getTaskName(),
 				taskToAdd.getStartDateTime().toString(), taskToAdd
 						.getEndDateTime().toString());
-		CalendarEventEntry insertedEntry = calendarService.insert(postURL,
-				event);
-		return insertedEntry.getId();
-
+		pullEvents();
+		return calendarService.insert(postURL, event);
 	}
 
 	/**
@@ -166,50 +139,17 @@ public class GoogleCalendar {
 		event.setTitle(new PlainTextConstruct(newTitle));
 
 		When eventUpdatedTimes = new When();
-		eventUpdatedTimes.setStartTime(DateTime.parseDateTime(newStartTime));
-		eventUpdatedTimes.setEndTime(DateTime.parseDateTime(newEndTime));
+		DateTime updatedStartTime = new DateTime();
+		DateTime updatedEndTime = new DateTime();
+		eventUpdatedTimes.setStartTime(updatedStartTime
+				.parseDateTime(newStartTime));
+		eventUpdatedTimes.setEndTime(updatedEndTime.parseDateTime(newEndTime));
 		event.addTime(eventUpdatedTimes);
 
 		URL editUrl = new URL(event.getEditLink().getHref());
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
 				.update(editUrl, event, "*");
-		return updatedEntry;
-	}
-
-	/**
-	 * Update synced CalendarEventEntry
-	 * 
-	 * @param taskId
-	 * @param newTitle
-	 * @param newStartTime
-	 * @param newEndTime
-	 * @param syncDateTime
-	 * @return
-	 * @throws IOException
-	 * @throws ServiceException
-	 */
-	public CalendarEventEntry updateEvent(String taskId, String newTitle,
-			String newStartTime, String newEndTime, String syncDateTime)
-			throws IOException, ServiceException {
-
-		CalendarEventEntry event = getEvent(taskId);
-
-		event.setTitle(new PlainTextConstruct(newTitle));
-
-		When eventUpdatedTimes = new When();
-		eventUpdatedTimes.setStartTime(DateTime.parseDateTime(newStartTime));
-		eventUpdatedTimes.setEndTime(DateTime.parseDateTime(newEndTime));
-		event.setUpdated(DateTime.parseDateTime(syncDateTime));
-
-		event.addTime(eventUpdatedTimes);
-		event.setEdited(DateTime.parseDateTime(syncDateTime));
-
-		URL editUrl = new URL(event.getEditLink().getHref());
-		// CalendarEventEntry updatedEntry = (CalendarEventEntry)
-		// calendarService
-		// .update(editUrl, event);
-		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
-				.update(editUrl, event, "*");
+		pullEvents();
 		return updatedEntry;
 	}
 
@@ -225,6 +165,7 @@ public class GoogleCalendar {
 		if (event != null) {
 			event.delete();
 		}
+		pullEvents();
 	}
 
 	/**
@@ -236,6 +177,7 @@ public class GoogleCalendar {
 		return eventList;
 	}
 
+	// TODO!!! make auto-pull logic
 	/**
 	 * get user's events from calendar
 	 * 
