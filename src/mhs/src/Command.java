@@ -10,9 +10,9 @@ public class Command {
 		add, remove,edit, search, sync,undo;
 	}
 	
-	private String taskName;
-	private String edittedName;
-	private command commandEnum;
+	private static String taskName;
+	private static String edittedName;
+	private static command commandEnum;
 	
 	private static DateTime startDate;
 	private static DateTime endDate;
@@ -29,12 +29,9 @@ public class Command {
 		taskName = taskNameInput;
 		edittedName = edittedNameInput;
 
+
 		if ((startDateInput == null && startTimeInput == null)) {
 			startDate = null;
-		}
-
-		if(startDateInput == null){
-			startDate = DateTime.now();
 		}
 		if (startDateInput != null && startTimeInput!=null) {
 			startDate = startDateInput.toDateTime(startTimeInput);
@@ -42,14 +39,18 @@ public class Command {
 		if(startDateInput !=null && startTimeInput==null){
 			startDate = startDateInput.toDateTimeAtStartOfDay();
 		}
-		
+		if(endDateInput == null && endTimeInput != null){
+			startDateInput = LocalDate.now();
+			startDate = startDateInput.toDateTime(startTimeInput);
+		}
+		if(endDateInput == null && endTimeInput != null){
+			endDateInput = LocalDate.now();
+			endDate = endDateInput.toDateTime(endTimeInput);
+		}
 		if (endDateInput == null && endTimeInput == null) {
 			endDate = null;
 		}
 		
-		if(endDateInput == null){
-			endDate = DateTime.now();
-		}
 		if (endDateInput != null && endTimeInput != null) {
 			endDate = endDateInput.toDateTime(endTimeInput);
 		}
@@ -67,11 +68,7 @@ public class Command {
 		edittedName = null;
 	}
 
-	public String toString() {
-		return startDate.toString();
-	}
-
-	public String getTaskName() {
+	public static String getTaskName() {
 		return taskName;
 	}
 
@@ -79,7 +76,7 @@ public class Command {
 		this.taskName = taskName;
 	}
 
-	public String getEdittedName() {
+	public static String getEdittedName() {
 		return edittedName;
 	}
 
@@ -103,7 +100,7 @@ public class Command {
 		Command.startDate = startDate;
 	}
 
-	public command getCommandEnum() {
+	public static command getCommandEnum() {
 		return commandEnum;
 	}
 

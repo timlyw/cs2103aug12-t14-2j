@@ -1,7 +1,8 @@
 package mhs.test;
 import static org.junit.Assert.assertEquals;
 
-import mhs.src.DateExtractor;
+import mhs.src.Command;
+import mhs.src.CommandParser;
 import mhs.src.TimeExtractor;
 
 import org.joda.time.DateTime;
@@ -64,17 +65,60 @@ public class CommandProcessorTest {
 		assertEquals(TimeExtractor.processTime("4am"), expectedTime);
 	}
 
+
 	@Test
-	public void testcheckDateFormat() {
+	public void testCommandParser(){
 
-		assertEquals(DateExtractor.checkDateFormat("10 10 2010"), true);
-		assertEquals(DateExtractor.checkDateFormat("10/5/2012"), true);
-		assertEquals(DateExtractor.checkDateFormat("12 jan"), true);
-		assertEquals(DateExtractor.checkDateFormat("3 maRcH 2014"), true);
-		assertEquals(DateExtractor.checkDateFormat("monday"), true);
-		assertEquals(DateExtractor.checkDateFormat("10 5"), true);
-		assertEquals(DateExtractor.checkDateFormat("5"), true);
-		assertEquals(DateExtractor.checkDateFormat("5/5"), true);
 
+		Command input;
+		String inputName;
+		String edittedName;
+		
+		DateTime expectedStartDate;
+		DateTime inputStartDate;
+		DateTime expectedEndDate;
+		DateTime inputEndDate;
+		
+		
+		input = CommandParser.getParsedCommand("meeting1");
+		inputName = input.getTaskName().trim();
+		assertEquals("meeting1", inputName);
+		
+		input = CommandParser.getParsedCommand("meeting 10/12/2012 10pm");
+		inputName = input.getTaskName().trim();
+		expectedStartDate = new DateTime(2012, 12, 10, 22, 0);
+		inputStartDate = Command.getStartDate();
+		assertEquals("meeting", inputName);
+		assertEquals(inputStartDate, expectedStartDate);
+		
+		input = CommandParser.getParsedCommand("\"day after tomorrow\" 10 dec 2012 22:12 12 12 2012 4.15pm");
+		inputName = input.getTaskName().trim();
+		expectedStartDate = new DateTime(2012, 12, 10, 22, 12);
+		inputStartDate = Command.getStartDate();
+		expectedEndDate = new DateTime(2012, 12, 12, 16, 15);
+		inputEndDate = Command.getEndDate();
+		assertEquals("day after tomorrow", inputName);
+		assertEquals(inputStartDate, expectedStartDate);
+		assertEquals(inputEndDate, expectedEndDate);
+		
+		input = CommandParser.getParsedCommand("\"day after tomorrow\" 10 dec 2012 22:12 12 12 2012 4.15pm");
+		inputName = input.getTaskName().trim();
+		expectedStartDate = new DateTime(2012, 12, 10, 22, 12);
+		inputStartDate = Command.getStartDate();
+		expectedEndDate = new DateTime(2012, 12, 12, 16, 15);
+		inputEndDate = Command.getEndDate();
+		assertEquals("day after tomorrow", inputName);
+		assertEquals(inputStartDate, expectedStartDate);
+		assertEquals(inputEndDate, expectedEndDate);
+		assertEquals(input.getCommandEnum(), Command.command.add);
+		
+		input = CommandParser.getParsedCommand("edit \"day after tomorrow\" movie at vivo");
+		inputName = input.getTaskName().trim();
+		edittedName = input.getEdittedName().trim();
+		assertEquals("day after tomorrow", inputName);
+		assertEquals("movie at vivo", edittedName);
+		assertEquals(input.getCommandEnum(), Command.command.edit);
 	}
+
+
 }

@@ -8,7 +8,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 public class Date {
-	// add today tomorrow
+
+	//add today tomorrow
 	private int Day;
 	private int Month;
 	private int Year;
@@ -36,7 +37,7 @@ public class Date {
 
 		DEFAULT_FORMATTER.setLenient(false);
 
-		String dateString = Day + "-" + Month + "-" + Year;
+		String dateString = Day + "-" + Month +"-" + Year;
 		try {
 			System.out.println("arg: " + dateString + " date: "
 					+ DEFAULT_FORMATTER.parse(dateString));
@@ -83,16 +84,15 @@ public class Date {
 	public void printString() {
 		System.out.println(Day + " " + Month + " " + Year);
 	}
-
-	public int getDay() {
+	public int getDay(){
 		return Day;
 	}
 
-	public int getMonth() {
+	public int getMonth(){
 		return Month;
 	}
 
-	public int getYear() {
+	public int getYear(){
 		return Year;
 	}
 
