@@ -1,34 +1,28 @@
 package mhs.test;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import mhs.src.Database;
-import mhs.src.DateTimeTypeConverter;
 import mhs.src.DeadlineTask;
 import mhs.src.FloatingTask;
 import mhs.src.Task;
 import mhs.src.TaskCategory;
-import mhs.src.TaskRecordFile;
-import mhs.src.TaskTypeConverter;
 import mhs.src.TimedTask;
 
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.runners.statements.Fail;
 
 import com.google.gdata.util.ServiceException;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class testDatabase {
 
@@ -76,25 +70,28 @@ public class testDatabase {
 	public void testSyncDatabase() throws IOException, ServiceException {
 		System.out.println("Sync Test");		
 		database.syncronizeDatabases();
-		
+				
+		System.out.println("Updating Tasks");		
 		// update task to push
-		List<Task> tempTasks = database.query();
-		
+		List<Task> tempTasks = database.query();		
 		System.out.println(tempTasks.size());
 		
+		if(tempTasks.size() > 0){
 		tempTasks.get(0).setTaskUpdated(new DateTime().now().plusDays(5));
 		database.update(tempTasks.get(0));
-		
+		}
+		if(tempTasks.size() > 1){
 		// update task to pull
 		tempTasks.get(1).setTaskLastSync(new DateTime().now().minusDays(5));
 		database.update(tempTasks.get(1));
-
+		}
+		
 		database.syncronizeDatabases();
 		//database.clearDatabase();
 	}
 
 	@Test
-	public void testClearDatabase() throws IOException {
+	public void testClearDatabase() throws IOException, ServiceException {
 		System.out.println("Clearing database Test");
 		database.add(task);
 		database.clearDatabase();
@@ -103,7 +100,7 @@ public class testDatabase {
 	}
 
 	@Test
-	public void testQueryTaskIdDatabase() throws IOException {
+	public void testQueryTaskIdDatabase() throws IOException, ServiceException {
 		System.out.println("Query Task Id Test");
 		// Query by taskId
 		database.add(task);
@@ -118,7 +115,7 @@ public class testDatabase {
 	}
 
 	@Test
-	public void testQueryTaskNameDatabase() throws IOException {
+	public void testQueryTaskNameDatabase() throws IOException, ServiceException {
 		System.out.println("Query Task Name Test");
 		// Query by Name
 		database.add(task);
@@ -138,7 +135,7 @@ public class testDatabase {
 	}
 
 	@Test
-	public void testQueryTaskCategoryDatabase() throws IOException {
+	public void testQueryTaskCategoryDatabase() throws IOException, ServiceException {
 		System.out.println("Query Task Category");
 
 		database.add(task);
@@ -178,7 +175,7 @@ public class testDatabase {
 	}
 
 	@Test
-	public void testQueryDateDatabase() throws IOException {
+	public void testQueryDateDatabase() throws IOException, ServiceException {
 		System.out.println("Query Task by Date");
 
 		DateTime testStartDt = new DateTime().now().minusDays(1).minusHours(1);
@@ -227,7 +224,7 @@ public class testDatabase {
 	 * Test database add, and taskKeyId generator
 	 * @throws IOException
 	 */
-	public void testAddToDatabase() throws IOException {
+	public void testAddToDatabase() throws IOException, ServiceException {
 
 		System.out.println("Adding to database...");
 
@@ -247,7 +244,7 @@ public class testDatabase {
 	}
 
 	@Test
-	public void testUpdateDatabase() throws IOException {
+	public void testUpdateDatabase() throws IOException, ServiceException {
 		System.out.println("Test update Database...");
 
 		database.add(task);
@@ -279,7 +276,7 @@ public class testDatabase {
 	}
 
 	@Test
-	public void testDeleteDatabase() throws IOException {
+	public void testDeleteDatabase() throws IOException, ServiceException {
 		System.out.println("Adding to database...");
 
 		database.add(task);

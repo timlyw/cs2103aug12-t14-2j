@@ -9,8 +9,6 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.ServiceException;
@@ -20,6 +18,7 @@ public class Database {
 	private ConfigFile configFile;
 	private TaskRecordFile taskRecordFile;
 	private GoogleCalendar googleCalendar;
+	private boolean GoogleServiceOnline;
 
 	// Data Views
 	private Map<Integer, Task> taskList; // primary task list with index as key
@@ -62,14 +61,23 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	private void initalizeDatabase(String taskRecordFileName)
-			throws IOException, ServiceException {
+			throws IOException {
 
 		configFile = new ConfigFile();
+		
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
-		initializeGoogleCalendarService();
-
 		taskList = taskRecordFile.getTaskList();
+		
 		gCalTaskList = taskRecordFile.getGCalTaskList();
+		try {
+			initializeGoogleCalendarService();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			// set GoogleServiceOnline based on error status
+			// e.getCause();
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -78,22 +86,40 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	private void initalizeDatabase() throws IOException, ServiceException {
+	private void initalizeDatabase() throws IOException {
 		configFile = new ConfigFile();
 
 		taskRecordFile = new TaskRecordFile();
 		taskList = taskRecordFile.loadTaskList();
 
-		initializeGoogleCalendarService();
+		try {
+			initializeGoogleCalendarService();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void initializeGoogleCalendarService() throws IOException,
 			ServiceException {
-		if (configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")) {
+		if (configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")
+				&& !configFile.getConfigParameter("GOOGLE_AUTH_TOKEN")
+						.isEmpty()) {
 			googleCalendar = new GoogleCalendar(
 					configFile.getConfigParameter("GOOGLE_AUTH_TOKEN"));
+			saveGoogleAuthToken();
+
 		} else if (configFile.hasConfigParameter("USER_GOOGLE_EMAIL")) {
 			// TODO prompt user password
+			googleCalendar = new GoogleCalendar();
+			saveGoogleAuthToken();
+		}
+	}
+
+	private void saveGoogleAuthToken() throws IOException {
+		String googleAuthToken = googleCalendar.getAuthToken();
+		if (googleAuthToken != null) {
+			configFile.setConfigParameter("GOOGLE_AUTH_TOKEN", googleAuthToken);
 		}
 	}
 
@@ -102,18 +128,14 @@ public class Database {
 
 	public void syncronizeDatabases() throws IOException, ServiceException {
 
-		DateTime syncDateTime = new DateTime().now();
-
-		pullSync(syncDateTime);
-
-		pushSync(syncDateTime);
+		pullSync();
+		pushSync();
 
 		saveTaskRecordFile();
 	}
 
 	// TODO
-	private void pushSync(DateTime syncDateTime) throws IOException,
-			ServiceException {
+	private void pushSync() throws IOException, ServiceException {
 		// push sync tasks from local to google calendar
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
 
@@ -124,20 +146,22 @@ public class Database {
 			}
 
 			// add unsynced tasks
-			if (entry.getValue().getgCalTaskId().equalsIgnoreCase("null")) {
+			if (entry.getValue().getgCalTaskId().equalsIgnoreCase("null")
+					|| entry.getValue().getgCalTaskId() == null) {
+
 				System.out.println("push unsync event : "
 						+ entry.getValue().getTaskName());
 				System.out.println("!" + entry.getValue().getgCalTaskId());
 
-				String eventGCalId = googleCalendar.createEvent(entry
-						.getValue().getTaskName(), entry.getValue()
-						.getStartDateTime().toString(), entry.getValue()
-						.getEndDateTime().toString(), syncDateTime.toString());
+				CalendarEventEntry addedGCalEvent = googleCalendar.createEvent(
+						entry.getValue().getTaskName(), entry.getValue()
+								.getStartDateTime().toString(), entry
+								.getValue().getEndDateTime().toString());
 
 				// Set local task sync details
-				entry.getValue().setgCalTaskId(eventGCalId);
-				entry.getValue().setTaskUpdated(syncDateTime);
-				entry.getValue().setTaskLastSync(syncDateTime);
+				entry.getValue().setgCalTaskId(addedGCalEvent.getIcalUID());
+				entry.getValue().setTaskLastSync(
+						new DateTime(addedGCalEvent.getUpdated().toString()));
 
 			}
 			// add updated tasks
@@ -154,24 +178,25 @@ public class Database {
 					System.out.println(entry.getValue().getTaskUpdated() + " "
 							+ entry.getValue().getTaskLastSync());
 
+					System.out.println(entry.getValue().toString());
 					// update remote task
-					googleCalendar.updateEvent(
-							entry.getValue().getgCalTaskId(), entry.getValue()
-									.getTaskName(), entry.getValue()
-									.getStartDateTime().toString(), entry
-									.getValue().getEndDateTime().toString(),
-							syncDateTime.toString());
+					CalendarEventEntry updatedGCalEvent = googleCalendar
+							.updateEvent(entry.getValue().getgCalTaskId(),
+									entry.getValue().getTaskName(), entry
+											.getValue().getStartDateTime()
+											.toString(), entry.getValue()
+											.getEndDateTime().toString());
 
 					// Set local task sync details
-					entry.getValue().setTaskUpdated(syncDateTime);
-					entry.getValue().setTaskLastSync(syncDateTime);
+					entry.getValue().setTaskLastSync(
+							new DateTime(updatedGCalEvent.getUpdated()
+									.toString()));
 				}
 			}
 		}
 	}
 
-	private void pullSync(DateTime syncDateTime) throws IOException,
-			ServiceException {
+	private void pullSync() throws IOException, ServiceException {
 		List<CalendarEventEntry> googleCalendarEvents = googleCalendar
 				.getEventList();
 		Iterator<CalendarEventEntry> iterator = googleCalendarEvents.iterator();
@@ -179,9 +204,10 @@ public class Database {
 		// pull sync remote tasks
 		while (iterator.hasNext()) {
 			CalendarEventEntry gCalEntry = iterator.next();
-			if (gCalTaskList.containsKey(gCalEntry.getId())) {
 
-				Task localTaskEntry = gCalTaskList.get(gCalEntry.getId());
+			if (gCalTaskList.containsKey(gCalEntry.getIcalUID())) {
+
+				Task localTaskEntry = gCalTaskList.get(gCalEntry.getIcalUID());
 
 				// pull newer remote task
 				if (localTaskEntry.getTaskLastSync().compareTo(
@@ -192,15 +218,6 @@ public class Database {
 					System.out.println(localTaskEntry.getTaskLastSync() + " "
 							+ new DateTime(gCalEntry.getUpdated().getValue()));
 
-					// update remote task
-					CalendarEventEntry updatedEvent = googleCalendar
-							.updateEvent(gCalEntry.getId(), gCalEntry
-									.getTitle().getPlainText(), gCalEntry
-									.getTimes().get(0).getStartTime()
-									.toString(), gCalEntry.getTimes().get(0)
-									.getStartTime().toString(), syncDateTime
-									.toString());
-
 					// edit local task
 					localTaskEntry.setTaskName(gCalEntry.getTitle()
 							.getPlainText());
@@ -208,11 +225,16 @@ public class Database {
 							.getTimes().get(0).getStartTime().toString()));
 					localTaskEntry.setEndDateTime(new DateTime(gCalEntry
 							.getTimes().get(0).getEndTime().toString()));
+
+					DateTime syncDateTime = new DateTime(gCalEntry
+							.getUpdated().toString());
 					localTaskEntry.setTaskLastSync(syncDateTime);
 					localTaskEntry.setTaskUpdated(syncDateTime);
 
+					taskList.put(localTaskEntry.getTaskId(), localTaskEntry.clone());
+					
 					System.out.println(syncDateTime + " "
-							+ updatedEvent.getUpdated());
+							+ new DateTime(gCalEntry.getUpdated().getValue()));
 
 				}
 			} else {
@@ -220,20 +242,12 @@ public class Database {
 				System.out.println("pulling new event");
 				// add task
 				Task newTask = new TimedTask(getNewTaskId(), gCalEntry,
-						syncDateTime);
+						new DateTime(gCalEntry.getUpdated().toString()));
+
 				// create new task
 				taskList.put(newTask.getTaskId(), newTask);
 
-				System.out.println(newTask.getTaskLastSync());
-
-				// update remote task
-				CalendarEventEntry updatedEvent = googleCalendar.updateEvent(
-						gCalEntry.getId(), gCalEntry.getTitle().getPlainText(),
-						gCalEntry.getTimes().get(0).getStartTime().toString(),
-						gCalEntry.getTimes().get(0).getStartTime().toString(),
-						syncDateTime.toString());
-
-				System.out.println(updatedEvent.getUpdated());
+				System.out.println(new DateTime(gCalEntry.getUpdated().toString()) + " " + newTask.getTaskLastSync());
 
 			}
 		}
@@ -370,12 +384,18 @@ public class Database {
 	 * 
 	 * @param task
 	 * @throws IOException
+	 * @throws ServiceException
 	 */
-	public void add(Task task) throws IOException {
+	public void add(Task task) throws IOException, ServiceException {
 		task.setTaskId(getNewTaskId());
 
 		Task taskToAdd = task.clone();
 		taskList.put(taskToAdd.getTaskId(), taskToAdd);
+
+		// TODO add to google calendar logic
+
+		googleCalendar.createEvent(taskToAdd);
+
 		saveTaskRecordFile();
 	}
 
@@ -384,13 +404,19 @@ public class Database {
 	 * 
 	 * @param taskId
 	 * @throws IOException
+	 * @throws ServiceException
 	 */
-	public void delete(int taskId) throws IOException {
+	public void delete(int taskId) throws IOException, ServiceException {
 		// check if task exists
 		if (taskList.containsKey(taskId)) {
 			Task taskToDelete = taskList.get(taskId);
 			taskToDelete.setDeleted(true);
 			taskList.put(taskToDelete.getTaskId(), taskToDelete);
+
+			// TODO delete from google calendar logic
+
+			googleCalendar.getEvent(taskToDelete.getgCalTaskId());
+
 			saveTaskRecordFile();
 		} else {
 			throw new Error("Invalid Task");
@@ -400,14 +426,30 @@ public class Database {
 	/**
 	 * Updates task
 	 * 
-	 * @param task
+	 * @param updatedTask
 	 * @throws IOException
+	 * @throws ServiceException
 	 */
-	public void update(Task task) throws IOException {
+	public void update(Task updatedTask) throws IOException, ServiceException {
 		// check if task exists
-		if (taskList.containsKey(task.getTaskId())) {
-			taskList.put(task.getTaskId(), task.clone());
+		if (taskList.containsKey(updatedTask.getTaskId())) {
+
+			// TODO update from google calendar logic
+
+			if (updatedTask.getgCalTaskId().equalsIgnoreCase("null")
+					|| updatedTask.getgCalTaskId() == null) {
+				CalendarEventEntry addedGCalEvent = googleCalendar
+						.createEvent(updatedTask);
+			} else {
+				CalendarEventEntry updatedGCalEvent = googleCalendar
+						.updateEvent(updatedTask.getgCalTaskId(), updatedTask
+								.getTaskName(), updatedTask.getStartDateTime()
+								.toString(), updatedTask.getEndDateTime()
+								.toString());
+			}
+			taskList.put(updatedTask.getTaskId(), updatedTask.clone());
 			saveTaskRecordFile();
+
 		} else {
 			throw new Error("Invalid Task");
 		}
