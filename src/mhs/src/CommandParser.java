@@ -1,10 +1,5 @@
 package mhs.src;
 
-import Command;
-import CommandExtractor;
-import DateExtractor;
-import TimeExtractor;
-
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
@@ -17,7 +12,7 @@ import org.joda.time.Partial;
 public class CommandParser {
 
 	public Command getParsedCommand(String command) {
-		
+
 		DateExtractor dateParser = new DateExtractor();
 		CommandExtractor commandParser = new CommandExtractor();
 		TimeExtractor timeExtractor = new TimeExtractor();
@@ -29,12 +24,12 @@ public class CommandParser {
 
 		boolean taskNameFlag = false;
 		boolean timeFlag = false;
-		boolean dateFlag= false;
-		
+		boolean dateFlag = false;
+
 		String command = null;
 		String taskName = null;
 		String edittedName = null;
-		
+
 		DateTime startDate = null;
 		Partial startTime = null;
 		DateTime endDate = null;
@@ -43,20 +38,17 @@ public class CommandParser {
 		int j;
 
 		for (int i = 0; i < processArray.length; i++) {
-			
+
 			if (CommandExtractor.checkCommandFormat(processArray[i])) {
 				command = commandParser.getCommand();
-			} 
-			else if (nameExtractor.checkNameFormat(processArray[i])) {
-			} 
-			else if (timeParser.checkTimeFormat(processArray[i])) {
+			} else if (nameExtractor.checkNameFormat(processArray[i])) {
+			} else if (timeParser.checkTimeFormat(processArray[i])) {
 				System.out.println(processArray[i] + " is a time");
-				if(!timeFlag){
-				startTime = timeParser.processTime(processArray[i]);
-				timeFlag = true;
-				}
-				else if(timeFlag){
-				endTime = timeParser.processTime(processArray[i]);
+				if (!timeFlag) {
+					startTime = timeParser.processTime(processArray[i]);
+					timeFlag = true;
+				} else if (timeFlag) {
+					endTime = timeParser.processTime(processArray[i]);
 				}
 				System.out.println("output is " + startTime.toString());
 
@@ -71,15 +63,14 @@ public class CommandParser {
 					}
 				}
 
-				//int counter = dateParser.getCounter();
+				// int counter = dateParser.getCounter();
 				i = j - 1;
-				//i -= counter;
-				if(!dateFlag){
-				startDate = dateParser.processDate(commandQueue);
-				dateFlag = true;
-				}
-				else if(dateFlag){
-				endDate = dateParser.processDate(commandQueue);
+				// i -= counter;
+				if (!dateFlag) {
+					startDate = dateParser.processDate(commandQueue);
+					dateFlag = true;
+				} else if (dateFlag) {
+					endDate = dateParser.processDate(commandQueue);
 				}
 				System.out.println("output is " + startDate.toString());
 
@@ -89,15 +80,16 @@ public class CommandParser {
 
 		}
 
-		setUpCommandObject(command, taskName, edittedName, startDate, startTime, endDate, endTime);
+		setUpCommandObject(command, taskName, edittedName, startDate,
+				startTime, endDate, endTime);
 	}
-
 
 	private static void setUpCommandObject(String command, String taskName,
 			String edittedName, LocalDate startDate, LocalTime startTime,
 			LocalDate endDate, LocalTime endTime) {
-		
-		Command object = new Command(command, taskName, edittedName, startDate, startTime, endDate, endTime);
-		
+
+		Command object = new Command(command, taskName, edittedName, startDate,
+				startTime, endDate, endTime);
+
 	}
 }

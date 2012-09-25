@@ -2,6 +2,7 @@ package mhs.src;
 
 import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
 import com.google.gdata.client.calendar.*;
+import com.google.gdata.data.Content;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.calendar.*;
@@ -12,6 +13,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+
+import javax.swing.event.HyperlinkEvent.EventType;
 
 public class GoogleCalendar {
 	static final String APP_NAME = "My Hot Secretary";
@@ -129,6 +132,22 @@ public class GoogleCalendar {
 		return insertedEntry.getId();
 	}
 
+	public String createEvent(Task taskToAdd) throws IOException,
+			ServiceException {
+		if (taskToAdd.taskCategory.equals(TaskCategory.FLOATING)) {
+			return null;
+		}
+		// TODO Auto-generated method stub
+		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
+		CalendarEventEntry event = constructEvent(taskToAdd.getTaskName(),
+				taskToAdd.getStartDateTime().toString(), taskToAdd
+						.getEndDateTime().toString());
+		CalendarEventEntry insertedEntry = calendarService.insert(postURL,
+				event);
+		return insertedEntry.getId();
+
+	}
+
 	/**
 	 * 
 	 * @param taskId
@@ -142,14 +161,18 @@ public class GoogleCalendar {
 	public CalendarEventEntry updateEvent(String taskId, String newTitle,
 			String newStartTime, String newEndTime) throws IOException,
 			ServiceException {
+
 		CalendarEventEntry event = getEvent(taskId);
 		event.setTitle(new PlainTextConstruct(newTitle));
+
 		When eventUpdatedTimes = new When();
 		eventUpdatedTimes.setStartTime(DateTime.parseDateTime(newStartTime));
 		eventUpdatedTimes.setEndTime(DateTime.parseDateTime(newEndTime));
+		event.addTime(eventUpdatedTimes);
+
 		URL editUrl = new URL(event.getEditLink().getHref());
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
-				.update(editUrl, event);
+				.update(editUrl, event, "*");
 		return updatedEntry;
 	}
 
@@ -176,12 +199,17 @@ public class GoogleCalendar {
 		When eventUpdatedTimes = new When();
 		eventUpdatedTimes.setStartTime(DateTime.parseDateTime(newStartTime));
 		eventUpdatedTimes.setEndTime(DateTime.parseDateTime(newEndTime));
-
 		event.setUpdated(DateTime.parseDateTime(syncDateTime));
 
+		event.addTime(eventUpdatedTimes);
+		event.setEdited(DateTime.parseDateTime(syncDateTime));
+
 		URL editUrl = new URL(event.getEditLink().getHref());
+		// CalendarEventEntry updatedEntry = (CalendarEventEntry)
+		// calendarService
+		// .update(editUrl, event);
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
-				.update(editUrl, event);
+				.update(editUrl, event, "*");
 		return updatedEntry;
 	}
 
@@ -283,12 +311,6 @@ public class GoogleCalendar {
 		setAuthToken();
 	}
 
-	private void setAuthToken() {
-		UserToken auth_token = (UserToken) calendarService
-				.getAuthTokenFactory().getAuthToken();
-		authToken = auth_token.getValue();
-	}
-
 	/**
 	 * Initializes google service with auth token (valid after first credential
 	 * setting)
@@ -296,11 +318,21 @@ public class GoogleCalendar {
 	 * @param accessToken
 	 */
 	private void initializeCalendarServiceWithAuthToken(String accessToken) {
+		calendarService = new CalendarService(APP_NAME);
 		calendarService.setUserToken(accessToken);
+	}
 
+	private void setAuthToken() {
 		UserToken auth_token = (UserToken) calendarService
 				.getAuthTokenFactory().getAuthToken();
 		authToken = auth_token.getValue();
+	}
+
+	public String getAuthToken() {
+		if (authToken != null) {
+			return authToken;
+		}
+		return null;
 	}
 
 	private void displayLine(String displayString) {

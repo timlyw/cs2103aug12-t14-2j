@@ -9,8 +9,6 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.ServiceException;
@@ -89,11 +87,25 @@ public class Database {
 
 	private void initializeGoogleCalendarService() throws IOException,
 			ServiceException {
-		if (configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")) {
+		if (configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")
+				&& !configFile.getConfigParameter("GOOGLE_AUTH_TOKEN")
+						.isEmpty()) {
 			googleCalendar = new GoogleCalendar(
 					configFile.getConfigParameter("GOOGLE_AUTH_TOKEN"));
+			saveGoogleAuthToken();
+
 		} else if (configFile.hasConfigParameter("USER_GOOGLE_EMAIL")) {
 			// TODO prompt user password
+			googleCalendar = new GoogleCalendar();
+			saveGoogleAuthToken();
+		}
+	}
+
+	private void saveGoogleAuthToken() throws IOException {
+		String googleAuthToken = googleCalendar.getAuthToken();
+		if (googleAuthToken != null) {
+			configFile.setConfigParameter("GOOGLE_AUTH_TOKEN",
+					googleAuthToken);
 		}
 	}
 
@@ -124,7 +136,8 @@ public class Database {
 			}
 
 			// add unsynced tasks
-			if (entry.getValue().getgCalTaskId().equalsIgnoreCase("null")) {
+			if (entry.getValue().getgCalTaskId().equalsIgnoreCase("null")
+					|| entry.getValue().getgCalTaskId() == null) {
 				System.out.println("push unsync event : "
 						+ entry.getValue().getTaskName());
 				System.out.println("!" + entry.getValue().getgCalTaskId());
@@ -370,12 +383,18 @@ public class Database {
 	 * 
 	 * @param task
 	 * @throws IOException
+	 * @throws ServiceException
 	 */
-	public void add(Task task) throws IOException {
+	public void add(Task task) throws IOException, ServiceException {
 		task.setTaskId(getNewTaskId());
 
 		Task taskToAdd = task.clone();
 		taskList.put(taskToAdd.getTaskId(), taskToAdd);
+
+		// TODO add to google calendar logic
+
+		googleCalendar.createEvent(taskToAdd);
+
 		saveTaskRecordFile();
 	}
 
@@ -384,13 +403,19 @@ public class Database {
 	 * 
 	 * @param taskId
 	 * @throws IOException
+	 * @throws ServiceException
 	 */
-	public void delete(int taskId) throws IOException {
+	public void delete(int taskId) throws IOException, ServiceException {
 		// check if task exists
 		if (taskList.containsKey(taskId)) {
 			Task taskToDelete = taskList.get(taskId);
 			taskToDelete.setDeleted(true);
 			taskList.put(taskToDelete.getTaskId(), taskToDelete);
+
+			// TODO delete from google calendar logic
+
+			googleCalendar.getEvent(taskToDelete.getgCalTaskId());
+
 			saveTaskRecordFile();
 		} else {
 			throw new Error("Invalid Task");
@@ -400,14 +425,31 @@ public class Database {
 	/**
 	 * Updates task
 	 * 
-	 * @param task
+	 * @param updatedTask
 	 * @throws IOException
+	 * @throws ServiceException
 	 */
-	public void update(Task task) throws IOException {
+	public void update(Task updatedTask) throws IOException, ServiceException {
 		// check if task exists
-		if (taskList.containsKey(task.getTaskId())) {
-			taskList.put(task.getTaskId(), task.clone());
+		if (taskList.containsKey(updatedTask.getTaskId())) {
+
+			// TODO update from google calendar logic
+
+			String gCalId = null;
+			CalendarEventEntry updatedGCalEvent;
+			if (updatedTask.getgCalTaskId().equalsIgnoreCase("null")
+					|| updatedTask.getgCalTaskId() == null) {
+				gCalId = googleCalendar.createEvent(updatedTask);
+			} else {
+				updatedGCalEvent = googleCalendar.updateEvent(updatedTask
+						.getgCalTaskId(), updatedTask.getTaskName(),
+						updatedTask.getStartDateTime().toString(), updatedTask
+								.getEndDateTime().toString(), updatedTask
+								.getTaskUpdated().toString());
+			}
+			taskList.put(updatedTask.getTaskId(), updatedTask.clone());
 			saveTaskRecordFile();
+
 		} else {
 			throw new Error("Invalid Task");
 		}
