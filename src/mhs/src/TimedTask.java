@@ -74,7 +74,7 @@ public class TimedTask extends Task {
 	public TimedTask(int taskId, CalendarEventEntry gCalEntry,
 			DateTime syncDateTime) {
 		super(taskId, gCalEntry.getTitle().getPlainText(), TaskCategory.TIMED,
-				syncDateTime, syncDateTime, syncDateTime, gCalEntry.getId(),
+				syncDateTime, syncDateTime, syncDateTime, gCalEntry.getIcalUID(),
 				false, false);
 		setStartDateTime(new DateTime(gCalEntry.getTimes().get(0)
 				.getStartTime().toString()));

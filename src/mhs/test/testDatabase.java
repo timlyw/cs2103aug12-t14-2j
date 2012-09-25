@@ -70,19 +70,22 @@ public class testDatabase {
 	public void testSyncDatabase() throws IOException, ServiceException {
 		System.out.println("Sync Test");		
 		database.syncronizeDatabases();
-		
+				
+		System.out.println("Updating Tasks");		
 		// update task to push
-		List<Task> tempTasks = database.query();
-		
+		List<Task> tempTasks = database.query();		
 		System.out.println(tempTasks.size());
 		
+		if(tempTasks.size() > 0){
 		tempTasks.get(0).setTaskUpdated(new DateTime().now().plusDays(5));
 		database.update(tempTasks.get(0));
-		
+		}
+		if(tempTasks.size() > 1){
 		// update task to pull
 		tempTasks.get(1).setTaskLastSync(new DateTime().now().minusDays(5));
 		database.update(tempTasks.get(1));
-
+		}
+		
 		database.syncronizeDatabases();
 		//database.clearDatabase();
 	}
