@@ -13,7 +13,7 @@ public class Task {
 	protected DateTime taskCreated;
 	protected DateTime taskUpdated;
 	protected DateTime taskLastSync;
-	protected String gCalTaskId;
+	protected String gCalTaskId; //TODO rename toIcalUID (referring to) 
 	protected Boolean isDone;
 	protected Boolean isDeleted;
 
