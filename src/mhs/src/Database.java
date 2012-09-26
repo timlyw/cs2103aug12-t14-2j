@@ -64,10 +64,10 @@ public class Database {
 			throws IOException {
 
 		configFile = new ConfigFile();
-		
+
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
 		taskList = taskRecordFile.getTaskList();
-		
+
 		gCalTaskList = taskRecordFile.getGCalTaskList();
 		try {
 			initializeGoogleCalendarService();
@@ -226,13 +226,14 @@ public class Database {
 					localTaskEntry.setEndDateTime(new DateTime(gCalEntry
 							.getTimes().get(0).getEndTime().toString()));
 
-					DateTime syncDateTime = new DateTime(gCalEntry
-							.getUpdated().toString());
+					DateTime syncDateTime = new DateTime(gCalEntry.getUpdated()
+							.toString());
 					localTaskEntry.setTaskLastSync(syncDateTime);
 					localTaskEntry.setTaskUpdated(syncDateTime);
 
-					taskList.put(localTaskEntry.getTaskId(), localTaskEntry.clone());
-					
+					taskList.put(localTaskEntry.getTaskId(),
+							localTaskEntry.clone());
+
 					System.out.println(syncDateTime + " "
 							+ new DateTime(gCalEntry.getUpdated().getValue()));
 
@@ -240,14 +241,25 @@ public class Database {
 			} else {
 				// pull new remote task
 				System.out.println("pulling new event");
-				// add task
-				Task newTask = new TimedTask(getNewTaskId(), gCalEntry,
-						new DateTime(gCalEntry.getUpdated().toString()));
+				System.out.println(gCalEntry.getTitle().getPlainText());
 
-				// create new task
-				taskList.put(newTask.getTaskId(), newTask);
+				Task newTask;
+				// add task from google calendar entry
+				if (gCalEntry.getTimes().get(0).getStartTime()
+						.equals(gCalEntry.getTimes().get(0).getEndTime())) {
+					newTask = new DeadlineTask(getNewTaskId(), gCalEntry,
+							new DateTime(gCalEntry.getUpdated().toString()));
+					// create new task
+					taskList.put(newTask.getTaskId(), newTask);
+				} else {
+					newTask = new TimedTask(getNewTaskId(), gCalEntry,
+							new DateTime(gCalEntry.getUpdated().toString()));
+					// create new task
+					taskList.put(newTask.getTaskId(), newTask);
+				}
 
-				System.out.println(new DateTime(gCalEntry.getUpdated().toString()) + " " + newTask.getTaskLastSync());
+				System.out.println(new DateTime(gCalEntry.getUpdated()
+						.toString()) + " " + newTask.getTaskLastSync());
 
 			}
 		}
@@ -394,7 +406,7 @@ public class Database {
 
 		// TODO add to google calendar logic
 
-		googleCalendar.createEvent(taskToAdd);
+		//googleCalendar.createEvent(taskToAdd);
 
 		saveTaskRecordFile();
 	}
@@ -447,7 +459,15 @@ public class Database {
 								.toString(), updatedTask.getEndDateTime()
 								.toString());
 			}
-			taskList.put(updatedTask.getTaskId(), updatedTask.clone());
+
+			
+			Task updatedTaskCopy = updatedTask.clone();
+			
+			System.out.println("!" + updatedTask.toString() + "\n"
+					+ updatedTask.clone().toString() + "\n" + updatedTaskCopy);
+			
+			taskList.put(updatedTask.getTaskId(), updatedTaskCopy);
+			
 			saveTaskRecordFile();
 
 		} else {

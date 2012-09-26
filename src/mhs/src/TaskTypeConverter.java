@@ -26,39 +26,56 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	public Task deserialize(JsonElement json, Type type,
 			JsonDeserializationContext context) throws JsonParseException {
 
-		JsonObject jobject = (JsonObject) json.getAsJsonObject();
+		JsonObject jObject = (JsonObject) json.getAsJsonObject();
 
-		switch (jobject.get("taskCategory").getAsString()) {
+		DateTime startDatetime;
+		DateTime endDatetime;
+		DateTime taskCreated;
+		DateTime taskUpdated;
+		DateTime taskLastSync;
+
+		switch (jObject.get("taskCategory").getAsString()) {
 		case "DEADLINE":
-			return new DeadlineTask(jobject.get("taskId").getAsInt(), jobject
-					.get("taskName").getAsString(), jobject.get("taskCategory")
-					.getAsString(), new DateTime(jobject.get("endDateTime")
-					.getAsString()), new DateTime(jobject.get("taskCreated")
-					.getAsString()), new DateTime(jobject.get("taskUpdated")
-					.getAsString()), new DateTime(jobject.get("taskLastSync")
-					.getAsString()), jobject.get("gCalTaskId").getAsString(),
-					jobject.get("isDone").getAsBoolean(), jobject.get(
+			endDatetime = new DateTime(jObject.get("endDateTime").getAsString());
+			taskCreated = new DateTime(jObject.get("taskCreated").getAsString());
+			taskUpdated = new DateTime(jObject.get("taskUpdated").getAsString());
+			taskLastSync = new DateTime(jObject.get("taskLastSync")
+					.getAsString());
+
+			return new DeadlineTask(jObject.get("taskId").getAsInt(), jObject
+					.get("taskName").getAsString(), jObject.get("taskCategory")
+					.getAsString(), endDatetime, taskCreated, taskUpdated,
+					taskLastSync, jObject.get("gCalTaskId").getAsString(),
+					jObject.get("isDone").getAsBoolean(), jObject.get(
 							"isDeleted").getAsBoolean());
 		case "TIMED":
-			return new TimedTask(jobject.get("taskId").getAsInt(), jobject.get(
-					"taskName").getAsString(), jobject.get("taskCategory")
-					.getAsString(), new DateTime(jobject.get("startDateTime")
-					.getAsString()), new DateTime(jobject.get("endDateTime")
-					.getAsString()), new DateTime(jobject.get("taskCreated")
-					.getAsString()), new DateTime(jobject.get("taskUpdated")
-					.getAsString()), new DateTime(jobject.get("taskLastSync")
-					.getAsString()), jobject.get("gCalTaskId").getAsString(),
-					jobject.get("isDone").getAsBoolean(), jobject.get(
-							"isDeleted").getAsBoolean());
+			startDatetime = new DateTime(jObject.get("startDateTime")
+					.getAsString());
+			endDatetime = new DateTime(jObject.get("endDateTime").getAsString());
+			taskCreated = new DateTime(jObject.get("taskCreated").getAsString());
+			taskUpdated = new DateTime(jObject.get("taskUpdated").getAsString());
+			taskLastSync = new DateTime(jObject.get("taskLastSync")
+					.getAsString());
+
+			return new TimedTask(jObject.get("taskId").getAsInt(), jObject.get(
+					"taskName").getAsString(), jObject.get("taskCategory")
+					.getAsString(), startDatetime, endDatetime, taskCreated,
+					taskUpdated, taskLastSync, jObject.get("gCalTaskId")
+							.getAsString(), jObject.get("isDone")
+							.getAsBoolean(), jObject.get("isDeleted")
+							.getAsBoolean());
 		case "FLOATING":
-			return new FloatingTask(jobject.get("taskId").getAsInt(), jobject
-					.get("taskName").getAsString(), jobject.get("taskCategory")
-					.getAsString(), new DateTime(jobject.get("taskCreated")
-					.getAsString()), new DateTime(jobject.get("taskUpdated")
-					.getAsString()), new DateTime(jobject.get("taskLastSync")
-					.getAsString()), jobject.get("gCalTaskId").getAsString(),
-					jobject.get("isDone").getAsBoolean(), jobject.get(
-							"isDeleted").getAsBoolean());
+			taskCreated = new DateTime(jObject.get("taskCreated").getAsString());
+			taskUpdated = new DateTime(jObject.get("taskUpdated").getAsString());
+			taskLastSync = new DateTime(jObject.get("taskLastSync")
+					.getAsString());
+
+			return new FloatingTask(jObject.get("taskId").getAsInt(), jObject
+					.get("taskName").getAsString(), jObject.get("taskCategory")
+					.getAsString(), taskCreated, taskUpdated, taskLastSync,
+					jObject.get("gCalTaskId").getAsString(), jObject.get(
+							"isDone").getAsBoolean(), jObject.get("isDeleted")
+							.getAsBoolean());
 		default:
 			break;
 		}

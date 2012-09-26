@@ -13,7 +13,7 @@ public class Task {
 	protected DateTime taskCreated;
 	protected DateTime taskUpdated;
 	protected DateTime taskLastSync;
-	protected String gCalTaskId; //TODO rename toIcalUID (referring to) 
+	protected String gCalTaskId;
 	protected Boolean isDone;
 	protected Boolean isDeleted;
 
@@ -93,7 +93,7 @@ public class Task {
 		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
 		Gson gson = gsonBuilder.create();
 
-		return gson.fromJson(gson.toJson(this), Task.class);
+		return gson.fromJson(gson.toJson(this), this.getClass());
 	}
 
 	public String toString() {
@@ -155,7 +155,7 @@ public class Task {
 	}
 
 	public DateTime getTaskUpdated() {
-		return taskUpdated;
+		return this.taskUpdated;
 	}
 
 	public void setTaskUpdated(DateTime taskUpdated) {

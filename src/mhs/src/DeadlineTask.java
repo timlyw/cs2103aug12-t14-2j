@@ -2,6 +2,8 @@ package mhs.src;
 
 import org.joda.time.DateTime;
 
+import com.google.gdata.data.calendar.CalendarEventEntry;
+
 public class DeadlineTask extends Task {
 
 	private DateTime endDateTime;
@@ -53,11 +55,27 @@ public class DeadlineTask extends Task {
 	}
 
 	/**
+	 * Constructor from Google CalendarEventEntry
+	 * 
+	 * @param taskId
+	 * @param gCalEntry
+	 */
+	public DeadlineTask(int taskId, CalendarEventEntry gCalEntry,
+			DateTime syncDateTime) {
+		super(taskId, gCalEntry.getTitle().getPlainText(),
+				TaskCategory.DEADLINE, syncDateTime, syncDateTime,
+				syncDateTime, gCalEntry.getIcalUID(), false, false);
+		setEndDateTime(new DateTime(gCalEntry.getTimes().get(0).getEndTime()
+				.toString()));
+	}
+
+	/**
 	 * Return endDateTime for startDateTime
 	 */
 	public DateTime getStartDateTime() {
 		return endDateTime;
 	}
+
 	public void setStartDateTime(DateTime endDateTime) {
 	}
 

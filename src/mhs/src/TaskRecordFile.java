@@ -122,6 +122,7 @@ public class TaskRecordFile {
 	public Map<Integer, Task> getTaskList() {
 		return taskList;
 	}
+
 	public Map<String, Task> getGCalTaskList() {
 		return gCalTaskList;
 	}

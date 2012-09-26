@@ -105,7 +105,6 @@ public class GoogleCalendar {
 		return calendarService.insert(postURL, event);
 	}
 
-
 	/**
 	 * 
 	 * @param taskId
@@ -121,6 +120,7 @@ public class GoogleCalendar {
 			ServiceException {
 
 		CalendarEventEntry event = getEvent(taskId);
+		System.out.println(newTitle);
 		event.setTitle(new PlainTextConstruct(newTitle));
 
 		When eventUpdatedTimes = new When();
@@ -200,7 +200,7 @@ public class GoogleCalendar {
 		pullEvents();
 		return calendarService.insert(postURL, event);
 	}
-	
+
 	// returns an event with the specified title, start and end time
 	private CalendarEventEntry constructEvent(String taskTitle,
 			String taskStartStr, String taskEndStr) {
