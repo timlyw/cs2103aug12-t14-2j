@@ -102,6 +102,10 @@ public class GoogleCalendar {
 		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
 		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
 				taskEndStr);
+
+		// add event to list
+		eventList.add(event);
+
 		return calendarService.insert(postURL, event);
 	}
 
@@ -120,7 +124,11 @@ public class GoogleCalendar {
 			ServiceException {
 
 		CalendarEventEntry event = getEvent(taskId);
-		System.out.println(newTitle);
+
+		if (event == null) {
+			return null;
+		}
+
 		event.setTitle(new PlainTextConstruct(newTitle));
 
 		When eventUpdatedTimes = new When();
@@ -134,6 +142,17 @@ public class GoogleCalendar {
 		URL editUrl = new URL(event.getEditLink().getHref());
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
 				.update(editUrl, event, "*");
+
+		// update event in list
+		for (int i = 0; i < eventList.size(); i++) {
+			if (eventList.get(i).getIcalUID() != null
+					&& updatedEntry.getIcalUID().equals(
+							eventList.get(i).getIcalUID())) {
+				eventList.remove(i);
+				eventList.add(updatedEntry);
+				break;
+			}
+		}
 		return updatedEntry;
 	}
 
@@ -145,9 +164,16 @@ public class GoogleCalendar {
 	 * @throws ServiceException
 	 */
 	public void deleteEvent(String taskId) throws IOException, ServiceException {
-		CalendarEventEntry event = getEvent(taskId);
-		if (event != null) {
-			event.delete();
+
+		CalendarEventEntry eventToDelete = null;
+
+		for (int i = 0; i < eventList.size(); i++) {
+			String currId = eventList.get(i).getIcalUID();
+			if (currId != null && currId.equals(taskId)) {
+				eventToDelete.delete();
+				eventList.remove(i);
+				break;
+			}
 		}
 	}
 

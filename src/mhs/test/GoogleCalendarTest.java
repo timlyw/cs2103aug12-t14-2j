@@ -64,8 +64,7 @@ public class GoogleCalendarTest {
 		System.out.println(addedEvent.getUpdated());
 		System.out.println(addedEvent.getEdited());
 
-		googleCalendar.deleteEvent(addedEvent.getId());
-		googleCalendar.pullEvents();
+		googleCalendar.deleteEvent(addedEvent.getIcalUID());
 
 	}
 
@@ -89,6 +88,10 @@ public class GoogleCalendarTest {
 		new DateTime();
 		DateTime updatedSt = DateTime.now().plusHours(2);
 		DateTime updatedEt = new DateTime().now().plusHours(3);
+
+		CalendarEventEntry updatedEventTest = googleCalendar.updateEvent(
+				"123", "Event 1 Updated",
+				updatedSt.toString(), updatedEt.toString());
 
 		CalendarEventEntry updatedEvent = googleCalendar.updateEvent(
 				addedEvent.getIcalUID(), "Event 1 Updated",
