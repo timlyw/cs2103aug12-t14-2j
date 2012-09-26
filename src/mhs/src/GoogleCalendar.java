@@ -2,7 +2,6 @@ package mhs.src;
 
 import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
 import com.google.gdata.client.calendar.*;
-import com.google.gdata.data.Content;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.calendar.*;
@@ -13,8 +12,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-
-import javax.swing.event.HyperlinkEvent.EventType;
 
 public class GoogleCalendar {
 	static final String APP_NAME = "My Hot Secretary";
@@ -79,7 +76,8 @@ public class GoogleCalendar {
 		CalendarEventEntry event;
 		for (int i = 0; i < eventList.size(); i++) {
 			event = eventList.get(i);
-			if (isIdEqual(event.getId(), taskId)) {
+			String currId = event.getIcalUID();
+			if (currId.equals(taskId)) {
 				return event;
 			}
 		}
@@ -104,22 +102,9 @@ public class GoogleCalendar {
 		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
 		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
 				taskEndStr);
-		pullEvents();
 		return calendarService.insert(postURL, event);
 	}
 
-	public CalendarEventEntry createEvent(Task taskToAdd) throws IOException,
-			ServiceException {
-		if (taskToAdd.taskCategory.equals(TaskCategory.FLOATING)) {
-			return null;
-		}
-		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
-		CalendarEventEntry event = constructEvent(taskToAdd.getTaskName(),
-				taskToAdd.getStartDateTime().toString(), taskToAdd
-						.getEndDateTime().toString());
-		pullEvents();
-		return calendarService.insert(postURL, event);
-	}
 
 	/**
 	 * 
@@ -139,17 +124,16 @@ public class GoogleCalendar {
 		event.setTitle(new PlainTextConstruct(newTitle));
 
 		When eventUpdatedTimes = new When();
-		DateTime updatedStartTime = new DateTime();
-		DateTime updatedEndTime = new DateTime();
-		eventUpdatedTimes.setStartTime(updatedStartTime
-				.parseDateTime(newStartTime));
-		eventUpdatedTimes.setEndTime(updatedEndTime.parseDateTime(newEndTime));
+		DateTime updatedStartTime = DateTime.parseDateTime(newStartTime);
+		DateTime updatedEndTime = DateTime.parseDateTime(newEndTime);
+		eventUpdatedTimes.setStartTime(updatedStartTime);
+		eventUpdatedTimes.setEndTime(updatedEndTime);
+		event.getTimes().clear();
 		event.addTime(eventUpdatedTimes);
 
 		URL editUrl = new URL(event.getEditLink().getHref());
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
 				.update(editUrl, event, "*");
-		pullEvents();
 		return updatedEntry;
 	}
 
@@ -165,7 +149,6 @@ public class GoogleCalendar {
 		if (event != null) {
 			event.delete();
 		}
-		pullEvents();
 	}
 
 	/**
@@ -194,7 +177,6 @@ public class GoogleCalendar {
 		CalendarEventFeed eventFeed = calendarService.query(myQuery,
 				CalendarEventFeed.class);
 		eventList = eventFeed.getEntries();
-
 	}
 
 	/**
@@ -202,24 +184,23 @@ public class GoogleCalendar {
 	 */
 	public void displayEvents() {
 		for (int i = 0; i < eventList.size(); i++) {
-			// displayLine(_eventList.get(i).getId().toString());
 			displayLine(eventList.get(i).getTitle().getPlainText());
 		}
 	}
 
-	private boolean isIdEqual(String id1, String id2) {
-		String shortId1 = getIdWithoutParentUrl(id1);
-		String shortId2 = getIdWithoutParentUrl(id2);
-
-		return shortId1.equals(shortId2);
+	public CalendarEventEntry createEvent(Task taskToAdd) throws IOException,
+			ServiceException {
+		if (taskToAdd.taskCategory.equals(TaskCategory.FLOATING)) {
+			return null;
+		}
+		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
+		CalendarEventEntry event = constructEvent(taskToAdd.getTaskName(),
+				taskToAdd.getStartDateTime().toString(), taskToAdd
+						.getEndDateTime().toString());
+		pullEvents();
+		return calendarService.insert(postURL, event);
 	}
-
-	private String getIdWithoutParentUrl(String taskId) {
-		int beginIndex = taskId.lastIndexOf(URL_SEPARATOR);
-		String shortTaskId = taskId.substring(beginIndex);
-		return shortTaskId;
-	}
-
+	
 	// returns an event with the specified title, start and end time
 	private CalendarEventEntry constructEvent(String taskTitle,
 			String taskStartStr, String taskEndStr) {
