@@ -6,7 +6,7 @@ import mhs.src.StringChangeTracker;
 
 import org.junit.Test;
 
-public class RcTester {
+public class RevisionControlTest {
 
 	@Test
 	public void testUndo() {
