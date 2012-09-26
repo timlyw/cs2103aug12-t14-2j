@@ -18,7 +18,7 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
-public class testTaskRecordFile {
+public class TaskRecordFileTest {
 
 	TaskRecordFile taskRecordFile;
 	Map<Integer, Task> taskList;
