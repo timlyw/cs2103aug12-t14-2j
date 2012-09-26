@@ -423,12 +423,14 @@ public class Database {
 		if (taskList.containsKey(taskId)) {
 			Task taskToDelete = taskList.get(taskId);
 			taskToDelete.setDeleted(true);
+			gCalTaskList.put(taskToDelete.getgCalTaskId(), taskToDelete);
 			taskList.put(taskToDelete.getTaskId(), taskToDelete);
 
 			// TODO delete from google calendar logic
-
-			googleCalendar.getEvent(taskToDelete.getgCalTaskId());
-
+			if(!taskToDelete.getgCalTaskId().isEmpty()){
+				googleCalendar.deleteEvent(taskToDelete.getgCalTaskId());
+			}
+			
 			saveTaskRecordFile();
 		} else {
 			throw new Error("Invalid Task");
@@ -462,9 +464,6 @@ public class Database {
 
 			
 			Task updatedTaskCopy = updatedTask.clone();
-			
-			System.out.println("!" + updatedTask.toString() + "\n"
-					+ updatedTask.clone().toString() + "\n" + updatedTaskCopy);
 			
 			taskList.put(updatedTask.getTaskId(), updatedTaskCopy);
 			
@@ -516,6 +515,7 @@ public class Database {
 	 */
 	public void clearDatabase() throws IOException {
 		taskList.clear();
+		//TODO clear associated Google Events
 		saveTaskRecordFile();
 	}
 
