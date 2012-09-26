@@ -463,6 +463,9 @@ public class Database {
 			
 			Task updatedTaskCopy = updatedTask.clone();
 			
+			System.out.println("!" + updatedTask.toString() + "\n"
+					+ updatedTask.clone().toString() + "\n" + updatedTaskCopy);
+			
 			taskList.put(updatedTask.getTaskId(), updatedTaskCopy);
 			
 			saveTaskRecordFile();
