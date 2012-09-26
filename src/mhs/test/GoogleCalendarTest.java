@@ -17,7 +17,7 @@ import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.data.extensions.When;
 import com.google.gdata.util.ServiceException;
 
-public class testGoogleCalendar {
+public class GoogleCalendarTest {
 
 	GoogleCalendar googleCalendar;
 
@@ -53,8 +53,9 @@ public class testGoogleCalendar {
 	public void testGoogleCalendarAddAndDelete() throws IOException,
 			ServiceException {
 
+		new DateTime();
 		CalendarEventEntry addedEvent = googleCalendar.createEvent("Event 1",
-				new DateTime().now().toString(), DateTime.now().plusHours(1)
+				DateTime.now().toString(), DateTime.now().plusHours(1)
 						.toString());
 
 		System.out.println(addedEvent.getTitle().getPlainText());
@@ -71,8 +72,9 @@ public class testGoogleCalendar {
 	@Test
 	public void testGoogleCalendarUpdate() throws IOException, ServiceException {
 
+		new DateTime();
 		CalendarEventEntry addedEvent = googleCalendar.createEvent("Event 1",
-				new DateTime().now().toString(), DateTime.now().plusHours(2)
+				DateTime.now().toString(), DateTime.now().plusHours(2)
 						.toString());
 
 		System.out.println(addedEvent.getTitle().getPlainText());
@@ -83,8 +85,9 @@ public class testGoogleCalendar {
 		System.out.println(addedEvent.getUpdated());
 
 		googleCalendar.pullEvents();
+		new DateTime();
 		CalendarEventEntry updatedEvent = googleCalendar.updateEvent(
-				addedEvent.getId(), "Event 1 Updated", new DateTime().now()
+				addedEvent.getId(), "Event 1 Updated", DateTime.now()
 						.plusHours(2).toString(), DateTime.now().plusHours(3)
 						.toString());
 
