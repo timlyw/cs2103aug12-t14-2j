@@ -265,6 +265,13 @@ public class GoogleCalendar {
 		calendarService.setUserCredentials(userEmail, userPassword);
 		setAuthToken();
 	}
+	
+	public void initializeCalendarService(String userEmail, String userPassword) throws AuthenticationException {
+		calendarService = new CalendarService(APP_NAME);
+		calendarService.setUserCredentials(userEmail, userPassword);
+		setAuthToken();
+	}
+
 
 	/**
 	 * Initializes google service with auth token (valid after first credential
