@@ -34,7 +34,7 @@ public class Processor {
 		String screenOutput;
 		if (isInteger(command)) {
 			if (validateSelectionCommand(command)) {
-				screenOutput = processSelectedCommand(Integer.parseInt(command));
+				screenOutput = processSelectedCommand(Integer.parseInt(command)-1);
 				// empty list if matching index found
 				matchedTasks.clear();
 			} else {
@@ -219,6 +219,7 @@ public class Processor {
 		String outputString = new String();
 		for (Task selectedTask : resultList) {
 			outputString += count + ". " + selectedTask.getTaskName() + "\n";
+			count++;
 		}
 		return outputString;
 	}
