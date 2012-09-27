@@ -498,7 +498,7 @@ public class Database {
 
 		task.setTaskId(getNewTaskId());
 		Task taskToAdd = task.clone();
-
+		
 		if (isRemoteSyncEnabled) {
 			try {
 				pushSyncTask(taskToAdd);
