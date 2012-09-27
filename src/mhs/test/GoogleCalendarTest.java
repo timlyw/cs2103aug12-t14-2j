@@ -93,6 +93,7 @@ public class GoogleCalendarTest {
 				"123", "Event 1 Updated",
 				updatedSt.toString(), updatedEt.toString());
 
+		// TODO test if can set updated
 		CalendarEventEntry updatedEvent = googleCalendar.updateEvent(
 				addedEvent.getIcalUID(), "Event 1 Updated",
 				updatedSt.toString(), updatedEt.toString());

@@ -28,7 +28,7 @@ public class TimedTask extends Task {
 			DateTime startDt, DateTime endDt, DateTime createdDt,
 			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
 			boolean isDone, boolean isDeleted) {
-		super(taskId, taskName, taskCategory, startDt, endDt, createdDt,
+		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
 				gCalTaskId, isDone, isDeleted);
 		setStartDateTime(startDt);
 		setEndDateTime(endDt);
@@ -55,7 +55,7 @@ public class TimedTask extends Task {
 	DateTime startDt, DateTime endDt, DateTime createdDt, DateTime updatedDt,
 			DateTime syncDt, String gCalTaskId, boolean isDone,
 			boolean isDeleted) {
-		super(taskId, taskName, taskCategory, startDt, endDt, createdDt,
+		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
 				gCalTaskId, isDone, isDeleted);
 		setStartDateTime(startDt);
 		setEndDateTime(endDt);
