@@ -27,6 +27,11 @@ public class TaskRecordFileTest {
 	Task task3;
 	Task task4;
 	Task task5;
+	DateTime dt;
+	DateTime dt2;
+	DateTime dt3;
+	DateTime dt4;
+	DateTime dt5;
 
 	private final static String TEST_TASK_RECORD_FILENAME = "testTaskRecordFile.json";
 
@@ -36,10 +41,10 @@ public class TaskRecordFileTest {
 		taskRecordFile = new TaskRecordFile(TEST_TASK_RECORD_FILENAME);
 
 		DateTime dt = new DateTime().now();
-		DateTime dt2 = new DateTime().now();
-		DateTime dt3 = new DateTime().now();
-		DateTime dt4 = new DateTime().now();
-		DateTime dt5 = new DateTime().now();
+		DateTime dt2 = new DateTime().now().plusDays(1);
+		DateTime dt3 = new DateTime().now().plusDays(2);
+		DateTime dt4 = new DateTime().now().plusDays(3);
+		DateTime dt5 = new DateTime().now().plusDays(4);
 
 		task = new TimedTask(1, "task 1", "TIMED", dt, dt2, dt3, dt4, dt5,
 				"null", false, false);
@@ -68,20 +73,12 @@ public class TaskRecordFileTest {
 		Map<Integer, Task> loadTaskList = new LinkedHashMap<Integer, Task>();
 
 		taskRecordFile.saveTaskList(taskList);
-
 		loadTaskList = taskRecordFile.loadTaskList();
 
+		// FAIL timed task times saving wrongly
 		for (int i = 1; i <= taskList.size(); i++) {
-			assertTrue(taskList.get(i).toString()
-					.equals(loadTaskList.get(i).toString()));
-			assertTrue(taskList.get(i).toString()
-					.equals(loadTaskList.get(i).toString()));
-			assertTrue(taskList.get(i).toString()
-					.equals(loadTaskList.get(i).toString()));
-			assertTrue(taskList.get(i).toString()
-					.equals(loadTaskList.get(i).toString()));
-			assertTrue(taskList.get(i).toString()
-					.equals(loadTaskList.get(i).toString()));
+			assertEquals(taskList.get(i).toString(), loadTaskList.get(i)
+					.toString());
 		}
 	}
 

@@ -73,11 +73,14 @@ public class GoogleCalendar {
 	 */
 	public CalendarEventEntry getEvent(String taskId)
 			throws MalformedURLException, IOException, ServiceException {
+		if (taskId == null) {
+			return null;
+		}
 		CalendarEventEntry event;
 		for (int i = 0; i < eventList.size(); i++) {
 			event = eventList.get(i);
 			String currId = event.getIcalUID();
-			if (currId.equals(taskId)) {
+			if (currId != null && currId.equals(taskId)) {
 				return event;
 			}
 		}
@@ -142,17 +145,20 @@ public class GoogleCalendar {
 		URL editUrl = new URL(event.getEditLink().getHref());
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
 				.update(editUrl, event, "*");
-
+				
 		// update event in list
+		// remove existing event
 		for (int i = 0; i < eventList.size(); i++) {
 			if (eventList.get(i).getIcalUID() != null
 					&& updatedEntry.getIcalUID().equals(
 							eventList.get(i).getIcalUID())) {
 				eventList.remove(i);
-				eventList.add(updatedEntry);
 				break;
 			}
 		}
+		
+		// add updated event to list
+		eventList.add(updatedEntry);
 		return updatedEntry;
 	}
 

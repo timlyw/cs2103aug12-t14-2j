@@ -110,7 +110,8 @@ public class TaskRecordFile {
 		jsonWriter.beginArray();
 
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-			gson.toJson(entry.getValue(), Task.class, jsonWriter);
+			gson.toJson(entry.getValue(), entry.getValue().getClass(),
+					jsonWriter);
 		}
 
 		jsonWriter.endArray();

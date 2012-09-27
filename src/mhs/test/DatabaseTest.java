@@ -72,37 +72,75 @@ public class DatabaseTest {
 
 	@Test
 	public void testSyncDatabase() throws IOException, ServiceException {
-
+		database = new Database(TEST_TASK_RECORD_FILENAME, false);
 		System.out.println("Sync Test");
+		database.syncronizeDatabases();
+	}
+
+	@Test
+	public void testSyncPushDatabase() throws IOException, ServiceException {
+
+		database = new Database(TEST_TASK_RECORD_FILENAME, false);
+		System.out.println("Adding new Tasks to push");
+		
 		database.add(task);
 		database.add(task2);
+		System.out.println("Manual Sync");
+		database.syncronizeDatabases();
+	}
+
+	@Test
+	public void testSyncPushNewerTask() throws IOException, ServiceException {
+
+		System.out.println("Updating Local Task");
+
+		database = new Database(TEST_TASK_RECORD_FILENAME, false);
+		Task updatedTask = database.query(1);
+		
+		new DateTime();
+		updatedTask.setTaskUpdated(DateTime.now());
+		updatedTask.setTaskLastSync(DateTime.now().minusMinutes(5));
+
+		System.out.println("task updated datetime : "
+				+ updatedTask.getTaskUpdated());
+		System.out.println("task sync datetime : "
+				+ updatedTask.getTaskLastSync());
+
+		database.update(updatedTask);
+		// auto update when connection is available...
 
 		database.syncronizeDatabases();
 
-		System.out.println("Updating Tasks");
-		// update task to push
+		System.out.println("updated task updated datetime : "
+				+ updatedTask.getTaskUpdated());
+		System.out.println("updated task sync datetime : "
+				+ updatedTask.getTaskLastSync());
+
+	}
+
+	@Test
+	public void testUpdatedPullSync() throws IOException, ServiceException {
+
+		database.clearDatabase();
+		database.syncronizeDatabases();
+
 		List<Task> tempTasks = database.query();
-		System.out.println(tempTasks.size());
-
-		if (tempTasks.size() > 0) {
-			// update task to push
-			tempTasks.get(0).setTaskUpdated(new DateTime().now().plusDays(5));
-			database.update(tempTasks.get(0));
-			Task updatedTask = database.query(tempTasks.get(0).getTaskId());
-
-			System.out.println(tempTasks.get(0).getTaskUpdated());
-			System.out.println(new DateTime().now().plusDays(5));
-			System.out.println(updatedTask.getTaskUpdated());
-		}
+		Iterator<Task> iterator = tempTasks.iterator();
+		// while (iterator.hasNext()) {
+		// implement test
+		// }
 
 		if (tempTasks.size() > 1) {
 			// update task to pull
-			tempTasks.get(1).setTaskLastSync(new DateTime().now().minusDays(5));
+			tempTasks.get(1).setTaskLastSync(new DateTime().now().minusDays(1));
+
 			database.update(tempTasks.get(1));
 		}
 
-		database.syncronizeDatabases();
-		// database.clearDatabase();
+	}
+
+	@Test
+	public void testSyncLocalDeletedTask() throws IOException, ServiceException {
 	}
 
 	@Test
@@ -117,15 +155,19 @@ public class DatabaseTest {
 	@Test
 	public void testQueryTaskIdDatabase() throws IOException, ServiceException {
 		System.out.println("Query Task Id Test");
+		
 		// Query by taskId
+		
 		database.add(task);
 		database.add(task2);
 		database.add(task3);
 		database.add(task4);
 		database.add(task5);
+		
 		Task queriedTask = database.query(1);
 		System.out.println(task.toString());
 		System.out.println(queriedTask.toString());
+		
 		assertEquals(task.toString(), queriedTask.toString());
 	}
 
@@ -274,9 +316,6 @@ public class DatabaseTest {
 			System.out.println(matchedTask.toString());
 		}
 
-	//	Task editTask = new TimedTask(task.getTaskId(), newTaskName, "TIMED", editedDateTime, editedDateTime2, editedDateTime3,
-		//		editedDateTime4, editedDateTime5, "null", false, false);		
-
 		Task editTask = task.clone();
 		String newTaskName = "edited! task 1 - meeting";
 		editTask.setTaskName(newTaskName);
@@ -291,18 +330,12 @@ public class DatabaseTest {
 		DateTime editedDateTime4 = DateTime.now().plusDays(4);
 		new DateTime();
 		DateTime editedDateTime5 = DateTime.now().plusDays(5);
-		
-		System.out.println(editedDateTime);
-		System.out.println(editedDateTime2);
-		System.out.println(editedDateTime3);
-		System.out.println(editedDateTime4);
-		System.out.println(editedDateTime5);
-		
+
 		editTask.setStartDateTime(editedDateTime);
 		editTask.setEndDateTime(editedDateTime2);
 		editTask.setTaskCreated(editedDateTime3);
 		editTask.setTaskUpdated(editedDateTime4);
-		editTask.setTaskLastSync(editedDateTime5);
+		editTask.setTaskLastSync(new DateTime().now().plusDays(5));
 
 		database.update(editTask);
 		System.out.println(editTask.toString());
@@ -320,7 +353,6 @@ public class DatabaseTest {
 				.getStartDateTime());
 		assertEquals(editTask.getEndDateTime(), queryList.get(0)
 				.getEndDateTime());
-		// Failed test
 		assertEquals(editTask.getTaskCreated(), queryList.get(0)
 				.getTaskCreated());
 		assertEquals(editTask.getTaskLastSync(), queryList.get(0)
@@ -367,7 +399,7 @@ public class DatabaseTest {
 
 	@After
 	public void testAfter() throws IOException {
-		// database.clearDatabase();
+		database.clearDatabase();
 		System.out.println(System.lineSeparator());
 	}
 }
