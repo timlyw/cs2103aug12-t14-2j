@@ -64,8 +64,7 @@ public class GoogleCalendarTest {
 		System.out.println(addedEvent.getUpdated());
 		System.out.println(addedEvent.getEdited());
 
-		googleCalendar.deleteEvent(addedEvent.getId());
-		googleCalendar.pullEvents();
+		googleCalendar.deleteEvent(addedEvent.getIcalUID());
 
 	}
 
@@ -85,11 +84,19 @@ public class GoogleCalendarTest {
 		System.out.println(addedEvent.getUpdated());
 
 		googleCalendar.pullEvents();
+
 		new DateTime();
+		DateTime updatedSt = DateTime.now().plusHours(2);
+		DateTime updatedEt = new DateTime().now().plusHours(3);
+
+		CalendarEventEntry updatedEventTest = googleCalendar.updateEvent(
+				"123", "Event 1 Updated",
+				updatedSt.toString(), updatedEt.toString());
+
+		// TODO test if can set updated
 		CalendarEventEntry updatedEvent = googleCalendar.updateEvent(
-				addedEvent.getId(), "Event 1 Updated", DateTime.now()
-						.plusHours(2).toString(), DateTime.now().plusHours(3)
-						.toString());
+				addedEvent.getIcalUID(), "Event 1 Updated",
+				updatedSt.toString(), updatedEt.toString());
 
 		System.out.println(updatedEvent.getTitle().getPlainText());
 		System.out.println(updatedEvent.getId());
@@ -97,24 +104,20 @@ public class GoogleCalendarTest {
 		System.out.println(updatedEvent.getTimes().get(0).getStartTime());
 		System.out.println(updatedEvent.getTimes().get(0).getEndTime());
 		System.out.println(updatedEvent.getUpdated());
-		System.out.println(updatedEvent.getEdited().toString());
 
 		googleCalendar.pullEvents();
-		updatedEvent = googleCalendar.getEvent(addedEvent.getId());
-
-		System.out.println(updatedEvent.getTitle().getPlainText());
-		System.out.println(updatedEvent.getIcalUID());
-		System.out.println(updatedEvent.getTimes().get(0).getStartTime());
-		System.out.println(updatedEvent.getTimes().get(0).getEndTime());
-		System.out.println(updatedEvent.getUpdated().toString());
-		System.out.println(updatedEvent.getEdited().toString());
 
 		assertEquals(updatedEvent.getTitle().getPlainText(), "Event 1 Updated");
-
+		// milis different
+		//assertEquals(updatedEvent.getTimes().get(0).getStartTime(), updatedSt.toString());
+		//assertEquals(updatedEvent.getTimes().get(0).getEndTime(), updatedEt.toString());
 	}
 
 	@After
 	public void testGoogleCalendarClean() throws IOException, ServiceException {
+
+		googleCalendar.pullEvents();
+
 		List<CalendarEventEntry> calendarEvents = googleCalendar.getEventList();
 		Iterator<CalendarEventEntry> iterator = calendarEvents.iterator();
 
