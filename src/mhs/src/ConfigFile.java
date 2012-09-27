@@ -49,7 +49,6 @@ public class ConfigFile {
 		if (!configFile.exists()) {
 			createNewJsonFile();
 		}
-		createNewJsonFile();
 		loadConfigFile();
 	}
 
