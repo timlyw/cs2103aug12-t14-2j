@@ -50,6 +50,7 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 							.getAsBoolean(), jObject.get("isDeleted")
 							.getAsBoolean());
 		case "DEADLINE":
+			
 			endDatetime = new DateTime(jObject.get("endDateTime").getAsString());
 			taskCreated = new DateTime(jObject.get("taskCreated").getAsString());
 			taskUpdated = new DateTime(jObject.get("taskUpdated").getAsString());
@@ -68,11 +69,15 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 			taskLastSync = new DateTime(jObject.get("taskLastSync")
 					.getAsString());
 
-			return new FloatingTask(jObject.get("taskId").getAsInt(), jObject
-					.get("taskName").getAsString(), jObject.get("taskCategory")
-					.getAsString(), taskCreated, taskUpdated, taskLastSync,
-					jObject.get("isDone").getAsBoolean(), jObject.get(
-							"isDeleted").getAsBoolean());
+			return new FloatingTask(
+					jObject.get("taskId").getAsInt(), 
+					jObject.get("taskName").getAsString(), 
+					jObject.get("taskCategory").getAsString(), 
+					taskCreated, 
+					taskUpdated, 
+					taskLastSync,
+					jObject.get("isDone").getAsBoolean(), 
+					jObject.get("isDeleted").getAsBoolean());
 		default:
 			break;
 		}

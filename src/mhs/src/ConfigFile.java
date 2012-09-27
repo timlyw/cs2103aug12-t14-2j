@@ -49,7 +49,7 @@ public class ConfigFile {
 		gsonBuilder.registerTypeAdapter(DateTime.class,
 				new DateTimeTypeConverter());
 		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
-		gson = gsonBuilder.create();
+		gson = gsonBuilder.serializeNulls().create();
 	}
 
 	@SuppressWarnings("unchecked")

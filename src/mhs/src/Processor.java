@@ -28,12 +28,10 @@ public class Processor {
 
 	public Processor() {
 		try {
-			// dataHandler = new Database(); // initialize with syncronize
-			dataHandler = new Database("taskRecordFile.json", true); // initialize
-																		// without
-																		// syncronizing
-																		// for
-																		// debug
+			// initialize with syncronize
+			// dataHandler = new Database();
+			// initialize without syncronizing for debug
+			dataHandler = new Database("taskRecordFile.json", true); 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

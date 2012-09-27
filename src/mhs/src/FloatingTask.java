@@ -13,7 +13,6 @@ public class FloatingTask extends Task {
 	 * @param createdDt
 	 * @param updatedDt
 	 * @param syncDt
-	 * @param gCalTaskId
 	 * @param isDone
 	 * @param isDeleted
 	 */
@@ -33,7 +32,6 @@ public class FloatingTask extends Task {
 	 * @param createdDt
 	 * @param updatedDt
 	 * @param syncDt
-	 * @param gCalTaskId
 	 * @param isDone
 	 * @param isDeleted
 	 */
