@@ -59,7 +59,7 @@ public class DatabaseTest {
 		task4 = new DeadlineTask(4, "task 4 - project due", "DEADLINE", dt,
 				dt2, dt3, dt4, "null", false, false);
 		task5 = new FloatingTask(5, "task 5 - play more games", "FLOATING", dt,
-				dt2, dt3, "null", false, false);
+				dt2, dt3, false, false);
 
 		taskList = new LinkedHashMap<Integer, Task>();
 
@@ -82,7 +82,7 @@ public class DatabaseTest {
 
 		database = new Database(TEST_TASK_RECORD_FILENAME, false);
 		System.out.println("Adding new Tasks to push");
-		
+
 		database.add(task);
 		database.add(task2);
 		System.out.println("Manual Sync");
@@ -96,7 +96,7 @@ public class DatabaseTest {
 
 		database = new Database(TEST_TASK_RECORD_FILENAME, false);
 		Task updatedTask = database.query(1);
-		
+
 		new DateTime();
 		updatedTask.setTaskUpdated(DateTime.now());
 		updatedTask.setTaskLastSync(DateTime.now().minusMinutes(5));
@@ -155,19 +155,19 @@ public class DatabaseTest {
 	@Test
 	public void testQueryTaskIdDatabase() throws IOException, ServiceException {
 		System.out.println("Query Task Id Test");
-		
+
 		// Query by taskId
-		
+
 		database.add(task);
 		database.add(task2);
 		database.add(task3);
 		database.add(task4);
 		database.add(task5);
-		
+
 		Task queriedTask = database.query(1);
 		System.out.println(task.toString());
 		System.out.println(queriedTask.toString());
-		
+
 		assertEquals(task.toString(), queriedTask.toString());
 	}
 

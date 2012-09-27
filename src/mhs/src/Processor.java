@@ -28,7 +28,12 @@ public class Processor {
 
 	public Processor() {
 		try {
-			dataHandler = new Database();
+			// dataHandler = new Database(); // initialize with syncronize
+			dataHandler = new Database("taskRecordFile.json", true); // initialize
+																		// without
+																		// syncronizing
+																		// for
+																		// debug
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -189,7 +194,7 @@ public class Processor {
 		case 0:
 			Task floatingTaskToAdd = new FloatingTask(0,
 					inputCommand.getTaskName(), TaskCategory.FLOATING,
-					DateTime.now(), null, null, null, false, false);
+					DateTime.now(), null, null, false, false);
 			return floatingTaskToAdd;
 		case 1:
 			Task deadlineTaskToAdd = new DeadlineTask(0,

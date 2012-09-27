@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -71,6 +72,7 @@ public class TaskRecordFile {
 		JsonArray Jarray = parser.parse(jsonReader).getAsJsonArray();
 
 		for (JsonElement obj : Jarray) {
+			JsonObject jObject = (JsonObject) obj.getAsJsonObject();
 			Task newTask = gson.fromJson(obj, Task.class);
 			taskList.put(newTask.taskId, newTask);
 			if (newTask.gCalTaskId != null) {

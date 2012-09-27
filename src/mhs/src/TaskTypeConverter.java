@@ -71,12 +71,11 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 			return new FloatingTask(jObject.get("taskId").getAsInt(), jObject
 					.get("taskName").getAsString(), jObject.get("taskCategory")
 					.getAsString(), taskCreated, taskUpdated, taskLastSync,
-					jObject.get("gCalTaskId").getAsString(), jObject.get(
-							"isDone").getAsBoolean(), jObject.get("isDeleted")
-							.getAsBoolean());
+					jObject.get("isDone").getAsBoolean(), jObject.get(
+							"isDeleted").getAsBoolean());
 		default:
 			break;
 		}
-		return new Task();
+		return null;
 	}
 }
