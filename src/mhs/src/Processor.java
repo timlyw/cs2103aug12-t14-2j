@@ -29,9 +29,9 @@ public class Processor {
 	public Processor() {
 		try {
 			// initialize with syncronize
-			 dataHandler = new Database();
+			// dataHandler = new Database();
 			// initialize without syncronizing for debug
-			// dataHandler = new Database("taskRecordFile.json", true); 
+			 dataHandler = new Database("taskRecordFile.json", true); 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

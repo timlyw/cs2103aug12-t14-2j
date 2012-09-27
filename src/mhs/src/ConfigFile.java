@@ -1,5 +1,6 @@
 package mhs.src;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class ConfigFile {
 	private Gson gson;
 	private JsonReader jsonReader;
 	private InputStream inputStream;
+	private File configFile;
 
 	private static String CONFIG_FILENAME;
 	private final static String DEFAULT_CONFIG_FILENAME = "configFile.json";
@@ -30,18 +32,32 @@ public class ConfigFile {
 
 	public ConfigFile(String configFileName) throws IOException {
 		CONFIG_FILENAME = configFileName;
+		configParameters = new HashMap<String, String>();
+		initializeGson();
 		initializeConfigFile();
 	}
 
 	public ConfigFile() throws IOException {
 		CONFIG_FILENAME = DEFAULT_CONFIG_FILENAME;
+		configParameters = new HashMap<String, String>();
+		initializeGson();
 		initializeConfigFile();
 	}
 
 	private void initializeConfigFile() throws IOException {
-		initializeGson();
-		configParameters = new HashMap<String, String>();
+		configFile = new File(CONFIG_FILENAME);
+		if (!configFile.exists()) {
+			createNewJsonFile();
+		}
+		createNewJsonFile();
 		loadConfigFile();
+	}
+
+	private void createNewJsonFile() throws IOException {
+		configFile.createNewFile();
+		FileWriter fileWriter = new FileWriter(configFile);
+		fileWriter.write(gson.toJson(configParameters));
+		fileWriter.close();
 	}
 
 	private void initializeGson() {
@@ -54,7 +70,7 @@ public class ConfigFile {
 
 	@SuppressWarnings("unchecked")
 	private void loadConfigFile() throws IOException {
-		inputStream = new FileInputStream(CONFIG_FILENAME);
+		inputStream = new FileInputStream(configFile);
 		jsonReader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
 
 		JsonParser parser = new JsonParser();
@@ -68,7 +84,7 @@ public class ConfigFile {
 	}
 
 	public void save() throws IOException {
-		FileWriter fileWriter = new FileWriter(CONFIG_FILENAME);
+		FileWriter fileWriter = new FileWriter(configFile);
 		fileWriter.write(gson.toJson(configParameters));
 		fileWriter.close();
 	}
