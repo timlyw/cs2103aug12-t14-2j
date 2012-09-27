@@ -56,7 +56,7 @@ public class TaskRecordFile {
 		gsonBuilder.registerTypeAdapter(DateTime.class,
 				new DateTimeTypeConverter());
 		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
-		gson = gsonBuilder.create();
+		gson = gsonBuilder.serializeNulls().create();
 
 	}
 
