@@ -73,11 +73,14 @@ public class GoogleCalendar {
 	 */
 	public CalendarEventEntry getEvent(String taskId)
 			throws MalformedURLException, IOException, ServiceException {
+		if (taskId == null) {
+			return null;
+		}
 		CalendarEventEntry event;
 		for (int i = 0; i < eventList.size(); i++) {
 			event = eventList.get(i);
 			String currId = event.getIcalUID();
-			if (currId.equals(taskId)) {
+			if (currId != null && currId.equals(taskId)) {
 				return event;
 			}
 		}
@@ -102,9 +105,12 @@ public class GoogleCalendar {
 		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
 		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
 				taskEndStr);
+
+		// add event to list
+		eventList.add(event);
+
 		return calendarService.insert(postURL, event);
 	}
-
 
 	/**
 	 * 
@@ -121,6 +127,11 @@ public class GoogleCalendar {
 			ServiceException {
 
 		CalendarEventEntry event = getEvent(taskId);
+
+		if (event == null) {
+			return null;
+		}
+
 		event.setTitle(new PlainTextConstruct(newTitle));
 
 		When eventUpdatedTimes = new When();
@@ -134,6 +145,20 @@ public class GoogleCalendar {
 		URL editUrl = new URL(event.getEditLink().getHref());
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
 				.update(editUrl, event, "*");
+				
+		// update event in list
+		// remove existing event
+		for (int i = 0; i < eventList.size(); i++) {
+			if (eventList.get(i).getIcalUID() != null
+					&& updatedEntry.getIcalUID().equals(
+							eventList.get(i).getIcalUID())) {
+				eventList.remove(i);
+				break;
+			}
+		}
+		
+		// add updated event to list
+		eventList.add(updatedEntry);
 		return updatedEntry;
 	}
 
@@ -145,9 +170,16 @@ public class GoogleCalendar {
 	 * @throws ServiceException
 	 */
 	public void deleteEvent(String taskId) throws IOException, ServiceException {
-		CalendarEventEntry event = getEvent(taskId);
-		if (event != null) {
-			event.delete();
+
+		CalendarEventEntry eventToDelete = null;
+
+		for (int i = 0; i < eventList.size(); i++) {
+			String currId = eventList.get(i).getIcalUID();
+			if (currId != null && currId.equals(taskId)) {
+				eventToDelete.delete();
+				eventList.remove(i);
+				break;
+			}
 		}
 	}
 
@@ -200,7 +232,7 @@ public class GoogleCalendar {
 		pullEvents();
 		return calendarService.insert(postURL, event);
 	}
-	
+
 	// returns an event with the specified title, start and end time
 	private CalendarEventEntry constructEvent(String taskTitle,
 			String taskStartStr, String taskEndStr) {

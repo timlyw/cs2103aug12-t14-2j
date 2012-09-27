@@ -1,8 +1,5 @@
 package mhs.src;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.joda.time.DateTime;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
@@ -31,7 +28,7 @@ public class TimedTask extends Task {
 			DateTime startDt, DateTime endDt, DateTime createdDt,
 			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
 			boolean isDone, boolean isDeleted) {
-		super(taskId, taskName, taskCategory, startDt, endDt, createdDt,
+		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
 				gCalTaskId, isDone, isDeleted);
 		setStartDateTime(startDt);
 		setEndDateTime(endDt);
@@ -58,11 +55,10 @@ public class TimedTask extends Task {
 	DateTime startDt, DateTime endDt, DateTime createdDt, DateTime updatedDt,
 			DateTime syncDt, String gCalTaskId, boolean isDone,
 			boolean isDeleted) {
-		super(taskId, taskName, taskCategory, startDt, endDt, createdDt,
+		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
 				gCalTaskId, isDone, isDeleted);
 		setStartDateTime(startDt);
 		setEndDateTime(endDt);
-
 	}
 
 	/**
@@ -74,8 +70,8 @@ public class TimedTask extends Task {
 	public TimedTask(int taskId, CalendarEventEntry gCalEntry,
 			DateTime syncDateTime) {
 		super(taskId, gCalEntry.getTitle().getPlainText(), TaskCategory.TIMED,
-				syncDateTime, syncDateTime, syncDateTime, gCalEntry.getIcalUID(),
-				false, false);
+				syncDateTime, syncDateTime, syncDateTime, gCalEntry
+						.getIcalUID(), false, false);
 		setStartDateTime(new DateTime(gCalEntry.getTimes().get(0)
 				.getStartTime().toString()));
 		setEndDateTime(new DateTime(gCalEntry.getTimes().get(0).getEndTime()
