@@ -74,10 +74,6 @@ public class Database {
 		try {
 			initializeGoogleCalendarService();
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			// set GoogleServiceOnline based on error status
-			// e.getCause();
-			e.printStackTrace();
 			isRemoteSyncEnabled = false;
 		}
 	}
@@ -150,6 +146,7 @@ public class Database {
 
 	// TODO BATCH OPERATIONS FOR DATABASE
 	// TODO BATCH UPDATES FOR GOOGLE CALENDAR
+	
 	/**
 	 * Syncronizes Databases
 	 * 
@@ -161,8 +158,6 @@ public class Database {
 			pushSync();
 			saveTaskRecordFile();
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			isRemoteSyncEnabled = false;
 		}
 	}
@@ -417,7 +412,7 @@ public class Database {
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
 			TaskCategory taskCategory = entry.getValue().getTaskCategory();
-			if (taskCategory.compareTo(queryTaskCategory) == 0) {
+			if (taskCategory.equals(queryTaskCategory)) {
 				if (!entry.getValue().isDeleted()) {
 					queriedTaskRecordset.add(entry.getValue().clone());
 				}
@@ -478,11 +473,37 @@ public class Database {
 	 * @param endTime
 	 * @return
 	 */
-	public List<Task> query(String taskName, TaskCategory taskCategory,
-			DateTime startTime, DateTime endTime) {
+	public List<Task> query(String queriedTaskName,
+			TaskCategory queriedTaskCategory, DateTime queriedStartTime,
+			DateTime queriedEndTime) {
+
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
 
-		// TODO
+		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
+			if (entry.getValue().isDeleted()) {
+				continue;
+			}
+
+			Task taskEntry = entry.getValue();
+			// Set interval for matched range (increase endtime by 1 ms to
+			// include)
+			Interval dateTimeInterval = new Interval(queriedStartTime,
+					queriedEndTime.plusMillis(1));
+
+			if (taskEntry.getTaskCategory().equals(queriedTaskCategory)) {
+				queriedTaskRecordset.add(entry.getValue().clone());
+				continue;
+			}
+			if (taskEntry.getTaskName().contains(queriedTaskName)) {
+				queriedTaskRecordset.add(entry.getValue().clone());
+				continue;
+			}
+			if (dateTimeInterval.contains(taskEntry.getStartDateTime())
+					|| dateTimeInterval.contains(taskEntry.getEndDateTime())) {
+				queriedTaskRecordset.add(entry.getValue().clone());
+				continue;
+			}
+		}
 
 		return null;
 	}
@@ -497,8 +518,12 @@ public class Database {
 	public void add(Task task) throws IOException {
 
 		task.setTaskId(getNewTaskId());
+		new DateTime();
+		task.setTaskCreated(DateTime.now());
+		task.setTaskUpdated(DateTime.now());
+
 		Task taskToAdd = task.clone();
-		
+
 		if (isRemoteSyncEnabled) {
 			try {
 				pushSyncTask(taskToAdd);
@@ -527,6 +552,8 @@ public class Database {
 
 			Task taskToUndelete = taskList.get(taskId);
 			taskToUndelete.setDeleted(false);
+			new DateTime();
+			taskToUndelete.setTaskUpdated(DateTime.now());
 
 			if (isRemoteSyncEnabled) {
 				try {
@@ -544,6 +571,7 @@ public class Database {
 			throw new Error("Invalid Task");
 		}
 	}
+
 	/**
 	 * Deletes a task
 	 * 
@@ -557,6 +585,8 @@ public class Database {
 
 			Task taskToDelete = taskList.get(taskId);
 			taskToDelete.setDeleted(true);
+			new DateTime();
+			taskToDelete.setTaskUpdated(DateTime.now());
 
 			if (isRemoteSyncEnabled) {
 				try {
@@ -586,6 +616,8 @@ public class Database {
 		// check if task exists
 		if (taskList.containsKey(updatedTask.getTaskId())) {
 
+			new DateTime();
+			updatedTask.setTaskUpdated(DateTime.now());
 			Task updatedTaskToSave = updatedTask.clone();
 
 			if (isRemoteSyncEnabled) {
