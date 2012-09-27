@@ -1,7 +1,9 @@
 package mhs.src;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,6 +30,7 @@ public class TaskRecordFile {
 	private JsonReader jsonReader;
 	private InputStream inputStream;
 	private OutputStream outputStream;
+	private File taskRecordFile;
 
 	private static String RECORD_FILE_NAME;
 	private final static String DEFAULT_TASK_RECORD_FILENAME = "taskRecordFile.json";
@@ -37,18 +40,35 @@ public class TaskRecordFile {
 
 	public TaskRecordFile() throws IOException {
 		RECORD_FILE_NAME = DEFAULT_TASK_RECORD_FILENAME;
+		initializeGson();
 		initalizeRecordFile();
-		loadAllTaskLists();
 	}
 
 	public TaskRecordFile(String taskRecordFileName) throws IOException {
 		RECORD_FILE_NAME = taskRecordFileName;
+		initializeGson();
 		initalizeRecordFile();
-		loadAllTaskLists();
 	}
 
 	private void initalizeRecordFile() throws IOException {
-		initializeGson();
+		taskRecordFile = new File(RECORD_FILE_NAME);
+		if (!taskRecordFile.exists()) {
+			createNewJsonFile();
+		} else {
+			loadAllTaskLists();
+		}
+	}
+
+	private void createNewJsonFile() throws IOException {
+		taskRecordFile.createNewFile();
+		outputStream = new FileOutputStream(RECORD_FILE_NAME);
+		jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream,
+				"UTF-8"));
+		jsonWriter.setIndent("  ");
+		jsonWriter.beginArray();
+		jsonWriter.endArray();
+		jsonWriter.close();
+		outputStream.close();
 	}
 
 	private void initializeGson() {
