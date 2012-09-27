@@ -54,8 +54,8 @@ public class TaskRecordFileTest {
 				"null", false, false);
 		task4 = new DeadlineTask(4, "task 4", "DEADLINE", dt, dt2, dt3, dt4,
 				"null", false, false);
-		task5 = new FloatingTask(5, "task 5", "FLOATING", dt, dt2, dt3, "null",
-				false, false);
+		task5 = new FloatingTask(5, "task 5", "FLOATING", dt, dt2, dt3, false,
+				false);
 
 		taskList = new LinkedHashMap<Integer, Task>();
 

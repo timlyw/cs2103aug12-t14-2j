@@ -6,6 +6,7 @@ public class FloatingTask extends Task {
 
 	/**
 	 * Constructor with String taskCategory
+	 * 
 	 * @param taskId
 	 * @param taskName
 	 * @param taskCategory
@@ -18,13 +19,14 @@ public class FloatingTask extends Task {
 	 */
 	public FloatingTask(int taskId, String taskName, String taskCategory,
 			DateTime createdDt, DateTime updatedDt, DateTime syncDt,
-			String gCalTaskId, boolean isDone, boolean isDeleted) {
+			boolean isDone, boolean isDeleted) {
 		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
-				gCalTaskId, isDone, isDeleted);
+				null, isDone, isDeleted);
 	}
 
 	/**
 	 * Constructor with TaskCategory taskCategory
+	 * 
 	 * @param taskId
 	 * @param taskName
 	 * @param taskCategory
@@ -37,8 +39,8 @@ public class FloatingTask extends Task {
 	 */
 	public FloatingTask(int taskId, String taskName, TaskCategory taskCategory,
 			DateTime createdDt, DateTime updatedDt, DateTime syncDt,
-			String gCalTaskId, boolean isDone, boolean isDeleted) {
+			boolean isDone, boolean isDeleted) {
 		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
-				gCalTaskId, isDone, isDeleted);
+				null, isDone, isDeleted);
 	}
 }

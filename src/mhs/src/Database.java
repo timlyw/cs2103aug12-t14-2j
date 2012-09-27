@@ -188,7 +188,7 @@ public class Database {
 
 			// remove deleted task
 			if (localTask.isDeleted()) {
-				//System.out.println("Removing deleted synced task");
+				// System.out.println("Removing deleted synced task");
 				googleCalendar.deleteEvent(localTask.getgCalTaskId());
 				continue;
 			}
@@ -208,14 +208,14 @@ public class Database {
 		// add unsynced tasks
 		if (localTask.getgCalTaskId() == null
 				|| localTask.getgCalTaskId().equalsIgnoreCase("null")) {
-			//System.out.println("Pushing new sync task");
+			// System.out.println("Pushing new sync task");
 			pushSyncNewTask(localTask);
 
 		} else {
 			// add updated tasks
 			// checks if task is updated after last sync
 			if (localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync())) {
-				//System.out.println("Pushing updated task");
+				// System.out.println("Pushing updated task");
 				pushSyncExistingTask(localTask);
 			}
 		}
@@ -317,7 +317,7 @@ public class Database {
 		syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
 
 		// pull new remote task
-		//System.out.println("pulling new event");
+		// System.out.println("pulling new event");
 
 		// add task from google calendar entry
 		if (gCalEntry.getTimes().get(0).getStartTime()
@@ -346,8 +346,8 @@ public class Database {
 		DateTime syncDateTime = new DateTime();
 		syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
 
-		//System.out.println("pulling newer event : "
-			//	+ localTaskEntry.getTaskName());
+		// System.out.println("pulling newer event : "
+		// + localTaskEntry.getTaskName());
 
 		// edit local task
 		localTaskEntry.setTaskName(gCalEntry.getTitle().getPlainText());
@@ -495,8 +495,8 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	public void add(Task task) throws IOException {
-		task.setTaskId(getNewTaskId());
 
+		task.setTaskId(getNewTaskId());
 		Task taskToAdd = task.clone();
 
 		if (isRemoteSyncEnabled) {
@@ -514,6 +514,36 @@ public class Database {
 		saveTaskRecordFile();
 	}
 
+	/**
+	 * Undeletes a task
+	 * 
+	 * @param taskId
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public void undelete(int taskId) throws IOException {
+		// check if task exists
+		if (taskList.containsKey(taskId)) {
+
+			Task taskToUndelete = taskList.get(taskId);
+			taskToUndelete.setDeleted(false);
+
+			if (isRemoteSyncEnabled) {
+				try {
+					pushSyncTask(taskToUndelete);
+				} catch (ServiceException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					isRemoteSyncEnabled = false;
+				}
+			}
+
+			saveTaskRecordFile();
+
+		} else {
+			throw new Error("Invalid Task");
+		}
+	}
 	/**
 	 * Deletes a task
 	 * 
