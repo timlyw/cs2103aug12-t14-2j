@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 public class Database {
@@ -18,7 +19,7 @@ public class Database {
 	private ConfigFile configFile;
 	private TaskRecordFile taskRecordFile;
 	private GoogleCalendar googleCalendar;
-	private boolean isRemoteSyncEnabled;
+	private boolean isRemoteSyncEnabled = true;
 
 	// Data Views
 	// contains Task objects references
@@ -33,12 +34,12 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	public Database(String taskRecordFileName, boolean disableSyncronize)
-			throws IOException, ServiceException {
+			throws IOException {
 		initalizeDatabase(taskRecordFileName);
 		// syncronize local and web databases
-		if (!disableSyncronize) {
+		if (disableSyncronize) {
 			isRemoteSyncEnabled = false;
-			// syncronize local and web databases
+		} else {
 			syncronizeDatabases();
 		}
 	}
@@ -49,9 +50,8 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public Database() throws IOException, ServiceException {
+	public Database() throws IOException {
 		initalizeDatabase();
-		// syncronize local and web databases
 		syncronizeDatabases();
 	}
 
@@ -78,6 +78,7 @@ public class Database {
 			// set GoogleServiceOnline based on error status
 			// e.getCause();
 			e.printStackTrace();
+			isRemoteSyncEnabled = false;
 		}
 
 	}
@@ -99,9 +100,16 @@ public class Database {
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			isRemoteSyncEnabled = false;
 		}
 	}
 
+	/**
+	 * Initializes Google Calendar Service with saved access token
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	private void initializeGoogleCalendarService() throws IOException,
 			ServiceException {
 		if (configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")
@@ -111,13 +119,28 @@ public class Database {
 					configFile.getConfigParameter("GOOGLE_AUTH_TOKEN"));
 			saveGoogleAuthToken();
 
-		} else if (configFile.hasConfigParameter("USER_GOOGLE_EMAIL")) {
-			// TODO prompt user password
-			googleCalendar = new GoogleCalendar();
-			saveGoogleAuthToken();
 		}
 	}
 
+	/**
+	 * Logs in user google account with user details
+	 * 
+	 * @param userName
+	 * @param userPassword
+	 * @throws AuthenticationException
+	 * @throws IOException
+	 */
+	public void authenticateUserGoogleAccount(String userName,
+			String userPassword) throws AuthenticationException, IOException {
+		googleCalendar.initializeCalendarService(userName, userPassword);
+		saveGoogleAuthToken();
+	}
+
+	/**
+	 * Saves user Google Calendar Service access token to config file
+	 * 
+	 * @throws IOException
+	 */
 	private void saveGoogleAuthToken() throws IOException {
 		String googleAuthToken = googleCalendar.getAuthToken();
 		if (googleAuthToken != null) {
@@ -127,11 +150,21 @@ public class Database {
 
 	// TODO BATCH OPERATIONS FOR DATABASE
 	// TODO BATCH UPDATES FOR GOOGLE CALENDAR
-
-	public void syncronizeDatabases() throws IOException, ServiceException {
-		pullSync();
-		pushSync();
-		saveTaskRecordFile();
+	/**
+	 * Syncronizes Databases
+	 * 
+	 * @throws IOException
+	 */
+	public void syncronizeDatabases() throws IOException {
+		try {
+			pullSync();
+			pushSync();
+			saveTaskRecordFile();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			isRemoteSyncEnabled = false;
+		}
 	}
 
 	/**
@@ -458,13 +491,19 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void add(Task task) throws IOException, ServiceException {
+	public void add(Task task) throws IOException {
 		task.setTaskId(getNewTaskId());
 
 		Task taskToAdd = task.clone();
 
 		if (isRemoteSyncEnabled) {
-			pushSyncTask(taskToAdd);
+			try {
+				pushSyncTask(taskToAdd);
+			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				isRemoteSyncEnabled = false;
+			}
 		}
 
 		taskList.put(taskToAdd.getTaskId(), taskToAdd);
@@ -479,7 +518,7 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void delete(int taskId) throws IOException, ServiceException {
+	public void delete(int taskId) throws IOException {
 		// check if task exists
 		if (taskList.containsKey(taskId)) {
 
@@ -487,7 +526,13 @@ public class Database {
 			taskToDelete.setDeleted(true);
 
 			if (isRemoteSyncEnabled) {
-				pushSyncTask(taskToDelete);
+				try {
+					pushSyncTask(taskToDelete);
+				} catch (ServiceException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					isRemoteSyncEnabled = false;
+				}
 			}
 
 			saveTaskRecordFile();
@@ -504,14 +549,20 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void update(Task updatedTask) throws IOException, ServiceException {
+	public void update(Task updatedTask) throws IOException {
 		// check if task exists
 		if (taskList.containsKey(updatedTask.getTaskId())) {
 
 			Task updatedTaskToSave = updatedTask.clone();
 
 			if (isRemoteSyncEnabled) {
-				pushSyncExistingTask(updatedTaskToSave);
+				try {
+					pushSyncExistingTask(updatedTaskToSave);
+				} catch (ServiceException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					isRemoteSyncEnabled = false;
+				}
 			}
 
 			taskList.put(updatedTask.getTaskId(), updatedTaskToSave);
