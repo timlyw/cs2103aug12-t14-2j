@@ -26,15 +26,30 @@ public class Processor {
 	private CommandParser commandParser;
 	private Database dataHandler;
 
+	public Processor() {
+		try {
+			dataHandler = new Database();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public String getCommandFeedback(String command) {
 		return "Command feedback for " + command;
 	}
 
-	public String executeCommand(String command) throws IOException {
-		String screenOutput;
+	public String executeCommand(String command) {
+		String screenOutput = null;
 		if (isInteger(command)) {
 			if (validateSelectionCommand(command)) {
-				screenOutput = processSelectedCommand(Integer.parseInt(command));
+				try {
+					screenOutput = processSelectedCommand(Integer
+							.parseInt(command));
+				} catch (NumberFormatException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				// empty list if matching index found
 				matchedTasks.clear();
 			} else {
@@ -45,7 +60,12 @@ public class Processor {
 			Command userCommand = commandParser.getParsedCommand(command);
 			// store last command
 			previousCommand = userCommand;
-			screenOutput = processCommand(userCommand);
+			try {
+				screenOutput = processCommand(userCommand);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return screenOutput;
 	}

@@ -6,5 +6,4 @@ public class Mhs {
 		ui.open();
 		ui.setInputBoxToActive();
 	}
-
 }

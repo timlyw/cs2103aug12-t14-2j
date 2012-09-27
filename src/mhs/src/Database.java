@@ -80,7 +80,6 @@ public class Database {
 			e.printStackTrace();
 			isRemoteSyncEnabled = false;
 		}
-
 	}
 
 	/**
@@ -90,15 +89,16 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	private void initalizeDatabase() throws IOException {
+
 		configFile = new ConfigFile();
 
 		taskRecordFile = new TaskRecordFile();
-		taskList = taskRecordFile.loadTaskList();
+		taskList = taskRecordFile.getTaskList();
 
+		gCalTaskList = taskRecordFile.getGCalTaskList();
 		try {
 			initializeGoogleCalendarService();
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			isRemoteSyncEnabled = false;
 		}
@@ -188,7 +188,7 @@ public class Database {
 
 			// remove deleted task
 			if (localTask.isDeleted()) {
-				System.out.println("Removing deleted synced task");
+				//System.out.println("Removing deleted synced task");
 				googleCalendar.deleteEvent(localTask.getgCalTaskId());
 				continue;
 			}
@@ -208,14 +208,14 @@ public class Database {
 		// add unsynced tasks
 		if (localTask.getgCalTaskId() == null
 				|| localTask.getgCalTaskId().equalsIgnoreCase("null")) {
-			System.out.println("Pushing new sync task");
+			//System.out.println("Pushing new sync task");
 			pushSyncNewTask(localTask);
 
 		} else {
 			// add updated tasks
 			// checks if task is updated after last sync
 			if (localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync())) {
-				System.out.println("Pushing updated task");
+				//System.out.println("Pushing updated task");
 				pushSyncExistingTask(localTask);
 			}
 		}
@@ -278,9 +278,7 @@ public class Database {
 
 		// pull sync remote tasks
 		while (iterator.hasNext()) {
-
 			CalendarEventEntry gCalEntry = iterator.next();
-
 			pullSyncTask(gCalEntry);
 		}
 	}
@@ -291,15 +289,20 @@ public class Database {
 	 * @param gCalEntry
 	 */
 	private void pullSyncTask(CalendarEventEntry gCalEntry) {
+
 		if (gCalTaskList.containsKey(gCalEntry.getIcalUID())) {
+
 			Task localTask = gCalTaskList.get(gCalEntry.getIcalUID());
 
 			if (localTask.getTaskLastSync().isBefore(
 					new DateTime(gCalEntry.getUpdated().getValue()))) {
 				pullSyncExistingTask(gCalEntry, localTask);
 			}
+
 		} else {
+
 			pullSyncNewTask(gCalEntry);
+
 		}
 	}
 
@@ -314,7 +317,7 @@ public class Database {
 		syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
 
 		// pull new remote task
-		System.out.println("pulling new event");
+		//System.out.println("pulling new event");
 
 		// add task from google calendar entry
 		if (gCalEntry.getTimes().get(0).getStartTime()
@@ -343,8 +346,8 @@ public class Database {
 		DateTime syncDateTime = new DateTime();
 		syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
 
-		System.out.println("pulling newer event : "
-				+ localTaskEntry.getTaskName());
+		//System.out.println("pulling newer event : "
+			//	+ localTaskEntry.getTaskName());
 
 		// edit local task
 		localTaskEntry.setTaskName(gCalEntry.getTitle().getPlainText());
@@ -566,7 +569,6 @@ public class Database {
 			}
 
 			taskList.put(updatedTask.getTaskId(), updatedTaskToSave);
-
 			saveTaskRecordFile();
 
 		} else {
