@@ -245,13 +245,22 @@ public class Database {
 	 */
 	private void pushSyncExistingTask(Task localTask) throws IOException,
 			ServiceException {
+		
 		// update remote task
 		CalendarEventEntry updatedGCalEvent = googleCalendar.updateEvent(
 				localTask.getgCalTaskId(), localTask.getTaskName(), localTask
 						.getStartDateTime().toString(), localTask
 						.getEndDateTime().toString());
+		
+		if(updatedGCalEvent == null){
+			return;
+		}
 
 		DateTime syncDateTime = new DateTime();
+		if(updatedGCalEvent.getUpdated() == null){
+			updatedGCalEvent.setUpdated(com.google.gdata.data.DateTime.now());
+		}
+
 		syncDateTime = new DateTime(updatedGCalEvent.getUpdated().toString());
 
 		// Set local task sync details
@@ -309,8 +318,11 @@ public class Database {
 	private void pullSyncNewTask(CalendarEventEntry gCalEntry) {
 
 		DateTime syncDateTime = new DateTime();
-		syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
-
+		if(gCalEntry.getUpdated() == null){
+			gCalEntry.setUpdated(com.google.gdata.data.DateTime.now());
+		}
+		syncDateTime = new DateTime(gCalEntry.getUpdated().toString());			
+		
 		// pull new remote task
 		// System.out.println("pulling new event");
 
@@ -339,6 +351,9 @@ public class Database {
 			Task localTaskEntry) {
 
 		DateTime syncDateTime = new DateTime();
+		if(gCalEntry.getUpdated() == null){
+			gCalEntry.setUpdated(com.google.gdata.data.DateTime.now());
+		}
 		syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
 
 		// System.out.println("pulling newer event : "

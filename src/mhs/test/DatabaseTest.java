@@ -399,7 +399,7 @@ public class DatabaseTest {
 
 	@After
 	public void testAfter() throws IOException {
-		database.clearDatabase();
+		// database.clearDatabase();
 		System.out.println(System.lineSeparator());
 	}
 }

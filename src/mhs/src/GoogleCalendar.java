@@ -128,8 +128,15 @@ public class GoogleCalendar {
 
 		CalendarEventEntry event = getEvent(taskId);
 
+		// TODO refine null event as exception handling
+		// Pull events again to double-check
 		if (event == null) {
-			return null;
+			// try pulling events
+			pullEvents();
+			event = getEvent(taskId);
+			if(event == null){
+				return null;	
+			}
 		}
 
 		event.setTitle(new PlainTextConstruct(newTitle));
