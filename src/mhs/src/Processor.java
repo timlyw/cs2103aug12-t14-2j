@@ -159,7 +159,7 @@ public class Processor {
 			case 0:
 				Task floatingTaskToAdd = new FloatingTask(0,
 						inputCommand.getEdittedName(), TaskCategory.FLOATING,
-						DateTime.now(), null, null, null, false, false);
+						DateTime.now(), null, null, false, false);
 				return floatingTaskToAdd;
 			case 1:
 				Task deadlineTaskToAdd = new DeadlineTask(0,
@@ -247,7 +247,7 @@ public class Processor {
 		case 0:
 			Task floatingTaskToAdd = new FloatingTask(0,
 					inputCommand.getTaskName(), TaskCategory.FLOATING,
-					DateTime.now(), null, null, null, false, false);
+					DateTime.now(), null, null, false, false);
 			return floatingTaskToAdd;
 		case 1:
 			Task deadlineTaskToAdd = new DeadlineTask(0,
