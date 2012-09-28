@@ -26,6 +26,15 @@ public class Processor {
 	private CommandParser commandParser;
 	private Database dataHandler;
 
+	Processor() {
+		try {
+			dataHandler = new Database();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public String getCommandFeedback(String command) {
 		return "Command feedback for " + command;
 	}
@@ -34,7 +43,7 @@ public class Processor {
 		String screenOutput;
 		if (isInteger(command)) {
 			if (validateSelectionCommand(command)) {
-				screenOutput = processSelectedCommand(Integer.parseInt(command)-1);
+				screenOutput = processSelectedCommand(Integer.parseInt(command) - 1);
 				// empty list if matching index found
 				matchedTasks.clear();
 			} else {
@@ -77,11 +86,13 @@ public class Processor {
 					+ matchedTasks.get(selectedIndex).getTaskName();
 			break;
 		case edit:
-			Task editedTask = createEditedTask(previousCommand,matchedTasks.get(selectedIndex));
+			Task editedTask = createEditedTask(previousCommand,
+					matchedTasks.get(selectedIndex));
 			dataHandler.add(editedTask);
 			// delete task
 			dataHandler.delete(matchedTasks.get(selectedIndex).getTaskId());
-			userOutputString = "Edited Task - " + matchedTasks.get(selectedIndex).getTaskName();
+			userOutputString = "Edited Task - "
+					+ matchedTasks.get(selectedIndex).getTaskName();
 			break;
 		case search:
 			userOutputString = "Chosen Task - "
@@ -132,7 +143,7 @@ public class Processor {
 		// if only 1 match is found then display it
 		else if (resultList.size() == 1) {
 			// create task
-			Task editedTask = createEditedTask(userCommand,resultList.get(0));
+			Task editedTask = createEditedTask(userCommand, resultList.get(0));
 			dataHandler.add(editedTask);
 			// delete task
 			dataHandler.delete(resultList.get(0).getTaskId());
@@ -145,7 +156,7 @@ public class Processor {
 		return outputString;
 	}
 
-	private Task createEditedTask(Command inputCommand,Task taskToEdit) {
+	private Task createEditedTask(Command inputCommand, Task taskToEdit) {
 		// checks kind of task :floating/timed/deadline
 		int typeCount = 0;
 		if (inputCommand.getStartDate() != null) {
@@ -224,12 +235,17 @@ public class Processor {
 		return outputString;
 	}
 
-	private String addTask(Command userCommand) throws IOException {
+	private String addTask(Command userCommand) {
 		Task newTask = createTaskToAdd(userCommand);
 		if (newTask.getTaskName() == null) {
 			return "Some error ocurred";
 		} else {
-			dataHandler.add(newTask);
+			try {
+				dataHandler.add(newTask);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return "Task: " + newTask.getTaskName() + "was successfully added";
 		}
 	}

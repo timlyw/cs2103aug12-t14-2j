@@ -13,7 +13,6 @@ import org.joda.time.Interval;
 import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
-import com.google.gson.Gson;
 
 public class Database {
 
@@ -65,14 +64,12 @@ public class Database {
 	 */
 	private void initalizeDatabase(String taskRecordFileName)
 			throws IOException {
-
-		configFile = new ConfigFile();
-
-		taskRecordFile = new TaskRecordFile(taskRecordFileName);
-		taskList = taskRecordFile.getTaskList();
-
-		gCalTaskList = taskRecordFile.getGCalTaskList();
 		try {
+			configFile = new ConfigFile();
+			taskRecordFile = new TaskRecordFile(taskRecordFileName);
+			taskList = taskRecordFile.getTaskList();
+
+			gCalTaskList = taskRecordFile.getGCalTaskList();
 			initializeGoogleCalendarService();
 		} catch (ServiceException e) {
 			isRemoteSyncEnabled = false;
@@ -87,18 +84,19 @@ public class Database {
 	 */
 	private void initalizeDatabase() throws IOException {
 
-		configFile = new ConfigFile();
-
-		taskRecordFile = new TaskRecordFile();
-		taskList = taskRecordFile.getTaskList();
-
-		gCalTaskList = taskRecordFile.getGCalTaskList();
 		try {
+			configFile = new ConfigFile();
+
+			taskRecordFile = new TaskRecordFile();
+			taskList = taskRecordFile.getTaskList();
+
+			gCalTaskList = taskRecordFile.getGCalTaskList();
 			initializeGoogleCalendarService();
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			isRemoteSyncEnabled = false;
 		}
+
 	}
 
 	/**
@@ -152,13 +150,16 @@ public class Database {
 	 * 
 	 * @throws IOException
 	 */
-	public void syncronizeDatabases() throws IOException {
+	public void syncronizeDatabases() {
 		try {
 			pullSync();
 			pushSync();
 			saveTaskRecordFile();
 		} catch (ServiceException e) {
 			isRemoteSyncEnabled = false;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -215,7 +216,8 @@ public class Database {
 
 	private boolean isUnsyncedTask(Task localTask) {
 		return localTask.getgCalTaskId() == null
-				|| localTask.getTaskLastSync() == null || localTask.getTaskUpdated() == null;
+				|| localTask.getTaskLastSync() == null
+				|| localTask.getTaskUpdated() == null;
 	}
 
 	/**
