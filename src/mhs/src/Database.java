@@ -215,7 +215,7 @@ public class Database {
 
 	private boolean isUnsyncedTask(Task localTask) {
 		return localTask.getgCalTaskId() == null
-				|| localTask.getTaskLastSync() == null;
+				|| localTask.getTaskLastSync() == null || localTask.getTaskUpdated() == null;
 	}
 
 	/**
