@@ -108,6 +108,15 @@ public class Task {
 		return taskToString;
 	}
 
+	public String toJson(){
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(DateTime.class,
+				new DateTimeTypeConverter());
+		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
+		Gson gson = gsonBuilder.create();
+
+		return gson.toJson(this);
+	}
 	/*
 	 * Getters and Setters
 	 */
