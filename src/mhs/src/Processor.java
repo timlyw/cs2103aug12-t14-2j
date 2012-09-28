@@ -26,33 +26,15 @@ public class Processor {
 	private CommandParser commandParser;
 	private Database dataHandler;
 
-	public Processor() {
-		try {
-			// initialize with syncronize
-			 dataHandler = new Database();
-			// initialize without syncronizing for debug
-			//dataHandler = new Database("taskRecordFile.json", true); 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	public String getCommandFeedback(String command) {
 		return "Command feedback for " + command;
 	}
 
-	public String executeCommand(String command) {
-		String screenOutput = null;
+	public String executeCommand(String command) throws IOException {
+		String screenOutput;
 		if (isInteger(command)) {
 			if (validateSelectionCommand(command)) {
-				try {
-					screenOutput = processSelectedCommand(Integer
-							.parseInt(command));
-				} catch (NumberFormatException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				screenOutput = processSelectedCommand(Integer.parseInt(command)-1);
 				// empty list if matching index found
 				matchedTasks.clear();
 			} else {
@@ -63,12 +45,7 @@ public class Processor {
 			Command userCommand = commandParser.getParsedCommand(command);
 			// store last command
 			previousCommand = userCommand;
-			try {
-				screenOutput = processCommand(userCommand);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			screenOutput = processCommand(userCommand);
 		}
 		return screenOutput;
 	}
@@ -100,7 +77,11 @@ public class Processor {
 					+ matchedTasks.get(selectedIndex).getTaskName();
 			break;
 		case edit:
-			// to be added
+			Task editedTask = createEditedTask(previousCommand,matchedTasks.get(selectedIndex));
+			dataHandler.add(editedTask);
+			// delete task
+			dataHandler.delete(matchedTasks.get(selectedIndex).getTaskId());
+			userOutputString = "Edited Task - " + matchedTasks.get(selectedIndex).getTaskName();
 			break;
 		case search:
 			userOutputString = "Chosen Task - "
@@ -125,7 +106,7 @@ public class Processor {
 			userOutputString = removeTask(userCommand);
 			break;
 		case edit:
-
+			userOutputString = editTask(userCommand);
 			break;
 		case search:
 			userOutputString = searchTask(userCommand);
@@ -138,6 +119,79 @@ public class Processor {
 			userOutputString = MESSAGE_UNKNOWN_COMMAND;
 		}
 		return userOutputString;
+	}
+
+	private String editTask(Command userCommand) throws IOException {
+		List<Task> resultList = queryTask(userCommand);
+		matchedTasks = resultList;
+		String outputString = new String();
+
+		if (resultList.isEmpty()) {
+			outputString = "No matching results found";
+		}
+		// if only 1 match is found then display it
+		else if (resultList.size() == 1) {
+			// create task
+			Task editedTask = createEditedTask(userCommand,resultList.get(0));
+			dataHandler.add(editedTask);
+			// delete task
+			dataHandler.delete(resultList.get(0).getTaskId());
+			outputString = "Edited Task - " + resultList.get(0).getTaskName();
+		}
+		// if multiple matches are found display the list
+		else {
+			outputString = displayListOfTasks(resultList);
+		}
+		return outputString;
+	}
+
+	private Task createEditedTask(Command inputCommand,Task taskToEdit) {
+		// checks kind of task :floating/timed/deadline
+		int typeCount = 0;
+		if (inputCommand.getStartDate() != null) {
+			typeCount++;
+		}
+		if (inputCommand.getEndDate() != null) {
+			typeCount++;
+		}
+		if (inputCommand.getEdittedName() != null) {
+			switch (typeCount) {
+			case 0:
+				Task floatingTaskToAdd = new FloatingTask(0,
+						inputCommand.getEdittedName(), TaskCategory.FLOATING,
+						DateTime.now(), null, null, null, false, false);
+				return floatingTaskToAdd;
+			case 1:
+				Task deadlineTaskToAdd = new DeadlineTask(0,
+						inputCommand.getEdittedName(), TaskCategory.DEADLINE,
+						inputCommand.getEndDate(), DateTime.now(), null, null,
+						null, false, false);
+				return deadlineTaskToAdd;
+			case 2:
+				Task timedTaskToAdd = new TimedTask(0,
+						inputCommand.getEdittedName(), TaskCategory.TIMED,
+						inputCommand.getStartDate(), inputCommand.getEndDate(),
+						DateTime.now(), null, null, null, false, false);
+				return timedTaskToAdd;
+			}
+		} else {
+			switch (typeCount) {
+			case 1:
+				Task deadlineTaskToAdd = new DeadlineTask(0,
+						taskToEdit.getTaskName(), TaskCategory.DEADLINE,
+						inputCommand.getEndDate(), DateTime.now(), null, null,
+						null, false, false);
+				return deadlineTaskToAdd;
+			case 2:
+				Task timedTaskToAdd = new TimedTask(0,
+						taskToEdit.getTaskName(), TaskCategory.TIMED,
+						inputCommand.getStartDate(), inputCommand.getEndDate(),
+						DateTime.now(), null, null, null, false, false);
+				return timedTaskToAdd;
+			}
+		}
+		Task nullTask = new Task();
+		return nullTask;
 	}
 
 	private String removeTask(Command userCommand) throws IOException {
@@ -165,6 +219,7 @@ public class Processor {
 		String outputString = new String();
 		for (Task selectedTask : resultList) {
 			outputString += count + ". " + selectedTask.getTaskName() + "\n";
+			count++;
 		}
 		return outputString;
 	}
@@ -192,7 +247,7 @@ public class Processor {
 		case 0:
 			Task floatingTaskToAdd = new FloatingTask(0,
 					inputCommand.getTaskName(), TaskCategory.FLOATING,
-					DateTime.now(), null, null, false, false);
+					DateTime.now(), null, null, null, false, false);
 			return floatingTaskToAdd;
 		case 1:
 			Task deadlineTaskToAdd = new DeadlineTask(0,
