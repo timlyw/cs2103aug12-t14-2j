@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 
 import javax.swing.Box;
 import javax.swing.JFrame;
@@ -261,7 +262,12 @@ public class UserInterface extends JFrame {
 	class InputBoxKeyListener implements KeyListener {
 		public void keyPressed(KeyEvent arg0) {
 			if (arg0.getKeyCode() == ENTER_KEY) {
-				sendCommandToProcessor();
+				try {
+					sendCommandToProcessor();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				hideHelper();
 				inputBox.setText("");
 			}
@@ -273,7 +279,7 @@ public class UserInterface extends JFrame {
 		public void keyTyped(KeyEvent arg0) {
 		}
 
-		private void sendCommandToProcessor() {
+		private void sendCommandToProcessor() throws IOException {
 			String command = inputBox.getText();
 			String response = processor.executeCommand(command);
 			displayScreen.setText(response);
