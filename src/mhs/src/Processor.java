@@ -40,21 +40,27 @@ public class Processor {
 	}
 
 	public String executeCommand(String command) throws IOException {
-		String screenOutput;
-		if (isInteger(command)) {
-			if (validateSelectionCommand(command)) {
-				screenOutput = processSelectedCommand(Integer.parseInt(command) - 1);
-				// empty list if matching index found
-				matchedTasks.clear();
-			} else {
-				screenOutput = "That is not a valid index number";
-			}
+		String screenOutput = null;
+		try {
+			if (isInteger(command)) {
+				if (validateSelectionCommand(command)) {
+					screenOutput = processSelectedCommand(Integer
+							.parseInt(command) - 1);
+					// empty list if matching index found
+					matchedTasks.clear();
+				} else {
+					screenOutput = "That is not a valid index number";
+				}
 
-		} else {
-			Command userCommand = commandParser.getParsedCommand(command);
-			// store last command
-			previousCommand = userCommand;
-			screenOutput = processCommand(userCommand);
+			} else {
+				Command userCommand = commandParser.getParsedCommand(command);
+				// store last command
+				previousCommand = userCommand;
+				screenOutput = processCommand(userCommand);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return screenOutput;
 	}
@@ -77,7 +83,7 @@ public class Processor {
 		return true;
 	}
 
-	private String processSelectedCommand(int selectedIndex) throws IOException {
+	private String processSelectedCommand(int selectedIndex) throws Exception {
 		String userOutputString = new String();
 		switch (previousCommand.getCommandEnum()) {
 		case remove:
@@ -107,7 +113,7 @@ public class Processor {
 		return userOutputString;
 	}
 
-	private String processCommand(Command userCommand) throws IOException {
+	private String processCommand(Command userCommand) throws Exception {
 		String userOutputString = new String();
 		switch (userCommand.getCommandEnum()) {
 		case add:
@@ -132,7 +138,7 @@ public class Processor {
 		return userOutputString;
 	}
 
-	private String editTask(Command userCommand) throws IOException {
+	private String editTask(Command userCommand) throws Exception {
 		List<Task> resultList = queryTask(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
@@ -205,7 +211,7 @@ public class Processor {
 		return nullTask;
 	}
 
-	private String removeTask(Command userCommand) throws IOException {
+	private String removeTask(Command userCommand) throws Exception {
 		List<Task> resultList = queryTask(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
@@ -235,7 +241,7 @@ public class Processor {
 		return outputString;
 	}
 
-	private String addTask(Command userCommand) {
+	private String addTask(Command userCommand) throws Exception {
 		Task newTask = createTaskToAdd(userCommand);
 		if (newTask.getTaskName() == null) {
 			return "Some error ocurred";
