@@ -1,12 +1,10 @@
 package mhs.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 import mhs.src.DeadlineTask;
 import mhs.src.FloatingTask;
@@ -40,11 +38,16 @@ public class TaskRecordFileTest {
 
 		taskRecordFile = new TaskRecordFile(TEST_TASK_RECORD_FILENAME);
 
-		DateTime dt = new DateTime().now();
-		DateTime dt2 = new DateTime().now().plusDays(1);
-		DateTime dt3 = new DateTime().now().plusDays(2);
-		DateTime dt4 = new DateTime().now().plusDays(3);
-		DateTime dt5 = new DateTime().now().plusDays(4);
+		new DateTime();
+		DateTime dt = DateTime.now();
+		new DateTime();
+		DateTime dt2 = DateTime.now().plusDays(1);
+		new DateTime();
+		DateTime dt3 = DateTime.now().plusDays(2);
+		new DateTime();
+		DateTime dt4 = DateTime.now().plusDays(3);
+		new DateTime();
+		DateTime dt5 = DateTime.now().plusDays(4);
 
 		task = new TimedTask(1, "task 1", "TIMED", dt, dt2, dt3, dt4, dt5,
 				"null", false, false);
@@ -75,7 +78,6 @@ public class TaskRecordFileTest {
 		taskRecordFile.saveTaskList(taskList);
 		loadTaskList = taskRecordFile.loadTaskList();
 
-		// FAIL timed task times saving wrongly
 		for (int i = 1; i <= taskList.size(); i++) {
 			assertEquals(taskList.get(i).toString(), loadTaskList.get(i)
 					.toString());
