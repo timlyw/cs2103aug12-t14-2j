@@ -1,19 +1,23 @@
 package mhs.src;
 
-import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
-import com.google.gdata.client.calendar.*;
-import com.google.gdata.data.DateTime;
-import com.google.gdata.data.PlainTextConstruct;
-import com.google.gdata.data.calendar.*;
-import com.google.gdata.data.extensions.When;
-import com.google.gdata.util.*;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
+import com.google.gdata.client.calendar.CalendarQuery;
+import com.google.gdata.client.calendar.CalendarService;
+import com.google.gdata.data.DateTime;
+import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.calendar.CalendarEventEntry;
+import com.google.gdata.data.calendar.CalendarEventFeed;
+import com.google.gdata.data.extensions.When;
+import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.ServiceException;
+
 public class GoogleCalendar {
+	private static final int QUERY_DEFAULT_MAX_START_DATE_DAYS_AFTER_TODAY = 30;
 	static final String APP_NAME = "My Hot Secretary";
 	static final String TAB = "\t";
 	static final String URL_SEPARATOR = "/";
@@ -31,8 +35,8 @@ public class GoogleCalendar {
 	private CalendarService calendarService;
 	private List<CalendarEventEntry> eventList;
 
-	String minStartTime = "2012-09-01T00:00:00";
-	String maxStartTime = "2012-09-29T23:59:59";
+	private DateTime queryMinStartDate;
+	private DateTime queryMaxStartDate;
 
 	/**
 	 * Constructor
@@ -43,6 +47,14 @@ public class GoogleCalendar {
 	public GoogleCalendar() throws IOException, ServiceException {
 		// setup the calendar service with userEmail and userPassword
 		initializeCalendarService();
+		// initialize default query range ( 30 days inclusive of today)
+		initializeQueryDateRange(
+				org.joda.time.DateTime.now().toString(),
+				org.joda.time.DateTime
+						.now()
+						.plusDays(
+								QUERY_DEFAULT_MAX_START_DATE_DAYS_AFTER_TODAY + 1)
+						.toString());
 		// pull events from user's calendar
 		pullEvents();
 	}
@@ -58,8 +70,56 @@ public class GoogleCalendar {
 			ServiceException {
 		// setup the calendar service with userEmail and userPassword
 		initializeCalendarServiceWithAuthToken(accessToken);
+		// initialize default query range ( 30 days inclusive of today)
+		initializeQueryDateRange(
+				org.joda.time.DateTime.now().toString(),
+				org.joda.time.DateTime
+						.now()
+						.plusDays(
+								QUERY_DEFAULT_MAX_START_DATE_DAYS_AFTER_TODAY + 1)
+						.toString());
 		// pull events from user's calendar
 		pullEvents();
+	}
+
+	/**
+	 * Constructor with accessToken and query start and end date
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public GoogleCalendar(String accessToken, String minStartDateToQuery,
+			String maxStartDateExclusiveToQuery) throws IOException,
+			ServiceException {
+		// setup the calendar service with userEmail and userPassword
+		initializeCalendarService();
+		// initialize query
+		initializeQueryDateRange(minStartDateToQuery,
+				maxStartDateExclusiveToQuery);
+		// pull events from user's calendar
+		pullEvents();
+	}
+
+	/**
+	 * Sets a query date range from DateTime strings for querying google
+	 * calendar events
+	 */
+	private void initializeQueryDateRange(String startMinDate,
+			String startMaxDateExclusive) {
+		// Ensure that startMinDate is before startMaxDateExclusive
+		if (DateTime.parseDateTime(startMinDate).compareTo(
+				DateTime.parseDateTime(startMaxDateExclusive)) > 0) {
+			queryMaxStartDate = DateTime.parseDateTime(startMinDate);
+			queryMinStartDate = DateTime.parseDateTime(startMaxDateExclusive);
+		} else {
+			queryMinStartDate = DateTime.parseDateTime(startMinDate);
+			queryMaxStartDate = DateTime.parseDateTime(startMaxDateExclusive);
+		}
+
+		queryMinStartDate = DateTime.parseDateTime(startMinDate);
+		queryMaxStartDate = DateTime.parseDateTime(startMaxDateExclusive);
+		queryMinStartDate.setDateOnly(true);
+		queryMaxStartDate.setDateOnly(true);
 	}
 
 	/**
@@ -134,8 +194,8 @@ public class GoogleCalendar {
 			// try pulling events
 			pullEvents();
 			event = getEvent(taskId);
-			if(event == null){
-				return null;	
+			if (event == null) {
+				return null;
 			}
 		}
 
@@ -152,7 +212,7 @@ public class GoogleCalendar {
 		URL editUrl = new URL(event.getEditLink().getHref());
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
 				.update(editUrl, event, "*");
-				
+
 		// update event in list
 		// remove existing event
 		for (int i = 0; i < eventList.size(); i++) {
@@ -163,7 +223,7 @@ public class GoogleCalendar {
 				break;
 			}
 		}
-		
+
 		// add updated event to list
 		eventList.add(updatedEntry);
 		return updatedEntry;
@@ -199,7 +259,6 @@ public class GoogleCalendar {
 		return eventList;
 	}
 
-	// TODO!!! make auto-pull logic
 	/**
 	 * get user's events from calendar
 	 * 
@@ -209,8 +268,11 @@ public class GoogleCalendar {
 	public void pullEvents() throws IOException, ServiceException {
 		URL feedUrl = new URL(URL_EVENT_FEED);
 		CalendarQuery myQuery = new CalendarQuery(feedUrl);
-		myQuery.setMinimumStartTime(DateTime.parseDateTime(minStartTime));
-		myQuery.setMaximumStartTime(DateTime.parseDateTime(maxStartTime));
+		myQuery.setMinimumStartTime(queryMinStartDate);
+		myQuery.setMaximumStartTime(queryMaxStartDate);
+		myQuery.setMaxResults(999); // sets max entries to retrieve (might be
+									// limited to google calendar service
+									// maximum)
 
 		// Send the request and receive the response:
 		CalendarEventFeed eventFeed = calendarService.query(myQuery,
@@ -227,6 +289,14 @@ public class GoogleCalendar {
 		}
 	}
 
+	/**
+	 * Creates calendar event entry
+	 * 
+	 * @param taskToAdd
+	 * @return
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	public CalendarEventEntry createEvent(Task taskToAdd) throws IOException,
 			ServiceException {
 		if (taskToAdd.taskCategory.equals(TaskCategory.FLOATING)) {
@@ -240,7 +310,14 @@ public class GoogleCalendar {
 		return calendarService.insert(postURL, event);
 	}
 
-	// returns an event with the specified title, start and end time
+	/**
+	 * returns an event with the specified title, start and end time
+	 * 
+	 * @param taskTitle
+	 * @param taskStartStr
+	 * @param taskEndStr
+	 * @return
+	 */
 	private CalendarEventEntry constructEvent(String taskTitle,
 			String taskStartStr, String taskEndStr) {
 		CalendarEventEntry event = new CalendarEventEntry();
@@ -266,19 +343,30 @@ public class GoogleCalendar {
 		return event;
 	}
 
-	// _calendarService is initialized with userEmail and userPassword
+	/**
+	 * calendarService is initialized with userEmail and userPassword
+	 * 
+	 * @throws AuthenticationException
+	 */
 	private void initializeCalendarService() throws AuthenticationException {
 		calendarService = new CalendarService(APP_NAME);
 		calendarService.setUserCredentials(userEmail, userPassword);
 		setAuthToken();
 	}
-	
-	public void initializeCalendarService(String userEmail, String userPassword) throws AuthenticationException {
+
+	/**
+	 * CalendarService is initialized with userEmail and userPassword
+	 * 
+	 * @param userEmail
+	 * @param userPassword
+	 * @throws AuthenticationException
+	 */
+	public void initializeCalendarService(String userEmail, String userPassword)
+			throws AuthenticationException {
 		calendarService = new CalendarService(APP_NAME);
 		calendarService.setUserCredentials(userEmail, userPassword);
 		setAuthToken();
 	}
-
 
 	/**
 	 * Initializes google service with auth token (valid after first credential
@@ -302,6 +390,15 @@ public class GoogleCalendar {
 			return authToken;
 		}
 		return null;
+	}
+
+	public String getQueryMinStartDate() {
+		return queryMinStartDate.toString();
+
+	}
+
+	public String getQueryMaxStartDate() {
+		return queryMaxStartDate.toString();
 	}
 
 	private void displayLine(String displayString) {

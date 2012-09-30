@@ -300,10 +300,13 @@ public class Database {
 	 * @param gCalEntry
 	 */
 	private void pullSyncTask(CalendarEventEntry gCalEntry) {
+
+		//TODO delete local task if google calendar entry is deleted		
+
 		if (gCalTaskList.containsKey(gCalEntry.getIcalUID())) {
 
 			Task localTask = gCalTaskList.get(gCalEntry.getIcalUID());
-
+			
 			if (localTask.getTaskLastSync().isBefore(
 					new DateTime(gCalEntry.getUpdated().getValue()))) {
 				pullSyncExistingTask(gCalEntry, localTask);
