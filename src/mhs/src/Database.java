@@ -301,12 +301,12 @@ public class Database {
 	 */
 	private void pullSyncTask(CalendarEventEntry gCalEntry) {
 
-		//TODO delete local task if google calendar entry is deleted		
+		// TODO delete local task if google calendar entry is deleted
 
 		if (gCalTaskList.containsKey(gCalEntry.getIcalUID())) {
 
 			Task localTask = gCalTaskList.get(gCalEntry.getIcalUID());
-			
+
 			if (localTask.getTaskLastSync().isBefore(
 					new DateTime(gCalEntry.getUpdated().getValue()))) {
 				pullSyncExistingTask(gCalEntry, localTask);
@@ -536,13 +536,13 @@ public class Database {
 	 * Adds a task
 	 * 
 	 * @param task
-	 * @throws IOException
+	 * @throws Exception
 	 * @throws ServiceException
 	 */
-	public void add(Task task) throws IOException {
+	public void add(Task task) throws Exception {
 
 		if (!isTaskValid(task)) {
-			throw new Error("Invalid Task format : " + task.toJson());
+			throw new Exception("Invalid Task format : " + task.toJson());
 		}
 
 		task.setTaskId(getNewTaskId());
@@ -600,14 +600,14 @@ public class Database {
 	 * Undeletes a task
 	 * 
 	 * @param taskId
-	 * @throws IOException
+	 * @throws Exception
 	 * @throws ServiceException
 	 */
-	public void undelete(int taskId) throws IOException {
+	public void undelete(int taskId) throws Exception {
 
 		// check whether task exists
 		if (!taskList.containsKey(taskId)) {
-			throw new Error("Invalid Task");
+			throw new Exception("Invalid Task");
 		}
 
 		Task taskToUndelete = taskList.get(taskId);
@@ -632,14 +632,14 @@ public class Database {
 	 * Deletes a task
 	 * 
 	 * @param taskId
-	 * @throws IOException
+	 * @throws Exception
 	 * @throws ServiceException
 	 */
-	public void delete(int taskId) throws IOException {
+	public void delete(int taskId) throws Exception {
 
 		// check whether task exists
 		if (!taskList.containsKey(taskId)) {
-			throw new Error("Invalid Task");
+			throw new Exception("Invalid Task");
 
 		}
 
@@ -666,18 +666,18 @@ public class Database {
 	 * Updates task
 	 * 
 	 * @param updatedTask
-	 * @throws IOException
+	 * @throws Exception
 	 * @throws ServiceException
 	 */
-	public void update(Task updatedTask) throws IOException {
+	public void update(Task updatedTask) throws Exception {
 
 		// check whether task exists
 		if (!taskList.containsKey(updatedTask.getTaskId())) {
-			throw new Error("Invalid Task");
+			throw new Exception("Invalid Task");
 		}
 
 		if (!isTaskValid(updatedTask)) {
-			throw new Error("Invalid Task format : " + updatedTask.toJson());
+			throw new Exception("Invalid Task format : " + updatedTask.toJson());
 		}
 
 		new DateTime();
@@ -713,15 +713,15 @@ public class Database {
 	 * Permanently removes task record
 	 * 
 	 * @param taskId
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	private void removeRecord(int taskId) throws IOException {
+	private void removeRecord(int taskId) throws Exception {
 		// check if task exists
 		if (taskList.containsKey(taskId)) {
 			taskList.remove(taskId);
 			saveTaskRecordFile();
 		} else {
-			throw new Error("Invalid Task");
+			throw new Exception("Invalid Task");
 		}
 	}
 

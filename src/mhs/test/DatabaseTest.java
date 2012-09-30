@@ -78,7 +78,7 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testSyncPushDatabase() throws IOException, ServiceException {
+	public void testSyncPushDatabase() throws Exception {
 
 		//database = new Database(TEST_TASK_RECORD_FILENAME, false);
 		System.out.println("Adding new Tasks to push");
@@ -90,7 +90,7 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testSyncPushNewerTask() throws IOException, ServiceException {
+	public void testSyncPushNewerTask() throws Exception {
 
 		System.out.println("Updating Local Task");
 
@@ -119,7 +119,7 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testUpdatedPullSync() throws IOException, ServiceException {
+	public void testUpdatedPullSync() throws Exception {
 
 		database.clearDatabase();
 		database.syncronizeDatabases();
@@ -144,7 +144,7 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testClearDatabase() throws IOException, ServiceException {
+	public void testClearDatabase() throws Exception {
 		System.out.println("Clearing database Test");
 		database.add(task);
 		database.clearDatabase();
@@ -153,7 +153,7 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testQueryTaskIdDatabase() throws IOException, ServiceException {
+	public void testQueryTaskIdDatabase() throws Exception {
 		System.out.println("Query Task Id Test");
 
 		// Query by taskId
@@ -172,8 +172,7 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testQueryTaskNameDatabase() throws IOException,
-			ServiceException {
+	public void testQueryTaskNameDatabase() throws Exception {
 		System.out.println("Query Task Name Test");
 		// Query by Name
 		database.add(task);
@@ -193,8 +192,7 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testQueryTaskCategoryDatabase() throws IOException,
-			ServiceException {
+	public void testQueryTaskCategoryDatabase() throws Exception {
 		System.out.println("Query Task Category");
 
 		database.add(task);
@@ -234,7 +232,7 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testQueryDateDatabase() throws IOException, ServiceException {
+	public void testQueryDateDatabase() throws Exception {
 		System.out.println("Query Task by Date");
 
 		DateTime testStartDt = new DateTime().now().minusDays(1).minusHours(1);
@@ -283,7 +281,7 @@ public class DatabaseTest {
 	 * Test database add, and taskKeyId generator
 	 * @throws IOException
 	 */
-	public void testAddToDatabase() throws IOException, ServiceException {
+	public void testAddToDatabase() throws Exception {
 
 		System.out.println("Adding to database...");
 
@@ -303,7 +301,7 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testUpdateDatabase() throws IOException, ServiceException {
+	public void testUpdateDatabase() throws Exception {
 		System.out.println("Test update Database...");
 
 		database.add(task);
@@ -363,7 +361,7 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testDeleteDatabase() throws IOException, ServiceException {
+	public void testDeleteDatabase() throws Exception {
 		System.out.println("Adding to database...");
 
 		database.add(task);
