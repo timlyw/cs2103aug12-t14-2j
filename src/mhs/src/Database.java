@@ -5,12 +5,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
+import com.google.gdata.data.extensions.BaseEventEntry.EventStatus;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
@@ -160,6 +162,9 @@ public class Database {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -279,10 +284,9 @@ public class Database {
 	 * local files Syncs new tasks from remote Syncs existing local task with
 	 * updated remote task
 	 * 
-	 * @throws IOException
-	 * @throws ServiceException
+	 * @throws Exception
 	 */
-	private void pullSync() throws IOException, ServiceException {
+	private void pullSync() throws Exception {
 		List<CalendarEventEntry> googleCalendarEvents = googleCalendar
 				.getEventList();
 		Iterator<CalendarEventEntry> iterator = googleCalendarEvents.iterator();
@@ -292,20 +296,27 @@ public class Database {
 			CalendarEventEntry gCalEntry = iterator.next();
 			pullSyncTask(gCalEntry);
 		}
+
 	}
 
 	/**
 	 * Pull sync new or existing task from remote
 	 * 
 	 * @param gCalEntry
+	 * @throws Exception
 	 */
-	private void pullSyncTask(CalendarEventEntry gCalEntry) {
-
-		// TODO delete local task if google calendar entry is deleted
+	private void pullSyncTask(CalendarEventEntry gCalEntry) throws Exception {
 
 		if (gCalTaskList.containsKey(gCalEntry.getIcalUID())) {
 
 			Task localTask = gCalTaskList.get(gCalEntry.getIcalUID());
+
+			// pull sync deleted events
+			System.out.println("Deleting cancelled task");
+			if (gCalEntry.getStatus().getValue().contains("canceled")) {
+				delete(localTask.getTaskId());
+				return;
+			}
 
 			if (localTask.getTaskLastSync().isBefore(
 					new DateTime(gCalEntry.getUpdated().getValue()))) {
@@ -322,11 +333,19 @@ public class Database {
 	 * sync validation logic.
 	 * 
 	 * @param gCalEntry
+	 * @throws Exception
 	 */
-	private void pullSyncNewTask(CalendarEventEntry gCalEntry) {
+	private void pullSyncNewTask(CalendarEventEntry gCalEntry) throws Exception {
 
 		// pull new remote task
 		System.out.println("pulling new event");
+
+		// pull sync deleted events
+		System.out.println("Deleting cancelled task");
+		if (gCalEntry.getStatus().getValue().contains("canceled")) {
+			delete(gCalTaskList.get(gCalEntry.getIcalUID()).getTaskId());
+			return;
+		}
 
 		DateTime syncDateTime = new DateTime();
 		if (gCalEntry.getUpdated() == null) {
@@ -367,6 +386,10 @@ public class Database {
 			gCalEntry.setUpdated(com.google.gdata.data.DateTime.now());
 		}
 		syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
+
+		// TODO delete local task if google calendar entry is deleted
+		// delete if localTask contains gCalId, is within queried interval but
+		// not in gCalTaskList
 
 		// update local task
 		localTaskEntry.setTaskName(gCalEntry.getTitle().getPlainText());

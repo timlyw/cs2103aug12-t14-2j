@@ -243,6 +243,7 @@ public class GoogleCalendar {
 		for (int i = 0; i < eventList.size(); i++) {
 			String currId = eventList.get(i).getIcalUID();
 			if (currId != null && currId.equals(taskId)) {
+				eventToDelete = eventList.get(i);
 				eventToDelete.delete();
 				eventList.remove(i);
 				break;
@@ -270,9 +271,18 @@ public class GoogleCalendar {
 		CalendarQuery myQuery = new CalendarQuery(feedUrl);
 		myQuery.setMinimumStartTime(queryMinStartDate);
 		myQuery.setMaximumStartTime(queryMaxStartDate);
-		myQuery.setMaxResults(999); // sets max entries to retrieve (might be
-									// limited to google calendar service
-									// maximum)
+		/*
+		 * sets max entries to retrieve (might be limited to google calendar
+		 * service maximum)
+		 */
+		myQuery.setMaxResults(999);
+
+		/*
+		 * set updated to retrieve deleted events
+		 */
+		myQuery.setUpdatedMin(queryMinStartDate);
+		myQuery.setUpdatedMax(queryMaxStartDate);
+		myQuery.setStringCustomParameter("showdeleted", "true");
 
 		// Send the request and receive the response:
 		CalendarEventFeed eventFeed = calendarService.query(myQuery,
