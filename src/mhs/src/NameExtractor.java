@@ -8,7 +8,7 @@ public class NameExtractor {
 		at, by, from, to;
 	}
 
-	public static boolean checkNameFormat(String printString) {
+	public boolean checkNameFormat(String printString) {
 
 		DateExtractor dateParser = new DateExtractor();
 		TimeExtractor timeParser = new TimeExtractor();
@@ -26,7 +26,7 @@ public class NameExtractor {
 
 	}
 
-	public static String processName(Queue<String> commandQueue) {
+	public String processName(Queue<String> commandQueue) {
 		String name = "";
 
 		while (!commandQueue.isEmpty()) {
