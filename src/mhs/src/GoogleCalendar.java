@@ -236,7 +236,7 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void deleteEvent(String taskId) throws IOException, ServiceException {
+	public void deleteEvent(String taskId) throws IOException {
 
 		CalendarEventEntry eventToDelete = null;
 
@@ -244,7 +244,12 @@ public class GoogleCalendar {
 			String currId = eventList.get(i).getIcalUID();
 			if (currId != null && currId.equals(taskId)) {
 				eventToDelete = eventList.get(i);
-				eventToDelete.delete();
+				try {
+					eventToDelete.delete();
+				} catch (ServiceException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				eventList.remove(i);
 				break;
 			}

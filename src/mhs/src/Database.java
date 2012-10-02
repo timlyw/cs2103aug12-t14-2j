@@ -280,9 +280,7 @@ public class Database {
 	}
 
 	/**
-	 * Pull Sync remote tasks to local TODO deleted tasks on remote -> delete
-	 * local files Syncs new tasks from remote Syncs existing local task with
-	 * updated remote task
+	 * Pull Sync remote tasks to local
 	 * 
 	 * @throws Exception
 	 */
@@ -341,8 +339,8 @@ public class Database {
 		System.out.println("pulling new event");
 
 		// pull sync deleted events
-		System.out.println("Deleting cancelled task");
 		if (gCalEntry.getStatus().getValue().contains("canceled")) {
+			System.out.println("Deleting cancelled task");
 			delete(gCalTaskList.get(gCalEntry.getIcalUID()).getTaskId());
 			return;
 		}
@@ -509,6 +507,44 @@ public class Database {
 		}
 
 		return queriedTaskRecordset;
+	}
+
+	/**
+	 * Returns task that matches any of the specified parameters
+	 * 
+	 * @param taskName
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<Task> query(String queriedTaskName, DateTime queriedStartTime,
+			DateTime queriedEndTime) {
+
+		List<Task> queriedTaskRecordset = new LinkedList<Task>();
+
+		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
+			if (entry.getValue().isDeleted()) {
+				continue;
+			}
+
+			Task taskEntry = entry.getValue();
+			// Set interval for matched range (increase endtime by 1 ms to
+			// include)
+			Interval dateTimeInterval = new Interval(queriedStartTime,
+					queriedEndTime.plusMillis(1));
+
+			if (taskEntry.getTaskName().contains(queriedTaskName)) {
+				queriedTaskRecordset.add(entry.getValue().clone());
+				continue;
+			}
+			if (dateTimeInterval.contains(taskEntry.getStartDateTime())
+					|| dateTimeInterval.contains(taskEntry.getEndDateTime())) {
+				queriedTaskRecordset.add(entry.getValue().clone());
+				continue;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -753,7 +789,9 @@ public class Database {
 	 * 
 	 * @throws IOException
 	 */
-	public void clearExpiredTasks() throws IOException {
+	public void cleanupTasks() throws IOException {
+		// Remove local tasks that are deleted remotely
+		// Remove expired tasks
 	}
 
 	/**
