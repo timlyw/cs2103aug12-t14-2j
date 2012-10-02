@@ -7,7 +7,7 @@ import org.joda.time.LocalDate;
 
 public class DateExtractor {
 
-	private static Date newDate;
+	private Date newDate;
 
 	static LocalDate startDate = null;
 
@@ -106,7 +106,7 @@ public class DateExtractor {
 
 	}
 
-	private static void setDay(int parameters) {
+	private void setDay(int parameters) {
 
 		if (parameters < newDate.getCurrentDayOfWeek()) {
 			newDate.setDay((7 - newDate.getCurrentDayOfWeek() + parameters + newDate
@@ -118,7 +118,7 @@ public class DateExtractor {
 		}
 	}
 
-	private static int getDayParameters(String command) {
+	private int getDayParameters(String command) {
 
 		int dayOfWeek = 0;
 
@@ -130,7 +130,7 @@ public class DateExtractor {
 		return dayOfWeek;
 	}
 
-	private static int getMontParameters(String command) {
+	private int getMontParameters(String command) {
 
 		for (Month m : Month.values()) {
 			if (command.equals(m.name())) {
@@ -140,7 +140,7 @@ public class DateExtractor {
 		return 0;
 	}
 
-	private static void setDate(String command) {
+	private void setDate(String command) {
 
 		int[] dateParameters = new int[3];
 		String[] dateArray = command.split("\\W");
@@ -156,21 +156,21 @@ public class DateExtractor {
 		}
 	}
 
-	private static boolean isNumberOfDaysInMonth(int number) {
+	private boolean isNumberOfDaysInMonth(int number) {
 		if (number > 0 && number < 32) {
 			return true;
 		}
 		return false;
 	}
 
-	private static boolean isMonthFormatInt(int number) {
+	private boolean isMonthFormatInt(int number) {
 		if (number > 0 && number < 13) {
 			return true;
 		}
 		return false;
 	}
 
-	private static boolean isYearFormat(int number) {
+	private boolean isYearFormat(int number) {
 
 		int year = newDate.getCurrentYear();
 		if (number >= year && number < 9999) {
@@ -179,7 +179,7 @@ public class DateExtractor {
 		return false;
 	}
 
-	public static boolean checkDateFormat(String printString) {
+	public boolean checkDateFormat(String printString) {
 		if (isInteger(printString)) {
 			return true;
 		}
@@ -197,7 +197,7 @@ public class DateExtractor {
 	}
 
 
-	private static boolean isInteger(String printString) {
+	private boolean isInteger(String printString) {
 		try {
 			Integer.parseInt(printString);
 			return true;
@@ -206,7 +206,7 @@ public class DateExtractor {
 		}
 	}
 
-	private static boolean isDayOfWeek(String printString) {
+	private boolean isDayOfWeek(String printString) {
 
 		for (Day d : Day.values()) {
 			if (printString.equals(d.name())) {
@@ -217,7 +217,7 @@ public class DateExtractor {
 
 	}
 
-	private static boolean isDateWithMonthSpelled(String printString) {
+	private boolean isDateWithMonthSpelled(String printString) {
 		for (Month m : Month.values()) {
 			if (printString.equals(m.name())) {
 				return true;
@@ -227,7 +227,7 @@ public class DateExtractor {
 
 	}
 
-	private static boolean isDateStandardFormat(String printString) {
+	private boolean isDateStandardFormat(String printString) {
 		String dateFormat = "(0?[1-9]|[12][0-9]|3[01])(/|-)(0?[1-9]|1[012])(.*)(((20)\\d\\d)?)";
 		Pattern patternDateStandardFormat = Pattern.compile(dateFormat);
 		Matcher matcherDateStandardFormat = patternDateStandardFormat

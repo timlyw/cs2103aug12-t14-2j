@@ -8,7 +8,7 @@ import org.joda.time.LocalTime;
 
 public class CommandParser {
 
-	public static Command getParsedCommand(String process) {
+	public Command getParsedCommand(String process) {
 
 		DateExtractor dateParser = new DateExtractor();
 		TimeExtractor timeParser = new TimeExtractor();
@@ -72,10 +72,10 @@ public class CommandParser {
 					}
 				}
 				if(!taskNameFlag){
-					taskName = NameExtractor.processName(commandQueue);
+					taskName = nameParser.processName(commandQueue);
 				}
 				else {
-					edittedName = NameExtractor.processName(commandQueue);
+					edittedName = nameParser.processName(commandQueue);
 				}
 				taskNameFlag = true;
 				i=j-1;
