@@ -13,6 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gdata.data.BaseEntry;
 import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.data.extensions.When;
 import com.google.gdata.util.ServiceException;
@@ -44,8 +45,12 @@ public class GoogleCalendarTest {
 			System.out.println(eventTimes.get(0).getStartTime());
 			System.out.println(eventTimes.get(0).getEndTime());
 			System.out.println(calEntry.getUpdated());
-			// System.out.println(calEntry.getIcalUID());
-			// System.out.println(calEntry.getId());
+			// Gets event status (deleted)
+			System.out.println(calEntry.getStatus().getValue().contains("canceled"));
+			// Sync Values - is sync and sequence of sync
+			System.out.println(calEntry.getIcalUID());
+			System.out.println(calEntry.isSyncEvent());
+			System.out.println(calEntry.getSequence());
 		}
 	}
 
@@ -124,7 +129,7 @@ public class GoogleCalendarTest {
 		// Delete all events
 		while (iterator.hasNext()) {
 			CalendarEventEntry calEntry = iterator.next();
-			calEntry.delete();
+			// calEntry.delete();
 		}
 
 		System.out.println(System.lineSeparator());
