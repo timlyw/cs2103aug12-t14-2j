@@ -10,12 +10,12 @@ public class Command {
 		add, remove,edit, search, sync,undo;
 	}
 	
-	private static String taskName;
-	private static String edittedName;
-	private static command commandEnum;
+	private String taskName;
+	private String edittedName;
+	private command commandEnum;
 	
-	private static DateTime startDate;
-	private static DateTime endDate;
+	private DateTime startDate;
+	private DateTime endDate;
 
 	public Command(String commandInput, String taskNameInput,
 			String edittedNameInput, LocalDate startDateInput,
@@ -39,10 +39,11 @@ public class Command {
 		if(startDateInput !=null && startTimeInput==null){
 			startDate = startDateInput.toDateTimeAtStartOfDay();
 		}
-		if(endDateInput == null && endTimeInput != null){
+		if(startDateInput == null && startTimeInput != null){
 			startDateInput = LocalDate.now();
 			startDate = startDateInput.toDateTime(startTimeInput);
 		}
+		
 		if(endDateInput == null && endTimeInput != null){
 			endDateInput = LocalDate.now();
 			endDate = endDateInput.toDateTime(endTimeInput);
@@ -68,7 +69,7 @@ public class Command {
 		edittedName = null;
 	}
 
-	public static String getTaskName() {
+	public String getTaskName() {
 		return taskName;
 	}
 
@@ -76,7 +77,7 @@ public class Command {
 		this.taskName = taskName;
 	}
 
-	public static String getEdittedName() {
+	public String getEdittedName() {
 		return edittedName;
 	}
 
@@ -84,23 +85,23 @@ public class Command {
 		this.edittedName = edittedName;
 	}
 
-	public static DateTime getEndDate() {
+	public DateTime getEndDate() {
 		return endDate;
 	}
 
-	public static void setEndDate(DateTime endDate) {
-		Command.endDate = endDate;
+	public void setEndDate(DateTime endDate) {
+		this.endDate = endDate;
 	}
 
-	public static DateTime getStartDate() {
+	public DateTime getStartDate() {
 		return startDate;
 	}
 
-	public static void setStartDate(DateTime startDate) {
-		Command.startDate = startDate;
+	public void setStartDate(DateTime startDate) {
+		this.startDate = startDate;
 	}
 
-	public static command getCommandEnum() {
+	public command getCommandEnum() {
 		return commandEnum;
 	}
 

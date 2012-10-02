@@ -19,16 +19,9 @@ public class TimeExtractor {
 
 	private static final String REGEX_12_HOUR_FORMAT = "(1[012]|[1-9])(.*)([0-5][0-9])(\\s)?(?i)(am|pm)";
 
-	static DateTimeFormatter parseTime = null;
-
-	static DateTimeFieldType[] types = {
-	            DateTimeFieldType.hourOfDay(),
-	            DateTimeFieldType.minuteOfHour(),
-	   };
+	private LocalTime startTime = null;
 		
-		private static LocalTime startTime = null;
-		
-	public static LocalTime processTime(String time) {
+	public LocalTime processTime(String time) {
 		if (is24HrFormat(time)) {
 			process24hrFormat(time);
 		} else if (is12HrFormat(time)) {
@@ -37,7 +30,7 @@ public class TimeExtractor {
 		return startTime;
 	}
 
-	private static void process24hrFormat(String time) {
+	private void process24hrFormat(String time) {
 
 		String[] timeArray = new String[2];
 		timeArray = time.split(":");
@@ -45,7 +38,7 @@ public class TimeExtractor {
 
 	}
 
-	private static void process12HrFormat(String time) {
+	private void process12HrFormat(String time) {
 
 		time = time.replaceAll("\\W", " ");
 
@@ -71,7 +64,7 @@ public class TimeExtractor {
 
 	}
 
-	private static boolean is12HrFormat(String time) {
+	private boolean is12HrFormat(String time) {
 
 		String timeFormat12Hr = REGEX_12_HOUR_FORMAT;
 		String timeFormat12HrWithoutMinutes = REGEX_12_HOUR_FORMAT_WITHOUT_MINUTES;
@@ -86,7 +79,7 @@ public class TimeExtractor {
 		return false;
 	}
 
-	private static boolean is24HrFormat(String time) {
+	private boolean is24HrFormat(String time) {
 
 		String timeFormat24Hr = REGEX_24_HOUR_FORMAT;
 		Pattern patternTimeFormat24Hr = Pattern.compile(timeFormat24Hr);
@@ -98,7 +91,7 @@ public class TimeExtractor {
 		return false;
 	}
 
-	public static boolean checkTimeFormat(String time) {
+	public boolean checkTimeFormat(String time) {
 
 		if (is12HrFormat(time) || is24HrFormat(time)) {
 			return true;

@@ -4,7 +4,7 @@ public class CommandExtractor {
 
 	enum commands {
 		add("add"), remove("remove"), delete("remove"), update("edit"), edit(
-				"edit"), postpone("edit"), search("search"), find("search"), sync(
+				"edit"), postpone("edit"), search("search"), find("search"), display("search"), sync(
 				"sync"), undo("undo");
 
 		private final String command;
@@ -15,7 +15,7 @@ public class CommandExtractor {
 
 	}
 
-	private static String commandString;
+	private String commandString;
 
 	public boolean isCommand(String printString){
 		for (commands c : commands.values()) {

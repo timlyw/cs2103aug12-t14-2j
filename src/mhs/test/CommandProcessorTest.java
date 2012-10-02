@@ -1,6 +1,8 @@
 package mhs.test;
-import static org.junit.Assert.assertEquals;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import mhs.src.Command;
 import mhs.src.CommandParser;
 import mhs.src.TimeExtractor;
@@ -22,47 +24,49 @@ public class CommandProcessorTest {
 	@Test
 	public void testcheckTimeFormat() {
 
-		assertEquals(TimeExtractor.checkTimeFormat("12pm"), true);
-		assertEquals(TimeExtractor.checkTimeFormat("3pm"), true);
-		assertEquals(TimeExtractor.checkTimeFormat("4am"), true);
-		assertEquals(TimeExtractor.checkTimeFormat("12.40pm"), true);
-		assertEquals(TimeExtractor.checkTimeFormat("00:00"), true);
-		assertEquals(TimeExtractor.checkTimeFormat("00:12"), true);
-		assertEquals(TimeExtractor.checkTimeFormat("15:13"), true);
+		TimeExtractor timeParser = new TimeExtractor();
+		assertTrue(timeParser.checkTimeFormat("12pm"));
+		assertTrue(timeParser.checkTimeFormat("3pm"));
+		assertTrue(timeParser.checkTimeFormat("4am"));
+		assertTrue(timeParser.checkTimeFormat("12.40pm"));
+		assertTrue(timeParser.checkTimeFormat("00:00"));
+		assertTrue(timeParser.checkTimeFormat("00:12"));
+		assertTrue(timeParser.checkTimeFormat("15:13"));
 
-		assertEquals(TimeExtractor.checkTimeFormat("15pm"), false);
-		assertEquals(TimeExtractor.checkTimeFormat("12.60pm"), false);
-		assertEquals(TimeExtractor.checkTimeFormat("00:70"), false);
-		assertEquals(TimeExtractor.checkTimeFormat("400"), false);
-		assertEquals(TimeExtractor.checkTimeFormat("1600"), false);
-		assertEquals(TimeExtractor.checkTimeFormat("27:00"), false);
+		assertFalse(timeParser.checkTimeFormat("15pm"));
+		assertFalse(timeParser.checkTimeFormat("12.60pm"));
+		assertFalse(timeParser.checkTimeFormat("00:70"));
+		assertFalse(timeParser.checkTimeFormat("400"));
+		assertFalse(timeParser.checkTimeFormat("1600"));
+		assertFalse(timeParser.checkTimeFormat("27:00"));
 	}
 
 	@Test
 	public void testProcessTime() {
 
 		LocalTime expectedTime = null;
+		TimeExtractor timeParser = new TimeExtractor();
 		
 		expectedTime = new LocalTime(12, 4 );
-		assertEquals(TimeExtractor.processTime("12:04"), expectedTime);
+		assertEquals(timeParser.processTime("12:04"), expectedTime);
 
 		expectedTime = new LocalTime(12, 40 );
-		assertEquals(TimeExtractor.processTime("12:40"), expectedTime);
+		assertEquals(timeParser.processTime("12:40"), expectedTime);
 
 		expectedTime = new LocalTime(0, 0 );
-		assertEquals(TimeExtractor.processTime("00:00"), expectedTime);
+		assertEquals(timeParser.processTime("00:00"), expectedTime);
 
 		expectedTime = new LocalTime(0, 12 );
-		assertEquals(TimeExtractor.processTime("00:12"), expectedTime);
+		assertEquals(timeParser.processTime("00:12"), expectedTime);
 
 		expectedTime = new LocalTime(15, 13 );
-		assertEquals(TimeExtractor.processTime("15:13"), expectedTime);
+		assertEquals(timeParser.processTime("15:13"), expectedTime);
 
 		expectedTime = new LocalTime(15, 13 );
-		assertEquals(TimeExtractor.processTime("3.13pm"), expectedTime);
+		assertEquals(timeParser.processTime("3.13pm"), expectedTime);
 
 		expectedTime = new LocalTime(4, 0 );
-		assertEquals(TimeExtractor.processTime("4am"), expectedTime);
+		assertEquals(timeParser.processTime("4am"), expectedTime);
 	}
 
 
@@ -73,46 +77,45 @@ public class CommandProcessorTest {
 		Command input;
 		String inputName;
 		String edittedName;
-		
+		CommandParser commandParser = new CommandParser();
 		DateTime expectedStartDate;
 		DateTime inputStartDate;
 		DateTime expectedEndDate;
 		DateTime inputEndDate;
 		
-		
-		input = CommandParser.getParsedCommand("meeting1");
+		input = commandParser.getParsedCommand("meeting1");
 		inputName = input.getTaskName().trim();
 		assertEquals("meeting1", inputName);
 		
-		input = CommandParser.getParsedCommand("meeting 10/12/2012 10pm");
+		input = commandParser.getParsedCommand("meeting 10/12/2012 10pm");
 		inputName = input.getTaskName().trim();
 		expectedStartDate = new DateTime(2012, 12, 10, 22, 0);
-		inputStartDate = Command.getStartDate();
+		inputStartDate = input.getStartDate();
 		assertEquals("meeting", inputName);
 		assertEquals(inputStartDate, expectedStartDate);
-		
-		input = CommandParser.getParsedCommand("\"day after tomorrow\" 10 dec 2012 22:12 12 12 2012 4.15pm");
+
+		input = commandParser.getParsedCommand("\"day after tomorrow\" 10 dec 2012 22:12 12 12 2012 4.15pm");
 		inputName = input.getTaskName().trim();
 		expectedStartDate = new DateTime(2012, 12, 10, 22, 12);
-		inputStartDate = Command.getStartDate();
+		inputStartDate = input.getStartDate();
 		expectedEndDate = new DateTime(2012, 12, 12, 16, 15);
-		inputEndDate = Command.getEndDate();
+		inputEndDate = input.getEndDate();
 		assertEquals("day after tomorrow", inputName);
 		assertEquals(inputStartDate, expectedStartDate);
 		assertEquals(inputEndDate, expectedEndDate);
 		
-		input = CommandParser.getParsedCommand("\"day after tomorrow\" 10 dec 2012 22:12 12 12 2012 4.15pm");
+		input = commandParser.getParsedCommand("\"day after tomorrow\" 10 dec 2012 22:12 12 12 2012 4.15pm");
 		inputName = input.getTaskName().trim();
 		expectedStartDate = new DateTime(2012, 12, 10, 22, 12);
-		inputStartDate = Command.getStartDate();
+		inputStartDate = input.getStartDate();
 		expectedEndDate = new DateTime(2012, 12, 12, 16, 15);
-		inputEndDate = Command.getEndDate();
+		inputEndDate = input.getEndDate();
 		assertEquals("day after tomorrow", inputName);
 		assertEquals(inputStartDate, expectedStartDate);
 		assertEquals(inputEndDate, expectedEndDate);
 		assertEquals(input.getCommandEnum(), Command.command.add);
 		
-		input = CommandParser.getParsedCommand("edit \"day after tomorrow\" movie at vivo");
+		input = commandParser.getParsedCommand("edit \"day after tomorrow\" movie at vivo");
 		inputName = input.getTaskName().trim();
 		edittedName = input.getEdittedName().trim();
 		assertEquals("day after tomorrow", inputName);

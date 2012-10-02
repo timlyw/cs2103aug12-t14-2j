@@ -10,6 +10,8 @@ import mhs.src.CommandExtractor.commands;
 
 import org.joda.time.DateTime;
 
+import com.google.gdata.util.ServiceException;
+
 /**
  * 
  * @author Shekhar Baggavalli Raju
@@ -28,7 +30,12 @@ public class Processor {
 
 	Processor() {
 		try {
-			dataHandler = new Database();
+			try {
+				dataHandler = new Database();
+			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
