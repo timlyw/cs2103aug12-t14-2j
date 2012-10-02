@@ -235,7 +235,10 @@ public class Processor {
 		int count = 1;
 		String outputString = new String();
 		for (Task selectedTask : resultList) {
-			outputString += count + ". " + selectedTask.getTaskName() + "\n";
+			outputString += count + ". " + selectedTask.getTaskName() + "-"
+					+ selectedTask.getTaskCategory() + "#"
+					+ selectedTask.getStartDateTime() + "/"
+					+ selectedTask.getEndDateTime() + "\n";
 			count++;
 		}
 		return outputString;
@@ -252,7 +255,12 @@ public class Processor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return "Task: " + newTask.getTaskName() + "was successfully added";
+			return "Task: " + newTask.getTaskName() + "@"
+					+ userCommand.getStartDate() + "@"
+					+ newTask.getEndDateTime() + "@"
+					+ newTask.getTaskCategory() + "#"
+					+ newTask.getStartDateTime() + " to "
+					+ newTask.getEndDateTime() + "was successfully added";
 		}
 	}
 
@@ -274,7 +282,7 @@ public class Processor {
 		case 1:
 			Task deadlineTaskToAdd = new DeadlineTask(0,
 					inputCommand.getTaskName(), TaskCategory.DEADLINE,
-					inputCommand.getEndDate(), DateTime.now(), null, null,
+					inputCommand.getStartDate(), DateTime.now(), null, null,
 					null, false, false);
 			return deadlineTaskToAdd;
 		case 2:
@@ -283,9 +291,10 @@ public class Processor {
 					inputCommand.getEndDate(), DateTime.now(), null, null,
 					null, false, false);
 			return timedTaskToAdd;
+		default:
+			Task nullTask = new Task();
+			return nullTask;
 		}
-		Task nullTask = new Task();
-		return nullTask;
 	}
 
 	private String searchTask(Command userCommand) throws IOException {
