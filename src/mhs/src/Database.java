@@ -5,14 +5,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
-import com.google.gdata.data.extensions.BaseEventEntry.EventStatus;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
@@ -36,7 +34,7 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	public Database(String taskRecordFileName, boolean disableSyncronize)
-			throws IOException {
+			throws IOException, ServiceException {
 		initalizeDatabase(taskRecordFileName);
 		// syncronize local and web databases
 		if (disableSyncronize) {
@@ -52,7 +50,7 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public Database() throws IOException {
+	public Database() throws IOException, ServiceException {
 		initalizeDatabase();
 		syncronizeDatabases();
 	}
@@ -149,16 +147,18 @@ public class Database {
 
 	/**
 	 * Syncronizes Databases
+	 * @throws ServiceException 
 	 * 
 	 * @throws IOException
 	 */
-	public void syncronizeDatabases() {
+	public void syncronizeDatabases() throws ServiceException {
 		try {
 			pullSync();
 			pushSync();
 			saveTaskRecordFile();
 		} catch (ServiceException e) {
 			isRemoteSyncEnabled = false;
+			throw e;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
