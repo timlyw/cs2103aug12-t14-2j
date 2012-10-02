@@ -28,6 +28,9 @@ public class Processor {
 	private CommandParser commandParser;
 	private Database dataHandler;
 
+	/**
+	 * constructor to initialize sync
+	 */
 	Processor() {
 		try {
 			try {
