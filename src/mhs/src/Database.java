@@ -147,7 +147,8 @@ public class Database {
 
 	/**
 	 * Syncronizes Databases
-	 * @throws ServiceException 
+	 * 
+	 * @throws ServiceException
 	 * 
 	 * @throws IOException
 	 */
