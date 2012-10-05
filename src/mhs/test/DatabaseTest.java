@@ -72,7 +72,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testSyncDatabase() throws IOException, ServiceException {
-		//database = new Database(TEST_TASK_RECORD_FILENAME, false);
+		// database = new Database(TEST_TASK_RECORD_FILENAME, false);
 		System.out.println("Sync Test");
 		database.syncronizeDatabases();
 	}
@@ -80,7 +80,7 @@ public class DatabaseTest {
 	@Test
 	public void testSyncPushDatabase() throws Exception {
 
-		//database = new Database(TEST_TASK_RECORD_FILENAME, false);
+		// database = new Database(TEST_TASK_RECORD_FILENAME, false);
 		System.out.println("Adding new Tasks to push");
 
 		database.add(task);
@@ -94,7 +94,7 @@ public class DatabaseTest {
 
 		System.out.println("Updating Local Task");
 
-		//database = new Database(TEST_TASK_RECORD_FILENAME, false);
+		// database = new Database(TEST_TASK_RECORD_FILENAME, false);
 		Task updatedTask = database.query(1);
 
 		new DateTime();
@@ -186,6 +186,7 @@ public class DatabaseTest {
 		Iterator<Task> iterator = queryList.iterator();
 		while (iterator.hasNext()) {
 			Task matchedTask = iterator.next();
+			
 			assertTrue(matchedTask.toString().equals(task.toString())
 					|| matchedTask.toString().equals(task2.toString()));
 		}
