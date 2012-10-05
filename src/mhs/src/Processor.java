@@ -32,6 +32,7 @@ public class Processor {
 		try {
 			try {
 				dataHandler = new Database();
+				commandParser = new CommandParser();
 			} catch (ServiceException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
