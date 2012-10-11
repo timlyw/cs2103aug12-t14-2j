@@ -72,15 +72,15 @@ public class Database {
 		private void pushSyncTask(Task localTask) throws IOException,
 				ServiceException {
 
-			// remove deleted task
-			if (localTask.isDeleted()) {
-				System.out.println("Removing deleted synced task");				
-				googleCalendar.deleteEvent(localTask.getgCalTaskId());
+			// skip floating tasks
+			if (localTask.getTaskCategory().equals(TaskCategory.FLOATING)) {
 				return;
 			}
 
-			// skip floating tasks
-			if (localTask.getTaskCategory().equals(TaskCategory.FLOATING)) {
+			// remove deleted task
+			if (localTask.isDeleted()) {
+				System.out.println("Removing deleted synced task");	
+				googleCalendar.deleteEvent(localTask.getgCalTaskId());
 				return;
 			}
 

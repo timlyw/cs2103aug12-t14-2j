@@ -174,11 +174,10 @@ public class GoogleCalendar {
 		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
 		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
 				taskEndStr);
-
-		// add event to list
-		eventList.add(event);
-
-		return calendarService.insert(postURL, event);
+		CalendarEventEntry addedEvent = calendarService.insert(postURL, event);
+		
+		eventList.add(addedEvent);		
+		return addedEvent;
 	}
 
 	/**
