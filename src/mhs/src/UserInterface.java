@@ -53,6 +53,9 @@ public class UserInterface extends JFrame {
 	// helper parameters
 	private static final int HELPER_LEFT_PADDING = 5;
 	private static final int HELPER_TOP_PADDING = 5;
+	
+	private static final int ENTER_KEY = KeyEvent.VK_ENTER;
+	private static final Color FRAME_COLOR = new Color(100, 100, 255);
 
 	private JPanel framePanel = new JPanel(); // framePanel will be used to
 												// contain all other display
@@ -64,8 +67,6 @@ public class UserInterface extends JFrame {
 														// feedback to user
 
 	private Processor processor = new Processor();
-	private static final int ENTER_KEY = KeyEvent.VK_ENTER;
-	private static final Color FRAME_COLOR = new Color(100, 100, 255);
 
 	UserInterface() {
 		super(FRAME_TITLE);
