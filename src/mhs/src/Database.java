@@ -79,7 +79,7 @@ public class Database {
 
 			// remove deleted task
 			if (localTask.isDeleted()) {
-				System.out.println("Removing deleted synced task");	
+				System.out.println("Removing deleted synced task");
 				googleCalendar.deleteEvent(localTask.getgCalTaskId());
 				return;
 			}
@@ -118,8 +118,8 @@ public class Database {
 			localTask.setgCalTaskId(addedGCalEvent.getIcalUID());
 			localTask.setTaskLastSync(new DateTime(addedGCalEvent.getUpdated()
 					.toString()));
-			
-			updateTaskLists(localTask);					
+
+			updateTaskLists(localTask);
 		}
 
 		/**
@@ -148,7 +148,7 @@ public class Database {
 			DateTime syncDateTime = setSyncTime(updatedGCalEvent);
 			localTask.setTaskLastSync(syncDateTime);
 
-			updateTaskLists(localTask);		
+			updateTaskLists(localTask);
 		}
 
 		/**
@@ -705,7 +705,7 @@ public class Database {
 
 		Task taskToUndelete = taskList.get(taskId);
 		undeleteTask(taskToUndelete);
-		
+
 		// TODO undelete google calendar task
 		if (isRemoteSyncEnabled) {
 			syncronize.pushSyncTask(taskToUndelete);
@@ -795,29 +795,62 @@ public class Database {
 	}
 
 	/**
-	 * Permanently removes task record from local storage
+	 * Removes task from list
 	 * 
 	 * @param taskId
 	 * @throws Exception
 	 */
 	private void removeRecord(int taskId) throws Exception {
-		// check if task exists
-		if (taskList.containsKey(taskId)) {
-			taskList.remove(taskId);
-			saveTaskRecordFile();
-		} else {
-			throw new Exception("Invalid Task");
+		if (!taskExists(taskId)) {
+			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
+		taskList.remove(taskId);
+	}
+
+	private void removeRecord(String gCalTaskId) throws Exception {
+		if (!taskExists(gCalTaskId)) {
+			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
+		}
+		taskList.remove(gCalTaskId);
 	}
 
 	/**
-	 * TODO Clears expired and deleted tasks
+	 * Clears deleted and expired/done local and remote tasks
 	 * 
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public void cleanupTasks() throws IOException {
-		// Remove local tasks that are deleted remotely
-		// Remove expired tasks
+	public void cleanupTasks() throws Exception {
+		syncronizeDatabases();
+		cleanupLocalTasks();
+	}
+
+	/**
+	 * Clears deleted and expired/done local tasks
+	 * 
+	 * @throws Exception
+	 */
+	private void cleanupLocalTasks() throws Exception {
+		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
+
+			if (!entry.getValue().isDeleted()) {
+				continue;
+			}
+
+			switch (entry.getValue().getTaskCategory()) {
+			case TIMED:
+			case DEADLINE:
+				if (entry.getValue().getEndDateTime().isAfterNow()) {
+					removeRecord(entry.getValue().getTaskId());
+				}
+				break;
+			case FLOATING:
+				if (entry.getValue().isDone()) {
+					removeRecord(entry.getValue().getTaskId());
+				}
+				break;
+			}
+		}
+		saveTaskRecordFile();
 	}
 
 	/**
