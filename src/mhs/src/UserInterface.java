@@ -1,3 +1,10 @@
+/*
+ * This class is a graphical user interface consisting of
+ * 		1) A display screen to show output to user
+ * 		2) An input JTextField to get user input
+ * 		3) A pop-up helper screen to provide user with real-time feedback
+ */
+
 package mhs.src;
 import java.awt.Color;
 import java.awt.Component;

@@ -1,3 +1,12 @@
+/*
+ * This class provides services to connect with a user's Google Calendar
+ * Supported functionality:
+ * 		1) Create Events
+ * 		2) Retrieve Events
+ * 		3) Update Events
+ * 		4) Delete Events
+ */
+
 package mhs.src;
 
 import java.io.IOException;
