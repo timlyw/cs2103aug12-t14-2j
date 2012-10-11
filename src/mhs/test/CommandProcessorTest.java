@@ -87,39 +87,46 @@ public class CommandProcessorTest {
 		inputName = input.getTaskName().trim();
 		assertEquals("meeting1", inputName);
 		
-		input = commandParser.getParsedCommand("meeting 10/12/2012 10pm");
+		input = commandParser.getParsedCommand("class project by 10/12/2012 10pm");
 		inputName = input.getTaskName().trim();
 		expectedStartDate = new DateTime(2012, 12, 10, 22, 0);
 		inputStartDate = input.getStartDate();
-		assertEquals("meeting", inputName);
+		assertEquals("class project", inputName);
 		assertEquals(inputStartDate, expectedStartDate);
 
-		input = commandParser.getParsedCommand("\"day after tomorrow\" 10 dec 2012 22:12 12 12 2012 4.15pm");
+		input = commandParser.getParsedCommand("\"day after tomorrow\" on 4 dec 2012 22:12 to 6 12 2012 4.15pm");
 		inputName = input.getTaskName().trim();
-		expectedStartDate = new DateTime(2012, 12, 10, 22, 12);
+		expectedStartDate = new DateTime(2012, 12, 4, 22, 12);
 		inputStartDate = input.getStartDate();
-		expectedEndDate = new DateTime(2012, 12, 12, 16, 15);
+		expectedEndDate = new DateTime(2012, 12, 6, 16, 15);
 		inputEndDate = input.getEndDate();
 		assertEquals("day after tomorrow", inputName);
 		assertEquals(inputStartDate, expectedStartDate);
 		assertEquals(inputEndDate, expectedEndDate);
 		
-		input = commandParser.getParsedCommand("\"day after tomorrow\" 10 dec 2012 22:12 12 12 2012 4.15pm");
+		input = commandParser.getParsedCommand("\"day after tomorrow\" 2 nov 2012 22:12 7 11 2012 4.15pm");
 		inputName = input.getTaskName().trim();
-		expectedStartDate = new DateTime(2012, 12, 10, 22, 12);
+		expectedStartDate = new DateTime(2012, 11, 2, 22, 12);
 		inputStartDate = input.getStartDate();
-		expectedEndDate = new DateTime(2012, 12, 12, 16, 15);
+		expectedEndDate = new DateTime(2012, 11, 7, 16, 15);
 		inputEndDate = input.getEndDate();
 		assertEquals("day after tomorrow", inputName);
 		assertEquals(inputStartDate, expectedStartDate);
 		assertEquals(inputEndDate, expectedEndDate);
 		assertEquals(input.getCommandEnum(), Command.command.add);
 		
-		input = commandParser.getParsedCommand("edit \"day after tomorrow\" movie at vivo");
+		input = commandParser.getParsedCommand("edit \"watch movie\" \"laundry duties\"");
 		inputName = input.getTaskName().trim();
 		edittedName = input.getEdittedName().trim();
-		assertEquals("day after tomorrow", inputName);
-		assertEquals("movie at vivo", edittedName);
+		assertEquals("watch movie", inputName);
+		assertEquals("laundry duties", edittedName);
+		assertEquals(input.getCommandEnum(), Command.command.edit);
+		
+		input = commandParser.getParsedCommand("edit watch movie to laundry duties");
+		inputName = input.getTaskName().trim();
+		edittedName = input.getEdittedName().trim();
+		assertEquals("watch movie", inputName);
+		assertEquals("laundry duties", edittedName);
 		assertEquals(input.getCommandEnum(), Command.command.edit);
 	}
 
