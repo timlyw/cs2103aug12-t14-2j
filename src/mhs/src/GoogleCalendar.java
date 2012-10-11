@@ -256,6 +256,18 @@ public class GoogleCalendar {
 		}
 	}
 
+	public void deleteAllEvents() throws IOException, ServiceException {
+		for (int i = 0; i < eventList.size(); i++) {
+			CalendarEventEntry eventToDelete = 	eventList.get(i);
+			try {
+				eventToDelete.delete();
+			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/**
 	 * Get event list from google calendar
 	 * 
