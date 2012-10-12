@@ -17,24 +17,24 @@ import com.google.gdata.util.ServiceException;
 public class Database {
 
 	private Syncronize syncronize;
-	private static GoogleCalendar googleCalendar;
-	private static TaskRecordFile taskRecordFile;
-	private static ConfigFile configFile;
+	private GoogleCalendar googleCalendar;
+	private TaskRecordFile taskRecordFile;
+	private ConfigFile configFile;
 
 	// Data Views
 	// contains Task objects references
 
-	private static Map<Integer, Task> taskList; // primary task list with index
-												// as key
-	private static Map<String, Task> gCalTaskList; // task list with gCalId as
-													// key
+	private Map<Integer, Task> taskList; // primary task list with index
+											// as key
+	private Map<String, Task> gCalTaskList; // task list with gCalId as
+											// key
 
 	private boolean isRemoteSyncEnabled = true;
 
 	private static final String EXCEPTION_MESSAGE_INVALID_TASK_FORMAT = "Invalid Task Format";
 	private static final String EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST = "Task does not exist";
 
-	private static class Syncronize {
+	private class Syncronize {
 
 		/**
 		 * Syncronizes Databases
@@ -656,7 +656,7 @@ public class Database {
 		updateTaskLists(taskToAdd);
 	}
 
-	private static void updateTaskLists(Task task) {
+	private void updateTaskLists(Task task) {
 		taskList.put(task.getTaskId(), task);
 		gCalTaskList.put(task.getgCalTaskId(), task);
 	}
@@ -883,7 +883,7 @@ public class Database {
 		gCalTaskList.clear();
 	}
 
-	private static boolean taskExists(String gCalTaskId) {
+	private boolean taskExists(String gCalTaskId) {
 		if (!gCalTaskList.containsKey(gCalTaskId)) {
 			return false;
 		}
@@ -913,7 +913,7 @@ public class Database {
 	 * 
 	 * @return
 	 */
-	private static int getNewTaskId() {
+	private int getNewTaskId() {
 		Set<Integer> taskKeySet = taskList.keySet();
 
 		int getNewTaskId = 0;

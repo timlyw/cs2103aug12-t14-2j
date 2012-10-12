@@ -108,7 +108,7 @@ public class Task {
 		return taskToString;
 	}
 
-	public String toJson(){
+	public String toJson() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(DateTime.class,
 				new DateTimeTypeConverter());
@@ -117,6 +117,7 @@ public class Task {
 
 		return gson.toJson(this);
 	}
+
 	/*
 	 * Getters and Setters
 	 */

@@ -175,8 +175,8 @@ public class GoogleCalendar {
 		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
 				taskEndStr);
 		CalendarEventEntry addedEvent = calendarService.insert(postURL, event);
-		
-		eventList.add(addedEvent);		
+
+		eventList.add(addedEvent);
 		return addedEvent;
 	}
 
@@ -250,7 +250,11 @@ public class GoogleCalendar {
 
 		for (int i = 0; i < eventList.size(); i++) {
 			String currId = eventList.get(i).getIcalUID();
-			if (currId != null && currId.equals(taskId)) {
+
+			if (currId == null) {
+				continue;
+			}
+			if (currId.equals(taskId)) {
 				eventToDelete = eventList.get(i);
 				try {
 					eventToDelete.delete();
@@ -266,7 +270,7 @@ public class GoogleCalendar {
 
 	public void deleteAllEvents() throws IOException, ServiceException {
 		for (int i = 0; i < eventList.size(); i++) {
-			CalendarEventEntry eventToDelete = 	eventList.get(i);
+			CalendarEventEntry eventToDelete = eventList.get(i);
 			try {
 				eventToDelete.delete();
 			} catch (ServiceException e) {
@@ -274,6 +278,7 @@ public class GoogleCalendar {
 				e.printStackTrace();
 			}
 		}
+		eventList.clear();
 	}
 
 	/**
