@@ -1,3 +1,12 @@
+/**
+ * Database 
+ * 
+ * Database interfaces persistent the data storage mechanism, on local disk and remote 
+ * (Google Calendar Service). Handles task queries and operations and user configuration settings.
+ * 
+ * @author timlyw
+ */
+
 package mhs.src;
 
 import java.io.IOException;
@@ -435,7 +444,7 @@ public class Database {
 	/**
 	 * Returns List of all tasks
 	 * 
-	 * @return
+	 * @return List of all Tasks
 	 * @throws IOException
 	 */
 	public List<Task> query() throws IOException {
@@ -452,7 +461,7 @@ public class Database {
 	 * Returns single task with specified taskId (deleted tasks queriable)
 	 * 
 	 * @param taskId
-	 * @return
+	 * @return matched task
 	 * @throws Exception
 	 */
 	public Task query(int taskId) throws Exception {
@@ -466,7 +475,7 @@ public class Database {
 	 * Return tasks with matching taskName, case-insensitive substring search
 	 * 
 	 * @param taskName
-	 * @return
+	 * @return list of matched tasks
 	 */
 	public List<Task> query(String taskName) {
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
@@ -485,7 +494,7 @@ public class Database {
 	 * Returns tasks that match specified TaskCategory
 	 * 
 	 * @param queryTaskCategory
-	 * @return
+	 * @return list of matched tasks
 	 */
 	public List<Task> query(TaskCategory queryTaskCategory) {
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
@@ -505,7 +514,7 @@ public class Database {
 	 * 
 	 * @param startTime
 	 * @param endTime
-	 * @return
+	 * @return list of matched tasks
 	 */
 	public List<Task> query(DateTime startTime, DateTime endTime) {
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
@@ -546,10 +555,10 @@ public class Database {
 	/**
 	 * Returns task that matches any of the specified parameters
 	 * 
-	 * @param taskName
-	 * @param startTime
-	 * @param endTime
-	 * @return
+	 * @param queriedTaskName
+	 * @param queriedStartTime
+	 * @param queriedEndTime
+	 * @return list of matched tasks
 	 */
 	public List<Task> query(String queriedTaskName, DateTime queriedStartTime,
 			DateTime queriedEndTime) {
@@ -584,11 +593,11 @@ public class Database {
 	/**
 	 * Returns task that matches any of the specified parameters
 	 * 
-	 * @param taskName
-	 * @param taskCategory
-	 * @param startTime
-	 * @param endTime
-	 * @return
+	 * @param queriedTaskName
+	 * @param queriedTaskCategory
+	 * @param queriedStartTime
+	 * @param queriedEndTime
+	 * @return list of matched tasks
 	 */
 	public List<Task> query(String queriedTaskName,
 			TaskCategory queriedTaskCategory, DateTime queriedStartTime,
@@ -807,6 +816,7 @@ public class Database {
 		taskList.remove(taskId);
 	}
 
+	@SuppressWarnings("unused")
 	private void removeRecord(String gCalTaskId) throws Exception {
 		if (!taskExists(gCalTaskId)) {
 			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);

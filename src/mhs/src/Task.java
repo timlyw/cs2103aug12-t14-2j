@@ -1,3 +1,9 @@
+/**
+ * Superclass Task
+ * 
+ * @author timlyw
+ */
+
 package mhs.src;
 
 import org.joda.time.DateTime;
@@ -29,8 +35,6 @@ public class Task {
 	 * @param taskId
 	 * @param taskName
 	 * @param taskCategory
-	 * @param startDt
-	 * @param endDt
 	 * @param createdDt
 	 * @param updatedDt
 	 * @param syncDt
@@ -59,8 +63,6 @@ public class Task {
 	 * @param taskId
 	 * @param taskName
 	 * @param taskCategory
-	 * @param startDt
-	 * @param endDt
 	 * @param createdDt
 	 * @param updatedDt
 	 * @param syncDt

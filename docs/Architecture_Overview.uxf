@@ -21,7 +21,7 @@
       <h>96</h>
     </coordinates>
     <panel_attributes>Ui
-bg=yellow</panel_attributes>
+</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -44,7 +44,7 @@ bg=yellow</panel_attributes>
       <h>160</h>
     </coordinates>
     <panel_attributes>Application
-bg=green</panel_attributes>
+</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -57,7 +57,7 @@ bg=green</panel_attributes>
     </coordinates>
     <panel_attributes>Database
 fg=
-bg=blue</panel_attributes>
+</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -150,17 +150,6 @@ bg=blue</panel_attributes>
     <additional_attributes>24;64;24;24</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>40</x>
-      <y>128</y>
-      <w>472</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>lt=:</panel_attributes>
-    <additional_attributes>24;24;456;24</additional_attributes>
-  </element>
-  <element>
     <type>com.umlet.element.custom.Text</type>
     <coordinates>
       <x>392</x>
@@ -181,17 +170,6 @@ bg=blue</panel_attributes>
     </coordinates>
     <panel_attributes>Presentation Tier</panel_attributes>
     <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>40</x>
-      <y>320</y>
-      <w>472</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>lt=:</panel_attributes>
-    <additional_attributes>24;24;456;24</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.custom.Text</type>

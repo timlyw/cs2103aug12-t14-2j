@@ -1,9 +1,14 @@
+/**
+ * Task Record File - Handles File I/O operations for tasks in json file
+ *  
+ * @author timlyw
+ */
+
 package mhs.src;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

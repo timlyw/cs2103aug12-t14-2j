@@ -1,3 +1,9 @@
+/**
+ * Json converter for Task
+ * 
+ * @author timlyw
+ */
+
 package mhs.src;
 
 import java.lang.reflect.Type;
