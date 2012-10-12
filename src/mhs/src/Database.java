@@ -21,13 +21,12 @@ public class Database {
 	private TaskRecordFile taskRecordFile;
 	private ConfigFile configFile;
 
-	// Data Views
-	// contains Task objects references
+	// Data Views - contains Task objects references
 
-	private Map<Integer, Task> taskList; // primary task list with index
-											// as key
-	private Map<String, Task> gCalTaskList; // task list with gCalId as
-											// key
+	// primary task list with index as key
+	private Map<Integer, Task> taskList;
+	// task list with gCalId as key
+	private Map<String, Task> gCalTaskList;
 
 	private boolean isRemoteSyncEnabled = true;
 
@@ -141,6 +140,7 @@ public class Database {
 							.getEndDateTime().toString());
 
 			if (updatedGCalEvent == null) {
+				assert (updatedGCalEvent == null);
 				return;
 			}
 
