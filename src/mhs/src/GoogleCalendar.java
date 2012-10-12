@@ -135,7 +135,7 @@ public class GoogleCalendar {
 	 * Returns an event with taskId matching input parameter
 	 * 
 	 * @param taskId
-	 * @return
+	 * @return requested event
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 * @throws ServiceException
@@ -163,8 +163,7 @@ public class GoogleCalendar {
 	 * @param taskTitle
 	 * @param taskStartStr
 	 * @param taskEndStr
-	 * @param taskUpdated
-	 * @return
+	 * @return added event
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
@@ -186,7 +185,7 @@ public class GoogleCalendar {
 	 * @param newTitle
 	 * @param newStartTime
 	 * @param newEndTime
-	 * @return
+	 * @return updated event
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
@@ -284,7 +283,7 @@ public class GoogleCalendar {
 	/**
 	 * Get event list from google calendar
 	 * 
-	 * @return
+	 * @return List of Calendar events
 	 */
 	public List<CalendarEventEntry> getEventList() {
 		return eventList;
@@ -333,7 +332,7 @@ public class GoogleCalendar {
 	 * Creates calendar event entry
 	 * 
 	 * @param taskToAdd
-	 * @return
+	 * @return added event
 	 * @throws IOException
 	 * @throws ServiceException
 	 */

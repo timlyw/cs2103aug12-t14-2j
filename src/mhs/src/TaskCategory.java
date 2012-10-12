@@ -1,3 +1,9 @@
+/**
+ * Task Category enumerated type
+ * 
+ * @author timlyw 
+ */
+
 package mhs.src;
 
 public enum TaskCategory {

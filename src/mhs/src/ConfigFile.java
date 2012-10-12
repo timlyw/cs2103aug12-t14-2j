@@ -1,3 +1,9 @@
+/**
+ * Configuration File - handles File I/O operation for persistent user configuration in json file.
+ * 
+ * @author timlyw
+ */
+
 package mhs.src;
 
 import java.io.File;
@@ -6,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,12 +87,23 @@ public class ConfigFile {
 		inputStream.close();
 	}
 
+	/**
+	 * Saves configuration to json file
+	 * 
+	 * @throws IOException
+	 */
 	public void save() throws IOException {
 		FileWriter fileWriter = new FileWriter(configFile);
 		fileWriter.write(gson.toJson(configParameters));
 		fileWriter.close();
 	}
 
+	/**
+	 * Checks whether configuration parameter exists
+	 * 
+	 * @param parameter
+	 * @return boolean
+	 */
 	public boolean hasConfigParameter(String parameter) {
 		if (configParameters.get(parameter) == null) {
 			return false;
@@ -99,7 +115,7 @@ public class ConfigFile {
 	 * Get Config Parameter - userGoogleUserEmail - googleAuthToken
 	 * 
 	 * @param parameter
-	 * @return
+	 * @return parameter value
 	 */
 	public String getConfigParameter(String parameter) {
 		return configParameters.get(parameter);
@@ -110,7 +126,6 @@ public class ConfigFile {
 	 * 
 	 * @param parameter
 	 * @param value
-	 * @return
 	 * @throws IOException
 	 */
 	public void setConfigParameter(String parameter, String value)

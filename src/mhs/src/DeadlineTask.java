@@ -1,3 +1,9 @@
+/**
+ * Deadline Task - inherits from superclass Task
+ * 
+ * @author timlyw
+ */
+
 package mhs.src;
 
 import org.joda.time.DateTime;
