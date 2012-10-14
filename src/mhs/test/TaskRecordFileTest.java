@@ -1,3 +1,7 @@
+/**
+ * Unit test for Task Record File
+ * @author timlyw
+ */
 package mhs.test;
 
 import static org.junit.Assert.assertEquals;
@@ -71,6 +75,10 @@ public class TaskRecordFileTest {
 	}
 
 	@Test
+	/**
+	 * Tests save and load 
+	 * @throws IOException
+	 */
 	public void testSaveAndLoadTasks() throws IOException {
 
 		Map<Integer, Task> loadTaskList = new LinkedHashMap<Integer, Task>();
@@ -78,6 +86,10 @@ public class TaskRecordFileTest {
 		taskRecordFile.saveTaskList(taskList);
 		loadTaskList = taskRecordFile.loadTaskList();
 
+		// Test size
+		assertEquals(taskList.size(), loadTaskList.size());
+
+		// Test values
 		for (int i = 1; i <= taskList.size(); i++) {
 			assertEquals(taskList.get(i).toString(), loadTaskList.get(i)
 					.toString());
