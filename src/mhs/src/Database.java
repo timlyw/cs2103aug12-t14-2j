@@ -148,7 +148,7 @@ public class Database {
 					localTask.getgCalTaskId(), localTask.getTaskName(),
 					localTask.getStartDateTime().toString(), localTask
 							.getEndDateTime().toString());
-			
+
 			// Update local task sync details
 			DateTime syncDateTime = setSyncTime(updatedGcalEvent);
 			localTask.setTaskLastSync(syncDateTime);
@@ -188,7 +188,7 @@ public class Database {
 
 				// pull sync deleted events
 				System.out.println("Deleting cancelled task");
-				if (gCalEntry.getStatus().getValue().contains("canceled")) {
+				if (googleCalendar.isDeleted(gCalEntry)) {
 
 					// delete local task
 					deleteTaskInTaskList(gCalTaskList.get(gCalEntry
@@ -204,7 +204,7 @@ public class Database {
 
 			} else {
 				// Skip deleted events
-				if (gCalEntry.getStatus().getValue().contains("canceled")) {
+				if (googleCalendar.isDeleted(gCalEntry)) {
 					return;
 				}
 				pullSyncNewTask(gCalEntry);

@@ -446,6 +446,13 @@ public class GoogleCalendar {
 		return queryMaxStartDate.toString();
 	}
 
+	public boolean isDeleted(CalendarEventEntry calEntry) {
+		if (calEntry.getStatus().getValue().contains("canceled")) {
+			return true;
+		}
+		return false;
+	}
+
 	private void displayLine(String displayString) {
 		System.out.println(displayString);
 	}
