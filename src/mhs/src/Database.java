@@ -10,7 +10,6 @@
 package mhs.src;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -291,7 +290,7 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public Database() throws IOException, ServiceException, UnknownHostException {
+	public Database() throws IOException, ServiceException {
 		initalizeDatabase();
 		syncronizeDatabases();
 	}
@@ -343,7 +342,7 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	private void initalizeDatabase() throws IOException, UnknownHostException, ServiceException {
+	private void initalizeDatabase() throws IOException {
 
 		try {
 			configFile = new ConfigFile();
@@ -357,7 +356,6 @@ public class Database {
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			isRemoteSyncEnabled = false;
-			throw e;
 		}
 
 	}
@@ -369,7 +367,7 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	private void initializeGoogleCalendarService() throws IOException,
-			ServiceException, UnknownHostException {
+			ServiceException {
 		if (configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")
 				&& !configFile.getConfigParameter("GOOGLE_AUTH_TOKEN")
 						.isEmpty()) {
@@ -741,6 +739,7 @@ public class Database {
 	}
 
 	private void deleteTaskInTaskList(Task taskToDelete) {
+		taskToDelete.setDeleted(true);
 		DateTime UpdateTime = new DateTime();
 		UpdateTime = DateTime.now().plusMinutes(1);
 		// set updated time further ahead to force sync (timing issues)
