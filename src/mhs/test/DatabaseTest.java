@@ -1,5 +1,5 @@
 /**
- * Unit Testing for Database
+ * Component Test for Database
  * @author timlyw
  */
 package mhs.test;
@@ -45,7 +45,7 @@ public class DatabaseTest {
 	private final static String TEST_TASK_RECORD_FILENAME = "testTaskRecordFile.json";
 
 	@Before
-	public void testDatabase() throws IOException, ServiceException {
+	public void testDatabaseSetup() throws IOException, ServiceException {
 
 		// create test tasks
 		new DateTime();
@@ -73,11 +73,12 @@ public class DatabaseTest {
 		taskList.put(task3.getTaskId(), task3);
 		taskList.put(task4.getTaskId(), task4);
 		taskList.put(task5.getTaskId(), task5);
+
 	}
 
 	@Test
 	/**
-	 * Tests database query
+	 * Tests database query under local environment
 	 * @throws Exception
 	 */
 	public void testQueryDatabase() throws Exception {
@@ -191,10 +192,10 @@ public class DatabaseTest {
 
 	@Test
 	/**
-	 * Test database add, and taskKeyId generator
+	 * Test database add, and taskKeyId generator under local environment
 	 * @throws IOException
 	 */
-	public void testAddToDatabase() throws Exception {
+	public void testAddDatabase() throws Exception {
 
 		// initialize database without sync for testing
 		database = new Database(TEST_TASK_RECORD_FILENAME, true);
@@ -214,18 +215,12 @@ public class DatabaseTest {
 		assertEquals(task.getgCalTaskId(), addedTask.getgCalTaskId());
 		assertEquals(task.getTaskCategory(), addedTask.getTaskCategory());
 
-		assertFalse(task.getTaskCreated().isEqual(addedTask.getTaskCreated()));
-		assertFalse(task.getTaskUpdated().isEqual(addedTask.getTaskUpdated()));
-
 		// Add deadline task
 		Task addedTask2 = database.query(2);
 		assertEquals(task3.getTaskName(), addedTask2.getTaskName());
 		assertEquals(task3.getEndDateTime(), addedTask2.getEndDateTime());
 		assertEquals(task3.getgCalTaskId(), addedTask2.getgCalTaskId());
 		assertEquals(task3.getTaskCategory(), addedTask2.getTaskCategory());
-
-		assertFalse(task3.getTaskCreated().isEqual(addedTask2.getTaskCreated()));
-		assertFalse(task3.getTaskUpdated().isEqual(addedTask2.getTaskUpdated()));
 
 		// Add floating task
 		Task addedTask3 = database.query(3);
@@ -235,14 +230,11 @@ public class DatabaseTest {
 		assertEquals(task5.getgCalTaskId(), addedTask3.getgCalTaskId());
 		assertEquals(task5.getTaskCategory(), addedTask3.getTaskCategory());
 
-		assertFalse(task5.getTaskCreated().isEqual(addedTask3.getTaskCreated()));
-		assertFalse(task5.getTaskUpdated().isEqual(addedTask3.getTaskUpdated()));
-
 	}
 
 	@Test
 	/**
-	 * Tests update database
+	 * Tests update database under local environment
 	 * @throws Exception
 	 */
 	public void testUpdateDatabase() throws Exception {
@@ -257,7 +249,6 @@ public class DatabaseTest {
 
 		System.out.println("before update");
 		queryList = database.query();
-		System.out.println(queryList.get(0).toString());
 
 		Task editTask = task.clone();
 		String newTaskName = "edited! task 1 - meeting";
@@ -303,6 +294,10 @@ public class DatabaseTest {
 	}
 
 	@Test
+	/**
+	 * Test delete under local environment
+	 * @throws Exception
+	 */
 	public void testDeleteDatabase() throws Exception {
 
 		// initialize database without sync for testing
@@ -319,12 +314,6 @@ public class DatabaseTest {
 
 		queryList = database.query();
 
-		Iterator<Task> iterator = queryList.iterator();
-		while (iterator.hasNext()) {
-			Task matchedTask = iterator.next();
-			System.out.println(matchedTask.toString());
-		}
-
 		System.out.println("after deleting task 1 and 2");
 		database.delete(1);
 		database.delete(2);
@@ -340,11 +329,14 @@ public class DatabaseTest {
 			assertTrue(matchedTask.getTaskId() == 3
 					|| matchedTask.getTaskId() == 4
 					|| matchedTask.getTaskId() == 5);
-			System.out.println(matchedTask.toString());
 		}
 	}
 
 	@Test
+	/**
+	 * Tests Sync methods (push-sync new task, push sync existing task, pull-sync new task, pull-sync existing task)
+	 * @throws Exception
+	 */
 	public void testSyncDatabase() throws Exception {
 
 		// Clear database (local and remote)

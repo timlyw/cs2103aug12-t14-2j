@@ -38,7 +38,7 @@ public class TaskRecordFileTest {
 	private final static String TEST_TASK_RECORD_FILENAME = "testTaskRecordFile.json";
 
 	@Before
-	public void initTestFile() throws IOException {
+	public void taskRecordFileSetup() throws IOException {
 
 		taskRecordFile = new TaskRecordFile(TEST_TASK_RECORD_FILENAME);
 

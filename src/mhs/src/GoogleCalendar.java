@@ -54,7 +54,8 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public GoogleCalendar() throws IOException, ServiceException, UnknownHostException {
+	public GoogleCalendar() throws IOException, ServiceException,
+			UnknownHostException {
 		// setup the calendar service with userEmail and userPassword
 		initializeCalendarService();
 		// initialize default query range ( 30 days inclusive of today)
@@ -142,7 +143,8 @@ public class GoogleCalendar {
 	 * @throws ServiceException
 	 */
 	public CalendarEventEntry getEvent(String taskId)
-			throws MalformedURLException, IOException, ServiceException, UnknownHostException {
+			throws MalformedURLException, IOException, ServiceException,
+			UnknownHostException {
 		if (taskId == null) {
 			return null;
 		}
@@ -244,20 +246,19 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void deleteEvent(String taskId) throws IOException, UnknownHostException {
-
-		CalendarEventEntry eventToDelete = null;
+	public void deleteEvent(String taskId) throws IOException,
+			UnknownHostException {
 
 		for (int i = 0; i < eventList.size(); i++) {
+
 			String currId = eventList.get(i).getIcalUID();
 
-			if (currId == null) {
-				continue;
-			}
 			if (currId.equals(taskId)) {
-				eventToDelete = eventList.get(i);
+				CalendarEventEntry eventToDelete = eventList.get(i);
 				try {
-					eventToDelete.delete();
+					if (!isDeleted(eventToDelete)) {
+						eventToDelete.delete();
+					}
 				} catch (ServiceException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -268,11 +269,14 @@ public class GoogleCalendar {
 		}
 	}
 
-	public void deleteAllEvents() throws IOException, ServiceException, UnknownHostException {
+	public void deleteAllEvents() throws IOException, ServiceException,
+			UnknownHostException {
 		for (int i = 0; i < eventList.size(); i++) {
 			CalendarEventEntry eventToDelete = eventList.get(i);
 			try {
-				eventToDelete.delete();
+				if (!isDeleted(eventToDelete)) {
+					eventToDelete.delete();
+				}
 			} catch (ServiceException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -296,7 +300,8 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void pullEvents() throws IOException, ServiceException, UnknownHostException {
+	public void pullEvents() throws IOException, ServiceException,
+			UnknownHostException {
 		URL feedUrl = new URL(URL_EVENT_FEED);
 		CalendarQuery myQuery = new CalendarQuery(feedUrl);
 		myQuery.setMinimumStartTime(queryMinStartDate);
@@ -394,7 +399,8 @@ public class GoogleCalendar {
 	 * 
 	 * @throws AuthenticationException
 	 */
-	private void initializeCalendarService() throws AuthenticationException, UnknownHostException {
+	private void initializeCalendarService() throws AuthenticationException,
+			UnknownHostException {
 		calendarService = new CalendarService(APP_NAME);
 		calendarService.setUserCredentials(userEmail, userPassword);
 		setAuthToken();
@@ -420,7 +426,8 @@ public class GoogleCalendar {
 	 * 
 	 * @param accessToken
 	 */
-	private void initializeCalendarServiceWithAuthToken(String accessToken) throws UnknownHostException {
+	private void initializeCalendarServiceWithAuthToken(String accessToken)
+			throws UnknownHostException {
 		calendarService = new CalendarService(APP_NAME);
 		calendarService.setUserToken(accessToken);
 	}

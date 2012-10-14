@@ -22,7 +22,7 @@ public class GoogleCalendarTest {
 	GoogleCalendar googleCalendar;
 
 	@Before
-	public void testGoogleCalendarInit() throws IOException, ServiceException {
+	public void testGoogleCalendarSetup() throws IOException, ServiceException {
 		googleCalendar = new GoogleCalendar();
 	}
 

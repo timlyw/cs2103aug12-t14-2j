@@ -1,3 +1,7 @@
+/**
+ * Unit test for ConfigFile
+ * @author timlyw
+ */
 package mhs.test;
 
 import static org.junit.Assert.*;
@@ -25,6 +29,10 @@ public class ConfigFileTest {
 	}
 
 	@Test
+	/**
+	 * Test config file set/get config parameter and save
+	 * @throws IOException
+	 */
 	public void configFileTest() throws IOException {
 		ConfigFile configFile = new ConfigFile(TEST_CONFIG_FILE_NAME);
 
@@ -38,6 +46,10 @@ public class ConfigFileTest {
 	}
 
 	@Test
+	/**
+	 * Test config file load
+	 * @throws IOException
+	 */
 	public void configFileTestLoad() throws IOException {
 		ConfigFile configFile = new ConfigFile(TEST_CONFIG_FILE_NAME);
 
