@@ -545,5 +545,18 @@
     "gCalTaskId": "m9o1u59kt3sl2nmvg79g2qvg5c@google.com",
     "isDone": false,
     "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-10-14T16:00:00.000+08:00",
+    "endDateTime": "2012-10-14T18:00:00.000+08:00",
+    "taskId": 47,
+    "taskName": "nus meet",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-10-14T09:09:07.000+08:00",
+    "taskUpdated": "2012-10-14T09:09:07.000+08:00",
+    "taskLastSync": "2012-10-14T09:09:07.000+08:00",
+    "gCalTaskId": "5fk90d61gc2h0ak4faie5auhb4@google.com",
+    "isDone": false,
+    "isDeleted": false
   }
 ]
