@@ -1,3 +1,7 @@
+/**
+ * Unit Testing for Database
+ * @author timlyw
+ */
 package mhs.test;
 
 import static org.junit.Assert.assertEquals;
@@ -13,6 +17,7 @@ import java.util.Map;
 import mhs.src.Database;
 import mhs.src.DeadlineTask;
 import mhs.src.FloatingTask;
+import mhs.src.GoogleCalendar;
 import mhs.src.Task;
 import mhs.src.TaskCategory;
 import mhs.src.TimedTask;
@@ -22,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.ServiceException;
 
 public class DatabaseTest {
@@ -41,32 +47,23 @@ public class DatabaseTest {
 	@Before
 	public void testDatabase() throws IOException, ServiceException {
 
-		// initialize database without sync for testing
-		database = new Database(TEST_TASK_RECORD_FILENAME, true);
-		database.clearDatabase();
-
 		// create test tasks
 		new DateTime();
 		DateTime dt = DateTime.now();
 		new DateTime();
 		DateTime dt2 = DateTime.now();
 		new DateTime();
-		DateTime dt3 = DateTime.now();
-		new DateTime();
-		DateTime dt4 = DateTime.now();
-		new DateTime();
-		DateTime dt5 = DateTime.now();
 
-		task = new TimedTask(1, "task 1 - a meeting", "TIMED", dt, dt2, dt3,
-				dt4, dt5, "null", false, false);
+		task = new TimedTask(1, "task 1 - a meeting", "TIMED", dt, dt2, null,
+				null, null, null, false, false);
 		task2 = new TimedTask(2, "task 2 - a project meeting", "TIMED", dt,
-				dt2, dt3, dt4, dt5, "null", false, false);
+				dt2, null, null, null, null, false, false);
 		task3 = new DeadlineTask(3, "task 3 - assignment due", "DEADLINE", dt,
-				dt2, dt3, dt4, "null", false, false);
+				null, null, null, null, false, false);
 		task4 = new DeadlineTask(4, "task 4 - project due", "DEADLINE", dt,
-				dt2, dt3, dt4, "null", false, false);
-		task5 = new FloatingTask(5, "task 5 - play more games", "FLOATING", dt,
-				dt2, dt3, false, false);
+				null, null, null, null, false, false);
+		task5 = new FloatingTask(5, "task 5 - play more games", "FLOATING",
+				null, null, null, false, false);
 
 		// create new taskList
 		taskList = new LinkedHashMap<Integer, Task>();
@@ -79,174 +76,89 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testSyncDatabase() throws IOException, ServiceException {
-		System.out.println("Sync Test");
-		database.syncronizeDatabases();
-		database.clearDatabase();
-	}
+	/**
+	 * Tests database query
+	 * @throws Exception
+	 */
+	public void testQueryDatabase() throws Exception {
 
-	@Test
-	public void testSyncPushDatabase() throws Exception {
-		// Clear database (local and remote)
-		database = new Database(TEST_TASK_RECORD_FILENAME, false);
-		database.clearDatabase();
-
-		System.out.println("Adding new Tasks to push");
-		database.add(task);
-		database.add(task2);
-
+		// initialize database without sync for testing
 		database = new Database(TEST_TASK_RECORD_FILENAME, true);
-		List<Task> queryTaskList = database.query();
-
-		assertEquals(2, queryTaskList.size());
-	}
-
-	@Test
-	public void testSyncPushNewerTask() throws Exception {
-
-		// Clear database (local and remote)
-		database = new Database(TEST_TASK_RECORD_FILENAME, false);
 		database.clearDatabase();
 
-		// add task and push
-		System.out.println("Adding new task");
-		database.add(task);
-
-		// update task and push
-		Task updatedTask = database.query(1);
-		updatedTask.setTaskName("Task 1 Updated");
-		database.update(updatedTask);
-
-		database.clearLocalDatabase();
-		database.syncronizeDatabases();
-
-		List<Task> queryTaskList = database.query();
-		assertEquals(1, queryTaskList.size());
-
-		Task pushedTask = database.query(1);
-		assertEquals("Task 1 Updated", pushedTask.getTaskName());
-	}
-
-	@Test
-	public void testUpdatedPullSync() throws Exception {
-
-		database.clearDatabase();
-		database.syncronizeDatabases();
-
-		List<Task> tempTasks = database.query();
-		Iterator<Task> iterator = tempTasks.iterator();
-		// while (iterator.hasNext()) {
-		// implement test
-		// }
-
-		if (tempTasks.size() > 1) {
-			// update task to pull
-			tempTasks.get(1).setTaskLastSync(new DateTime().now().minusDays(1));
-
-			database.update(tempTasks.get(1));
-		}
-
-	}
-
-	@Test
-	public void testSyncLocalDeletedTask() throws IOException, ServiceException {
-	}
-
-	@Test
-	public void testClearDatabase() throws Exception {
-		System.out.println("Clearing database Test");
-		database.add(task);
-		database.clearDatabase();
-		queryList = database.query();
-		assertEquals(0, queryList.size());
-	}
-
-	@Test
-	public void testQueryTaskIdDatabase() throws Exception {
-		System.out.println("Query Task Id Test");
-
-		// Query by taskId
 		database.add(task);
 		database.add(task2);
 		database.add(task3);
 		database.add(task4);
 		database.add(task5);
 
+		// Test query by taskId
 		Task queriedTask = database.query(1);
 		assertEquals(queriedTask.getTaskId(), 1);
-	}
 
-	@Test
-	public void testQueryTaskNameDatabase() throws Exception {
-		System.out.println("Query Task Name Test");
-		// Query by Name
-		database.add(task);
-		database.add(task2);
-		database.add(task3);
-		database.add(task4);
-		database.add(task5);
-
+		// Test query by task name
 		// word query
 		queryList = database.query("assignment");
 		assertEquals(queryList.size(), 1);
 		assertEquals(queryList.get(0).getTaskId(), 3);
+		Iterator<Task> iterator = queryList.iterator();
+		while (iterator.hasNext()) {
+			Task matchedTask = iterator.next();
+			assertTrue(matchedTask.getTaskId() == 3);
+		}
 
 		// multiple match query
 		queryList = database.query("meeting");
-		assertEquals(queryList.size(), 2);
+		iterator = queryList.iterator();
+		while (iterator.hasNext()) {
+			Task matchedTask = iterator.next();
+			assertTrue(matchedTask.getTaskId() == 1
+					|| matchedTask.getTaskId() == 2);
+		}
 
 		// substring name query
 		queryList = database.query("meet");
 		assertEquals(queryList.size(), 2);
-	}
 
-	@Test
-	public void testQueryTaskCategoryDatabase() throws Exception {
-		System.out.println("Query Task Category");
-
-		database.add(task);
-		database.add(task2);
-		database.add(task3);
-		database.add(task4);
-		database.add(task5);
-
-		// Query Timed Tasks
-		System.out.println("Query Timed Task");
-		queryList = database.query(TaskCategory.TIMED);
-
-		Iterator<Task> iterator = queryList.iterator();
+		iterator = queryList.iterator();
 		while (iterator.hasNext()) {
 			Task matchedTask = iterator.next();
-			System.out.println(matchedTask.toString());
+			assertTrue(matchedTask.getTaskId() == 1
+					|| matchedTask.getTaskId() == 2);
+		}
+
+		// Test query by task category
+		// Query Timed Tasks
+		queryList = database.query(TaskCategory.TIMED);
+
+		iterator = queryList.iterator();
+		while (iterator.hasNext()) {
+			Task matchedTask = iterator.next();
+			assertTrue(matchedTask.getTaskId() == 1
+					|| matchedTask.getTaskId() == 2);
 		}
 		assertEquals(queryList.size(), 2);
 
 		// Query Deadline Tasks
-		System.out.println("Query Deadline Task");
 		queryList = database.query(TaskCategory.DEADLINE);
 		assertEquals(queryList.size(), 2);
 
 		while (iterator.hasNext()) {
 			Task matchedTask = iterator.next();
-			System.out.println(matchedTask.toString());
+			assertTrue(matchedTask.getTaskId() == 3
+					|| matchedTask.getTaskId() == 4);
 		}
 
 		// Query Floating Tasks
-		System.out.println("Query Floating Task");
 		queryList = database.query(TaskCategory.FLOATING);
 		assertEquals(queryList.size(), 1);
 
 		while (iterator.hasNext()) {
 			Task matchedTask = iterator.next();
-			System.out.println(matchedTask.toString());
+			assertTrue(matchedTask.getTaskId() == 5);
 		}
 
-	}
-
-	@Test
-	public void testQueryDateDatabase() throws Exception {
-		System.out.println("Query Task by Date");
-
+		// Query by date
 		new DateTime();
 		DateTime testStartDt = DateTime.now().minusDays(1).minusHours(1);
 		new DateTime();
@@ -256,38 +168,25 @@ public class DatabaseTest {
 				testEndDt, testStartDt, testStartDt, testStartDt, "null",
 				false, false);
 
-		database.add(task);
-		database.add(task2);
-		database.add(task3);
-		database.add(task4);
-		database.add(task5);
+		database.update(task);
 
+		// Boundary testing
+		// Test on boundary
 		queryList = database.query(testStartDt, testEndDt);
 
-		Iterator<Task> iterator = queryList.iterator();
-		while (iterator.hasNext()) {
-			Task matchedTask = iterator.next();
-			assertEquals(matchedTask.getTaskId(), 1);
-			assertFalse(matchedTask.getTaskId() == 2);
-			assertFalse(matchedTask.getTaskId() == 3);
-			assertFalse(matchedTask.getTaskId() == 4);
-			assertFalse(matchedTask.getTaskId() == 5);
-			System.out.println(matchedTask.toString());
-		}
+		assertEquals(queryList.size(), 1);
+		assertEquals(queryList.get(0).getTaskId(), 1);
 
-		queryList = database.query(testStartDt.minusMinutes(10),
-				testEndDt.plusMinutes(10));
+		// Test around boundary
+		queryList = database.query(testStartDt.minusMinutes(1), testEndDt);
 
-		Iterator<Task> iterator2 = queryList.iterator();
-		while (iterator2.hasNext()) {
-			Task matchedTask = iterator2.next();
-			assertEquals(matchedTask.getTaskId(), 1);
-			assertFalse(matchedTask.getTaskId() == 2);
-			assertFalse(matchedTask.getTaskId() == 3);
-			assertFalse(matchedTask.getTaskId() == 4);
-			assertFalse(matchedTask.getTaskId() == 5);
-			System.out.println(matchedTask.toString());
-		}
+		assertEquals(queryList.size(), 1);
+		assertEquals(queryList.get(0).getTaskId(), 1);
+
+		queryList = database.query(testStartDt, testEndDt.plusMinutes(1));
+
+		assertEquals(queryList.size(), 1);
+		assertEquals(queryList.get(0).getTaskId(), 1);
 	}
 
 	@Test
@@ -296,6 +195,10 @@ public class DatabaseTest {
 	 * @throws IOException
 	 */
 	public void testAddToDatabase() throws Exception {
+
+		// initialize database without sync for testing
+		database = new Database(TEST_TASK_RECORD_FILENAME, true);
+		database.clearDatabase();
 
 		System.out.println("Adding to database...");
 
@@ -338,7 +241,15 @@ public class DatabaseTest {
 	}
 
 	@Test
+	/**
+	 * Tests update database
+	 * @throws Exception
+	 */
 	public void testUpdateDatabase() throws Exception {
+
+		// initialize database without sync for testing
+		database = new Database(TEST_TASK_RECORD_FILENAME, true);
+		database.clearDatabase();
 
 		System.out.println("Test update Database...");
 
@@ -393,6 +304,11 @@ public class DatabaseTest {
 
 	@Test
 	public void testDeleteDatabase() throws Exception {
+
+		// initialize database without sync for testing
+		database = new Database(TEST_TASK_RECORD_FILENAME, true);
+		database.clearDatabase();
+
 		System.out.println("Adding to database...");
 
 		database.add(task);
@@ -401,9 +317,7 @@ public class DatabaseTest {
 		database.add(task4);
 		database.add(task5);
 
-		System.out.println("before delete");
 		queryList = database.query();
-		assertEquals(queryList.size(), 5);
 
 		Iterator<Task> iterator = queryList.iterator();
 		while (iterator.hasNext()) {
@@ -430,9 +344,70 @@ public class DatabaseTest {
 		}
 	}
 
+	@Test
+	public void testSyncDatabase() throws Exception {
+
+		// Clear database (local and remote)
+		database = new Database(TEST_TASK_RECORD_FILENAME, false);
+		database.clearDatabase();
+
+		// we use a separate GoogleCalendar to query events (need to pullEvents
+		// manually)
+		GoogleCalendar gCal = new GoogleCalendar();
+
+		// Test push new task sync
+		System.out.println("Adding new Tasks to push");
+		database.add(task);
+		database.add(task2);
+
+		queryList = database.query();
+		gCal.pullEvents();
+
+		assertTrue(gCal.getEvent(queryList.get(0).getgCalTaskId()) != null);
+		assertTrue(gCal.getEvent(queryList.get(1).getgCalTaskId()) != null);
+
+		// Test push updated task sync
+		Task updatedTask = queryList.get(0);
+		updatedTask.setTaskName("Updated Task");
+		database.update(updatedTask);
+		gCal.pullEvents();
+
+		Task queryTask = database.query(updatedTask.getTaskId());
+
+		assertEquals(updatedTask.getTaskName(),
+				gCal.getEvent(queryTask.getgCalTaskId()).getTitle()
+						.getPlainText());
+
+		// Test pull new task sync
+		CalendarEventEntry createdEvent = gCal.createEvent(task3);
+		database.syncronizeDatabases();
+
+		queryList = database.query(task3.getTaskName());
+		assertEquals(1, queryList.size());
+		assertEquals(createdEvent.getIcalUID(), queryList.get(0)
+				.getgCalTaskId());
+
+		// Test pull newer task sync
+		String updatedEventName = "Updated Event on Google";
+		CalendarEventEntry updatedCreatedEvent = gCal.updateEvent(createdEvent
+				.getIcalUID(), updatedEventName, task3.getStartDateTime()
+				.toString(), task3.getEndDateTime().toString());
+		database.syncronizeDatabases();
+
+		queryList = database.query(updatedCreatedEvent.getTitle()
+				.getPlainText());
+
+		assertEquals(1, queryList.size());
+		assertEquals(updatedCreatedEvent.getIcalUID(), queryList.get(0)
+				.getgCalTaskId());
+		assertEquals(updatedCreatedEvent.getTitle().getPlainText(), queryList
+				.get(0).getTaskName());
+
+	}
+
 	@After
 	public void testAfter() throws IOException, ServiceException {
-		// database.clearDatabase();
 		System.out.println(System.lineSeparator());
+		database.clearDatabase();
 	}
 }
