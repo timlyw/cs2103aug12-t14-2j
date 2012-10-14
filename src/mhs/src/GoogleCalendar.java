@@ -339,15 +339,21 @@ public class GoogleCalendar {
 	 */
 	public CalendarEventEntry createEvent(Task taskToAdd) throws IOException,
 			ServiceException, UnknownHostException {
+
 		if (taskToAdd.taskCategory.equals(TaskCategory.FLOATING)) {
 			return null;
 		}
+
 		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
-		CalendarEventEntry event = constructEvent(taskToAdd.getTaskName(),
+		CalendarEventEntry eventToAdd = constructEvent(taskToAdd.getTaskName(),
 				taskToAdd.getStartDateTime().toString(), taskToAdd
 						.getEndDateTime().toString());
-		pullEvents();
-		return calendarService.insert(postURL, event);
+
+		CalendarEventEntry addedEvent = calendarService.insert(postURL,
+				eventToAdd);
+		eventList.add(addedEvent);
+
+		return addedEvent;
 	}
 
 	/**
@@ -439,6 +445,13 @@ public class GoogleCalendar {
 
 	public String getQueryMaxStartDate() {
 		return queryMaxStartDate.toString();
+	}
+
+	public boolean isDeleted(CalendarEventEntry calEntry) {
+		if (calEntry.getStatus().getValue().contains("canceled")) {
+			return true;
+		}
+		return false;
 	}
 
 	private void displayLine(String displayString) {
