@@ -1,6 +1,7 @@
 package mhs.src;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import javax.management.Query;
@@ -36,6 +37,8 @@ public class Processor {
 			try {
 				dataHandler = new Database();
 				commandParser = new CommandParser();
+			} catch(UnknownHostException e) {
+				e.printStackTrace();
 			} catch (ServiceException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

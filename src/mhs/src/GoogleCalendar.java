@@ -12,6 +12,7 @@ package mhs.src;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
@@ -53,7 +54,7 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public GoogleCalendar() throws IOException, ServiceException {
+	public GoogleCalendar() throws IOException, ServiceException, UnknownHostException {
 		// setup the calendar service with userEmail and userPassword
 		initializeCalendarService();
 		// initialize default query range ( 30 days inclusive of today)
@@ -76,7 +77,7 @@ public class GoogleCalendar {
 	 * @throws ServiceException
 	 */
 	public GoogleCalendar(String accessToken) throws IOException,
-			ServiceException {
+			ServiceException, UnknownHostException {
 		// setup the calendar service with userEmail and userPassword
 		initializeCalendarServiceWithAuthToken(accessToken);
 		// initialize default query range ( 30 days inclusive of today)
@@ -99,7 +100,7 @@ public class GoogleCalendar {
 	 */
 	public GoogleCalendar(String accessToken, String minStartDateToQuery,
 			String maxStartDateExclusiveToQuery) throws IOException,
-			ServiceException {
+			ServiceException, UnknownHostException {
 		// setup the calendar service with userEmail and userPassword
 		initializeCalendarService();
 		// initialize query
@@ -141,7 +142,7 @@ public class GoogleCalendar {
 	 * @throws ServiceException
 	 */
 	public CalendarEventEntry getEvent(String taskId)
-			throws MalformedURLException, IOException, ServiceException {
+			throws MalformedURLException, IOException, ServiceException, UnknownHostException {
 		if (taskId == null) {
 			return null;
 		}
@@ -169,7 +170,7 @@ public class GoogleCalendar {
 	 */
 	public CalendarEventEntry createEvent(String taskTitle,
 			String taskStartStr, String taskEndStr) throws IOException,
-			ServiceException {
+			ServiceException, UnknownHostException {
 		URL postURL = new URL(String.format(URL_CREATE_EVENT, userEmail));
 		CalendarEventEntry event = constructEvent(taskTitle, taskStartStr,
 				taskEndStr);
@@ -191,7 +192,7 @@ public class GoogleCalendar {
 	 */
 	public CalendarEventEntry updateEvent(String taskId, String newTitle,
 			String newStartTime, String newEndTime) throws IOException,
-			ServiceException {
+			ServiceException, UnknownHostException {
 
 		CalendarEventEntry event = getEvent(taskId);
 
@@ -243,7 +244,7 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void deleteEvent(String taskId) throws IOException {
+	public void deleteEvent(String taskId) throws IOException, UnknownHostException {
 
 		CalendarEventEntry eventToDelete = null;
 
@@ -267,7 +268,7 @@ public class GoogleCalendar {
 		}
 	}
 
-	public void deleteAllEvents() throws IOException, ServiceException {
+	public void deleteAllEvents() throws IOException, ServiceException, UnknownHostException {
 		for (int i = 0; i < eventList.size(); i++) {
 			CalendarEventEntry eventToDelete = eventList.get(i);
 			try {
@@ -295,7 +296,7 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void pullEvents() throws IOException, ServiceException {
+	public void pullEvents() throws IOException, ServiceException, UnknownHostException {
 		URL feedUrl = new URL(URL_EVENT_FEED);
 		CalendarQuery myQuery = new CalendarQuery(feedUrl);
 		myQuery.setMinimumStartTime(queryMinStartDate);
@@ -337,7 +338,7 @@ public class GoogleCalendar {
 	 * @throws ServiceException
 	 */
 	public CalendarEventEntry createEvent(Task taskToAdd) throws IOException,
-			ServiceException {
+			ServiceException, UnknownHostException {
 		if (taskToAdd.taskCategory.equals(TaskCategory.FLOATING)) {
 			return null;
 		}
@@ -387,7 +388,7 @@ public class GoogleCalendar {
 	 * 
 	 * @throws AuthenticationException
 	 */
-	private void initializeCalendarService() throws AuthenticationException {
+	private void initializeCalendarService() throws AuthenticationException, UnknownHostException {
 		calendarService = new CalendarService(APP_NAME);
 		calendarService.setUserCredentials(userEmail, userPassword);
 		setAuthToken();
@@ -401,7 +402,7 @@ public class GoogleCalendar {
 	 * @throws AuthenticationException
 	 */
 	public void initializeCalendarService(String userEmail, String userPassword)
-			throws AuthenticationException {
+			throws AuthenticationException, UnknownHostException {
 		calendarService = new CalendarService(APP_NAME);
 		calendarService.setUserCredentials(userEmail, userPassword);
 		setAuthToken();
@@ -413,18 +414,18 @@ public class GoogleCalendar {
 	 * 
 	 * @param accessToken
 	 */
-	private void initializeCalendarServiceWithAuthToken(String accessToken) {
+	private void initializeCalendarServiceWithAuthToken(String accessToken) throws UnknownHostException {
 		calendarService = new CalendarService(APP_NAME);
 		calendarService.setUserToken(accessToken);
 	}
 
-	private void setAuthToken() {
+	private void setAuthToken() throws UnknownHostException {
 		UserToken auth_token = (UserToken) calendarService
 				.getAuthTokenFactory().getAuthToken();
 		authToken = auth_token.getValue();
 	}
 
-	public String getAuthToken() {
+	public String getAuthToken() throws UnknownHostException {
 		if (authToken != null) {
 			return authToken;
 		}

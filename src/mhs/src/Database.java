@@ -10,6 +10,7 @@
 package mhs.src;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -301,7 +302,7 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public Database() throws IOException, ServiceException {
+	public Database() throws IOException, ServiceException, UnknownHostException {
 		initalizeDatabase();
 		syncronizeDatabases();
 	}
@@ -353,7 +354,7 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	private void initalizeDatabase() throws IOException {
+	private void initalizeDatabase() throws IOException, UnknownHostException, ServiceException {
 
 		try {
 			configFile = new ConfigFile();
@@ -367,6 +368,7 @@ public class Database {
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			isRemoteSyncEnabled = false;
+			throw e;
 		}
 
 	}
@@ -378,7 +380,7 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	private void initializeGoogleCalendarService() throws IOException,
-			ServiceException {
+			ServiceException, UnknownHostException {
 		if (configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")
 				&& !configFile.getConfigParameter("GOOGLE_AUTH_TOKEN")
 						.isEmpty()) {
