@@ -3,7 +3,6 @@ package mhs.src;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
-
 import org.joda.time.DateTime;
 
 import com.google.gdata.util.ServiceException;
@@ -24,6 +23,8 @@ public class Processor {
 	private CommandParser commandParser;
 	private Database dataHandler;
 
+	// private Stack<Task> taskLog;
+
 	/**
 	 * constructor to initialize sync
 	 */
@@ -32,7 +33,7 @@ public class Processor {
 			try {
 				dataHandler = new Database();
 				commandParser = new CommandParser();
-			} catch(UnknownHostException e) {
+			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			} catch (ServiceException e) {
 				// TODO Auto-generated catch block
@@ -45,7 +46,27 @@ public class Processor {
 	}
 
 	public String getCommandFeedback(String command) {
-		return "Command feedback for " + command;
+		String screenOutput = null;
+		try {
+			// *********add && matchedTasks.size()>0
+			if (isInteger(command)) {
+				if (validateSelectionCommand(command)) {
+					screenOutput = "Command-"+previousCommand.getCommandEnum()+" will be performed on Task number -"+command;
+					// empty list if matching index found
+				} else {
+					screenOutput = "That is not a valid index number";
+				}
+
+			} else {
+				Command userCommand = commandParser.getParsedCommand(command);
+				// store last command
+				screenOutput="Command-"+userCommand.getCommandEnum()+" will be performed on event -"+userCommand.getTaskName();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return screenOutput;
 	}
 
 	public String executeCommand(String command) throws IOException {
@@ -177,7 +198,7 @@ public class Processor {
 		return outputString;
 	}
 
-	private Task createEditedTask(Command inputCommand, Task taskToEdit) {
+	public Task createEditedTask(Command inputCommand, Task taskToEdit) {
 		// checks kind of task :floating/timed/deadline
 		int typeCount = 0;
 		if (inputCommand.getStartDate() != null) {
@@ -291,7 +312,7 @@ public class Processor {
 		}
 	}
 
-	private Task createTaskToAdd(Command inputCommand) {
+	public Task createTaskToAdd(Command inputCommand) {
 		// checks kind of task :floating/timed/deadline
 		int typeCount = 0;
 		if (inputCommand.getStartDate() != null) {
