@@ -1,11 +1,14 @@
 package mhs.src;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
 import org.joda.time.DateTime;
 
 import com.google.gdata.util.ServiceException;
+
 
 /**
  * 
@@ -44,6 +47,10 @@ public class Processor {
 			e.printStackTrace();
 		}
 	}
+	
+	public boolean isPasswordExpected() {
+		return false;
+	}
 
 	public String getCommandFeedback(String command) {
 		String screenOutput = null;
@@ -69,7 +76,7 @@ public class Processor {
 		return screenOutput;
 	}
 
-	public String executeCommand(String command) throws IOException {
+	public String executeCommand(String command) {
 		String screenOutput = null;
 		try {
 			// *********add && matchedTasks.size()>0
@@ -189,7 +196,7 @@ public class Processor {
 			// create task
 			Task editedTask = createEditedTask(userCommand, resultList.get(0));
 			executeTask("edit", editedTask);
-			outputString = "Edited Task";
+			outputString = "Edited Task - '"+resultList.get(0).getTaskName()+"'";
 		}
 		// if multiple matches are found display the list
 		else {
@@ -270,7 +277,7 @@ public class Processor {
 		// if only 1 match is found then display it
 		else if (resultList.size() == 1) {
 			executeTask("remove", resultList.get(0));
-			outputString = "Deleted Task - " + resultList.get(0).getTaskName();
+			outputString = "Deleted Task - '" + resultList.get(0).getTaskName()+"'";
 		}
 		// if multiple matches are found display the list
 		else {
@@ -284,9 +291,10 @@ public class Processor {
 		String outputString = new String();
 		for (Task selectedTask : resultList) {
 			outputString += count + ". " + selectedTask.getTaskName() + "-"
-					+ selectedTask.getTaskCategory() + "#"
+					+ selectedTask.getTaskCategory()+"\n";
+				/* + "#"
 					+ selectedTask.getStartDateTime() + "/"
-					+ selectedTask.getEndDateTime() + "\n";
+					+ selectedTask.getEndDateTime() + "\n";*/
 			count++;
 		}
 		return outputString;
@@ -303,12 +311,7 @@ public class Processor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return "Task: " + newTask.getTaskName() + "@"
-					+ userCommand.getStartDate() + "@"
-					+ newTask.getEndDateTime() + "@"
-					+ newTask.getTaskCategory() + "#"
-					+ newTask.getStartDateTime() + " to "
-					+ newTask.getEndDateTime() + "was successfully added";
+			return "A "+newTask.getTaskCategory()+" task - '"+newTask.getTaskName()+"' was successfully added";
 		}
 	}
 
