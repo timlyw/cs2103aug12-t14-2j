@@ -92,6 +92,7 @@ public class UserInterface extends JFrame {
 
 		InputBoxKeyListener inputBoxKeyListener = new InputBoxKeyListener();
 		inputBox.addKeyListener(inputBoxKeyListener);
+		passwordBox.addKeyListener(inputBoxKeyListener);
 	}
 
 	// set the default method to close the frame
