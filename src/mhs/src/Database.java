@@ -142,7 +142,7 @@ public class Database {
 		 */
 		private void pushSyncExistingTask(Task localTask) throws IOException,
 				ServiceException {
-
+			
 			// update remote task
 			CalendarEventEntry updatedGcalEvent = googleCalendar.updateEvent(
 					localTask.getgCalTaskId(), localTask.getTaskName(),
@@ -682,7 +682,7 @@ public class Database {
 	}
 
 	/**
-	 * Undeletes a task
+	 * Undeletes a task (deprecated due to Google Calendar Sync, manually re-add task instead) 
 	 * 
 	 * @param taskId
 	 * @throws Exception

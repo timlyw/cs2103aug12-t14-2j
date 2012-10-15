@@ -70,6 +70,7 @@ public class GoogleCalendarTest {
 		testEvent = googleCalendar.getEvent(testEvent.getIcalUID());
 
 		assertTrue(googleCalendar.isDeleted(testEvent));
+		
 	}
 
 	@After
