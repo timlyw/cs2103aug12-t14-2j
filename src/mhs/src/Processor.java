@@ -47,6 +47,10 @@ public class Processor {
 			e.printStackTrace();
 		}
 	}
+	
+	public boolean isPasswordExpected() {
+		return false;
+	}
 
 	public String getCommandFeedback(String command) {
 		String screenOutput = null;
@@ -72,7 +76,7 @@ public class Processor {
 		return screenOutput;
 	}
 
-	public String executeCommand(String command) throws IOException {
+	public String executeCommand(String command) {
 		String screenOutput = null;
 		try {
 			// *********add && matchedTasks.size()>0

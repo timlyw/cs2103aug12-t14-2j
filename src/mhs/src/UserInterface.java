@@ -12,12 +12,12 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.IOException;
 
 import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -57,14 +57,11 @@ public class UserInterface extends JFrame {
 	private static final int ENTER_KEY = KeyEvent.VK_ENTER;
 	private static final Color FRAME_COLOR = new Color(100, 100, 255);
 
-	private JPanel framePanel = new JPanel(); // framePanel will be used to
-												// contain all other display
-												// components
-	private JTextArea displayScreen = new JTextArea(); // used to display
-														// command response
+	private JPanel framePanel = new JPanel(); // framePanel will be used to contain all other display components
+	private JTextArea displayScreen = new JTextArea(); // used to display command response
 	private JTextField inputBox = new JTextField(); // used to get user input
-	private JPopupMenu helperScreen = new JPopupMenu(); // used to display
-														// feedback to user
+	private JPasswordField passwordBox = new JPasswordField();
+	private JPopupMenu helperScreen = new JPopupMenu(); // used to display feedback to user
 
 	private Processor processor = new Processor();
 
@@ -196,8 +193,11 @@ public class UserInterface extends JFrame {
 				INPUT_BOX_HEIGHT_IMPORTANCE);
 		Box inputBoxContainer = createContainerBox(inputBox,
 				INPUT_BOX_EXTERNAL_PADDING);
+		Box passwordBoxContainer = createContainerBox(passwordBox,
+				INPUT_BOX_EXTERNAL_PADDING);
 		framePanel.add(inputBoxContainer, inputGbc);
-	}
+		framePanel.add(passwordBoxContainer, inputGbc);
+	} 
 
 	private void formatInputBox() {
 		EmptyBorder paddingBorder = createPaddingBorder(INPUT_BOX_INTERNAL_PADDING);
@@ -233,6 +233,26 @@ public class UserInterface extends JFrame {
 		EmptyBorder paddingBorder = new EmptyBorder(padding, padding, padding,
 				padding);
 		return paddingBorder;
+	}
+	
+	private void switchToPasswordBox() {
+		inputBox.setVisible(false);
+		passwordBox.setVisible(true);
+		passwordBox.requestFocus();
+	}
+	
+	private void switchToInputBox() {
+		inputBox.setVisible(true);
+		passwordBox.setVisible(false);
+		inputBox.requestFocus();
+	}
+	
+	private void selectInputType() {
+		if(processor.isPasswordExpected()) {
+			switchToPasswordBox();
+		} else {
+			switchToInputBox();
+		}	
 	}
 
 	// meant to listen to inputBox for changes in text
@@ -270,14 +290,11 @@ public class UserInterface extends JFrame {
 	class InputBoxKeyListener implements KeyListener {
 		public void keyPressed(KeyEvent arg0) {
 			if (arg0.getKeyCode() == ENTER_KEY) {
-				try {
-					sendCommandToProcessor();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				sendCommandToProcessor();
 				hideHelper();
 				inputBox.setText("");
+				passwordBox.setText("");
+				selectInputType();
 			}
 		}
 
@@ -287,7 +304,7 @@ public class UserInterface extends JFrame {
 		public void keyTyped(KeyEvent arg0) {
 		}
 
-		private void sendCommandToProcessor() throws IOException {
+		private void sendCommandToProcessor() {
 			String command = inputBox.getText();
 			String response = processor.executeCommand(command);
 			displayScreen.setText(response);
