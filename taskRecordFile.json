@@ -494,7 +494,7 @@
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-06T22:03:06.497+08:00",
     "taskUpdated": "2012-10-06T22:03:06.497+08:00",
-    "taskLastSync": "2012-10-06T22:03:05.000+08:00",
+    "taskLastSync": "2012-10-15T20:51:30.820+08:00",
     "gCalTaskId": "46pkn5j0nj1qqqs1pt0ugrgomc@google.com",
     "isDone": false,
     "isDeleted": false
@@ -835,11 +835,11 @@
     "taskName": "nexus",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-15T00:41:33.000+08:00",
-    "taskUpdated": "2012-10-15T00:41:33.000+08:00",
+    "taskUpdated": "2012-10-15T22:02:02.928+08:00",
     "taskLastSync": "2012-10-15T00:41:33.000+08:00",
     "gCalTaskId": "me5ikgq8vs1onhkmeteucts054@google.com",
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 71,
@@ -891,7 +891,7 @@
     "taskName": "go ",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-15T10:09:45.678+08:00",
-    "taskUpdated": "2012-10-15T10:56:43.829+08:00",
+    "taskUpdated": "2012-10-15T22:02:02.928+08:00",
     "taskLastSync": "2012-10-15T10:09:45.000+08:00",
     "gCalTaskId": "4uql64cn5b0rp5k2vr7iloe3cg@google.com",
     "isDone": false,
@@ -903,11 +903,11 @@
     "taskName": "run in NUS ",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-15T10:10:08.176+08:00",
-    "taskUpdated": "2012-10-15T10:10:08.176+08:00",
+    "taskUpdated": "2012-10-15T22:02:02.928+08:00",
     "taskLastSync": "2012-10-15T10:10:07.000+08:00",
     "gCalTaskId": "f0o1d3ie9pbgnd7adbi68h2tk4@google.com",
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-10-15T19:00:00.000+08:00",
@@ -915,7 +915,7 @@
     "taskName": "clean car ",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-15T10:11:21.360+08:00",
-    "taskUpdated": "2012-10-15T10:56:43.829+08:00",
+    "taskUpdated": "2012-10-15T22:02:02.928+08:00",
     "taskLastSync": "2012-10-15T10:11:21.000+08:00",
     "gCalTaskId": "q9p8j5o4fcf21tera245euvai0@google.com",
     "isDone": false,
@@ -950,9 +950,32 @@
     "taskName": "clean car",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-15T10:11:54.000+08:00",
-    "taskUpdated": "2012-10-15T10:11:54.000+08:00",
+    "taskUpdated": "2012-10-15T22:02:02.928+08:00",
     "taskLastSync": "2012-10-15T10:11:54.000+08:00",
     "gCalTaskId": "gc1ca8dvcl9mk5cefamanq7o1o@google.com",
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "endDateTime": "2012-10-15T19:00:00.000+08:00",
+    "taskId": 81,
+    "taskName": "get a nexus",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-10-15T20:51:30.491+08:00",
+    "taskUpdated": "2012-10-15T20:51:30.491+08:00",
+    "taskLastSync": "2012-10-15T20:51:30.491+08:00",
+    "gCalTaskId": "p3kgs2qbku196la5pja7hsr33g@google.com",
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 82,
+    "taskName": "sunc ",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-10-15T20:51:43.863+08:00",
+    "taskUpdated": "2012-10-15T20:51:43.863+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
     "isDone": false,
     "isDeleted": false
   }
