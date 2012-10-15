@@ -10,6 +10,7 @@
 package mhs.src;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -142,7 +143,7 @@ public class Database {
 		 */
 		private void pushSyncExistingTask(Task localTask) throws IOException,
 				ServiceException {
-			
+
 			// update remote task
 			CalendarEventEntry updatedGcalEvent = googleCalendar.updateEvent(
 					localTask.getgCalTaskId(), localTask.getTaskName(),
@@ -276,9 +277,8 @@ public class Database {
 		 */
 		private DateTime setSyncTime(CalendarEventEntry gCalEntry) {
 			DateTime syncDateTime = new DateTime();
-			if (gCalEntry.getUpdated() == null) {
-				gCalEntry.setUpdated(com.google.gdata.data.DateTime.now());
-			}
+			gCalEntry.setUpdated(com.google.gdata.data.DateTime.now());
+
 			syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
 			return syncDateTime;
 		}
@@ -323,17 +323,13 @@ public class Database {
 	private void initalizeDatabase(String taskRecordFileName)
 			throws IOException {
 
-		try {
-			configFile = new ConfigFile();
-			taskRecordFile = new TaskRecordFile(taskRecordFileName);
-			taskList = taskRecordFile.getTaskList();
-			gCalTaskList = taskRecordFile.getGCalTaskList();
+		configFile = new ConfigFile();
+		taskRecordFile = new TaskRecordFile(taskRecordFileName);
+		taskList = taskRecordFile.getTaskList();
+		gCalTaskList = taskRecordFile.getGCalTaskList();
 
-			syncronize = new Syncronize();
-			initializeGoogleCalendarService();
-		} catch (ServiceException e) {
-			isRemoteSyncEnabled = false;
-		}
+		syncronize = new Syncronize();
+		initializeGoogleCalendarService();
 	}
 
 	/**
@@ -344,19 +340,14 @@ public class Database {
 	 */
 	private void initalizeDatabase() throws IOException {
 
-		try {
-			configFile = new ConfigFile();
+		configFile = new ConfigFile();
 
-			taskRecordFile = new TaskRecordFile();
-			taskList = taskRecordFile.getTaskList();
-			gCalTaskList = taskRecordFile.getGCalTaskList();
+		taskRecordFile = new TaskRecordFile();
+		taskList = taskRecordFile.getTaskList();
+		gCalTaskList = taskRecordFile.getGCalTaskList();
 
-			syncronize = new Syncronize();
-			initializeGoogleCalendarService();
-		} catch (ServiceException e) {
-			e.printStackTrace();
-			isRemoteSyncEnabled = false;
-		}
+		syncronize = new Syncronize();
+		initializeGoogleCalendarService();
 
 	}
 
@@ -366,14 +357,24 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	private void initializeGoogleCalendarService() throws IOException,
-			ServiceException {
+	private void initializeGoogleCalendarService() {
 		if (configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")
 				&& !configFile.getConfigParameter("GOOGLE_AUTH_TOKEN")
 						.isEmpty()) {
-			googleCalendar = new GoogleCalendar(
-					configFile.getConfigParameter("GOOGLE_AUTH_TOKEN"));
-			saveGoogleAuthToken();
+			try {
+				googleCalendar = new GoogleCalendar(
+						configFile.getConfigParameter("GOOGLE_AUTH_TOKEN"));
+				saveGoogleAuthToken();
+			} catch (UnknownHostException e) {
+				isRemoteSyncEnabled = false;
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -682,7 +683,8 @@ public class Database {
 	}
 
 	/**
-	 * Undeletes a task (deprecated due to Google Calendar Sync, manually re-add task instead) 
+	 * Undeletes a task (deprecated due to Google Calendar Sync, manually re-add
+	 * task instead)
 	 * 
 	 * @param taskId
 	 * @throws Exception
