@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 import org.joda.time.DateTime;
 
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 /**
@@ -22,9 +23,11 @@ public class Processor {
 	private List<Task> matchedTasks;
 	private CommandParser commandParser;
 	private Database dataHandler;
-
-	// private Stack<Task> taskLog;
-
+	private boolean usernameIsExpected = false;
+	private boolean passwordIsExpected = false;
+	private String username;
+	private String password;
+	
 	/**
 	 * constructor to initialize sync
 	 */
@@ -46,14 +49,13 @@ public class Processor {
 	}
 
 	public boolean isPasswordExpected() {
-		return false;
+		return passwordIsExpected;
 	}
 
 	public String getCommandFeedback(String command) {
 		String screenOutput = null;
 		try {
-			// *********add && matchedTasks.size()>0
-			if (isInteger(command)) {
+			if (isInteger(command) && matchedTasks.size() > 0) {
 				if (validateSelectionCommand(command)) {
 					screenOutput = "Command-"
 							+ previousCommand.getCommandEnum()
@@ -92,10 +94,24 @@ public class Processor {
 				}
 
 			} else {
-				Command userCommand = commandParser.getParsedCommand(command);
-				// store last command
-				previousCommand = userCommand;
-				screenOutput = processCommand(userCommand);
+				if (usernameIsExpected) {
+					username = command; 
+					usernameIsExpected = false;
+					passwordIsExpected = true;
+					screenOutput = "Enter password";
+				} 
+				else if(passwordIsExpected){
+					password = command;
+					passwordIsExpected = false;
+					screenOutput = authenticateUser(username,password);
+				}
+				else {
+					Command userCommand = commandParser
+							.getParsedCommand(command);
+					// store last command
+					previousCommand = userCommand;
+					screenOutput = processCommand(userCommand);
+				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -111,6 +127,12 @@ public class Processor {
 		} else {
 			return false;
 		}
+	}
+	
+	private String authenticateUser(String userName, String password) throws AuthenticationException, IOException
+	{
+		dataHandler.authenticateUserGoogleAccount(userName, password);
+		return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
 	}
 
 	private static boolean isInteger(String input) {
@@ -166,6 +188,7 @@ public class Processor {
 			userOutputString = searchTask(userCommand);
 			break;
 		case sync:
+			userOutputString = loginUser(userCommand);
 			break;
 		case undo:
 			userOutputString = undoTask();
@@ -174,6 +197,13 @@ public class Processor {
 			userOutputString = MESSAGE_UNKNOWN_COMMAND;
 		}
 		return userOutputString;
+	}
+
+	private String loginUser(Command inputCommand) {
+		String outputString = new String();
+		outputString = "Enter Google username . e.g: tom.sawyer@gmail.com ";
+		usernameIsExpected = true;
+		return outputString;
 	}
 
 	private String undoTask() {
@@ -417,6 +447,7 @@ public class Processor {
 		default:
 			return false;
 		}
+
 		return true;
 	}
 }
