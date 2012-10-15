@@ -254,6 +254,16 @@ public class UserInterface extends JFrame {
 			switchToInputBox();
 		}	
 	}
+	
+	private String getInput() {
+		String input;
+		if(processor.isPasswordExpected()) {
+			input = new String(passwordBox.getPassword());
+		} else {
+			input = inputBox.getText();
+		}
+		return input;
+	}
 
 	// meant to listen to inputBox for changes in text
 	// when text is changed, it gets feedback on the text from processor
@@ -278,7 +288,7 @@ public class UserInterface extends JFrame {
 				return;
 			}
 			String feedback = processor.getCommandFeedback(command);
-			showHelper(feedback + "\n test next line");
+			showHelper(feedback);
 			setInputBoxToActive();
 		}
 	}
@@ -305,7 +315,7 @@ public class UserInterface extends JFrame {
 		}
 
 		private void sendCommandToProcessor() {
-			String command = inputBox.getText();
+			String command = getInput();
 			String response = processor.executeCommand(command);
 			displayScreen.setText(response);
 		}
