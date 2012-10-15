@@ -1,14 +1,11 @@
 package mhs.src;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
 import org.joda.time.DateTime;
 
 import com.google.gdata.util.ServiceException;
-
 
 /**
  * 
@@ -47,7 +44,7 @@ public class Processor {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public boolean isPasswordExpected() {
 		return false;
 	}
@@ -58,7 +55,9 @@ public class Processor {
 			// *********add && matchedTasks.size()>0
 			if (isInteger(command)) {
 				if (validateSelectionCommand(command)) {
-					screenOutput = "Command-"+previousCommand.getCommandEnum()+" will be performed on Task number -"+command;
+					screenOutput = "Command-"
+							+ previousCommand.getCommandEnum()
+							+ " will be performed on Task number -" + command;
 					// empty list if matching index found
 				} else {
 					screenOutput = "That is not a valid index number";
@@ -67,7 +66,9 @@ public class Processor {
 			} else {
 				Command userCommand = commandParser.getParsedCommand(command);
 				// store last command
-				screenOutput="Command-"+userCommand.getCommandEnum()+" will be performed on event -"+userCommand.getTaskName();
+				screenOutput = "Command-" + userCommand.getCommandEnum()
+						+ " will be performed on event -"
+						+ userCommand.getTaskName();
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -182,7 +183,7 @@ public class Processor {
 	}
 
 	private String editTask(Command userCommand) throws Exception {
-		List<Task> resultList = queryTask(userCommand);
+		List<Task> resultList = queryEditedTask(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
 		// outputString =
@@ -196,7 +197,8 @@ public class Processor {
 			// create task
 			Task editedTask = createEditedTask(userCommand, resultList.get(0));
 			executeTask("edit", editedTask);
-			outputString = "Edited Task - '"+resultList.get(0).getTaskName()+"'";
+			outputString = "Edited Task - '" + resultList.get(0).getTaskName()
+					+ "'";
 		}
 		// if multiple matches are found display the list
 		else {
@@ -277,7 +279,8 @@ public class Processor {
 		// if only 1 match is found then display it
 		else if (resultList.size() == 1) {
 			executeTask("remove", resultList.get(0));
-			outputString = "Deleted Task - '" + resultList.get(0).getTaskName()+"'";
+			outputString = "Deleted Task - '" + resultList.get(0).getTaskName()
+					+ "'";
 		}
 		// if multiple matches are found display the list
 		else {
@@ -291,10 +294,11 @@ public class Processor {
 		String outputString = new String();
 		for (Task selectedTask : resultList) {
 			outputString += count + ". " + selectedTask.getTaskName() + "-"
-					+ selectedTask.getTaskCategory()+"\n";
-				/* + "#"
-					+ selectedTask.getStartDateTime() + "/"
-					+ selectedTask.getEndDateTime() + "\n";*/
+					+ selectedTask.getTaskCategory() + "\n";
+			/*
+			 * + "#" + selectedTask.getStartDateTime() + "/" +
+			 * selectedTask.getEndDateTime() + "\n";
+			 */
 			count++;
 		}
 		return outputString;
@@ -311,7 +315,8 @@ public class Processor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return "A "+newTask.getTaskCategory()+" task - '"+newTask.getTaskName()+"' was successfully added";
+			return "A " + newTask.getTaskCategory() + " task - '"
+					+ newTask.getTaskName() + "' was successfully added";
 		}
 	}
 
@@ -388,6 +393,12 @@ public class Processor {
 		} else {
 			queryResultList = dataHandler.query();
 		}
+		return queryResultList;
+	}
+
+	private List<Task> queryEditedTask(Command inputCommand) throws IOException {
+		List<Task> queryResultList;
+		queryResultList = dataHandler.query(inputCommand.getTaskName());
 		return queryResultList;
 	}
 
