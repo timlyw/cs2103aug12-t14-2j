@@ -1,7 +1,5 @@
 package mhs.src;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -178,7 +176,7 @@ public class Processor {
 	}
 
 	private String editTask(Command userCommand) throws Exception {
-		List<Task> resultList = queryTask(userCommand);
+		List<Task> resultList = queryEditedTask(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
 		// outputString =
@@ -384,6 +382,12 @@ public class Processor {
 		} else {
 			queryResultList = dataHandler.query();
 		}
+		return queryResultList;
+	}
+	
+	private List<Task> queryEditedTask(Command inputCommand) throws IOException {
+		List<Task> queryResultList;
+		queryResultList = dataHandler.query(inputCommand.getTaskName());
 		return queryResultList;
 	}
 
