@@ -4,8 +4,8 @@
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>232</x>
-      <y>72</y>
+      <x>424</x>
+      <y>112</y>
       <w>128</w>
       <h>56</h>
     </coordinates>
@@ -15,78 +15,69 @@
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>80</x>
-      <y>40</y>
+      <x>272</x>
+      <y>80</y>
       <w>288</w>
       <h>96</h>
     </coordinates>
     <panel_attributes>Ui
-</panel_attributes>
+bg=yellow</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>88</x>
-      <y>72</y>
+      <x>280</x>
+      <y>112</y>
       <w>128</w>
       <h>56</h>
     </coordinates>
-    <panel_attributes>CLI</panel_attributes>
+    <panel_attributes>CLI
+bg=
+fg=black</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>80</x>
-      <y>168</y>
-      <w>288</w>
-      <h>160</h>
+      <x>272</x>
+      <y>208</y>
+      <w>296</w>
+      <h>136</h>
     </coordinates>
-    <panel_attributes>Application
-</panel_attributes>
+    <panel_attributes>bg=green</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>80</x>
-      <y>368</y>
+      <x>272</x>
+      <y>376</y>
       <w>296</w>
       <h>176</h>
     </coordinates>
     <panel_attributes>Database
 fg=
-</panel_attributes>
+bg=blue</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>88</x>
-      <y>192</y>
-      <w>184</w>
-      <h>40</h>
+      <x>288</x>
+      <y>256</y>
+      <w>104</w>
+      <h>48</h>
     </coordinates>
-    <panel_attributes>Command Processor</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Class</type>
-    <coordinates>
-      <x>88</x>
-      <y>248</y>
-      <w>272</w>
-      <h>56</h>
-    </coordinates>
-    <panel_attributes>Application Logic</panel_attributes>
+    <panel_attributes>Command 
+Processor</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>200</x>
-      <y>112</y>
+      <x>392</x>
+      <y>152</y>
       <w>40</w>
       <h>72</h>
     </coordinates>
@@ -96,19 +87,19 @@ fg=
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>88</x>
-      <y>208</y>
-      <w>40</w>
-      <h>56</h>
+      <x>368</x>
+      <y>256</y>
+      <w>72</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>24;40;24;24</additional_attributes>
+    <additional_attributes>24;24;56;24</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Note</type>
     <coordinates>
-      <x>176</x>
-      <y>0</y>
+      <x>368</x>
+      <y>40</y>
       <w>112</w>
       <h>24</h>
     </coordinates>
@@ -119,30 +110,21 @@ fg=
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>176</x>
+      <x>368</x>
       <y>400</y>
       <w>184</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>Syncronize</panel_attributes>
+    <panel_attributes>Syncronize
+bg=
+fg=</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>280</x>
+      <x>472</x>
       <y>416</y>
-      <w>40</w>
-      <h>72</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>24;56;24;24</additional_attributes>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>200</x>
-      <y>304</y>
       <w>40</w>
       <h>80</h>
     </coordinates>
@@ -150,12 +132,23 @@ fg=
     <additional_attributes>24;64;24;24</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.custom.Text</type>
+    <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>392</x>
-      <y>352</y>
+      <y>320</y>
+      <w>40</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>24;56;24;24</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.Text</type>
+    <coordinates>
+      <x>584</x>
+      <y>400</y>
       <w>136</w>
-      <h>80</h>
+      <h>72</h>
     </coordinates>
     <panel_attributes>Data Tier</panel_attributes>
     <additional_attributes/>
@@ -163,8 +156,8 @@ fg=
   <element>
     <type>com.umlet.element.custom.Text</type>
     <coordinates>
-      <x>384</x>
-      <y>40</y>
+      <x>576</x>
+      <y>88</y>
       <w>136</w>
       <h>80</h>
     </coordinates>
@@ -174,10 +167,10 @@ fg=
   <element>
     <type>com.umlet.element.custom.Text</type>
     <coordinates>
-      <x>384</x>
-      <y>168</y>
+      <x>592</x>
+      <y>200</y>
       <w>136</w>
-      <h>80</h>
+      <h>72</h>
     </coordinates>
     <panel_attributes>Logic Tier</panel_attributes>
     <additional_attributes/>
@@ -185,19 +178,19 @@ fg=
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>200</x>
+      <x>392</x>
       <y>416</y>
       <w>40</w>
-      <h>72</h>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>24;56;24;24</additional_attributes>
+    <additional_attributes>24;64;24;24</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>184</x>
-      <y>504</y>
+      <x>376</x>
+      <y>512</y>
       <w>72</w>
       <h>24</h>
     </coordinates>
@@ -208,8 +201,8 @@ fg=
   <element>
     <type>com.umlet.element.custom.Database</type>
     <coordinates>
-      <x>272</x>
-      <y>472</y>
+      <x>464</x>
+      <y>480</y>
       <w>88</w>
       <h>64</h>
     </coordinates>
@@ -220,8 +213,8 @@ bg=black</panel_attributes>
   <element>
     <type>com.umlet.element.custom.Database</type>
     <coordinates>
-      <x>176</x>
-      <y>472</y>
+      <x>368</x>
+      <y>480</y>
       <w>88</w>
       <h>64</h>
     </coordinates>
@@ -231,13 +224,24 @@ bg=black</panel_attributes>
   <element>
     <type>com.umlet.element.custom.Database</type>
     <coordinates>
-      <x>88</x>
-      <y>472</y>
+      <x>280</x>
+      <y>504</y>
       <w>80</w>
       <h>40</h>
     </coordinates>
     <panel_attributes>ConfigFile
 bg=black</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>424</x>
+      <y>256</y>
+      <w>128</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>Processor</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>

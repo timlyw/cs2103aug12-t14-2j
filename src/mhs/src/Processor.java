@@ -3,12 +3,6 @@ package mhs.src;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
-
-import javax.management.Query;
-import javax.smartcardio.CommandAPDU;
-
-import mhs.src.CommandExtractor.commands;
-
 import org.joda.time.DateTime;
 
 import com.google.gdata.util.ServiceException;
@@ -29,6 +23,8 @@ public class Processor {
 	private CommandParser commandParser;
 	private Database dataHandler;
 
+	// private Stack<Task> taskLog;
+
 	/**
 	 * constructor to initialize sync
 	 */
@@ -37,7 +33,7 @@ public class Processor {
 			try {
 				dataHandler = new Database();
 				commandParser = new CommandParser();
-			} catch(UnknownHostException e) {
+			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			} catch (ServiceException e) {
 				// TODO Auto-generated catch block
@@ -50,12 +46,33 @@ public class Processor {
 	}
 
 	public String getCommandFeedback(String command) {
-		return "Command feedback for " + command;
+		String screenOutput = null;
+		try {
+			// *********add && matchedTasks.size()>0
+			if (isInteger(command)) {
+				if (validateSelectionCommand(command)) {
+					screenOutput = "Command-"+previousCommand.getCommandEnum()+" will be performed on Task number -"+command;
+					// empty list if matching index found
+				} else {
+					screenOutput = "That is not a valid index number";
+				}
+
+			} else {
+				Command userCommand = commandParser.getParsedCommand(command);
+				// store last command
+				screenOutput="Command-"+userCommand.getCommandEnum()+" will be performed on event -"+userCommand.getTaskName();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return screenOutput;
 	}
 
 	public String executeCommand(String command) throws IOException {
 		String screenOutput = null;
 		try {
+			// *********add && matchedTasks.size()>0
 			if (isInteger(command)) {
 				if (validateSelectionCommand(command)) {
 					screenOutput = processSelectedCommand(Integer
@@ -108,9 +125,7 @@ public class Processor {
 		case edit:
 			Task editedTask = createEditedTask(previousCommand,
 					matchedTasks.get(selectedIndex));
-			dataHandler.add(editedTask);
-			// delete task
-			dataHandler.delete(matchedTasks.get(selectedIndex).getTaskId());
+			dataHandler.update(editedTask);
 			userOutputString = "Edited Task - "
 					+ matchedTasks.get(selectedIndex).getTaskName();
 			break;
@@ -145,6 +160,7 @@ public class Processor {
 		case sync:
 			break;
 		case undo:
+			userOutputString = undoTask();
 			break;
 		default:
 			userOutputString = MESSAGE_UNKNOWN_COMMAND;
@@ -152,11 +168,19 @@ public class Processor {
 		return userOutputString;
 	}
 
+	private String undoTask() {
+		String outputString = new String();
+
+		return outputString;
+	}
+
 	private String editTask(Command userCommand) throws Exception {
 		List<Task> resultList = queryTask(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
-
+		// outputString =
+		// userCommand.getCommandEnum()+"??"+userCommand.getTaskName()+"??"+userCommand.getEdittedName()+"??"+userCommand.getStartDate()+"??"+userCommand.getEndDate();
+		// return outputString;
 		if (resultList.isEmpty()) {
 			outputString = "No matching results found";
 		}
@@ -164,10 +188,8 @@ public class Processor {
 		else if (resultList.size() == 1) {
 			// create task
 			Task editedTask = createEditedTask(userCommand, resultList.get(0));
-			dataHandler.add(editedTask);
-			// delete task
-			dataHandler.delete(resultList.get(0).getTaskId());
-			outputString = "Edited Task - " + resultList.get(0).getTaskName();
+			executeTask("edit", editedTask);
+			outputString = "Edited Task";
 		}
 		// if multiple matches are found display the list
 		else {
@@ -176,7 +198,7 @@ public class Processor {
 		return outputString;
 	}
 
-	private Task createEditedTask(Command inputCommand, Task taskToEdit) {
+	public Task createEditedTask(Command inputCommand, Task taskToEdit) {
 		// checks kind of task :floating/timed/deadline
 		int typeCount = 0;
 		if (inputCommand.getStartDate() != null) {
@@ -188,41 +210,53 @@ public class Processor {
 		if (inputCommand.getEdittedName() != null) {
 			switch (typeCount) {
 			case 0:
-				Task floatingTaskToAdd = new FloatingTask(0,
-						inputCommand.getEdittedName(), TaskCategory.FLOATING,
-						DateTime.now(), null, null, false, false);
+				Task floatingTaskToAdd = new FloatingTask(
+						taskToEdit.getTaskId(), inputCommand.getEdittedName(),
+						TaskCategory.FLOATING, DateTime.now(), null, null,
+						false, false);
 				return floatingTaskToAdd;
 			case 1:
-				Task deadlineTaskToAdd = new DeadlineTask(0,
-						inputCommand.getEdittedName(), TaskCategory.DEADLINE,
-						inputCommand.getEndDate(), DateTime.now(), null, null,
-						null, false, false);
+				Task deadlineTaskToAdd = new DeadlineTask(
+						taskToEdit.getTaskId(), inputCommand.getEdittedName(),
+						TaskCategory.DEADLINE, inputCommand.getStartDate(),
+						DateTime.now(), null, null, null, false, false);
 				return deadlineTaskToAdd;
 			case 2:
-				Task timedTaskToAdd = new TimedTask(0,
+				Task timedTaskToAdd = new TimedTask(taskToEdit.getTaskId(),
 						inputCommand.getEdittedName(), TaskCategory.TIMED,
 						inputCommand.getStartDate(), inputCommand.getEndDate(),
 						DateTime.now(), null, null, null, false, false);
 				return timedTaskToAdd;
+			default:
+				Task nullTask = new Task();
+				return nullTask;
 			}
 		} else {
 			switch (typeCount) {
+			case 0:
+				Task floatingTaskToAdd = new FloatingTask(
+						taskToEdit.getTaskId(), inputCommand.getTaskName(),
+						TaskCategory.FLOATING, DateTime.now(), null, null,
+						false, false);
+				return floatingTaskToAdd;
 			case 1:
-				Task deadlineTaskToAdd = new DeadlineTask(0,
-						taskToEdit.getTaskName(), TaskCategory.DEADLINE,
-						inputCommand.getEndDate(), DateTime.now(), null, null,
-						null, false, false);
+				Task deadlineTaskToAdd = new DeadlineTask(
+						taskToEdit.getTaskId(), inputCommand.getTaskName(),
+						TaskCategory.DEADLINE, inputCommand.getStartDate(),
+						DateTime.now(), null, null, null, false, false);
 				return deadlineTaskToAdd;
 			case 2:
-				Task timedTaskToAdd = new TimedTask(0,
-						taskToEdit.getTaskName(), TaskCategory.TIMED,
+				Task timedTaskToAdd = new TimedTask(taskToEdit.getTaskId(),
+						inputCommand.getTaskName(), TaskCategory.TIMED,
 						inputCommand.getStartDate(), inputCommand.getEndDate(),
 						DateTime.now(), null, null, null, false, false);
 				return timedTaskToAdd;
+			default:
+				Task nullTask = new Task();
+				return nullTask;
 			}
+
 		}
-		Task nullTask = new Task();
-		return nullTask;
 	}
 
 	private String removeTask(Command userCommand) throws Exception {
@@ -235,7 +269,7 @@ public class Processor {
 		}
 		// if only 1 match is found then display it
 		else if (resultList.size() == 1) {
-			dataHandler.delete(resultList.get(0).getTaskId());
+			executeTask("remove", resultList.get(0));
 			outputString = "Deleted Task - " + resultList.get(0).getTaskName();
 		}
 		// if multiple matches are found display the list
@@ -264,7 +298,7 @@ public class Processor {
 			return "Some error ocurred";
 		} else {
 			try {
-				dataHandler.add(newTask);
+				executeTask("add", newTask);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -278,7 +312,7 @@ public class Processor {
 		}
 	}
 
-	private Task createTaskToAdd(Command inputCommand) {
+	public Task createTaskToAdd(Command inputCommand) {
 		// checks kind of task :floating/timed/deadline
 		int typeCount = 0;
 		if (inputCommand.getStartDate() != null) {
@@ -354,4 +388,21 @@ public class Processor {
 		return queryResultList;
 	}
 
+	private boolean executeTask(String commandType, Task taskToExecute)
+			throws Exception {
+		switch (commandType) {
+		case "add":
+			dataHandler.add(taskToExecute);
+			break;
+		case "remove":
+			dataHandler.delete(taskToExecute.getTaskId());
+			break;
+		case "edit":
+			dataHandler.update(taskToExecute);
+			break;
+		default:
+			return false;
+		}
+		return true;
+	}
 }
