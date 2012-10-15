@@ -276,10 +276,14 @@ public class Database {
 		 * @return sync datetime for updating local task
 		 */
 		private DateTime setSyncTime(CalendarEventEntry gCalEntry) {
-			DateTime syncDateTime = new DateTime();
-			gCalEntry.setUpdated(com.google.gdata.data.DateTime.now());
+			new DateTime();
+			DateTime syncDateTime = DateTime.now();
 
-			syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
+			if (gCalEntry != null) {
+				gCalEntry.setUpdated(com.google.gdata.data.DateTime.now());
+				syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
+			}
+
 			return syncDateTime;
 		}
 	}
