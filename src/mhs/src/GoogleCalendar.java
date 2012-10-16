@@ -38,8 +38,8 @@ public class GoogleCalendar {
 	static final String URL_EVENT_FEED = "https://www.google.com/calendar/feeds/default/private/full";
 	static final String URL_CREATE_EVENT = "http://www.google.com/calendar/feeds/%1$s/private/full";
 
-	static String userEmail = "cs2103mhs@gmail.com";
-	static String userPassword = "myhotsec2103";
+	private static String userEmail = "cs2103mhs@gmail.com";
+	private static String userPassword = "myhotsec2103";
 
 	static String authToken;
 	private CalendarService calendarService;
@@ -416,6 +416,8 @@ public class GoogleCalendar {
 	public void initializeCalendarService(String userEmail, String userPassword)
 			throws AuthenticationException, UnknownHostException {
 		calendarService = new CalendarService(APP_NAME);
+		GoogleCalendar.userEmail = userEmail;
+		GoogleCalendar.userPassword = userPassword;				
 		calendarService.setUserCredentials(userEmail, userPassword);
 		setAuthToken();
 	}
