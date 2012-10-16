@@ -392,18 +392,17 @@ public class Database {
 	 */
 	public void authenticateUserGoogleAccount(String userName,
 			String userPassword) throws AuthenticationException, IOException {
-		try{
+		try {
 			googleCalendar.initializeCalendarService(userName, userPassword);
 			isRemoteSyncEnabled = true;
-		}
-		catch (UnknownHostException e){
+		} catch (UnknownHostException e) {
 			isRemoteSyncEnabled = false;
 			throw e;
-		}catch (AuthenticationException e){
+		} catch (AuthenticationException e) {
 			isRemoteSyncEnabled = false;
 			throw e;
 		}
-		saveGoogleAuthToken();	
+		saveGoogleAuthToken();
 	}
 
 	/**
@@ -665,7 +664,7 @@ public class Database {
 	 * @throws Exception
 	 * @throws ServiceException
 	 */
-	public void add(Task task) throws Exception {
+	public Task add(Task task) throws Exception {
 
 		if (!isTaskValid(task)) {
 			throw new Exception(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
@@ -679,6 +678,8 @@ public class Database {
 		}
 
 		saveTaskRecordFile();
+
+		return taskToAdd;
 	}
 
 	private void addTaskToTaskList(Task taskToAdd) {
@@ -769,7 +770,7 @@ public class Database {
 	 * @throws Exception
 	 * @throws ServiceException
 	 */
-	public void update(Task updatedTask) throws Exception {
+	public Task update(Task updatedTask) throws Exception {
 
 		if (!taskExists(updatedTask.getTaskId())) {
 			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
@@ -788,6 +789,7 @@ public class Database {
 
 		saveTaskRecordFile();
 
+		return updatedTaskToSave;
 	}
 
 	private void updateTaskinTaskList(Task updatedTaskToSave) {
@@ -971,4 +973,7 @@ public class Database {
 		return getNewTaskId;
 	}
 
+	public boolean isUserGoogleCalendarAuthenticated() {
+		return isRemoteSyncEnabled;
+	}
 }
