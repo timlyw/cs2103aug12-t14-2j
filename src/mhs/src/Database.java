@@ -392,9 +392,18 @@ public class Database {
 	 */
 	public void authenticateUserGoogleAccount(String userName,
 			String userPassword) throws AuthenticationException, IOException {
-		googleCalendar.initializeCalendarService(userName, userPassword);
-		saveGoogleAuthToken();
-		isRemoteSyncEnabled = true;
+		try{
+			googleCalendar.initializeCalendarService(userName, userPassword);
+			isRemoteSyncEnabled = true;
+		}
+		catch (UnknownHostException e){
+			isRemoteSyncEnabled = false;
+			throw e;
+		}catch (AuthenticationException e){
+			isRemoteSyncEnabled = false;
+			throw e;
+		}
+		saveGoogleAuthToken();	
 	}
 
 	/**
