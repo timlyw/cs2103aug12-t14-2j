@@ -51,64 +51,69 @@ public class GoogleCalendar {
 	/**
 	 * Constructor
 	 * 
-	 * @throws IOException
+	 * @param userEmail
+	 * @param userPassword
 	 * @throws ServiceException
-	 */
-	public GoogleCalendar() throws IOException, ServiceException,
-			UnknownHostException {
-		// setup the calendar service with userEmail and userPassword
-		initializeCalendarService();
-		// initialize default query range ( 30 days inclusive of today)
-		initializeQueryDateRange(
-				org.joda.time.DateTime.now().toString(),
-				org.joda.time.DateTime
-						.now()
-						.plusDays(
-								QUERY_DEFAULT_MAX_START_DATE_DAYS_AFTER_TODAY + 1)
-						.toString());
-		// pull events from user's calendar
-		pullEvents();
-	}
-
-	/**
-	 * Constructor with accessToken provided
-	 * 
-	 * @param accessToken
 	 * @throws IOException
-	 * @throws ServiceException
 	 */
-	public GoogleCalendar(String accessToken) throws IOException,
-			ServiceException, UnknownHostException {
-		// setup the calendar service with userEmail and userPassword
-		initializeCalendarServiceWithAuthToken(accessToken);
-		// initialize default query range ( 30 days inclusive of today)
-		initializeQueryDateRange(
-				org.joda.time.DateTime.now().toString(),
-				org.joda.time.DateTime
-						.now()
-						.plusDays(
-								QUERY_DEFAULT_MAX_START_DATE_DAYS_AFTER_TODAY + 1)
-						.toString());
-		// pull events from user's calendar
-		pullEvents();
-	}
-
-	/**
-	 * Constructor with accessToken and query start and end date
-	 * 
-	 * @throws IOException
-	 * @throws ServiceException
-	 */
-	public GoogleCalendar(String accessToken, String minStartDateToQuery,
+	public GoogleCalendar(String userEmail, String userPassword,
+			String accessToken, String minStartDateToQuery,
 			String maxStartDateExclusiveToQuery) throws IOException,
-			ServiceException, UnknownHostException {
-		// setup the calendar service with userEmail and userPassword
-		initializeCalendarService();
-		// initialize query
-		initializeQueryDateRange(minStartDateToQuery,
-				maxStartDateExclusiveToQuery);
+			ServiceException {
+
+		GoogleCalendar.userEmail = userEmail;
+		GoogleCalendar.userPassword = userPassword;
+
+		if (accessToken == null) {
+			initializeCalendarService();
+		} else {
+			initializeCalendarServiceWithAuthToken(accessToken);
+		}
+
+		if (minStartDateToQuery == null || maxStartDateExclusiveToQuery == null) {
+			initializeQueryDateRange();
+		} else {
+			initializeQueryDateRange(minStartDateToQuery,
+					maxStartDateExclusiveToQuery);
+		}
+
 		// pull events from user's calendar
 		pullEvents();
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public GoogleCalendar(String userEmail, String userPassword,
+			String accessToken) throws IOException, ServiceException,
+			UnknownHostException {
+		GoogleCalendar.userEmail = userEmail;
+		GoogleCalendar.userPassword = userPassword;
+
+		if (accessToken == null) {
+			initializeCalendarService();
+		} else {
+			initializeCalendarServiceWithAuthToken(accessToken);
+		}
+
+		initializeQueryDateRange();
+
+		// pull events from user's calendar
+		pullEvents();
+	}
+
+	private void initializeQueryDateRange() {
+		// initialize default query range ( 30 days inclusive of today)
+		initializeQueryDateRange(
+				org.joda.time.DateTime.now().toString(),
+				org.joda.time.DateTime
+						.now()
+						.plusDays(
+								QUERY_DEFAULT_MAX_START_DATE_DAYS_AFTER_TODAY + 1)
+						.toString());
 	}
 
 	/**
@@ -407,22 +412,6 @@ public class GoogleCalendar {
 	}
 
 	/**
-	 * CalendarService is initialized with userEmail and userPassword
-	 * 
-	 * @param userEmail
-	 * @param userPassword
-	 * @throws AuthenticationException
-	 */
-	public void initializeCalendarService(String userEmail, String userPassword)
-			throws AuthenticationException, UnknownHostException {
-		calendarService = new CalendarService(APP_NAME);
-		GoogleCalendar.userEmail = userEmail;
-		GoogleCalendar.userPassword = userPassword;				
-		calendarService.setUserCredentials(userEmail, userPassword);
-		setAuthToken();
-	}
-
-	/**
 	 * Initializes google service with auth token (valid after first credential
 	 * setting)
 	 * 
@@ -461,6 +450,10 @@ public class GoogleCalendar {
 			return true;
 		}
 		return false;
+	}
+
+	public String getUserEmail() {
+		return userEmail;
 	}
 
 	private void displayLine(String displayString) {

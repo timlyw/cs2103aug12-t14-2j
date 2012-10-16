@@ -52,10 +52,16 @@ public class Database {
 		 * 
 		 * @throws IOException
 		 */
-		public void syncronizeDatabases() throws Exception {
+		public boolean syncronizeDatabases() throws Exception {
+			if (googleCalendar == null) {
+				return false;
+			}
+
 			googleCalendar.pullEvents();
 			pullSync();
 			pushSync();
+
+			return true;
 		}
 
 		/**
@@ -351,8 +357,11 @@ public class Database {
 		gCalTaskList = taskRecordFile.getGCalTaskList();
 
 		syncronize = new Syncronize();
-		initializeGoogleCalendarService();
-
+		if (initializeGoogleCalendarService()) {
+			isRemoteSyncEnabled = true;
+		} else {
+			isRemoteSyncEnabled = false;
+		}
 	}
 
 	/**
@@ -361,25 +370,25 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	private void initializeGoogleCalendarService() {
-		if (configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")
-				&& !configFile.getConfigParameter("GOOGLE_AUTH_TOKEN")
-						.isEmpty()) {
-			try {
-				googleCalendar = new GoogleCalendar(
-						configFile.getConfigParameter("GOOGLE_AUTH_TOKEN"));
-				saveGoogleAuthToken();
-			} catch (UnknownHostException e) {
-				isRemoteSyncEnabled = false;
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	private boolean initializeGoogleCalendarService() throws IOException {
+		if (!configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")
+				|| configFile.getConfigParameter("GOOGLE_AUTH_TOKEN").isEmpty()) {
+			return false;
 		}
+		if (!configFile.hasConfigParameter("GOOGLE_USER_ACCOUNT")
+				|| configFile.getConfigParameter("GOOGLE_USER_ACCOUNT")
+						.isEmpty()) {
+			return false;
+		}
+		try {
+			googleCalendar = new GoogleCalendar(
+					configFile.getConfigParameter("GOOGLE_USER_ACCOUNT"), null,
+					configFile.getConfigParameter("GOOGLE_AUTH_TOKEN"));
+			saveGoogleAuthToken();
+			return true;
+		} catch (ServiceException e) {
+		}
+		return false;
 	}
 
 	/**
@@ -387,21 +396,27 @@ public class Database {
 	 * 
 	 * @param userName
 	 * @param userPassword
-	 * @throws AuthenticationException
 	 * @throws IOException
+	 * @throws ServiceException
 	 */
 	public void authenticateUserGoogleAccount(String userName,
-			String userPassword) throws AuthenticationException, IOException {
+			String userPassword) throws IOException, ServiceException {
 		try {
-			googleCalendar.initializeCalendarService(userName, userPassword);
-			isRemoteSyncEnabled = true;
+			googleCalendar = new GoogleCalendar(userName, userPassword, null);
 		} catch (UnknownHostException e) {
 			isRemoteSyncEnabled = false;
+			e.printStackTrace();
 			throw e;
 		} catch (AuthenticationException e) {
 			isRemoteSyncEnabled = false;
+			e.printStackTrace();
+			throw e;
+		} catch (ServiceException e) {
+			isRemoteSyncEnabled = false;
+			e.printStackTrace();
 			throw e;
 		}
+		isRemoteSyncEnabled = true;
 		saveGoogleAuthToken();
 	}
 
@@ -412,8 +427,15 @@ public class Database {
 	 */
 	private void saveGoogleAuthToken() throws IOException {
 		String googleAuthToken = googleCalendar.getAuthToken();
+		String googleUserAccount = googleCalendar.getUserEmail();
+
 		if (googleAuthToken != null) {
 			configFile.setConfigParameter("GOOGLE_AUTH_TOKEN", googleAuthToken);
+		}
+
+		if (googleUserAccount != null) {
+			configFile.setConfigParameter("GOOGLE_USER_ACCOUNT",
+					googleAuthToken);
 		}
 	}
 
@@ -434,12 +456,7 @@ public class Database {
 		} catch (ServiceException e) {
 			isRemoteSyncEnabled = false;
 			throw e;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 

@@ -164,11 +164,11 @@ public class Processor {
 	 * @param userName
 	 * @param password
 	 * @return confirmation string
-	 * @throws AuthenticationException
 	 * @throws IOException
+	 * @throws ServiceException 
 	 */
 	private String authenticateUser(String userName, String password)
-			throws AuthenticationException, IOException {
+			throws IOException, ServiceException {
 		try{
 			dataHandler.authenticateUserGoogleAccount(userName, password);
 			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
