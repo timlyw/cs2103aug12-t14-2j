@@ -18,7 +18,7 @@ public class Command {
 	 * This is the enum of the different type of commands. 
 	 */
 	public enum command{
-		add, remove,edit, search, sync,undo;
+		add, remove,edit, search, sync, undo, login, logout, rename, redo;
 	}
 	
 	private String taskName;

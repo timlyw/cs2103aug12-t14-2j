@@ -1,5 +1,6 @@
 package mhs.src;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -8,14 +9,14 @@ import org.joda.time.LocalTime;
 
 /**
  * 
- *This is a class to parse strings and extract out appropriate parameters.
+ * This is a class to parse strings and extract out appropriate parameters.
  */
 public class CommandParser {
 
-	//this is the default command.
+	// this is the default command.
 	private static final String COMMAND_ADD = "add";
-	
-	//these are regex strings.
+
+	// these are regex strings.
 	private static final String REGEX_WHITE_SPACE = "\\s+";
 	private static final String REGEX_QUOTATION_MARKS = "\"";
 
@@ -38,11 +39,13 @@ public class CommandParser {
 	private LocalTime endTime;
 
 	private int counter;
-	
+
 	/**
-	 * This is the function to take in a string and return a command object with parameters set.
+	 * This is the function to take in a string and return a command object with
+	 * parameters set.
 	 * 
-	 * @param parseString The String that needs to be parsed.
+	 * @param parseString
+	 *            The String that needs to be parsed.
 	 * 
 	 * @return Returns a commandObject that has all the arguments set
 	 */
@@ -52,7 +55,7 @@ public class CommandParser {
 
 		parseString = setNameInQuotationMarks(parseString);
 		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
-		
+
 		setCommand(processArray);
 		for (counter = 0; counter < processArray.length; counter++) {
 
@@ -62,15 +65,10 @@ public class CommandParser {
 			} else if (timeParser.checkTimeFormat(processArray[counter])) {
 				setTime(processArray);
 
-			} else if (dateParser.checkDateFormat(processArray[counter])) {
-				setDate(processArray);
-
-			} else {
-				System.out.println("invalid command");
 			}
 
 		}
-
+		setDate(processArray);
 		return setUpCommandObject(command, taskName, edittedName, startDate,
 				startTime, endDate, endTime);
 
@@ -84,7 +82,7 @@ public class CommandParser {
 		timeParser = new TimeExtractor();
 		commandParser = new CommandExtractor();
 		nameParser = new NameExtractor();
-		
+
 		taskNameFlag = false;
 		timeFlag = false;
 		dateFlag = false;
@@ -103,45 +101,33 @@ public class CommandParser {
 	/**
 	 * This is the function to set the start dates and/or end dates.
 	 * 
-	 * @param processArray Takes in a stringArray.
+	 * @param processArray
+	 *            Takes in a stringArray.
 	 */
 	private void setDate(String[] processArray) {
 
-		Queue<String> commandQueue = setUpDateQueue(processArray);
-		if (!dateFlag) {
-			startDate = dateParser.processDate(commandQueue);
-			dateFlag = true;
-		} else if (dateFlag) {
-			endDate = dateParser.processDate(commandQueue);
+		Queue<LocalDate> dateList;
+		dateList = dateParser.processDate(processArray);
+		if (dateList.isEmpty()) {
+			return;
 		}
-	}
-
-	/**
-	 * This is a function to set up a queue with all the date parameters in a row.
-	 * 
-	 * @param processArray Takes in a string array.
-	 * 
-	 * @return Returns a command queue.
-	 */
-	private Queue<String> setUpDateQueue(String[] processArray) {
-		int j;
-		Queue<String> commandQueue = new LinkedList<String>();
-		for (j = counter; j < processArray.length; j++) {
-			if (dateParser.checkDateFormat(processArray[j])) {
-				commandQueue.add(processArray[j]);
-			} else {
+		while (!dateList.isEmpty()) {
+			if (!dateFlag) {
+				startDate = dateList.poll();
+				dateFlag = true;
+			} else if (dateFlag) {
+				endDate = dateList.poll();
 				break;
 			}
 		}
-		counter = j-1;
 
-		return commandQueue;
 	}
 
 	/**
 	 * This is the function to set the start times and/or end times.
 	 * 
-	 * @param processArray Takes in a string array.
+	 * @param processArray
+	 *            Takes in a string array.
 	 */
 	private void setTime(String[] processArray) {
 		if (!timeFlag) {
@@ -155,7 +141,8 @@ public class CommandParser {
 	/**
 	 * This is the function to set the name and/or editted name.
 	 * 
-	 * @param processArray Takes in a string array.
+	 * @param processArray
+	 *            Takes in a string array.
 	 */
 	private void setName(String[] processArray) {
 
@@ -169,11 +156,13 @@ public class CommandParser {
 	}
 
 	/**
-	 * This is the function to set up a queue with all the name parameters in a row.
+	 * This is the function to set up a queue with all the name parameters in a
+	 * row.
 	 * 
-	 * @param processArray Takes in a string array.
+	 * @param processArray
+	 *            Takes in a string array.
 	 * 
-	 * @return Returns a queue with all the name parameters. 
+	 * @return Returns a queue with all the name parameters.
 	 */
 	private Queue<String> setUpNameQueue(String[] processArray) {
 		int j;
@@ -185,14 +174,15 @@ public class CommandParser {
 				break;
 			}
 		}
-		counter = j-1;
+		counter = j - 1;
 		return commandQueue;
 	}
 
 	/**
 	 * This is a function to set the command.
 	 * 
-	 * @param processArray Takes in a string array.
+	 * @param processArray
+	 *            Takes in a string array.
 	 */
 	private void setCommand(String[] processArray) {
 
@@ -205,11 +195,13 @@ public class CommandParser {
 	}
 
 	/**
-	 * This is a function to set names that are in quotation marks and remove them from the string. 
+	 * This is a function to set names that are in quotation marks and remove
+	 * them from the string.
 	 * 
-	 * @param process This is the string that is input by the user.
+	 * @param process
+	 *            This is the string that is input by the user.
 	 * 
-	 * @return Returns the string with the quotation marks removed. 
+	 * @return Returns the string with the quotation marks removed.
 	 */
 	private String setNameInQuotationMarks(String process) {
 
@@ -232,23 +224,31 @@ public class CommandParser {
 	}
 
 	/**
-	 * This is the function to set up the command object with all the parameters extracted. 
+	 * This is the function to set up the command object with all the parameters
+	 * extracted.
 	 * 
-	 * @param command This is the command the user wants to perform.
+	 * @param command
+	 *            This is the command the user wants to perform.
 	 * 
-	 * @param taskName This is the name of the task.
+	 * @param taskName
+	 *            This is the name of the task.
 	 * 
-	 * @param edittedName This is the name that the user wants to change the task to.
-	 *  
-	 * @param startDate This is the start date of the task.
+	 * @param edittedName
+	 *            This is the name that the user wants to change the task to.
 	 * 
-	 * @param startTime This is the start time of the task.
+	 * @param startDate
+	 *            This is the start date of the task.
 	 * 
-	 * @param endDate This is the end date of the task.
+	 * @param startTime
+	 *            This is the start time of the task.
 	 * 
-	 * @param endTime This is the end time of the task.
+	 * @param endDate
+	 *            This is the end date of the task.
 	 * 
-	 * @return Returns an object with all the parameters packaged together. 
+	 * @param endTime
+	 *            This is the end time of the task.
+	 * 
+	 * @return Returns an object with all the parameters packaged together.
 	 */
 	private Command setUpCommandObject(String command, String taskName,
 			String edittedName, LocalDate startDate, LocalTime startTime,
