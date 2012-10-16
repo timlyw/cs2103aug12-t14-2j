@@ -346,8 +346,7 @@ public class DatabaseTest {
 
 		// we use a separate GoogleCalendar to query events (need to pullEvents
 		// manually)
-		GoogleCalendar gCal = new GoogleCalendar();
-		gCal.initializeCalendarService("cs2103mhs@gmail.com", "myhotsec2103");
+		GoogleCalendar gCal = new GoogleCalendar("cs2103mhs@gmail.com", "myhotsec2103", null);
 
 		// Test push new task sync
 		System.out.println("Adding new Tasks to push");

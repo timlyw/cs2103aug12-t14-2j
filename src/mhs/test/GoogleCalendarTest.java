@@ -23,8 +23,7 @@ public class GoogleCalendarTest {
 
 	@Before
 	public void testGoogleCalendarSetup() throws IOException, ServiceException {
-		googleCalendar = new GoogleCalendar();
-		googleCalendar.initializeCalendarService("cs2103mhs@gmail.com", "myhotsec2103");
+		googleCalendar = new GoogleCalendar("cs2103mhs@gmail.com", "myhotsec2103", null);
 	}
 
 	@Test
