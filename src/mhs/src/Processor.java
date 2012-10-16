@@ -27,9 +27,9 @@ public class Processor {
 	private boolean passwordIsExpected = false;
 	private String username;
 	private String password;
-	
+
 	/**
-	 * constructor to initialize sync
+	 * constructor to initialize sync with Gcal
 	 */
 	Processor() {
 		try {
@@ -48,10 +48,21 @@ public class Processor {
 		}
 	}
 
+	/**
+	 * Checks if the input field needs to be masked for password
+	 * 
+	 * @return whether password is expected
+	 */
 	public boolean isPasswordExpected() {
 		return passwordIsExpected;
 	}
 
+	/**
+	 * Method that handles the live command feedback mechanism
+	 * 
+	 * @param command
+	 * @return Command Feedback string
+	 */
 	public String getCommandFeedback(String command) {
 		String screenOutput = null;
 		try {
@@ -79,6 +90,12 @@ public class Processor {
 		return screenOutput;
 	}
 
+	/**
+	 * Executes the given command after a carriage return
+	 * 
+	 * @param command
+	 * @return
+	 */
 	public String executeCommand(String command) {
 		String screenOutput = null;
 		try {
@@ -95,17 +112,15 @@ public class Processor {
 
 			} else {
 				if (usernameIsExpected) {
-					username = command; 
+					username = command;
 					usernameIsExpected = false;
 					passwordIsExpected = true;
 					screenOutput = "Enter password";
-				} 
-				else if(passwordIsExpected){
+				} else if (passwordIsExpected) {
 					password = command;
 					passwordIsExpected = false;
-					screenOutput = authenticateUser(username,password);
-				}
-				else {
+					screenOutput = authenticateUser(username, password);
+				} else {
 					Command userCommand = commandParser
 							.getParsedCommand(command);
 					// store last command
@@ -120,6 +135,13 @@ public class Processor {
 		return screenOutput;
 	}
 
+	/**
+	 * Validates if the given selection index number is less than the total
+	 * matched entries
+	 * 
+	 * @param command
+	 * @return boolean
+	 */
 	private boolean validateSelectionCommand(String command) {
 		int inputNum = Integer.parseInt(command);
 		if (matchedTasks.size() >= inputNum && inputNum > 0) {
@@ -128,13 +150,28 @@ public class Processor {
 			return false;
 		}
 	}
-	
-	private String authenticateUser(String userName, String password) throws AuthenticationException, IOException
-	{
+
+	/**
+	 * Authenticates GCAL account for syncing
+	 * 
+	 * @param userName
+	 * @param password
+	 * @return confirmation string
+	 * @throws AuthenticationException
+	 * @throws IOException
+	 */
+	private String authenticateUser(String userName, String password)
+			throws AuthenticationException, IOException {
 		dataHandler.authenticateUserGoogleAccount(userName, password);
 		return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
 	}
 
+	/**
+	 * Checks if integer is entered
+	 * 
+	 * @param input
+	 * @return boolean
+	 */
 	private static boolean isInteger(String input) {
 		try {
 			Integer.parseInt(input);
@@ -144,6 +181,12 @@ public class Processor {
 		return true;
 	}
 
+	/**
+	 * Process the given type of command on task selected from list
+	 * @param selectedIndex
+	 * @return confirmation string
+	 * @throws Exception
+	 */
 	private String processSelectedCommand(int selectedIndex) throws Exception {
 		String userOutputString = new String();
 		switch (previousCommand.getCommandEnum()) {
@@ -172,6 +215,12 @@ public class Processor {
 		return userOutputString;
 	}
 
+	/**
+	 * Performs given operation on a task
+	 * @param userCommand
+	 * @return confirmation string
+	 * @throws Exception
+	 */
 	private String processCommand(Command userCommand) throws Exception {
 		String userOutputString = new String();
 		switch (userCommand.getCommandEnum()) {
@@ -185,7 +234,7 @@ public class Processor {
 			userOutputString = editTask(userCommand);
 			break;
 		case search:
-			userOutputString = searchTask(userCommand);
+			userOutputString = displayTask(userCommand);
 			break;
 		case sync:
 			userOutputString = loginUser(userCommand);
@@ -199,6 +248,11 @@ public class Processor {
 		return userOutputString;
 	}
 
+	/**
+	 * Prompts user for username
+	 * @param inputCommand
+	 * @return String asking for username
+	 */
 	private String loginUser(Command inputCommand) {
 		String outputString = new String();
 		outputString = "Enter Google username . e.g: tom.sawyer@gmail.com ";
@@ -206,14 +260,24 @@ public class Processor {
 		return outputString;
 	}
 
+	/**
+	 * Undo's the ;ast change to database
+	 * @return
+	 */
 	private String undoTask() {
 		String outputString = new String();
 
 		return outputString;
 	}
 
+	/**
+	 * edits a given task, or else returns a list of matched tasks to given search string
+	 * @param userCommand
+	 * @return confirmations string
+	 * @throws Exception
+	 */
 	private String editTask(Command userCommand) throws Exception {
-		List<Task> resultList = queryEditedTask(userCommand);
+		List<Task> resultList = queryTasksByTaskName(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
 		// outputString =
@@ -237,7 +301,13 @@ public class Processor {
 		return outputString;
 	}
 
-	public Task createEditedTask(Command inputCommand, Task taskToEdit) {
+	/**
+	 * create edited task based on command given
+	 * @param inputCommand
+	 * @param taskToEdit
+	 * @return new edited Task to be updated in the DB
+	 */
+	private Task createEditedTask(Command inputCommand, Task taskToEdit) {
 		// checks kind of task :floating/timed/deadline
 		int typeCount = 0;
 		if (inputCommand.getStartDate() != null) {
@@ -298,6 +368,12 @@ public class Processor {
 		}
 	}
 
+	/**
+	 * remove the given task from the DB or else show all matched entries to search string
+	 * @param userCommand
+	 * @return confirmation string
+	 * @throws Exception
+	 */
 	private String removeTask(Command userCommand) throws Exception {
 		List<Task> resultList = queryTask(userCommand);
 		matchedTasks = resultList;
@@ -319,6 +395,11 @@ public class Processor {
 		return outputString;
 	}
 
+	/**
+	 * Show all matched tasks in an appended string
+	 * @param resultList
+	 * @return appended string of tasks
+	 */
 	private String displayListOfTasks(List<Task> resultList) {
 		int count = 1;
 		String outputString = new String();
@@ -334,6 +415,12 @@ public class Processor {
 		return outputString;
 	}
 
+	/**
+	 * Adds a task
+	 * @param userCommand
+	 * @return confirmation string
+	 * @throws Exception
+	 */
 	private String addTask(Command userCommand) throws Exception {
 		Task newTask = createTaskToAdd(userCommand);
 		if (newTask.getTaskName() == null) {
@@ -350,7 +437,12 @@ public class Processor {
 		}
 	}
 
-	public Task createTaskToAdd(Command inputCommand) {
+	/**
+	 * Create a new task to add. Checks the kind of task to create based on input command.
+	 * @param inputCommand
+	 * @return new task
+	 */
+	private Task createTaskToAdd(Command inputCommand) {
 		// checks kind of task :floating/timed/deadline
 		int typeCount = 0;
 		if (inputCommand.getStartDate() != null) {
@@ -383,7 +475,13 @@ public class Processor {
 		}
 	}
 
-	private String searchTask(Command userCommand) throws IOException {
+	/**
+	 * Displays a given task
+	 * @param userCommand
+	 * @return String to be displayed
+	 * @throws IOException
+	 */
+	private String displayTask(Command userCommand) throws IOException {
 		List<Task> resultList = queryTask(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
@@ -405,6 +503,12 @@ public class Processor {
 
 	}
 
+	/**
+	 * Queries keywords & time to get matched tasks
+	 * @param inputCommand
+	 * @return matched list of tasks
+	 * @throws IOException
+	 */
 	private List<Task> queryTask(Command inputCommand) throws IOException {
 		boolean name, startDate, endDate;
 		List<Task> queryResultList;
@@ -426,12 +530,25 @@ public class Processor {
 		return queryResultList;
 	}
 
-	private List<Task> queryEditedTask(Command inputCommand) throws IOException {
+	/**
+	 * query tasks by name
+	 * @param inputCommand
+	 * @return
+	 * @throws IOException
+	 */
+	private List<Task> queryTasksByTaskName(Command inputCommand) throws IOException {
 		List<Task> queryResultList;
 		queryResultList = dataHandler.query(inputCommand.getTaskName());
 		return queryResultList;
 	}
 
+	/**
+	 * execute the given command in the database
+	 * @param commandType
+	 * @param taskToExecute
+	 * @return if executed
+	 * @throws Exception
+	 */
 	private boolean executeTask(String commandType, Task taskToExecute)
 			throws Exception {
 		switch (commandType) {
