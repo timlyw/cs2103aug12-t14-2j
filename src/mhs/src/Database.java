@@ -421,11 +421,6 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	private boolean initializeGoogleCalendarService() throws IOException {
-		System.out.println(configFile
-				.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN));
-		System.out.println(configFile
-				.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT));
-		System.out.println("init gcal!");
 		if (!configFile.hasConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)
 				|| configFile
 						.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)
@@ -873,6 +868,13 @@ public class Database {
 		}
 
 		Task updatedTaskToSave = updatedTask.clone();
+
+		// Preserve non-editable fields
+		Task currentTask = query(updatedTaskToSave.taskId);
+		updatedTaskToSave.setgCalTaskId(currentTask.getgCalTaskId());
+		updatedTaskToSave.setTaskCreated(currentTask.getTaskCreated());
+		updatedTaskToSave.setTaskLastSync(currentTask.getTaskLastSync());
+
 		updateTaskinTaskList(updatedTaskToSave);
 
 		if (isRemoteSyncEnabled) {

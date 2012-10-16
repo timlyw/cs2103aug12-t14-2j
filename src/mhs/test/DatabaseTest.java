@@ -247,7 +247,6 @@ public class DatabaseTest {
 
 		database.add(task);
 
-		System.out.println("before update");
 		queryList = database.query();
 
 		Task editTask = task.clone();
@@ -273,18 +272,18 @@ public class DatabaseTest {
 
 		database.update(editTask);
 
-		System.out.println("after update");
 		queryList = database.query();
-		System.out.println(queryList.get(0).toString());
 
 		assertEquals(newTaskName, queryList.get(0).getTaskName());
 		assertEquals(editTask.getStartDateTime(), queryList.get(0)
 				.getStartDateTime());
 		assertEquals(editTask.getEndDateTime(), queryList.get(0)
 				.getEndDateTime());
-		assertEquals(editTask.getTaskCreated(), queryList.get(0)
+
+		// non-editable fields
+		assertFalse(editTask.getTaskCreated() == queryList.get(0)
 				.getTaskCreated());
-		assertEquals(editTask.getTaskLastSync(), queryList.get(0)
+		assertFalse(editTask.getTaskLastSync() == queryList.get(0)
 				.getTaskLastSync());
 
 		// updated time is changed
@@ -341,12 +340,14 @@ public class DatabaseTest {
 
 		// Clear database (local and remote)
 		database = new Database(TEST_TASK_RECORD_FILENAME, false);
-		database.authenticateUserGoogleAccount("cs2103mhs@gmail.com", "myhotsec2103");
+		database.authenticateUserGoogleAccount("cs2103mhs@gmail.com",
+				"myhotsec2103");
 		database.clearDatabase();
 
 		// we use a separate GoogleCalendar to query events (need to pullEvents
 		// manually)
-		GoogleCalendar gCal = new GoogleCalendar("cs2103mhs@gmail.com", "myhotsec2103", null);
+		GoogleCalendar gCal = new GoogleCalendar("cs2103mhs@gmail.com",
+				"myhotsec2103", null);
 
 		// Test push new task sync
 		System.out.println("Adding new Tasks to push");
@@ -385,7 +386,7 @@ public class DatabaseTest {
 		CalendarEventEntry updatedCreatedEvent = gCal.updateEvent(createdEvent
 				.getIcalUID(), updatedEventName, task3.getStartDateTime()
 				.toString(), task3.getEndDateTime().toString());
-		
+
 		database.syncronizeDatabases();
 
 		queryList = database.query(updatedCreatedEvent.getTitle()
