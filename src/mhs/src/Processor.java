@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 import org.joda.time.DateTime;
 
+import com.google.gdata.client.GoogleService.InvalidCredentialsException;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
@@ -119,7 +120,13 @@ public class Processor {
 				} else if (passwordIsExpected) {
 					password = command;
 					passwordIsExpected = false;
-					screenOutput = authenticateUser(username, password);
+					try{
+						screenOutput = authenticateUser(username, password);
+					} catch (AuthenticationException e){
+						System.out.println("Login Failed!");
+						// TODO - login failed scenario goes here
+						// e.printStackTrace();
+					}
 				} else {
 					Command userCommand = commandParser
 							.getParsedCommand(command);
@@ -162,8 +169,12 @@ public class Processor {
 	 */
 	private String authenticateUser(String userName, String password)
 			throws AuthenticationException, IOException {
-		dataHandler.authenticateUserGoogleAccount(userName, password);
-		return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
+		try{
+			dataHandler.authenticateUserGoogleAccount(userName, password);
+			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
+		}catch (AuthenticationException e){
+			throw e;
+		}
 	}
 
 	/**

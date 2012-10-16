@@ -341,11 +341,13 @@ public class DatabaseTest {
 
 		// Clear database (local and remote)
 		database = new Database(TEST_TASK_RECORD_FILENAME, false);
+		database.authenticateUserGoogleAccount("cs2103mhs@gmail.com", "myhotsec2103");
 		database.clearDatabase();
 
 		// we use a separate GoogleCalendar to query events (need to pullEvents
 		// manually)
 		GoogleCalendar gCal = new GoogleCalendar();
+		gCal.initializeCalendarService("cs2103mhs@gmail.com", "myhotsec2103");
 
 		// Test push new task sync
 		System.out.println("Adding new Tasks to push");
@@ -384,6 +386,7 @@ public class DatabaseTest {
 		CalendarEventEntry updatedCreatedEvent = gCal.updateEvent(createdEvent
 				.getIcalUID(), updatedEventName, task3.getStartDateTime()
 				.toString(), task3.getEndDateTime().toString());
+		
 		database.syncronizeDatabases();
 
 		queryList = database.query(updatedCreatedEvent.getTitle()
