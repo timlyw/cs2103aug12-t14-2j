@@ -16,6 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -39,9 +41,16 @@ public class Database {
 	private Map<String, Task> gCalTaskList;
 
 	private boolean isRemoteSyncEnabled = true;
+	private Timer DatabaseServiceTimer;
+	private TimerTask pullSyncTimedTask;
 
+	// Exception Messages
 	private static final String EXCEPTION_MESSAGE_INVALID_TASK_FORMAT = "Invalid Task Format";
 	private static final String EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST = "Task does not exist";
+
+	// Config parameters
+	private static final String CONFIG_PARAM_GOOGLE_USER_ACCOUNT = "GOOGLE_USER_ACCOUNT";
+	private static final String CONFIG_PARAM_GOOGLE_AUTH_TOKEN = "GOOGLE_AUTH_TOKEN";
 
 	private class Syncronize {
 
@@ -339,7 +348,11 @@ public class Database {
 		gCalTaskList = taskRecordFile.getGCalTaskList();
 
 		syncronize = new Syncronize();
-		initializeGoogleCalendarService();
+		if (initializeGoogleCalendarService()) {
+			enableRemoteSync();
+		} else {
+			isRemoteSyncEnabled = false;
+		}
 	}
 
 	/**
@@ -358,10 +371,47 @@ public class Database {
 
 		syncronize = new Syncronize();
 		if (initializeGoogleCalendarService()) {
-			isRemoteSyncEnabled = true;
+			enableRemoteSync();
 		} else {
-			isRemoteSyncEnabled = false;
+			disableRemoteSync();
 		}
+	}
+
+	private void enableRemoteSync() {
+		isRemoteSyncEnabled = true;
+		syncronizePullSyncTimer();
+	}
+
+	private void disableRemoteSync() {
+		isRemoteSyncEnabled = false;
+
+		if (pullSyncTimedTask != null) {
+			pullSyncTimedTask.cancel();
+		}
+	}
+
+	private void syncronizePullSyncTimer() {
+		DatabaseServiceTimer = new Timer();
+		pullSyncTimedTask = new TimerTask() {
+			@Override
+			public void run() {
+				System.out.println("Timed pull-sync");
+				try {
+					googleCalendar.pullEvents();
+					syncronize.pullSync();
+				} catch (UnknownHostException e) {
+					disableRemoteSync();
+				} catch (IOException e) {
+					disableRemoteSync();
+				} catch (ServiceException e) {
+					disableRemoteSync();
+				} catch (Exception e) {
+				}
+			}
+		};
+
+		// schedule pull-sync every 5 minutes
+		DatabaseServiceTimer.schedule(pullSyncTimedTask, 300000, 300000);
 	}
 
 	/**
@@ -371,20 +421,29 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	private boolean initializeGoogleCalendarService() throws IOException {
-		if (!configFile.hasConfigParameter("GOOGLE_AUTH_TOKEN")
-				|| configFile.getConfigParameter("GOOGLE_AUTH_TOKEN").isEmpty()) {
+		System.out.println(configFile
+				.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN));
+		System.out.println(configFile
+				.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT));
+		System.out.println("init gcal!");
+		if (!configFile.hasConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)
+				|| configFile
+						.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)
+						.isEmpty()) {
 			return false;
 		}
-		if (!configFile.hasConfigParameter("GOOGLE_USER_ACCOUNT")
-				|| configFile.getConfigParameter("GOOGLE_USER_ACCOUNT")
-						.isEmpty()) {
+		if (!configFile.hasConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)
+				|| configFile.getConfigParameter(
+						CONFIG_PARAM_GOOGLE_USER_ACCOUNT).isEmpty()) {
 			return false;
 		}
 		try {
 			googleCalendar = new GoogleCalendar(
-					configFile.getConfigParameter("GOOGLE_USER_ACCOUNT"), null,
-					configFile.getConfigParameter("GOOGLE_AUTH_TOKEN"));
-			saveGoogleAuthToken();
+					configFile
+							.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT),
+					null, configFile
+							.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN));
+			saveGoogleAccountInfo();
 			return true;
 		} catch (ServiceException e) {
 		}
@@ -401,42 +460,58 @@ public class Database {
 	 */
 	public void authenticateUserGoogleAccount(String userName,
 			String userPassword) throws IOException, ServiceException {
+
+		disableRemoteSync();
+
 		try {
 			googleCalendar = new GoogleCalendar(userName, userPassword, null);
 		} catch (UnknownHostException e) {
-			isRemoteSyncEnabled = false;
 			e.printStackTrace();
 			throw e;
 		} catch (AuthenticationException e) {
-			isRemoteSyncEnabled = false;
 			e.printStackTrace();
 			throw e;
 		} catch (ServiceException e) {
-			isRemoteSyncEnabled = false;
 			e.printStackTrace();
 			throw e;
 		}
-		isRemoteSyncEnabled = true;
-		saveGoogleAuthToken();
+
+		enableRemoteSync();
+		saveGoogleAccountInfo();
 	}
 
 	/**
-	 * Saves user Google Calendar Service access token to config file
+	 * Logs user out of Google Account
 	 * 
 	 * @throws IOException
 	 */
-	private void saveGoogleAuthToken() throws IOException {
+	public void logOutUserGoogleAccount() throws IOException {
+		disableRemoteSync();
+		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN, null);
+		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT, null);
+		configFile.save();
+	}
+
+	/**
+	 * Saves user Google Calendar Service access token and user google account
+	 * email to config file
+	 * 
+	 * @throws IOException
+	 */
+	private void saveGoogleAccountInfo() throws IOException {
 		String googleAuthToken = googleCalendar.getAuthToken();
 		String googleUserAccount = googleCalendar.getUserEmail();
 
 		if (googleAuthToken != null) {
-			configFile.setConfigParameter("GOOGLE_AUTH_TOKEN", googleAuthToken);
+			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN,
+					googleAuthToken);
 		}
 
 		if (googleUserAccount != null) {
-			configFile.setConfigParameter("GOOGLE_USER_ACCOUNT",
-					googleAuthToken);
+			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT,
+					googleUserAccount);
 		}
+		configFile.save();
 	}
 
 	// TODO BATCH OPERATIONS FOR DATABASE
@@ -454,7 +529,7 @@ public class Database {
 			syncronize.syncronizeDatabases();
 			saveTaskRecordFile();
 		} catch (ServiceException e) {
-			isRemoteSyncEnabled = false;
+			disableRemoteSync();
 			throw e;
 		} catch (Exception e) {
 		}
@@ -887,7 +962,7 @@ public class Database {
 	}
 
 	/**
-	 * Clears database
+	 * Clears all databases
 	 * 
 	 * @throws IOException
 	 * @throws ServiceException
@@ -898,11 +973,22 @@ public class Database {
 		saveTaskRecordFile();
 	}
 
+	/**
+	 * Clear local database
+	 * 
+	 * @throws IOException
+	 */
 	public void clearLocalDatabase() throws IOException {
 		clearTaskLists();
 		saveTaskRecordFile();
 	}
 
+	/**
+	 * Clears remote database
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	public void clearRemoteDatabase() throws IOException, ServiceException {
 		if (isRemoteSyncEnabled) {
 			googleCalendar.deleteAllEvents();
@@ -916,6 +1002,9 @@ public class Database {
 
 	/**
 	 * Checks if Task is valid for given format
+	 * 
+	 * @param task
+	 * @return boolean
 	 */
 	private boolean isTaskValid(Task task) {
 
@@ -990,6 +1079,11 @@ public class Database {
 		return getNewTaskId;
 	}
 
+	/**
+	 * Checks if Remote Sync (Google Calendar) is active
+	 * 
+	 * @return
+	 */
 	public boolean isUserGoogleCalendarAuthenticated() {
 		return isRemoteSyncEnabled;
 	}
