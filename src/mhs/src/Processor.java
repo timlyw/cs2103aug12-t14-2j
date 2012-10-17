@@ -29,6 +29,7 @@ public class Processor {
 	private boolean passwordIsExpected = false;
 	private String username;
 	private String password;
+	private boolean userIsLoggedIn = false;
 
 	private class taskLog {
 		private Task previousTask;
@@ -108,7 +109,7 @@ public class Processor {
 						+ userCommand.getTaskName();
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			screenOutput = "Some error occurred ! Sorry :(";
 			e.printStackTrace();
 		}
 		return screenOutput;
@@ -146,6 +147,7 @@ public class Processor {
 						screenOutput = authenticateUser(username, password);
 					} catch (AuthenticationException e) {
 						System.out.println("Login Failed!");
+						screenOutput = "Login failed! Check username and password.";
 						// login failed scenario goes here
 						// e.printStackTrace();
 					}
@@ -187,15 +189,17 @@ public class Processor {
 	 * @param password
 	 * @return confirmation string
 	 * @throws IOException
-	 * @throws ServiceException 
+	 * @throws ServiceException
 	 */
 	private String authenticateUser(String userName, String password)
 			throws IOException, ServiceException {
 		try {
 			dataHandler.authenticateUserGoogleAccount(userName, password);
+			userIsLoggedIn = true;
 			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
 		} catch (AuthenticationException e) {
-			throw e;
+			userIsLoggedIn = false;
+			return "Login unsuccessful! Please check username and password.";
 		}
 	}
 
@@ -272,7 +276,7 @@ public class Processor {
 			userOutputString = displayTask(userCommand);
 			break;
 		case sync:
-			userOutputString = loginUser(userCommand);
+			userOutputString = syncGcal(userCommand);
 			break;
 		case undo:
 			userOutputString = undoTask();
@@ -288,11 +292,21 @@ public class Processor {
 	 * 
 	 * @param inputCommand
 	 * @return String asking for username
+	 * @throws ServiceException
 	 */
-	private String loginUser(Command inputCommand) {
+	private String syncGcal(Command inputCommand) throws ServiceException {
 		String outputString = new String();
-		outputString = "Enter Google username . e.g: tom.sawyer@gmail.com ";
-		usernameIsExpected = true;
+		if (!userIsLoggedIn) {
+			outputString = "Enter Google username . e.g: tom.sawyer@gmail.com ";
+			usernameIsExpected = true;
+		} else {
+			try {
+				dataHandler.syncronizeDatabases();
+				outputString = "Pulling events from your Google calender.... Sync complete !";
+			} catch (ServiceException e) {
+				outputString = "No internet connection detected !";
+			}
+		}
 		return outputString;
 	}
 
@@ -625,10 +639,12 @@ public class Processor {
 	private boolean executeTask(String commandType, Task previousTask,
 			Task currentTask) throws Exception {
 
+		Task tempTask;
 		try {
 			switch (commandType) {
 			case "add":
-				dataHandler.add(currentTask);
+				tempTask = dataHandler.add(currentTask);
+				currentTask = tempTask;
 				break;
 			case "remove":
 				dataHandler.delete(previousTask.getTaskId());
