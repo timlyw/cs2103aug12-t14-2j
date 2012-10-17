@@ -67,7 +67,7 @@ public class NameExtractor {
 			String command = commandQueue.poll();
 			name += command + REGEX_WHITE_SPACE;
 		}
-
+		name = name.trim();
 		return name;
 	}
 
