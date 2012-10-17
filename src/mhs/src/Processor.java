@@ -3,9 +3,10 @@ package mhs.src;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Stack;
+
 import org.joda.time.DateTime;
 
-import com.google.gdata.client.GoogleService.InvalidCredentialsException;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
@@ -29,22 +30,44 @@ public class Processor {
 	private String username;
 	private String password;
 
+	private class taskLog {
+		private Task previousTask;
+		private Task nextTask;
+
+		public taskLog(Task previous, Task next) {
+			previousTask = previous;
+			nextTask = next;
+		}
+
+		public Task getPreviousTask() {
+			return previousTask;
+		}
+
+		public Task getNextTask() {
+			return nextTask;
+		}
+	}
+
+	private Stack<taskLog> logOfTasksUndo = new Stack<taskLog>();
+
 	/**
 	 * constructor to initialize sync with Gcal
 	 */
 	Processor() {
 		try {
-			try {
-				dataHandler = new Database();
-				commandParser = new CommandParser();
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			} catch (ServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			dataHandler = new Database();
+			commandParser = new CommandParser();
+		} catch (UnknownHostException e) {
+			// no internet
+			e.printStackTrace();
+		} catch (AuthenticationException e) {
+			e.printStackTrace();
+			// auth excep
+		} catch (ServiceException e) {
+			// service exception(wrong with google API)
+			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			//
 			e.printStackTrace();
 		}
 	}
@@ -100,8 +123,7 @@ public class Processor {
 	public String executeCommand(String command) {
 		String screenOutput = null;
 		try {
-			// *********add && matchedTasks.size()>0
-			if (isInteger(command)) {
+			if (isInteger(command) && matchedTasks.size() > 0) {
 				if (validateSelectionCommand(command)) {
 					screenOutput = processSelectedCommand(Integer
 							.parseInt(command) - 1);
@@ -120,11 +142,11 @@ public class Processor {
 				} else if (passwordIsExpected) {
 					password = command;
 					passwordIsExpected = false;
-					try{
+					try {
 						screenOutput = authenticateUser(username, password);
-					} catch (AuthenticationException e){
+					} catch (AuthenticationException e) {
 						System.out.println("Login Failed!");
-						// TODO - login failed scenario goes here
+						// login failed scenario goes here
 						// e.printStackTrace();
 					}
 				} else {
@@ -169,10 +191,10 @@ public class Processor {
 	 */
 	private String authenticateUser(String userName, String password)
 			throws IOException, ServiceException {
-		try{
+		try {
 			dataHandler.authenticateUserGoogleAccount(userName, password);
 			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
-		}catch (AuthenticationException e){
+		} catch (AuthenticationException e) {
 			throw e;
 		}
 	}
@@ -194,6 +216,7 @@ public class Processor {
 
 	/**
 	 * Process the given type of command on task selected from list
+	 * 
 	 * @param selectedIndex
 	 * @return confirmation string
 	 * @throws Exception
@@ -202,14 +225,14 @@ public class Processor {
 		String userOutputString = new String();
 		switch (previousCommand.getCommandEnum()) {
 		case remove:
-			dataHandler.delete(matchedTasks.get(selectedIndex).getTaskId());
+			executeTask("remove", matchedTasks.get(selectedIndex), null);
 			userOutputString = "Deleted Task - "
 					+ matchedTasks.get(selectedIndex).getTaskName();
 			break;
 		case edit:
 			Task editedTask = createEditedTask(previousCommand,
 					matchedTasks.get(selectedIndex));
-			dataHandler.update(editedTask);
+			executeTask("edit", matchedTasks.get(selectedIndex), editedTask);
 			userOutputString = "Edited Task - "
 					+ matchedTasks.get(selectedIndex).getTaskName();
 			break;
@@ -228,6 +251,7 @@ public class Processor {
 
 	/**
 	 * Performs given operation on a task
+	 * 
 	 * @param userCommand
 	 * @return confirmation string
 	 * @throws Exception
@@ -261,6 +285,7 @@ public class Processor {
 
 	/**
 	 * Prompts user for username
+	 * 
 	 * @param inputCommand
 	 * @return String asking for username
 	 */
@@ -272,17 +297,35 @@ public class Processor {
 	}
 
 	/**
-	 * Undo's the ;ast change to database
+	 * Undo's the last change to database
+	 * 
 	 * @return
+	 * @throws Exception
 	 */
-	private String undoTask() {
+	private String undoTask() throws Exception {
 		String outputString = new String();
-
+		try {
+			taskLog lastTaskLog = logOfTasksUndo.pop();
+			if (lastTaskLog.getPreviousTask() == null) {
+				executeUndoTask("remove", lastTaskLog.getNextTask(), null);
+			} else if (lastTaskLog.getNextTask() == null) {
+				executeUndoTask("add", null, lastTaskLog.getPreviousTask());
+			} else {
+				executeUndoTask("edit", lastTaskLog.getNextTask(),
+						lastTaskLog.getPreviousTask());
+			}
+			outputString = "Undo was successful";
+		} catch (NullPointerException e) {
+			outputString = "fail";
+			System.out.println("FAIL");
+		}
 		return outputString;
 	}
 
 	/**
-	 * edits a given task, or else returns a list of matched tasks to given search string
+	 * edits a given task, or else returns a list of matched tasks to given
+	 * search string
+	 * 
 	 * @param userCommand
 	 * @return confirmations string
 	 * @throws Exception
@@ -301,7 +344,8 @@ public class Processor {
 		else if (resultList.size() == 1) {
 			// create task
 			Task editedTask = createEditedTask(userCommand, resultList.get(0));
-			executeTask("edit", editedTask);
+			executeTask("edit", resultList.get(0), editedTask);
+
 			outputString = "Edited Task - '" + resultList.get(0).getTaskName()
 					+ "'";
 		}
@@ -314,6 +358,7 @@ public class Processor {
 
 	/**
 	 * create edited task based on command given
+	 * 
 	 * @param inputCommand
 	 * @param taskToEdit
 	 * @return new edited Task to be updated in the DB
@@ -380,7 +425,9 @@ public class Processor {
 	}
 
 	/**
-	 * remove the given task from the DB or else show all matched entries to search string
+	 * remove the given task from the DB or else show all matched entries to
+	 * search string
+	 * 
 	 * @param userCommand
 	 * @return confirmation string
 	 * @throws Exception
@@ -395,7 +442,7 @@ public class Processor {
 		}
 		// if only 1 match is found then display it
 		else if (resultList.size() == 1) {
-			executeTask("remove", resultList.get(0));
+			executeTask("remove", resultList.get(0), null);
 			outputString = "Deleted Task - '" + resultList.get(0).getTaskName()
 					+ "'";
 		}
@@ -408,6 +455,7 @@ public class Processor {
 
 	/**
 	 * Show all matched tasks in an appended string
+	 * 
 	 * @param resultList
 	 * @return appended string of tasks
 	 */
@@ -428,6 +476,7 @@ public class Processor {
 
 	/**
 	 * Adds a task
+	 * 
 	 * @param userCommand
 	 * @return confirmation string
 	 * @throws Exception
@@ -438,7 +487,7 @@ public class Processor {
 			return "Some error ocurred";
 		} else {
 			try {
-				executeTask("add", newTask);
+				executeTask("add", null, newTask);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -449,7 +498,9 @@ public class Processor {
 	}
 
 	/**
-	 * Create a new task to add. Checks the kind of task to create based on input command.
+	 * Create a new task to add. Checks the kind of task to create based on
+	 * input command.
+	 * 
 	 * @param inputCommand
 	 * @return new task
 	 */
@@ -488,6 +539,7 @@ public class Processor {
 
 	/**
 	 * Displays a given task
+	 * 
 	 * @param userCommand
 	 * @return String to be displayed
 	 * @throws IOException
@@ -516,6 +568,7 @@ public class Processor {
 
 	/**
 	 * Queries keywords & time to get matched tasks
+	 * 
 	 * @param inputCommand
 	 * @return matched list of tasks
 	 * @throws IOException
@@ -528,13 +581,19 @@ public class Processor {
 		endDate = inputCommand.getEndDate() == null ? false : true;
 		if (name && startDate && endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
-					TaskCategory.TIMED, inputCommand.getStartDate(),
-					inputCommand.getEndDate());
+					inputCommand.getStartDate(), inputCommand.getEndDate());
 		} else if (startDate && endDate && !name) {
 			queryResultList = dataHandler.query(inputCommand.getStartDate(),
 					inputCommand.getEndDate());
 		} else if (name && !startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName());
+		} else if (name && startDate && !endDate) {
+			queryResultList = dataHandler.query(inputCommand.getTaskName(),
+					inputCommand.getStartDate(), inputCommand.getStartDate()
+							.toDateMidnight().toDateTime());
+		} else if (!name && startDate && !endDate) {
+			queryResultList = dataHandler.query(inputCommand.getStartDate(),
+					inputCommand.getStartDate().toDateMidnight().toDateTime());
 		} else {
 			queryResultList = dataHandler.query();
 		}
@@ -543,39 +602,79 @@ public class Processor {
 
 	/**
 	 * query tasks by name
+	 * 
 	 * @param inputCommand
 	 * @return
 	 * @throws IOException
 	 */
-	private List<Task> queryTasksByTaskName(Command inputCommand) throws IOException {
+	private List<Task> queryTasksByTaskName(Command inputCommand)
+			throws IOException {
 		List<Task> queryResultList;
 		queryResultList = dataHandler.query(inputCommand.getTaskName());
 		return queryResultList;
 	}
 
 	/**
-	 * execute the given command in the database
+	 * execute the given command in the database except undo tasks
+	 * 
 	 * @param commandType
-	 * @param taskToExecute
+	 * @param currentTask
 	 * @return if executed
 	 * @throws Exception
 	 */
-	private boolean executeTask(String commandType, Task taskToExecute)
-			throws Exception {
-		switch (commandType) {
-		case "add":
-			dataHandler.add(taskToExecute);
-			break;
-		case "remove":
-			dataHandler.delete(taskToExecute.getTaskId());
-			break;
-		case "edit":
-			dataHandler.update(taskToExecute);
-			break;
-		default:
-			return false;
-		}
+	private boolean executeTask(String commandType, Task previousTask,
+			Task currentTask) throws Exception {
 
+		try {
+			switch (commandType) {
+			case "add":
+				dataHandler.add(currentTask);
+				break;
+			case "remove":
+				dataHandler.delete(previousTask.getTaskId());
+				break;
+			case "edit":
+				dataHandler.update(currentTask);
+				break;
+			default:
+				return false;
+			}
+			taskLog newLog = new taskLog(previousTask, currentTask);
+			logOfTasksUndo.push(newLog);
+		} catch (NullPointerException e) {
+			// TO BE DONE
+		}
+		return true;
+	}
+
+	/**
+	 * Executes undo tasks, no addition to stack
+	 * 
+	 * @param commandType
+	 * @param previousTask
+	 * @param currentTask
+	 * @return
+	 * @throws Exception
+	 */
+	private boolean executeUndoTask(String commandType, Task previousTask,
+			Task currentTask) throws Exception {
+		try {
+			switch (commandType) {
+			case "add":
+				dataHandler.add(currentTask);
+				break;
+			case "remove":
+				dataHandler.delete(previousTask.getTaskId());
+				break;
+			case "edit":
+				dataHandler.update(currentTask);
+				break;
+			default:
+				return false;
+			}
+		} catch (NullPointerException e) {
+
+		}
 		return true;
 	}
 }
