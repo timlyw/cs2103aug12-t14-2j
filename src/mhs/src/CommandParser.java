@@ -50,7 +50,7 @@ public class CommandParser {
 	 * @return Returns a commandObject that has all the arguments set
 	 */
 	public Command getParsedCommand(String parseString) {
-
+		
 		setEnvironment();
 
 		parseString = setNameInQuotationMarks(parseString);

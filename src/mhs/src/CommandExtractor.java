@@ -23,7 +23,8 @@ public class CommandExtractor {
 		add("add"), remove("remove"), delete("remove"), update("edit"), edit(
 				"edit"), postpone("edit"), search("search"), find("search"), display(
 				"search"), sync("sync"), undo("undo"), redo("redo"), rename(
-				"rename"), login("login"), logout("logout"), help("help");
+				"rename"), login("login"), signin("login"), logout("logout"), signout(
+				"logout"), help("help"), mark("mark"), check("mark");
 
 		private final String command;
 
