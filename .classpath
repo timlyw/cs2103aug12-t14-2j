@@ -3,18 +3,18 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gdata-calendar-2.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gdata-calendar-meta-2.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gdata-client-1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gdata-client-meta-1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gdata-core-1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2-javadoc.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/gson-2.2.2-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/guava-11.0.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/joda-time-2.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/joda-time-2.1-javadoc.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/joda-time-2.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/jsr305.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/gdata-calendar-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/gdata-calendar-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/gdata-client-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/gdata-client-meta-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/gdata-core-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/gson-2.2.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/gson-2.2.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/gson-2.2.2-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/guava-11.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/joda-time-2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/joda-time-2.1-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/joda-time-2.1-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/java/cs2103aug12-t14-2j/libs/jsr305.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
