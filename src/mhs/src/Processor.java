@@ -29,8 +29,9 @@ public class Processor {
 	private boolean passwordIsExpected = false;
 	private String username;
 	private String password;
-	private boolean userIsLoggedIn = false;
-
+	private boolean userIsLoggedIn;
+	
+	
 	private class taskLog {
 		private Task previousTask;
 		private Task nextTask;
@@ -58,6 +59,7 @@ public class Processor {
 		try {
 			dataHandler = new Database();
 			commandParser = new CommandParser();
+			userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
 		} catch (UnknownHostException e) {
 			// no internet
 			e.printStackTrace();
