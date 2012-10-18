@@ -246,6 +246,14 @@ public class Processor {
 					+ matchedTasks.get(selectedIndex).getStartDateTime()
 					+ " , " + matchedTasks.get(selectedIndex).getEndDateTime();
 			break;
+		case mark:
+			Task markedTask = matchedTasks.get(selectedIndex);
+			markedTask.setDone(true);
+			executeTask("edit", matchedTasks.get(selectedIndex), markedTask);
+			userOutputString = "Edited Task - "
+					+ matchedTasks.get(selectedIndex).getTaskName() + "-Done? "
+					+ matchedTasks.get(selectedIndex).isDone;
+			break;
 		default:
 			userOutputString = MESSAGE_UNKNOWN_COMMAND;
 		}
@@ -281,7 +289,7 @@ public class Processor {
 			userOutputString = undoTask();
 			break;
 		case mark:
-			// userOutputString = markTask();
+			userOutputString = markTask(userCommand);
 			break;
 		case login:
 			userOutputString = loginUser();
@@ -293,6 +301,32 @@ public class Processor {
 			userOutputString = MESSAGE_UNKNOWN_COMMAND;
 		}
 		return userOutputString;
+	}
+
+	private String markTask(Command userCommand) throws Exception {
+		List<Task> resultList = queryTasksByTaskName(userCommand);
+		matchedTasks = resultList;
+		String outputString = new String();
+		if (resultList.isEmpty()) {
+			outputString = "No matching results found";
+		}
+		// if only 1 match is found then display it
+		else if (resultList.size() == 1) {
+			// create task
+			Task editedTask = resultList.get(0);
+			editedTask.setDone(true);
+			executeTask("edit", resultList.get(0), editedTask);
+
+			outputString = "Marked Task as done - '"
+					+ resultList.get(0).getTaskName() + "'" + "-Done? "
+					+ resultList.get(0).isDone;
+		}
+		// if multiple matches are found display the list
+		else {
+			outputString = displayListOfTasksCategory(resultList,
+					TaskCategory.FLOATING);
+		}
+		return outputString;
 	}
 
 	/**
@@ -358,16 +392,20 @@ public class Processor {
 	private String undoTask() throws Exception {
 		String outputString = new String();
 		try {
-			taskLog lastTaskLog = logOfTasksUndo.pop();
-			if (lastTaskLog.getPreviousTask() == null) {
-				executeUndoTask("remove", lastTaskLog.getNextTask(), null);
-			} else if (lastTaskLog.getNextTask() == null) {
-				executeUndoTask("add", null, lastTaskLog.getPreviousTask());
+			if (logOfTasksUndo.isEmpty()) {
+				outputString = "Nothing to undo!";
 			} else {
-				executeUndoTask("edit", lastTaskLog.getNextTask(),
-						lastTaskLog.getPreviousTask());
+				taskLog lastTaskLog = logOfTasksUndo.pop();
+				if (lastTaskLog.getPreviousTask() == null) {
+					executeUndoTask("remove", lastTaskLog.getNextTask(), null);
+				} else if (lastTaskLog.getNextTask() == null) {
+					executeUndoTask("add", null, lastTaskLog.getPreviousTask());
+				} else {
+					executeUndoTask("edit", lastTaskLog.getNextTask(),
+							lastTaskLog.getPreviousTask());
+				}
+				outputString = "Undo was successful";
 			}
-			outputString = "Undo was successful";
 		} catch (NullPointerException e) {
 			outputString = "fail";
 			System.out.println("FAIL");
@@ -387,9 +425,6 @@ public class Processor {
 		List<Task> resultList = queryTasksByTaskName(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
-		// outputString =
-		// userCommand.getCommandEnum()+"??"+userCommand.getTaskName()+"??"+userCommand.getEdittedName()+"??"+userCommand.getStartDate()+"??"+userCommand.getEndDate();
-		// return outputString;
 		if (resultList.isEmpty()) {
 			outputString = "No matching results found";
 		}
@@ -516,12 +551,36 @@ public class Processor {
 		int count = 1;
 		String outputString = new String();
 		for (Task selectedTask : resultList) {
-			outputString += count + ". " + selectedTask.getTaskName() + "-"
-					+ selectedTask.getTaskCategory() + "\n";
-			/*
-			 * + "#" + selectedTask.getStartDateTime() + "/" +
-			 * selectedTask.getEndDateTime() + "\n";
-			 */
+			if (selectedTask.getTaskCategory() == TaskCategory.FLOATING) {
+				outputString += count + ". " + selectedTask.getTaskName() + "-"
+						+ selectedTask.getTaskCategory() + "("
+						+ selectedTask.isDone + ")\n";
+			} else {
+				outputString += count + ". " + selectedTask.getTaskName() + "-"
+						+ selectedTask.getTaskCategory() + "\n";
+			}
+			count++;
+		}
+		return outputString;
+	}
+
+	/**
+	 * Displays list of tasks by category
+	 * 
+	 * @param resultList
+	 * @param category
+	 * @return
+	 */
+	private String displayListOfTasksCategory(List<Task> resultList,
+			TaskCategory category) {
+		int count = 1;
+		String outputString = new String();
+		for (Task selectedTask : resultList) {
+			if (selectedTask.getTaskCategory() == category) {
+				outputString += count + ". " + selectedTask.getTaskName() + "-"
+						+ selectedTask.getTaskCategory() + "("
+						+ selectedTask.isDone + ")\n";
+			}
 			count++;
 		}
 		return outputString;
