@@ -1020,7 +1020,7 @@
     "taskName": "IDA seminar ",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-18T01:19:53.817+08:00",
-    "taskUpdated": "2012-10-18T01:51:37.082+08:00",
+    "taskUpdated": "2012-10-18T08:49:29.351+08:00",
     "taskLastSync": "2012-10-18T01:19:52.000+08:00",
     "gCalTaskId": "h80q2sekif94skrn666fi9ump4@google.com",
     "isDone": false,
@@ -1064,5 +1064,41 @@
     "gCalTaskId": "qmultt9053q52inr46b2k13vbg@google.com",
     "isDone": false,
     "isDeleted": false
+  },
+  {
+    "endDateTime": "2012-10-18T21:00:00.000+08:00",
+    "taskId": 90,
+    "taskName": "naya naya",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-10-18T08:29:25.348+08:00",
+    "taskUpdated": "2012-10-18T08:49:29.351+08:00",
+    "taskLastSync": "2012-10-18T08:29:23.000+08:00",
+    "gCalTaskId": "echess5mh4nl53ifj8i475v2m4@google.com",
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "endDateTime": "2012-10-18T13:00:00.000+08:00",
+    "taskId": 91,
+    "taskName": "woah lunch",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-10-18T08:49:35.890+08:00",
+    "taskUpdated": "2012-10-18T08:49:35.890+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "endDateTime": "2012-10-18T09:00:00.000+08:00",
+    "taskId": 92,
+    "taskName": "lincher",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-10-18T08:50:45.316+08:00",
+    "taskUpdated": "2012-10-18T08:52:18.522+08:00",
+    "taskLastSync": "2012-10-18T08:50:43.000+08:00",
+    "gCalTaskId": "bh447dj8r3eksj706bt2vb2u98@google.com",
+    "isDone": false,
+    "isDeleted": true
   }
 ]

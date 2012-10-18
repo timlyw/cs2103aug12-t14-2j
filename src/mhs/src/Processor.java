@@ -198,7 +198,6 @@ public class Processor {
 			userIsLoggedIn = true;
 			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
 		} catch (AuthenticationException e) {
-			userIsLoggedIn = false;
 			return "Login unsuccessful! Please check username and password.";
 		}
 	}
@@ -281,6 +280,15 @@ public class Processor {
 		case undo:
 			userOutputString = undoTask();
 			break;
+		case mark:
+			// userOutputString = markTask();
+			break;
+		case login:
+			userOutputString = loginUser();
+			break;
+		case logout:
+			userOutputString = logoutUser();
+			break;
 		default:
 			userOutputString = MESSAGE_UNKNOWN_COMMAND;
 		}
@@ -297,8 +305,7 @@ public class Processor {
 	private String syncGcal(Command inputCommand) throws ServiceException {
 		String outputString = new String();
 		if (!userIsLoggedIn) {
-			outputString = "Enter Google username . e.g: tom.sawyer@gmail.com ";
-			usernameIsExpected = true;
+			outputString = loginUser();
 		} else {
 			try {
 				dataHandler.syncronizeDatabases();
@@ -306,6 +313,38 @@ public class Processor {
 			} catch (ServiceException e) {
 				outputString = "No internet connection detected !";
 			}
+		}
+		return outputString;
+	}
+
+	/**
+	 * Begins the login process by prompting for username
+	 * 
+	 * @return confirmation
+	 */
+	private String loginUser() {
+		String outputString;
+		if (!userIsLoggedIn) {
+			outputString = "To Sync you need to log in. \nEnter Google username . e.g: tom.sawyer@gmail.com ";
+			usernameIsExpected = true;
+		} else {
+			outputString = "You are already loggen in!";
+		}
+		return outputString;
+	}
+
+	/**
+	 * User logout method
+	 * 
+	 * @return confirmation
+	 */
+	private String logoutUser() {
+		String outputString;
+		try {
+			dataHandler.logOutUserGoogleAccount();
+			outputString = "You have successfully logged out !";
+		} catch (IOException e) {
+			outputString = "Some error occurred during logout!";
 		}
 		return outputString;
 	}
