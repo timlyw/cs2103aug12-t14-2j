@@ -389,10 +389,10 @@
     "taskName": "test",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-06T21:30:54.761+08:00",
-    "taskUpdated": "2012-10-06T21:30:54.761+08:00",
+    "taskUpdated": "2012-10-18T12:02:58.889+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": false,
+    "isDone": true,
     "isDeleted": false
   },
   {
@@ -411,10 +411,10 @@
     "taskName": "launddder ",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-06T21:37:06.683+08:00",
-    "taskUpdated": "2012-10-06T21:37:06.683+08:00",
+    "taskUpdated": "2012-10-18T11:56:02.294+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": false,
+    "isDone": true,
     "isDeleted": false
   },
   {
@@ -1098,6 +1098,30 @@
     "taskUpdated": "2012-10-18T08:52:18.522+08:00",
     "taskLastSync": "2012-10-18T08:50:43.000+08:00",
     "gCalTaskId": "bh447dj8r3eksj706bt2vb2u98@google.com",
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 93,
+    "taskName": "complete fixing project",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-10-18T11:49:52.828+08:00",
+    "taskUpdated": "2012-10-18T11:51:00.629+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": true,
+    "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-10-18T17:00:00.000+08:00",
+    "endDateTime": "2012-10-18T20:00:00.000+08:00",
+    "taskId": 94,
+    "taskName": "wahlao",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-10-18T12:10:10.419+08:00",
+    "taskUpdated": "2012-10-18T12:11:15.442+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
     "isDone": false,
     "isDeleted": true
   }
