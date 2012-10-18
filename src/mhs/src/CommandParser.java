@@ -1,6 +1,5 @@
 package mhs.src;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -18,7 +17,6 @@ public class CommandParser {
 
 	// these are regex strings.
 	private static final String REGEX_WHITE_SPACE = "\\s+";
-	private static final String REGEX_QUOTATION_MARKS = "\"";
 
 	private DateExtractor dateParser;
 	private TimeExtractor timeParser;
@@ -38,8 +36,6 @@ public class CommandParser {
 	private LocalTime startTime;
 	private LocalTime endTime;
 
-	private int counter;
-
 	/**
 	 * This is the function to take in a string and return a command object with
 	 * parameters set.
@@ -50,25 +46,17 @@ public class CommandParser {
 	 * @return Returns a commandObject that has all the arguments set
 	 */
 	public Command getParsedCommand(String parseString) {
-		
+
 		setEnvironment();
 
 		parseString = setNameInQuotationMarks(parseString);
 		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 
 		setCommand(processArray);
-		for (counter = 0; counter < processArray.length; counter++) {
-
-			if (nameParser.checkNameFormat(processArray[counter])) {
-				setName(processArray);
-
-			} else if (timeParser.checkTimeFormat(processArray[counter])) {
-				setTime(processArray);
-
-			}
-
-		}
+		setName(processArray);
+		setTime(processArray);
 		setDate(processArray);
+
 		return setUpCommandObject(command, taskName, edittedName, startDate,
 				startTime, endDate, endTime);
 
@@ -95,7 +83,6 @@ public class CommandParser {
 		endDate = null;
 		startTime = null;
 		endTime = null;
-		counter = 0;
 	}
 
 	/**
@@ -130,11 +117,18 @@ public class CommandParser {
 	 *            Takes in a string array.
 	 */
 	private void setTime(String[] processArray) {
-		if (!timeFlag) {
-			startTime = timeParser.processTime(processArray[counter]);
-			timeFlag = true;
-		} else if (timeFlag) {
-			endTime = timeParser.processTime(processArray[counter]);
+		Queue<LocalTime> timeList;
+		timeList = timeParser.processTime(processArray);
+		if (timeList.isEmpty()) {
+			return;
+		}
+		while (!timeList.isEmpty()) {
+			if (!timeFlag) {
+				startTime = timeList.poll();
+				timeFlag = true;
+			} else if (timeFlag) {
+				endTime = timeList.poll();
+			}
 		}
 	}
 
@@ -146,36 +140,21 @@ public class CommandParser {
 	 */
 	private void setName(String[] processArray) {
 
-		Queue<String> commandQueue = setUpNameQueue(processArray);
-		if (!taskNameFlag) {
-			taskName = nameParser.processName(commandQueue);
-			taskNameFlag = true;
-		} else {
-			edittedName = nameParser.processName(commandQueue);
+		Queue<String> nameList;
+		nameList = nameParser.processName(processArray);
+		if (nameList.isEmpty()) {
+			return;
 		}
-	}
-
-	/**
-	 * This is the function to set up a queue with all the name parameters in a
-	 * row.
-	 * 
-	 * @param processArray
-	 *            Takes in a string array.
-	 * 
-	 * @return Returns a queue with all the name parameters.
-	 */
-	private Queue<String> setUpNameQueue(String[] processArray) {
-		int j;
-		Queue<String> commandQueue = new LinkedList<String>();
-		for (j = counter; j < processArray.length; j++) {
-			if (nameParser.checkNameFormat(processArray[j])) {
-				commandQueue.add(processArray[j]);
-			} else {
-				break;
+		for (int i = 0; i<2; i++) {
+			if (!taskNameFlag) {
+				taskName = nameList.poll();
+				System.out.println("tas " + taskName);
+				taskNameFlag = true;
+			} else if (taskNameFlag && !nameList.isEmpty()) {
+				edittedName = nameList.poll();
+				System.out.println(edittedName);
 			}
 		}
-		counter = j - 1;
-		return commandQueue;
 	}
 
 	/**
@@ -205,21 +184,7 @@ public class CommandParser {
 	 */
 	private String setNameInQuotationMarks(String process) {
 
-		while (nameParser.hasQuotations(process)) {
-			String tempName = "";
-			tempName = nameParser.processNameWithinQuotationMarks(process);
-			if (tempName != "") {
-				if (!taskNameFlag) {
-					taskName = tempName.replace(REGEX_QUOTATION_MARKS, "");
-					taskNameFlag = true;
-				} else {
-					edittedName = tempName.replace(REGEX_QUOTATION_MARKS, "");
-				}
-				process = process.replace(tempName, "");
-				process = process.trim();
-
-			}
-		}
+		process = nameParser.processNameWithinQuotationMarks(process);
 		return process;
 	}
 
