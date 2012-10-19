@@ -1,12 +1,3 @@
-/*
- * This class provides services to connect with a user's Google Calendar
- * Supported functionality:
- * 		1) Create Event
- * 		2) Retrieve Event(s)
- * 		3) Update Event
- * 		4) Delete Event
- */
-
 package mhs.src;
 
 import java.io.IOException;
@@ -25,6 +16,22 @@ import com.google.gdata.data.calendar.CalendarEventFeed;
 import com.google.gdata.data.extensions.When;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
+
+/**
+ * This class provides services to connect with a user's Google Calendar
+ * Supported functionality:
+ * 		1) Create event entry
+ * 		2) Retrieve event entry(s)
+ * 		3) Update event entry
+ * 		4) delete event entry
+ * 
+ * To use the above services:
+ * 		1) retrieve access token with user's email and password
+ * 		2) create an instance of this class with retrieved access token
+ * 
+ * @author John Wong
+ */
+
 
 public class GoogleCalendar {
 	 // URL constants for communicating with Google Calendar
@@ -46,6 +53,8 @@ public class GoogleCalendar {
 	
 	// used to set a Google Calendar query to show deleted events
 	static final String PARAMETER_SHOW_DELETED = "showdeleted";
+	// used to check if an event is deleted
+	static final String PARAMETER_IS_DELETED = "canceled";
 	static final String TRUE = "true";
 
 	// user's Google account email
@@ -305,6 +314,19 @@ public class GoogleCalendar {
 		CalendarEventFeed eventFeed = getEventFeed(calendarQuery);
 		List<CalendarEventEntry> eventList = eventFeed.getEntries();
 		return eventList;
+	}
+	
+	/**
+	 * check if an event has been deleted from user's Google Calendar
+	 * 
+	 * @param calendarEvent event entry to be checked
+	 * @return if event has been deleted
+	 */
+	public boolean isDeleted(CalendarEventEntry calendarEvent) {
+		if (calendarEvent.getStatus().getValue().contains(PARAMETER_IS_DELETED)) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
