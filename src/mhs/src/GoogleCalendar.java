@@ -203,6 +203,9 @@ public class GoogleCalendar {
 	 */
 	public CalendarEventEntry updateEvent(Task updatedTask) throws IOException,
 			ServiceException, NullPointerException {
+		if (isTaskFloating(updatedTask)) {
+			return null;
+		}
 		String eventId = updatedTask.getgCalTaskId();
 		String title = updatedTask.getTaskName();
 		String startTime = updatedTask.getStartDateTime().toString();
