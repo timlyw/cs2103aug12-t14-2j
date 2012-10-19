@@ -13,6 +13,7 @@ import java.util.Map;
 import mhs.src.DeadlineTask;
 import mhs.src.FloatingTask;
 import mhs.src.Task;
+import mhs.src.TaskCategory;
 import mhs.src.TaskRecordFile;
 import mhs.src.TimedTask;
 
@@ -24,16 +25,21 @@ public class TaskRecordFileTest {
 
 	TaskRecordFile taskRecordFile;
 	Map<Integer, Task> taskList;
+
 	Task task;
 	Task task2;
 	Task task3;
 	Task task4;
 	Task task5;
+
 	DateTime dt;
 	DateTime dt2;
-	DateTime dt3;
-	DateTime dt4;
-	DateTime dt5;
+
+	private static final String TEST_TASK_5_NAME = "task 5 - play more games";
+	private static final String TEST_TASK_4_NAME = "task 4 - project due";
+	private static final String TEST_TASK_3_NAME = "task 3 - assignment due";
+	private static final String TEST_TASK_2_NAME = "task 2 - a project meeting";
+	private static final String TEST_TASK_1_NAME = "task 1 - a meeting";
 
 	private final static String TEST_TASK_RECORD_FILENAME = "testTaskRecordFile.json";
 
@@ -47,22 +53,17 @@ public class TaskRecordFileTest {
 		new DateTime();
 		DateTime dt2 = DateTime.now().plusDays(1);
 		new DateTime();
-		DateTime dt3 = DateTime.now().plusDays(2);
-		new DateTime();
-		DateTime dt4 = DateTime.now().plusDays(3);
-		new DateTime();
-		DateTime dt5 = DateTime.now().plusDays(4);
 
-		task = new TimedTask(1, "task 1", "TIMED", dt, dt2, dt3, dt4, dt5,
-				"null", false, false);
-		task2 = new TimedTask(2, "task 2", "TIMED", dt, dt2, dt3, dt4, dt5,
-				"null", false, false);
-		task3 = new DeadlineTask(3, "task 3", "DEADLINE", dt, dt2, dt3, dt4,
-				"null", false, false);
-		task4 = new DeadlineTask(4, "task 4", "DEADLINE", dt, dt2, dt3, dt4,
-				"null", false, false);
-		task5 = new FloatingTask(5, "task 5", "FLOATING", dt, dt2, dt3, false,
-				false);
+		task = new TimedTask(1, TEST_TASK_1_NAME, TaskCategory.TIMED, dt, dt2,
+				null, null, null, null, false, false);
+		task2 = new TimedTask(2, TEST_TASK_2_NAME, TaskCategory.TIMED, dt, dt2,
+				null, null, null, null, false, false);
+		task3 = new DeadlineTask(3, TEST_TASK_3_NAME, TaskCategory.DEADLINE,
+				dt, null, null, null, null, false, false);
+		task4 = new DeadlineTask(4, TEST_TASK_4_NAME, TaskCategory.DEADLINE,
+				dt, null, null, null, null, false, false);
+		task5 = new FloatingTask(5, TEST_TASK_5_NAME, TaskCategory.FLOATING,
+				null, null, null, false, false);
 
 		taskList = new LinkedHashMap<Integer, Task>();
 
@@ -91,8 +92,7 @@ public class TaskRecordFileTest {
 
 		// Test values
 		for (int i = 1; i <= taskList.size(); i++) {
-			assertEquals(taskList.get(i).toString(), loadTaskList.get(i)
-					.toString());
+			assertEquals(taskList.get(i).toJson(), loadTaskList.get(i).toJson());
 		}
 	}
 
