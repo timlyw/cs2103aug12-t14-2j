@@ -27,6 +27,9 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
+	private static final String GOOGLE_CALENDAR_APP_NAME = "My Hot Secretary";
+	private static final int SYNC_TIMER_PERIOD = 300000;
+	private static final int SYNC_TIMER_DELAY = 300000;
 	private Syncronize syncronize;
 	private GoogleCalendar googleCalendar;
 	private TaskRecordFile taskRecordFile;
@@ -274,11 +277,9 @@ public class Database {
 				ServiceException {
 
 			// update remote task
-			CalendarEventEntry updatedGcalEvent = googleCalendar.updateEvent(
-					localTask.getgCalTaskId(), localTask.getTaskName(),
-					localTask.getStartDateTime().toString(), localTask
-							.getEndDateTime().toString());
-
+			CalendarEventEntry updatedGcalEvent = googleCalendar
+					.updateEvent(localTask.clone());
+			
 			// Update local task sync details
 			DateTime syncDateTime = setSyncTime(updatedGcalEvent);
 			localTask.setTaskLastSync(syncDateTime);
@@ -411,7 +412,6 @@ public class Database {
 				} catch (UnknownHostException e) {
 					disableRemoteSync();
 				} catch (IOException e) {
-					disableRemoteSync();
 				} catch (ServiceException e) {
 					disableRemoteSync();
 				} catch (Exception e) {
@@ -420,7 +420,8 @@ public class Database {
 		};
 
 		// schedule pull-sync every 5 minutes
-		DatabaseServiceTimer.schedule(pullSyncTimedTask, 300000, 300000);
+		DatabaseServiceTimer.schedule(pullSyncTimedTask, SYNC_TIMER_DELAY,
+				SYNC_TIMER_PERIOD);
 	}
 
 	/**
@@ -444,7 +445,7 @@ public class Database {
 		googleCalendar = new GoogleCalendar(
 				configFile.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN),
 				configFile.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT),
-				"My Hot Secretary");
+				GOOGLE_CALENDAR_APP_NAME);
 		saveGoogleAccountInfo();
 		return true;
 	}
@@ -463,9 +464,9 @@ public class Database {
 		disableRemoteSync();
 
 		String googleAccessToken = GoogleCalendar.retrieveAccessToken(
-				"My Hot Secretary", userName, userPassword);
+				GOOGLE_CALENDAR_APP_NAME, userName, userPassword);
 		googleCalendar = new GoogleCalendar(googleAccessToken, userName,
-				"My Hot Secretary");
+				GOOGLE_CALENDAR_APP_NAME);
 
 		enableRemoteSync();
 		saveGoogleAccountInfo();
@@ -506,7 +507,6 @@ public class Database {
 	}
 
 	// TODO BATCH OPERATIONS FOR DATABASE
-	// TODO BATCH UPDATES FOR GOOGLE CALENDAR
 
 	/**
 	 * Syncronizes Databases
