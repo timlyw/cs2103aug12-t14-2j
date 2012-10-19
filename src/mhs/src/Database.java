@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -109,7 +110,8 @@ public class Database {
 				Task localTask = gCalTaskList.get(gCalEntry.getIcalUID());
 
 				// pull sync deleted events
-				System.out.println("Deleting cancelled task");
+				MhsLogger.getLogger()
+						.log(Level.INFO, "Deleting cancelled task");
 				if (googleCalendar.isDeleted(gCalEntry)) {
 
 					// delete local task
@@ -144,7 +146,7 @@ public class Database {
 				throws Exception {
 
 			// pull new remote task
-			System.out.println("pulling new event");
+			MhsLogger.getLogger().log(Level.INFO, "pulling new event");
 
 			DateTime syncDateTime = setSyncTime(gCalEntry);
 
@@ -173,8 +175,8 @@ public class Database {
 		private void pullSyncExistingTask(CalendarEventEntry gCalEntry,
 				Task localTaskEntry) {
 
-			System.out.println("pulling newer event : "
-					+ localTaskEntry.getTaskName());
+			MhsLogger.getLogger().log(Level.INFO,
+					"pulling newer event : " + localTaskEntry.getTaskName());
 
 			DateTime syncDateTime = setSyncTime(gCalEntry);
 
@@ -221,20 +223,22 @@ public class Database {
 
 			// remove deleted task
 			if (localTask.isDeleted()) {
-				System.out.println("Removing deleted synced task");
+				MhsLogger.getLogger().log(Level.INFO,
+						"Removing deleted synced task");
 				googleCalendar.deleteEvent(localTask.getgCalTaskId());
 				return;
 			}
 
 			// add unsynced tasks
 			if (isUnsyncedTask(localTask)) {
-				System.out.println("Pushing new sync task");
+				MhsLogger.getLogger().log(Level.INFO, "Pushing new sync task");
 				pushSyncNewTask(localTask);
 			} else {
 				// add updated tasks
 				if (localTask.getTaskUpdated().isAfter(
 						localTask.getTaskLastSync())) {
-					System.out.println("Pushing updated task");
+					MhsLogger.getLogger().log(Level.INFO,
+							"Pushing updated task");
 					pushSyncExistingTask(localTask);
 				}
 			}
@@ -279,7 +283,7 @@ public class Database {
 			// update remote task
 			CalendarEventEntry updatedGcalEvent = googleCalendar
 					.updateEvent(localTask.clone());
-			
+
 			// Update local task sync details
 			DateTime syncDateTime = setSyncTime(updatedGcalEvent);
 			localTask.setTaskLastSync(syncDateTime);
@@ -315,6 +319,8 @@ public class Database {
 		initializeSyncDateTimes();
 		initalizeDatabase();
 		syncronizeDatabases();
+
+		MhsLogger.getLogger().log(Level.INFO, "Database Initialized");
 	}
 
 	private void initializeSyncDateTimes() {
@@ -406,7 +412,7 @@ public class Database {
 		pullSyncTimedTask = new TimerTask() {
 			@Override
 			public void run() {
-				System.out.println("Timed pull-sync");
+				MhsLogger.getLogger().log(Level.INFO, "Timed pull-sync");
 				try {
 					syncronize.pullSync();
 				} catch (UnknownHostException e) {
