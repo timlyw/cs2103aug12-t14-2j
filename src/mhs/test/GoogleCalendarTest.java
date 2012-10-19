@@ -13,6 +13,16 @@ import com.google.gdata.util.ServiceException;
 import mhs.src.GoogleCalendar;
 import static org.junit.Assert.*;
 
+/**
+ * This class tests the functionality of GoogleCalendar
+ * for creation, retrieval, update and deletion of events
+ * 
+ * It also tests for exception cases of null or invalid inputs
+ * 
+ * @author John
+ *
+ */
+
 public class GoogleCalendarTest {
 	/**
 	 * test account parameters
