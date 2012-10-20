@@ -16,5 +16,7 @@
 	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/joda-time-2.1-javadoc.jar"/>
 	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/joda-time-2.1-sources.jar"/>
 	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/jsr305.jar"/>
+	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/junit.jar"/>
+	<classpathentry kind="lib" path="C:/Users/timlyw/Desktop/eclipse-java-workspace/cs2103-MHS/libs/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
