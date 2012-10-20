@@ -351,12 +351,12 @@ public class DatabaseTest {
 
 		// we use a separate GoogleCalendar to query events (need to pullEvents
 		// manually)
-		String googleAccessToken = (GoogleCalendar.retrieveAccessToken(
+		String googleAccessToken = (GoogleCalendar.retrieveUserToken(
 				GOOGLE_APP_NAME, GOOGLE_TEST_ACCOUNT_NAME,
 				GOOGLE_TEST_ACCOUNT_PASSWORD));
 
-		GoogleCalendar gCal = new GoogleCalendar(googleAccessToken,
-				GOOGLE_TEST_ACCOUNT_NAME, GOOGLE_APP_NAME);
+		GoogleCalendar gCal = new GoogleCalendar(GOOGLE_APP_NAME,
+				GOOGLE_TEST_ACCOUNT_NAME, googleAccessToken);
 
 		// Test push new task sync
 		System.out.println("Adding new Tasks to push");
