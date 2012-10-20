@@ -1,4 +1,4 @@
-package mhs.src;
+package mhs.src.logic;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;

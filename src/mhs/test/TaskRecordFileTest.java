@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import mhs.src.DeadlineTask;
-import mhs.src.FloatingTask;
-import mhs.src.Task;
-import mhs.src.TaskCategory;
-import mhs.src.TaskRecordFile;
-import mhs.src.TimedTask;
+import mhs.src.storage.DeadlineTask;
+import mhs.src.storage.FloatingTask;
+import mhs.src.storage.Task;
+import mhs.src.storage.TaskCategory;
+import mhs.src.storage.TaskRecordFile;
+import mhs.src.storage.TimedTask;
 
 import org.joda.time.DateTime;
 import org.junit.Before;

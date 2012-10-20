@@ -1,4 +1,4 @@
-package mhs.src;
+package mhs.src.logic;
 
 /**
  * 

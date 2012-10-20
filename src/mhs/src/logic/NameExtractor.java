@@ -1,7 +1,8 @@
-package mhs.src;
+package mhs.src.logic;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 /**
  * 

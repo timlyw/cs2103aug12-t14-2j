@@ -14,13 +14,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import mhs.src.Database;
-import mhs.src.DeadlineTask;
-import mhs.src.FloatingTask;
-import mhs.src.GoogleCalendar;
-import mhs.src.Task;
-import mhs.src.TaskCategory;
-import mhs.src.TimedTask;
+import mhs.src.storage.Database;
+import mhs.src.storage.DeadlineTask;
+import mhs.src.storage.FloatingTask;
+import mhs.src.storage.GoogleCalendar;
+import mhs.src.storage.Task;
+import mhs.src.storage.TaskCategory;
+import mhs.src.storage.TimedTask;
 
 import org.joda.time.DateTime;
 import org.junit.After;

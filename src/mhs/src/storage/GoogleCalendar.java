@@ -1,10 +1,11 @@
-package mhs.src;
+package mhs.src.storage;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.List;
+
 
 import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
 import com.google.gdata.client.calendar.CalendarQuery;
@@ -355,7 +356,7 @@ public class GoogleCalendar {
 	 */
 	private static boolean isTaskFloating(Task task)
 			throws NullPointerException {
-		return task.taskCategory.equals(TaskCategory.FLOATING);
+		return task.getTaskCategory().equals(TaskCategory.FLOATING);
 	}
 
 	/**

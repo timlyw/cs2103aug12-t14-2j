@@ -4,7 +4,7 @@
  * @author timlyw
  */
 
-package mhs.src;
+package mhs.src.storage;
 
 import org.joda.time.DateTime;
 

@@ -1,9 +1,16 @@
-package mhs.src;
+package mhs.src.logic;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Stack;
+
+import mhs.src.storage.Database;
+import mhs.src.storage.DeadlineTask;
+import mhs.src.storage.FloatingTask;
+import mhs.src.storage.Task;
+import mhs.src.storage.TaskCategory;
+import mhs.src.storage.TimedTask;
 
 import org.joda.time.DateTime;
 
@@ -55,7 +62,7 @@ public class Processor {
 	/**
 	 * constructor to initialize sync with Gcal
 	 */
-	Processor() {
+	public Processor() {
 		try {
 			dataHandler = new Database();
 			commandParser = new CommandParser();
@@ -254,7 +261,7 @@ public class Processor {
 			executeTask("edit", matchedTasks.get(selectedIndex), markedTask);
 			userOutputString = "Edited Task - "
 					+ matchedTasks.get(selectedIndex).getTaskName() + "-Done? "
-					+ matchedTasks.get(selectedIndex).isDone;
+					+ matchedTasks.get(selectedIndex).isDone();
 			break;
 		default:
 			userOutputString = MESSAGE_UNKNOWN_COMMAND;
@@ -321,7 +328,7 @@ public class Processor {
 
 			outputString = "Marked Task as done - '"
 					+ resultList.get(0).getTaskName() + "'" + "-Done? "
-					+ resultList.get(0).isDone;
+					+ resultList.get(0).isDone();
 		}
 		// if multiple matches are found display the list
 		else {
@@ -556,7 +563,7 @@ public class Processor {
 			if (selectedTask.getTaskCategory() == TaskCategory.FLOATING) {
 				outputString += count + ". " + selectedTask.getTaskName() + "-"
 						+ selectedTask.getTaskCategory() + "("
-						+ selectedTask.isDone + ")\n";
+						+ selectedTask.isDone() + ")\n";
 			} else {
 				outputString += count + ". " + selectedTask.getTaskName() + "-"
 						+ selectedTask.getTaskCategory() + "\n";
@@ -581,7 +588,7 @@ public class Processor {
 			if (selectedTask.getTaskCategory() == category) {
 				outputString += count + ". " + selectedTask.getTaskName() + "-"
 						+ selectedTask.getTaskCategory() + "("
-						+ selectedTask.isDone + ")\n";
+						+ selectedTask.isDone() + ")\n";
 			}
 			count++;
 		}

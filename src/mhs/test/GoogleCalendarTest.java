@@ -10,7 +10,7 @@ import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
-import mhs.src.GoogleCalendar;
+import mhs.src.storage.GoogleCalendar;
 import static org.junit.Assert.*;
 
 /**

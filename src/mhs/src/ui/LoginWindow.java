@@ -1,4 +1,4 @@
-package mhs.src;
+package mhs.src.ui;
 
 import java.awt.Color;
 import java.awt.Component;
