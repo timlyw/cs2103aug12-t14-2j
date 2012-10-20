@@ -27,6 +27,7 @@ public class Command {
 	
 	private DateTime startDate;
 	private DateTime endDate;
+	private DateTime now;
 
 	/**
 	 * This is the constructor to set up the command object. 
@@ -43,6 +44,7 @@ public class Command {
 			String edittedNameInput, LocalDate startDateInput,
 			LocalTime startTimeInput, LocalDate endDateInput,
 			LocalTime endTimeInput) {
+		now = DateTime.now();
 		for(command c: command.values()){
 			if(commandInput == c.name()){
 				commandEnum = c;
@@ -50,41 +52,53 @@ public class Command {
 		}
 		taskName = taskNameInput;
 		edittedName = edittedNameInput;
+		
 
-
+		//no start date no start time
 		if ((startDateInput == null && startTimeInput == null)) {
 			startDate = null;
 		}
+		//both start date and start time
 		if (startDateInput != null && startTimeInput!=null) {
 			startDate = startDateInput.toDateTime(startTimeInput);
 		}
+		//only start date
 		if(startDateInput !=null && startTimeInput==null){
 			startDate = startDateInput.toDateTimeAtStartOfDay();
 		}
+		//only start time
 		if(startDateInput == null && startTimeInput != null){
 			startDateInput = LocalDate.now();
 			startDate = startDateInput.toDateTime(startTimeInput);
+			if(startDate.isBefore(now)){
+				startDate = startDate.plusDays(1);
+			}
 		}
-		
+		//only end time
 		if(endDateInput == null && endTimeInput != null){
 			endDateInput = LocalDate.now();
 			endDate = endDateInput.toDateTime(endTimeInput);
+			if(endDate.isBefore(now)){
+				endDate = endDate.plusDays(1);
+			}
 		}
+		//no end date no end time
 		if (endDateInput == null && endTimeInput == null) {
 			endDate = null;
 		}
-		
+		//both end date and end time
 		if (endDateInput != null && endTimeInput != null) {
 			endDate = endDateInput.toDateTime(endTimeInput);
 		}
+		//only end date
 		if(endDateInput !=null && endTimeInput==null){
 			endDate = endDateInput.toDateTimeAtStartOfDay();
 		}
-		
+		//ensure start date is before end date. 
 		if(startDate != null && endDate != null){
 			if(startDate.isAfter(endDate)){
 			DateTime temp = new DateTime();
-			temp = startDate; 
+			temp = endDate; 
 			endDate = startDate; 
 			startDate = temp;
 			}

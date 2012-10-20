@@ -25,7 +25,7 @@ public class NameExtractor {
 	/**
 	 * These are the enum that are keywords relating to date/time.
 	 */
-	private enum keywords {
+	private enum SpecialKeyWords {
 		at, by, from, to, on;
 	}
 
@@ -49,7 +49,7 @@ public class NameExtractor {
 		if (!(timeParser.checkTimeFormat(printString)
 				|| dateParser.checkDateFormat(printString) || commandParser
 					.isCommand(printString))) {
-			for (keywords k : keywords.values()) {
+			for (SpecialKeyWords k : SpecialKeyWords.values()) {
 				if (printString.equals(k.name())) {
 					return false;
 				}

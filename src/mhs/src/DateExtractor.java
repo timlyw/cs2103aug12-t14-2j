@@ -32,7 +32,7 @@ public class DateExtractor {
 	private static final String ERROR_MESSAGE_NOT_NUMERICAL_DATE = "error not numerical date!";
 
 	// These are regex to check the dateformat and for clearing.
-	private static final String REGEX_FULL_DATE_FORMAT = "(0?[1-9]|[12][0-9]|3[01])(/|-)(0?[1-9]|1[012])(.*)(((20)\\d\\d)?)";
+	private static final String REGEX_FULL_DATE_FORMAT = "(0?[1-9]|[12][0-9]|3[01])(/|-)(0?[1-9]|1[012])(/|-)(((20)\\d\\d)?)";
 	private static final String REGEX_NON_WORD_CHAR = "\\W";
 
 	LocalDate setDate;
@@ -44,14 +44,14 @@ public class DateExtractor {
 	 * This is the enum of the different days and the the day of the week they
 	 * correspond to.
 	 */
-	private enum Day {
+	private enum DayKeyWord {
 		monday(1), mon(1), tuesday(2), tue(2), tues(2), wednesday(3), weds(3), wed(
 				3), thursday(4), thurs(4), thur(4), friday(5), fri(5), saturday(
 				6), sat(6), sunday(7), sun(7);
 
 		private final int dayOfWeek;
 
-		Day(int dayOfWeek) {
+		DayKeyWord(int dayOfWeek) {
 			this.dayOfWeek = dayOfWeek;
 		}
 
@@ -61,14 +61,14 @@ public class DateExtractor {
 	 * This is the enum of the different months and the month of the year they
 	 * correspond to.
 	 */
-	private enum Month {
+	private enum MonthKeyWord {
 		janurary(1), jan(1), february(2), feb(2), march(3), april(4), may(5), june(
 				6), july(7), august(8), aug(8), september(9), sep(9), sept(9), october(
 				10), oct(10), november(11), nov(11), decemeber(12), dec(12);
 
 		private final int monthOfYear;
 
-		Month(int monthOfyear) {
+		MonthKeyWord(int monthOfyear) {
 			this.monthOfYear = monthOfyear;
 		}
 	}
@@ -76,7 +76,7 @@ public class DateExtractor {
 	/**
 	 * This is the enum of unique date types not covered in other formats.
 	 */
-	private enum uniqueDateType {
+	private enum UniqueDateTypeKeyWord {
 		today, tomorrow, week, month, year, THIS, weekend;
 	}
 
@@ -89,7 +89,7 @@ public class DateExtractor {
 	public DateExtractor() {
 		setDate = null;
 		now = LocalDate.now();
-		day = now.getDayOfWeek();
+		day = now.getDayOfMonth();
 		month = now.getMonthOfYear();
 		year = now.getYear();
 		startDate = new LocalDate();
@@ -101,6 +101,11 @@ public class DateExtractor {
 	private static int counter;
 	private static Queue<LocalDate> dateList;
 
+	private boolean monthFlag = false;
+	private boolean dayFlag = false;
+	private boolean yearFlag = false;
+	private boolean dateFlag = false;
+
 	/**
 	 * This is the function to process the date and set the values.
 	 * 
@@ -111,16 +116,12 @@ public class DateExtractor {
 	 */
 	public Queue<LocalDate> processDate(String[] parseString) {
 
-		boolean monthFlag = false;
-		boolean dayFlag = false;
-		boolean yearFlag = false;
-		boolean dateFlag = false;
 		String dateCommand;
 		Queue<String> dateQueue = new LinkedList<String>();
 		dateList = new LinkedList<LocalDate>();
 		startDate = null;
 		endDate = null;
-		
+
 		int parameters;
 
 		for (counter = 0; counter < parseString.length; counter++) {
@@ -131,6 +132,16 @@ public class DateExtractor {
 
 			if (checkDateFormat(parseString[counter])) {
 				dateQueue = setUpDateQueue(parseString);
+
+				if (dateQueue.size() == 1) {
+					if (isInteger(dateQueue.peek())) {
+						parameters = Integer.parseInt(dateQueue.peek());
+						if (isNumberOfDaysInMonth(parameters)) {
+
+						}
+					}
+				}
+
 				while (!dateQueue.isEmpty()) {
 					dateCommand = dateQueue.poll();
 
@@ -175,13 +186,17 @@ public class DateExtractor {
 					}
 
 					if (isUniqueDateType(dateCommand)) {
-						if (dateQueue.size() > 0 && isUniqueDateType(dateQueue.peek())) {
+						if (dateQueue.size() > 0
+								&& isUniqueDateType(dateQueue.peek())) {
 							dateCommand = dateCommand + " " + dateQueue.poll();
 						}
 						setUniqueDate(dateCommand);
 					}
 				}
 
+				if (!isAllFlagsSet()) {
+					setDateRange();
+				}
 				if (startDate != null) {
 					dateList.add(startDate);
 
@@ -201,6 +216,38 @@ public class DateExtractor {
 		}
 		return dateList;
 
+	}
+
+	private void setDateRange() {
+		// 1 month time period
+		if (!dayFlag && monthFlag) {
+			startDate = new LocalDate(year, month, 1);
+			endDate = startDate.plusMonths(1);
+			dateList.add(startDate);
+			dateList.add(endDate);
+		}
+		// 1 year time period
+		else if (!dayFlag && !monthFlag && yearFlag) {
+			startDate = new LocalDate(year, 1, 1);
+			endDate = startDate.plusYears(1);
+			dateList.add(startDate);
+			dateList.add(endDate);
+		}
+		//month and year
+		else if (!dayFlag && monthFlag && yearFlag) {
+			startDate = new LocalDate(year, month, 1);
+			endDate = startDate.plusMonths(1);
+			dateList.add(startDate);
+			dateList.add(endDate);
+		}
+
+	}
+
+	private boolean isAllFlagsSet() {
+		if ((dayFlag && monthFlag && yearFlag) || (dateFlag)) {
+			return true;
+		}
+		return false;
 	}
 
 	private Queue<String> setUpDateQueue(String[] processArray) {
@@ -227,13 +274,14 @@ public class DateExtractor {
 	private void setUniqueDate(String command) {
 
 		dateList = new LinkedList<LocalDate>();
-		if (command.equalsIgnoreCase(uniqueDateType.today.name())) {
+		if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.today.name())) {
 			startDate = now;
 
-		} else if (command.equalsIgnoreCase(uniqueDateType.tomorrow.name())) {
+		} else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.tomorrow
+				.name())) {
 			startDate = now.plusDays(1);
-		} else if (command.equalsIgnoreCase(uniqueDateType.THIS.name() + " "
-				+ uniqueDateType.week.name())) {
+		} else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
+				+ " " + UniqueDateTypeKeyWord.week.name())) {
 			startDate = now;
 			int numberOfDaysToEndOfWeek = 7 - startDate.getDayOfWeek();
 			if (numberOfDaysToEndOfWeek == 0) {
@@ -243,8 +291,8 @@ public class DateExtractor {
 			}
 		}
 
-		else if (command.equalsIgnoreCase(uniqueDateType.THIS.name() + " "
-				+ uniqueDateType.month.name())) {
+		else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
+				+ " " + UniqueDateTypeKeyWord.month.name())) {
 			startDate = now;
 			int numberOfDaysToEndOfMonth = startDate.dayOfMonth()
 					.getMaximumValue() - startDate.getDayOfMonth();
@@ -255,8 +303,8 @@ public class DateExtractor {
 			}
 		}
 
-		else if (command.equalsIgnoreCase(uniqueDateType.THIS.name() + " "
-				+ uniqueDateType.year.name())) {
+		else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
+				+ " " + UniqueDateTypeKeyWord.year.name())) {
 			startDate = now;
 			int numberOfDaysToEndOfYear;
 			if (startDate.year().isLeap()) {
@@ -272,8 +320,8 @@ public class DateExtractor {
 
 		}
 
-		else if (command.equalsIgnoreCase(uniqueDateType.THIS.name() + " "
-				+ uniqueDateType.weekend.name())) {
+		else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
+				+ " " + UniqueDateTypeKeyWord.weekend.name())) {
 			int numberOfDaysToEndOfWeek = 7 - now.getDayOfWeek();
 			endDate = now.plusDays(numberOfDaysToEndOfWeek);
 			startDate = endDate.minusDays(1);
@@ -302,6 +350,7 @@ public class DateExtractor {
 			day = day - lastDayOfMonth;
 
 		}
+
 	}
 
 	/**
@@ -356,7 +405,7 @@ public class DateExtractor {
 
 		int dayOfWeek = 0;
 
-		for (Day d : Day.values()) {
+		for (DayKeyWord d : DayKeyWord.values()) {
 			if (command.equals(d.name())) {
 				dayOfWeek = d.dayOfWeek;
 			}
@@ -375,7 +424,7 @@ public class DateExtractor {
 	 */
 	private int getMontParameters(String command) {
 
-		for (Month m : Month.values()) {
+		for (MonthKeyWord m : MonthKeyWord.values()) {
 			if (command.equals(m.name())) {
 				return m.monthOfYear;
 			}
@@ -492,7 +541,7 @@ public class DateExtractor {
 	 */
 	private boolean isUniqueDateType(String printString) {
 
-		for (uniqueDateType d : uniqueDateType.values()) {
+		for (UniqueDateTypeKeyWord d : UniqueDateTypeKeyWord.values()) {
 			if (printString.equalsIgnoreCase(d.name())) {
 				return true;
 			}
@@ -527,7 +576,7 @@ public class DateExtractor {
 	 */
 	private boolean isDayOfWeek(String printString) {
 
-		for (Day d : Day.values()) {
+		for (DayKeyWord d : DayKeyWord.values()) {
 			if (printString.equals(d.name())) {
 				return true;
 			}
@@ -545,7 +594,7 @@ public class DateExtractor {
 	 * @return Returns true if valid.
 	 */
 	private boolean isDateWithMonthSpelled(String printString) {
-		for (Month m : Month.values()) {
+		for (MonthKeyWord m : MonthKeyWord.values()) {
 			if (printString.equals(m.name())) {
 				return true;
 			}
