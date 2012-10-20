@@ -29,7 +29,7 @@ public class TimeExtractor {
 	// These are the regex formats of timings.
 	private static final String REGEX_24_HOUR_FORMAT = "([01]?[0-9]|2[0-3]):[0-5][0-9]";
 	private static final String REGEX_12_HOUR_FORMAT_WITHOUT_MINUTES = "(1[012]|[1-9])(\\s)?(?i)(am|pm)";
-	private static final String REGEX_12_HOUR_FORMAT = "(1[012]|[1-9])(.*)([0-5][0-9])(\\s)?(?i)(am|pm)";
+	private static final String REGEX_12_HOUR_FORMAT = "(1[012]|[1-9])(.)([0-5][0-9])(\\s)?(?i)(am|pm)";
 
 	private LocalTime setTime = null;
 	private Queue<LocalTime> timeQueue;
@@ -44,8 +44,16 @@ public class TimeExtractor {
 	 */
 	public Queue<LocalTime> processTime(String[] parseString) {
 		timeQueue = new LinkedList<LocalTime>();
-		
+
 		for (int i = 0; i < parseString.length; i++) {
+			/*if (isInteger(parseString[i])
+					&& (parseString[i+1].equalsIgnoreCase(AM) || parseString[i + 1].equalsIgnoreCase(PM))) {
+				String timeString = parseString[i] + " " + parseString[i + 1];
+				if (is12HrFormat(timeString)) {
+					process12HrFormat(timeString);
+					i++;
+				}
+			}*/
 			if (checkTimeFormat(parseString[i])) {
 				if (is24HrFormat(parseString[i])) {
 					process24hrFormat(parseString[i]);
@@ -57,6 +65,15 @@ public class TimeExtractor {
 		}
 
 		return timeQueue;
+	}
+
+	private boolean isInteger(String printString) {
+		try {
+			Integer.parseInt(printString);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -162,7 +179,12 @@ public class TimeExtractor {
 	private int extractHourPM(String[] timeArray, int i) {
 		int hour;
 		timeArray[i] = timeArray[i].replace(PM, "");
-		hour = Integer.parseInt(timeArray[0]) + 12;
+		hour = Integer.parseInt(timeArray[0]);
+		if (hour == 12) {
+			hour = 0;
+		} else {
+			hour += 12;
+		}
 		return hour;
 	}
 
@@ -224,6 +246,7 @@ public class TimeExtractor {
 	public boolean checkTimeFormat(String time) {
 
 		if (is12HrFormat(time) || is24HrFormat(time)) {
+			System.out.println("true");
 			return true;
 		}
 		return false;

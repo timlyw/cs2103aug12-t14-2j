@@ -1,6 +1,5 @@
 package mhs.src;
 
-import java.util.LinkedList;
 import java.util.Queue;
 
 import org.joda.time.LocalDate;
@@ -148,11 +147,9 @@ public class CommandParser {
 		for (int i = 0; i<2; i++) {
 			if (!taskNameFlag) {
 				taskName = nameList.poll();
-				System.out.println("tas " + taskName);
 				taskNameFlag = true;
 			} else if (taskNameFlag && !nameList.isEmpty()) {
 				edittedName = nameList.poll();
-				System.out.println(edittedName);
 			}
 		}
 	}
