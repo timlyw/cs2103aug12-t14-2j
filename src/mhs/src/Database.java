@@ -449,9 +449,9 @@ public class Database {
 			return false;
 		}
 		googleCalendar = new GoogleCalendar(
-				configFile.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN),
+				GOOGLE_CALENDAR_APP_NAME,
 				configFile.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT),
-				GOOGLE_CALENDAR_APP_NAME);
+				configFile.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN));
 		saveGoogleAccountInfo();
 		return true;
 	}
@@ -469,10 +469,10 @@ public class Database {
 
 		disableRemoteSync();
 
-		String googleAccessToken = GoogleCalendar.retrieveAccessToken(
+		String googleAccessToken = GoogleCalendar.retrieveUserToken(
 				GOOGLE_CALENDAR_APP_NAME, userName, userPassword);
-		googleCalendar = new GoogleCalendar(googleAccessToken, userName,
-				GOOGLE_CALENDAR_APP_NAME);
+		googleCalendar = new GoogleCalendar(GOOGLE_CALENDAR_APP_NAME, userName,
+				googleAccessToken);
 
 		enableRemoteSync();
 		saveGoogleAccountInfo();
@@ -497,7 +497,7 @@ public class Database {
 	 * @throws IOException
 	 */
 	private void saveGoogleAccountInfo() throws IOException {
-		String googleAuthToken = googleCalendar.getAuthToken();
+		String googleAuthToken = googleCalendar.getUserToken();
 		String googleUserAccount = googleCalendar.getUserEmail();
 
 		if (googleAuthToken != null) {

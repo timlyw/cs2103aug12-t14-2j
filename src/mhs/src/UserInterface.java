@@ -6,6 +6,7 @@
  */
 
 package mhs.src;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -14,6 +15,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -24,7 +26,6 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
 
 public class UserInterface extends JFrame {
 
@@ -68,6 +69,9 @@ public class UserInterface extends JFrame {
 	UserInterface() {
 		super(FRAME_TITLE);
 		initFrame();
+
+		ImageIcon icon = new ImageIcon(UserInterface.class.getResource("mhsIconSmall.png"));
+		this.setIconImage(icon.getImage());
 	}
 
 	public void open() {
