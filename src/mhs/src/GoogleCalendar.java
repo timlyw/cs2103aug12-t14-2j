@@ -56,7 +56,7 @@ public class GoogleCalendar {
 	private String userEmail = null;
 
 	// access token used to authorize communication with Google Calendar
-	private static String authorizationToken = null;
+	private String authorizationToken = null;
 
 	// calendarService used to interface with Google Calendar
 	private CalendarService calendarService;
