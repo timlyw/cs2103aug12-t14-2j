@@ -4,7 +4,7 @@
  * @author timlyw 
  */
 
-package mhs.src;
+package mhs.src.storage;
 
 public enum TaskCategory {
 	FLOATING("FLOATING"), TIMED("TIMED"), DEADLINE("DEADLINE");

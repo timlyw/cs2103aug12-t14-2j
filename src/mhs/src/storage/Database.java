@@ -7,7 +7,7 @@
  * @author timlyw
  */
 
-package mhs.src;
+package mhs.src.storage;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
+
+import mhs.src.common.MhsLogger;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -872,7 +874,7 @@ public class Database {
 		Task updatedTaskToSave = updatedTask.clone();
 
 		// Preserve non-editable fields
-		Task currentTask = query(updatedTaskToSave.taskId);
+		Task currentTask = query(updatedTaskToSave.getTaskId());
 		updatedTaskToSave.setgCalTaskId(currentTask.getgCalTaskId());
 		updatedTaskToSave.setTaskCreated(currentTask.getTaskCreated());
 		updatedTaskToSave.setTaskLastSync(currentTask.getTaskLastSync());

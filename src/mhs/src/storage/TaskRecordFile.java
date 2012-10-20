@@ -4,7 +4,7 @@
  * @author timlyw
  */
 
-package mhs.src;
+package mhs.src.storage;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 
 import org.joda.time.DateTime;
 
@@ -97,9 +98,9 @@ public class TaskRecordFile {
 
 		for (JsonElement obj : Jarray) {
 			Task newTask = gson.fromJson(obj, Task.class);
-			taskList.put(newTask.taskId, newTask);
-			if (newTask.gCalTaskId != null) {
-				gCalTaskList.put(newTask.gCalTaskId, newTask);
+			taskList.put(newTask.getTaskId(), newTask);
+			if (newTask.getgCalTaskId() != null) {
+				gCalTaskList.put(newTask.getgCalTaskId(), newTask);
 			}
 		}
 
@@ -118,7 +119,7 @@ public class TaskRecordFile {
 
 		for (JsonElement obj : Jarray) {
 			Task newTask = gson.fromJson(obj, Task.class);
-			taskList.put(newTask.taskId, newTask);
+			taskList.put(newTask.getTaskId(), newTask);
 		}
 
 		jsonReader.close();

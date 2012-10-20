@@ -1,4 +1,4 @@
-package mhs.src;
+package mhs.src.common;
 
 import java.io.IOException;
 import java.util.logging.FileHandler;

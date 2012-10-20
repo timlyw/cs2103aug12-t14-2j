@@ -5,7 +5,7 @@
  * 		3) A pop-up helper screen to provide user with real-time feedback
  */
 
-package mhs.src;
+package mhs.src.ui;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -26,6 +26,8 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import mhs.src.logic.Processor;
 
 public class UserInterface extends JFrame {
 
@@ -66,7 +68,7 @@ public class UserInterface extends JFrame {
 
 	private Processor processor = new Processor();
 
-	UserInterface() {
+	public UserInterface() {
 		super(FRAME_TITLE);
 		initFrame();
 
