@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="11.5.1">
+  <zoom_level>7</zoom_level>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>168</x>
+      <y>196</y>
+      <w>196</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Command Parser
+--
++getParsedCommand(String) : Command
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>7</x>
+      <y>434</y>
+      <w>182</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>DateExtractor
+--
++checkDateFormat(String) : boolean
++processDate(Queue&lt;String&gt;) : LocalDate</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>560</x>
+      <y>336</y>
+      <w>336</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Enumeration&gt;&gt;
+commands
+--
+add, delete, edit, find, postpone, remove, search, sync, undo, update.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>210</x>
+      <y>224</y>
+      <w>54</w>
+      <h>237</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+has 
+1</panel_attributes>
+    <additional_attributes>28;21;28;224</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>196</x>
+      <y>448</y>
+      <w>147</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>CommandExtractor
+
+--
++isCommand(String) : boolean
++setCommand(String) : String
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>63</x>
+      <y>224</y>
+      <w>153</w>
+      <h>223</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+has
+1</panel_attributes>
+    <additional_attributes>140;21;140;182;21;182;21;210</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>252</x>
+      <y>224</y>
+      <w>153</w>
+      <h>237</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+has 
+1</panel_attributes>
+    <additional_attributes>21;21;21;161;140;161;140;224</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>357</x>
+      <y>448</y>
+      <w>147</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>TimeExtractor
+
+--
++checkTimeFormat(String) : boolean
++processTime(String) : String
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>287</x>
+      <y>224</y>
+      <w>272</w>
+      <h>237</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+has 
+1</panel_attributes>
+    <additional_attributes>21;21;21;126;259;126;259;224</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>511</x>
+      <y>448</y>
+      <w>189</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>NameExtractor
+
+--
++checkNameFormat(String): boolean
++hasQuotations(String) : boolean
++processName(Queue&lt;String&gt;) : String
++processNameWithinQuotationMarks(String) : String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>343</x>
+      <y>189</y>
+      <w>230</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+returns</panel_attributes>
+    <additional_attributes>21;35;217;35</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>560</x>
+      <y>182</y>
+      <w>336</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>Command
+--
+
+-commandEnum : command
+-edittedName : String
+-endDate : DateTime
+-startDate : DateTime
+-taskName : String
+--
++Command()
++Command(String, String, String, LocalDate, LocalTime, LocalDate, LocalTime)</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
