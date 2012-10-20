@@ -47,7 +47,7 @@ public class GoogleCalendarTest {
 	public void testRetrieveAccessToken() {
 		try {
 			String accessToken;
-			accessToken = GoogleCalendar.retrieveAccessToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
+			accessToken = GoogleCalendar.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
 			assertTrue(accessToken.length() > 0);
 		} catch (AuthenticationException e) {
 			display(ERROR_LOGIN);
@@ -61,8 +61,8 @@ public class GoogleCalendarTest {
 	public void testGetEvents() {
 		try {	
 			String accessToken;
-			accessToken = GoogleCalendar.retrieveAccessToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
-			GoogleCalendar gCal = new GoogleCalendar(accessToken, USER_EMAIL, APP_NAME);
+			accessToken = GoogleCalendar.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
+			GoogleCalendar gCal = new GoogleCalendar(APP_NAME, USER_EMAIL, accessToken);
 
 			String startTime = "2014-02-01T01:00:00+08:00";
 			String endTime = "2014-02-29T23:00:00+08:00";
@@ -88,8 +88,8 @@ public class GoogleCalendarTest {
 		try {
 			// test createEvent
 			String accessToken;
-			accessToken = GoogleCalendar.retrieveAccessToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
-			GoogleCalendar gCal = new GoogleCalendar(accessToken, USER_EMAIL, APP_NAME);
+			accessToken = GoogleCalendar.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
+			GoogleCalendar gCal = new GoogleCalendar(APP_NAME, USER_EMAIL, accessToken);
 			
 			String title = "unit test create";
 			String startTime = "2012-10-16T13:00:00+08:00";
@@ -139,8 +139,8 @@ public class GoogleCalendarTest {
 		try {
 			// test createEvent
 			String accessToken;
-			accessToken = GoogleCalendar.retrieveAccessToken(APP_NAME,"invalid email", "invalid password");
-			GoogleCalendar gCal = new GoogleCalendar(accessToken, "invalid email", APP_NAME);
+			accessToken = GoogleCalendar.retrieveUserToken(APP_NAME,"invalid email", "invalid password");
+			GoogleCalendar gCal = new GoogleCalendar(APP_NAME, "invalid email", accessToken);
 
 			String title = "unit test create";
 			String startTime = "2012-10-16T13:00:00+08:00";
@@ -170,8 +170,8 @@ public class GoogleCalendarTest {
 		try {
 			// test createEvent
 			String accessToken;
-			accessToken = GoogleCalendar.retrieveAccessToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
-			GoogleCalendar gCal = new GoogleCalendar(accessToken, USER_EMAIL, APP_NAME);
+			accessToken = GoogleCalendar.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
+			GoogleCalendar gCal = new GoogleCalendar(APP_NAME, USER_EMAIL, accessToken);
 			gCal.createEvent(null);
 			gCal.deleteEvent(null);
 			
