@@ -47,6 +47,12 @@
     </javadoc>
   </target>
 
+  <!-- combine jars --> 
+  <zip destfile="${libs.dir}/libs/mhs-dependencies.jar">
+  	<zipgroupfileset excludes="META-INF/*.SF" dir="${libs.dir}" includes="*.jar"/>
+  </zip>
+  
+  
   <!--Creates the deployable jar file  -->
   <target name="create_run_jar" depends="compile">
     <jar destfile="${dist.dir}\mhs.jar" basedir="${build.dir}" filesetmanifest="mergewithoutmain">
@@ -56,21 +62,9 @@
       </manifest>
         
 	    <fileset dir="${bin.dir}"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/junit.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/gdata-core-1.0.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/gdata-client-meta-1.0.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/gdata-client-1.0.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/gdata-calendar-meta-2.0.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/gdata-calendar-2.0.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/gson-2.2.2.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/gson-2.2.2-javadoc.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/gson-2.2.2-sources.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/guava-11.0.2.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/joda-time-2.1.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/joda-time-2.1-javadoc.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/joda-time-2.1-sources.jar"/>
-	     <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/jsr305.jar"/>
+	
+		<!-- add combined jars -->	    
+	    <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/libs/mhs-dependencies.jar"/>
     </jar>
   </target>
   
