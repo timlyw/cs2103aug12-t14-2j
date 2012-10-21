@@ -4,12 +4,13 @@
  */
 package mhs.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 
-import mhs.src.ConfigFile;
+import mhs.src.storage.ConfigFile;
 
 import org.junit.Before;
 import org.junit.Test;
