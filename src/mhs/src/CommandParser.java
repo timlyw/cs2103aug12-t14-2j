@@ -11,12 +11,6 @@ import org.joda.time.LocalTime;
  */
 public class CommandParser {
 
-	// this is the default command.
-	private static final String COMMAND_ADD = "add";
-
-	// these are regex strings.
-	private static final String REGEX_WHITE_SPACE = "\\s+";
-
 	private DateExtractor dateParser;
 	private TimeExtractor timeParser;
 	private CommandExtractor commandParser;
@@ -49,12 +43,11 @@ public class CommandParser {
 		setEnvironment();
 
 		parseString = setNameInQuotationMarks(parseString);
-		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 
-		setCommand(processArray);
-		setName(processArray);
-		setTime(processArray);
-		setDate(processArray);
+		setCommand(parseString);
+		setName(parseString);
+		setTime(parseString);
+		setDate(parseString);
 
 		return setUpCommandObject(command, taskName, edittedName, startDate,
 				startTime, endDate, endTime);
@@ -87,13 +80,13 @@ public class CommandParser {
 	/**
 	 * This is the function to set the start dates and/or end dates.
 	 * 
-	 * @param processArray
+	 * @param parseString
 	 *            Takes in a stringArray.
 	 */
-	private void setDate(String[] processArray) {
+	private void setDate(String parseString) {
 
 		Queue<LocalDate> dateList;
-		dateList = dateParser.processDate(processArray);
+		dateList = dateParser.processDate(parseString);
 		if (dateList.isEmpty()) {
 			return;
 		}
@@ -112,12 +105,12 @@ public class CommandParser {
 	/**
 	 * This is the function to set the start times and/or end times.
 	 * 
-	 * @param processArray
+	 * @param parseString
 	 *            Takes in a string array.
 	 */
-	private void setTime(String[] processArray) {
+	private void setTime(String parseString) {
 		Queue<LocalTime> timeList;
-		timeList = timeParser.processTime(processArray);
+		timeList = timeParser.processTime(parseString);
 		if (timeList.isEmpty()) {
 			return;
 		}
@@ -134,17 +127,17 @@ public class CommandParser {
 	/**
 	 * This is the function to set the name and/or editted name.
 	 * 
-	 * @param processArray
+	 * @param parseString
 	 *            Takes in a string array.
 	 */
-	private void setName(String[] processArray) {
+	private void setName(String parseString) {
 
 		Queue<String> nameList;
-		nameList = nameParser.processName(processArray);
+		nameList = nameParser.processName(parseString);
 		if (nameList.isEmpty()) {
 			return;
 		}
-		for (int i = 0; i<2; i++) {
+		for (int i = 0; i < 2; i++) {
 			if (!taskNameFlag) {
 				taskName = nameList.poll();
 				taskNameFlag = true;
@@ -160,13 +153,9 @@ public class CommandParser {
 	 * @param processArray
 	 *            Takes in a string array.
 	 */
-	private void setCommand(String[] processArray) {
+	private void setCommand(String parseString) {
 
-		if (commandParser.isCommand(processArray[0])) {
-			command = commandParser.setCommand(processArray[0]);
-		} else {
-			command = COMMAND_ADD;
-		}
+		command = commandParser.setCommand(parseString);
 
 	}
 

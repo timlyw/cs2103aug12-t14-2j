@@ -21,6 +21,8 @@ public class TimeExtractor {
 	// These are the regex for clearing.
 	private static final String REGEX_NON_WORD_CHAR = "\\W";
 	private static final String REGEX_SPACE = " ";
+	private static final String REGEX_WHITE_SPACE = "\\s+";
+
 
 	// These are the am and pm formats used in timings.
 	private static final String AM = "am";
@@ -37,29 +39,25 @@ public class TimeExtractor {
 	/**
 	 * This is the function to extract and set the time.
 	 * 
-	 * @param parseString
+	 * @param processArray
 	 *            This is the string to be processed.
 	 * 
 	 * @return Returns a local time object with the timings set.
 	 */
-	public Queue<LocalTime> processTime(String[] parseString) {
+	public Queue<LocalTime> processTime(String parseString) {
 		timeQueue = new LinkedList<LocalTime>();
+		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
+		
+		for (int i = 0; i < processArray.length; i++) {
 
-		for (int i = 0; i < parseString.length; i++) {
-			/*if (isInteger(parseString[i])
-					&& (parseString[i+1].equalsIgnoreCase(AM) || parseString[i + 1].equalsIgnoreCase(PM))) {
-				String timeString = parseString[i] + " " + parseString[i + 1];
-				if (is12HrFormat(timeString)) {
-					process12HrFormat(timeString);
-					i++;
+			if (checkTimeFormat(processArray[i])) {
+				System.out.println(processArray[i]);
+				if (is24HrFormat(processArray[i])) {
+					process24hrFormat(processArray[i]);
+				} else if (is12HrFormat(processArray[i])) {
+					process12HrFormat(processArray[i]);
 				}
-			}*/
-			if (checkTimeFormat(parseString[i])) {
-				if (is24HrFormat(parseString[i])) {
-					process24hrFormat(parseString[i]);
-				} else if (is12HrFormat(parseString[i])) {
-					process12HrFormat(parseString[i]);
-				}
+				//System.out.println(setTime.toString());
 				timeQueue.add(setTime);
 			}
 		}
@@ -67,14 +65,6 @@ public class TimeExtractor {
 		return timeQueue;
 	}
 
-	private boolean isInteger(String printString) {
-		try {
-			Integer.parseInt(printString);
-			return true;
-		} catch (NumberFormatException e) {
-			return false;
-		}
-	}
 
 	/**
 	 * This is the function to process 24hr format timing.
@@ -208,10 +198,10 @@ public class TimeExtractor {
 		Matcher matcherTimeFormat12HrWithoutMinutes = patternTimeFormat12HrWithoutMinutes
 				.matcher(time);
 
-		if (matcherTimeFormat12Hr.matches()
-				|| matcherTimeFormat12HrWithoutMinutes.matches()) {
+		if (matcherTimeFormat12Hr.matches() || matcherTimeFormat12HrWithoutMinutes.matches()) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -246,7 +236,6 @@ public class TimeExtractor {
 	public boolean checkTimeFormat(String time) {
 
 		if (is12HrFormat(time) || is24HrFormat(time)) {
-			System.out.println("true");
 			return true;
 		}
 		return false;

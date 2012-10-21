@@ -34,6 +34,7 @@ public class DateExtractor {
 	// These are regex to check the dateformat and for clearing.
 	private static final String REGEX_FULL_DATE_FORMAT = "(0?[1-9]|[12][0-9]|3[01])(/|-)(0?[1-9]|1[012])(/|-)(((20)\\d\\d)?)";
 	private static final String REGEX_NON_WORD_CHAR = "\\W";
+	private static final String REGEX_WHITE_SPACE = "\\s+";
 
 	LocalDate setDate;
 	LocalDate now;
@@ -114,24 +115,25 @@ public class DateExtractor {
 	 * 
 	 * @return Returns a local date type with the day,month, year set.
 	 */
-	public Queue<LocalDate> processDate(String[] parseString) {
+	public Queue<LocalDate> processDate(String parseString) {
 
 		String dateCommand;
 		Queue<String> dateQueue = new LinkedList<String>();
+		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 		dateList = new LinkedList<LocalDate>();
 		startDate = null;
 		endDate = null;
 
 		int parameters;
 
-		for (counter = 0; counter < parseString.length; counter++) {
+		for (counter = 0; counter < processArray.length; counter++) {
 			monthFlag = false;
 			dayFlag = false;
 			yearFlag = false;
 			dateFlag = false;
 
-			if (checkDateFormat(parseString[counter])) {
-				dateQueue = setUpDateQueue(parseString);
+			if (checkDateFormat(processArray[counter])) {
+				dateQueue = setUpDateQueue(processArray);
 
 				if (dateQueue.size() == 1) {
 					if (isInteger(dateQueue.peek())) {
@@ -240,7 +242,7 @@ public class DateExtractor {
 			dateList.add(startDate);
 			dateList.add(endDate);
 		}
-
+	
 	}
 
 	private boolean isAllFlagsSet() {

@@ -18,7 +18,8 @@ import java.util.regex.Pattern;
 public class NameExtractor {
 
 	// These are the regex statements.
-	private static final String REGEX_WHITE_SPACE = " ";
+	private static final String REGEX_BLANK = " ";
+	private static final String REGEX_WHITE_SPACE = "\\s+";
 	private static final String REGEX_QUOTATION_MARKS = "\"[^\"]*\"";
 	private static final String REGEX_QUOTATION = "\"";
 
@@ -63,23 +64,23 @@ public class NameExtractor {
 	/**
 	 * This is the function to process the name.
 	 * 
-	 * @param parseString
+	 * @param processArray
 	 *            This is a queue of the name formats.
 	 * 
 	 * @return Returns a string with the full task name.
 	 */
-	public Queue<String> processName(String[] parseString) {
+	public Queue<String> processName(String parseString) {
 
-
+		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 		Queue<String> nameQueue = new LinkedList<String>();
-		for (counter = 0; counter < parseString.length; counter++) {
+		for (counter = 0; counter < processArray.length; counter++) {
 
-			if (checkNameFormat(parseString[counter])) {
-				nameQueue = setUpNameQueue(parseString);
+			if (checkNameFormat(processArray[counter])) {
+				nameQueue = setUpNameQueue(processArray);
 				String name = "";
 				while (!nameQueue.isEmpty()) {
 					String command = nameQueue.poll();
-					name += command + REGEX_WHITE_SPACE;
+					name += command + REGEX_BLANK;
 				}
 				name = name.trim();
 				nameList.add(name);
