@@ -34,6 +34,7 @@ public class CommandExtractor {
 
 	}
 
+	private static final String REGEX_WHITE_SPACE = "\\s+";
 	private String commandString;
 
 	/**
@@ -44,9 +45,9 @@ public class CommandExtractor {
 	 * 
 	 * @return Returns if the string is a command type.
 	 */
-	public boolean isCommand(String printString) {
+	public boolean isCommand(String parseString) {
 		for (CommandKeyWord c : CommandKeyWord.values()) {
-			if (printString.equalsIgnoreCase(c.name())) {
+			if (parseString.equalsIgnoreCase(c.name())) {
 				return true;
 			}
 		}
@@ -61,11 +62,17 @@ public class CommandExtractor {
 	 * 
 	 * @return Returns the command that is set.
 	 */
-	public String setCommand(String printString) {
-		for (CommandKeyWord c : CommandKeyWord.values()) {
-			if (printString.equalsIgnoreCase(c.name())) {
-				commandString = c.command;
+	public String setCommand(String parseString) {
+		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
+		if (isCommand(processArray[0])) {
+			for (CommandKeyWord c : CommandKeyWord.values()) {
+				if (processArray[0].equalsIgnoreCase(c.name())) {
+					commandString = c.command;
+				}
 			}
+		}
+		else {
+			commandString = CommandKeyWord.add.name();
 		}
 		return commandString;
 	}
