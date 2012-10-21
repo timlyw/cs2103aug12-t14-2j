@@ -14,13 +14,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import mhs.src.Database;
-import mhs.src.DeadlineTask;
-import mhs.src.FloatingTask;
-import mhs.src.GoogleCalendar;
-import mhs.src.Task;
-import mhs.src.TaskCategory;
-import mhs.src.TimedTask;
+import mhs.src.storage.Database;
+import mhs.src.storage.DeadlineTask;
+import mhs.src.storage.FloatingTask;
+import mhs.src.storage.GoogleCalendar;
+import mhs.src.storage.Task;
+import mhs.src.storage.TaskCategory;
+import mhs.src.storage.TimedTask;
 
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -31,6 +31,15 @@ import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.ServiceException;
 
 public class DatabaseTest {
+
+	private static final String TEST_TASK_5_NAME = "task 5 - play more games";
+	private static final String TEST_TASK_4_NAME = "task 4 - project due";
+	private static final String TEST_TASK_3_NAME = "task 3 - assignment due";
+	private static final String TEST_TASK_2_NAME = "task 2 - a project meeting";
+	private static final String TEST_TASK_1_NAME = "task 1 - a meeting";
+	private static final String GOOGLE_APP_NAME = "My Hot Secretary";
+	private static final String GOOGLE_TEST_ACCOUNT_NAME = "cs2103mhs@gmail.com";
+	private static final String GOOGLE_TEST_ACCOUNT_PASSWORD = "myhotsec2103";
 
 	Database database;
 	Map<Integer, Task> taskList;
@@ -48,21 +57,18 @@ public class DatabaseTest {
 	public void testDatabaseSetup() throws IOException, ServiceException {
 
 		// create test tasks
-		new DateTime();
 		DateTime dt = DateTime.now();
-		new DateTime();
 		DateTime dt2 = DateTime.now();
-		new DateTime();
 
-		task = new TimedTask(1, "task 1 - a meeting", "TIMED", dt, dt2, null,
-				null, null, null, false, false);
-		task2 = new TimedTask(2, "task 2 - a project meeting", "TIMED", dt,
-				dt2, null, null, null, null, false, false);
-		task3 = new DeadlineTask(3, "task 3 - assignment due", "DEADLINE", dt,
+		task = new TimedTask(1, TEST_TASK_1_NAME, TaskCategory.TIMED, dt, dt2,
 				null, null, null, null, false, false);
-		task4 = new DeadlineTask(4, "task 4 - project due", "DEADLINE", dt,
+		task2 = new TimedTask(2, TEST_TASK_2_NAME, TaskCategory.TIMED, dt, dt2,
 				null, null, null, null, false, false);
-		task5 = new FloatingTask(5, "task 5 - play more games", "FLOATING",
+		task3 = new DeadlineTask(3, TEST_TASK_3_NAME, TaskCategory.DEADLINE,
+				dt, null, null, null, null, false, false);
+		task4 = new DeadlineTask(4, TEST_TASK_4_NAME, TaskCategory.DEADLINE,
+				dt, null, null, null, null, false, false);
+		task5 = new FloatingTask(5, TEST_TASK_5_NAME, TaskCategory.FLOATING,
 				null, null, null, false, false);
 
 		// create new taskList
@@ -73,7 +79,6 @@ public class DatabaseTest {
 		taskList.put(task3.getTaskId(), task3);
 		taskList.put(task4.getTaskId(), task4);
 		taskList.put(task5.getTaskId(), task5);
-
 	}
 
 	@Test
@@ -165,9 +170,9 @@ public class DatabaseTest {
 		new DateTime();
 		DateTime testEndDt = DateTime.now().minusDays(1);
 
-		task = new TimedTask(1, "task 1 - a meeting", "TIMED", testStartDt,
-				testEndDt, testStartDt, testStartDt, testStartDt, "null",
-				false, false);
+		task = new TimedTask(1, TEST_TASK_1_NAME, TaskCategory.TIMED,
+				testStartDt, testEndDt, testStartDt, testStartDt, testStartDt,
+				null, false, false);
 
 		database.update(task);
 
@@ -340,14 +345,18 @@ public class DatabaseTest {
 
 		// Clear database (local and remote)
 		database = new Database(TEST_TASK_RECORD_FILENAME, false);
-		database.authenticateUserGoogleAccount("cs2103mhs@gmail.com",
-				"myhotsec2103");
+		database.authenticateUserGoogleAccount(GOOGLE_TEST_ACCOUNT_NAME,
+				GOOGLE_TEST_ACCOUNT_PASSWORD);
 		database.clearDatabase();
 
 		// we use a separate GoogleCalendar to query events (need to pullEvents
 		// manually)
-		GoogleCalendar gCal = new GoogleCalendar("cs2103mhs@gmail.com",
-				"myhotsec2103", null);
+		String googleAccessToken = (GoogleCalendar.retrieveUserToken(
+				GOOGLE_APP_NAME, GOOGLE_TEST_ACCOUNT_NAME,
+				GOOGLE_TEST_ACCOUNT_PASSWORD));
+
+		GoogleCalendar gCal = new GoogleCalendar(GOOGLE_APP_NAME,
+				GOOGLE_TEST_ACCOUNT_NAME, googleAccessToken);
 
 		// Test push new task sync
 		System.out.println("Adding new Tasks to push");
@@ -355,21 +364,19 @@ public class DatabaseTest {
 		database.add(task2);
 
 		queryList = database.query();
-		gCal.pullEvents();
 
-		assertTrue(gCal.getEvent(queryList.get(0).getgCalTaskId()) != null);
-		assertTrue(gCal.getEvent(queryList.get(1).getgCalTaskId()) != null);
+		assertTrue(gCal.retrieveEvent(queryList.get(0).getgCalTaskId()) != null);
+		assertTrue(gCal.retrieveEvent(queryList.get(1).getgCalTaskId()) != null);
 
 		// Test push updated task sync
 		Task updatedTask = queryList.get(0);
 		updatedTask.setTaskName("Updated Task");
 		database.update(updatedTask);
-		gCal.pullEvents();
 
 		Task queryTask = database.query(updatedTask.getTaskId());
 
 		assertEquals(updatedTask.getTaskName(),
-				gCal.getEvent(queryTask.getgCalTaskId()).getTitle()
+				gCal.retrieveEvent(queryTask.getgCalTaskId()).getTitle()
 						.getPlainText());
 
 		// Test pull new task sync
@@ -388,7 +395,6 @@ public class DatabaseTest {
 				.toString(), task3.getEndDateTime().toString());
 
 		database.syncronizeDatabases();
-
 		queryList = database.query(updatedCreatedEvent.getTitle()
 				.getPlainText());
 
