@@ -106,6 +106,8 @@ public class DateExtractor {
 	private boolean dayFlag = false;
 	private boolean yearFlag = false;
 	private boolean dateFlag = false;
+	private boolean startDateFlag = false;
+	private boolean uniqueDateFlag = false;
 
 	/**
 	 * This is the function to process the date and set the values.
@@ -123,6 +125,8 @@ public class DateExtractor {
 		dateList = new LinkedList<LocalDate>();
 		startDate = null;
 		endDate = null;
+		startDateFlag = false;
+		uniqueDateFlag = false;
 
 		int parameters;
 
@@ -137,82 +141,80 @@ public class DateExtractor {
 
 				if (dateQueue.size() == 1) {
 					if (isInteger(dateQueue.peek())) {
-						parameters = Integer.parseInt(dateQueue.peek());
-						if (isNumberOfDaysInMonth(parameters)) {
-
+						if (isNumberOfDaysInMonth(Integer.parseInt(dateQueue
+								.peek()))) {
+							dateQueue.poll();
 						}
 					}
 				}
+				if (!dateQueue.isEmpty()) {
+					while (!dateQueue.isEmpty()) {
+						dateCommand = dateQueue.poll();
+						uniqueDateFlag = false;
+						if (isInteger(dateCommand)) {
+							parameters = Integer.parseInt(dateCommand);
 
-				while (!dateQueue.isEmpty()) {
-					dateCommand = dateQueue.poll();
+							if (isNumberOfDaysInMonth(parameters) && !dayFlag) {
+								day = parameters;
+								dayFlag = true;
+							}
 
-					if (isInteger(dateCommand)) {
-						parameters = Integer.parseInt(dateCommand);
+							else if (isMonthFormatInt(parameters) && !monthFlag) {
+								month = parameters;
+								monthFlag = true;
+							}
 
-						if (isNumberOfDaysInMonth(parameters) && !dayFlag) {
-							day = parameters;
-							dayFlag = true;
+							else if (isYearFormat(parameters) && !yearFlag) {
+								year = parameters;
+								yearFlag = true;
+							} else {
+								System.out
+										.println(ERROR_MESSAGE_NOT_NUMERICAL_DATE);
+
+							}
 						}
 
-						else if (isMonthFormatInt(parameters) && !monthFlag) {
+						else if (isDateStandardFormat(dateCommand) && !dateFlag) {
+							setDate(dateCommand);
+							dateFlag = true;
+						}
+
+						else if (isDateWithMonthSpelled(dateCommand)
+								&& !monthFlag) {
+							parameters = getMontParameters(dateCommand);
 							month = parameters;
 							monthFlag = true;
 						}
 
-						else if (isYearFormat(parameters) && !yearFlag) {
-							year = parameters;
-							yearFlag = true;
-						} else {
-							System.out
-									.println(ERROR_MESSAGE_NOT_NUMERICAL_DATE);
+						else if (isDayOfWeek(dateCommand) && !dayFlag) {
+							parameters = getDayParameters(dateCommand);
+							setDay(parameters);
+							dayFlag = true;
+						}
 
+						else if (isUniqueDateType(dateCommand)) {
+							if (dateQueue.size() > 0
+									&& isUniqueDateType(dateQueue.peek())) {
+								dateCommand = dateCommand + " "
+										+ dateQueue.poll();
+							}
+							setUniqueDate(dateCommand);
 						}
 					}
-
-					else if (isDateStandardFormat(dateCommand) && !dateFlag) {
-						setDate(dateCommand);
-						dateFlag = true;
-					}
-
-					else if (isDateWithMonthSpelled(dateCommand) && !monthFlag) {
-						parameters = getMontParameters(dateCommand);
-						month = parameters;
-						monthFlag = true;
-					}
-
-					else if (isDayOfWeek(dateCommand) && !dayFlag) {
-						parameters = getDayParameters(dateCommand);
-						setDay(parameters);
-						dayFlag = true;
-					}
-
-					if (isUniqueDateType(dateCommand)) {
-						if (dateQueue.size() > 0
-								&& isUniqueDateType(dateQueue.peek())) {
-							dateCommand = dateCommand + " " + dateQueue.poll();
+					if (!uniqueDateFlag) {
+						if (!isAllFlagsSet()) {
+							setDateRange();
 						}
-						setUniqueDate(dateCommand);
+
+						else {
+							if (!isdateValid()) {
+								rectifyDate();
+							}
+							setDate = new LocalDate(year, month, day);
+							startDateFlag = true;
+							dateList.add(setDate);
+						}
 					}
-				}
-
-				if (!isAllFlagsSet()) {
-					setDateRange();
-				}
-				if (startDate != null) {
-					dateList.add(startDate);
-
-					if (endDate != null) {
-						dateList.add(endDate);
-					}
-				} else {
-
-					if (!isdateValid()) {
-						rectifyDate();
-					}
-					setDate = new LocalDate(year, month, day);
-					dateList.add(setDate);
-
 				}
 			}
 		}
@@ -231,16 +233,23 @@ public class DateExtractor {
 			startDate = new LocalDate(year, 1, 1);
 			endDate = startDate.plusYears(1);
 		}
-		//month and year
+		// month and year
 		else if (!dayFlag && monthFlag && yearFlag) {
 			startDate = new LocalDate(year, month, 1);
 			endDate = startDate.plusMonths(1);
 		}
-	
+		if (startDate != null) {
+			dateList.add(startDate);
+
+			if (endDate != null) {
+				dateList.add(endDate);
+			}
+		}
+
 	}
 
 	private boolean isAllFlagsSet() {
-		if ((dayFlag && monthFlag && yearFlag) || (dateFlag)) {
+		if ((dayFlag && monthFlag && yearFlag) || (dateFlag) || (dayFlag && monthFlag)) {
 			return true;
 		}
 		return false;
@@ -271,11 +280,21 @@ public class DateExtractor {
 
 		dateList = new LinkedList<LocalDate>();
 		if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.today.name())) {
-			startDate = now;
+			if (!startDateFlag) {
+				startDate = now;
+				startDateFlag = true;
+			} else {
+				endDate = now;
+			}
 
 		} else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.tomorrow
 				.name())) {
-			startDate = now.plusDays(1);
+			if (!startDateFlag) {
+				startDate = now.plusDays(1);
+				startDateFlag = true;
+			} else {
+				endDate = now.plusDays(1);
+			}
 		} else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
 				+ " " + UniqueDateTypeKeyWord.week.name())) {
 			startDate = now;
@@ -324,6 +343,14 @@ public class DateExtractor {
 
 		}
 
+		uniqueDateFlag = true;
+		if (startDate != null) {
+			dateList.add(startDate);
+
+			if (endDate != null) {
+				dateList.add(endDate);
+			}
+		}
 	}
 
 	/**

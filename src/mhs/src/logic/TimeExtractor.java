@@ -2,8 +2,6 @@ package mhs.src.logic;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.joda.time.LocalTime;
 
@@ -32,6 +30,8 @@ public class TimeExtractor {
 	private static final String REGEX_24_HOUR_FORMAT = "([01]?[0-9]|2[0-3]):[0-5][0-9]";
 	private static final String REGEX_12_HOUR_FORMAT_WITHOUT_MINUTES = "(1[012]|[1-9])(\\s)?(?i)(am|pm)";
 	private static final String REGEX_12_HOUR_FORMAT = "(1[012]|[1-9])(.)([0-5][0-9])(\\s)?(?i)(am|pm)";
+	private static final String REGEX_PM_IGNORE_CASE = "(?i)pm";
+	private static final String REGEX_AM_IGNORE_CASE = "(?i)am";
 
 	private LocalTime setTime = null;
 	private Queue<LocalTime> timeQueue;
@@ -51,13 +51,11 @@ public class TimeExtractor {
 		for (int i = 0; i < processArray.length; i++) {
 
 			if (checkTimeFormat(processArray[i])) {
-				System.out.println(processArray[i]);
 				if (is24HrFormat(processArray[i])) {
 					process24hrFormat(processArray[i]);
 				} else if (is12HrFormat(processArray[i])) {
 					process12HrFormat(processArray[i]);
 				}
-				//System.out.println(setTime.toString());
 				timeQueue.add(setTime);
 			}
 		}
@@ -130,7 +128,7 @@ public class TimeExtractor {
 		for (int i = 0; i < timeArray.length; i++) {
 			if (timeArray[i].contains(PM)) {
 				hour = extractHourPM(timeArray, i);
-			} else if (timeArray[i].contains(AM)) {
+			} else if (timeArray[i].toLowerCase().contains(AM)) {
 				hour = extractHourAM(timeArray, i);
 			}
 		}
@@ -150,7 +148,7 @@ public class TimeExtractor {
 	 */
 	private int extractHourAM(String[] timeArray, int i) {
 		int hour;
-		timeArray[i] = timeArray[i].replace(AM, "");
+		timeArray[i] = timeArray[i].replaceAll(REGEX_AM_IGNORE_CASE, "");
 		hour = Integer.parseInt(timeArray[0]);
 		return hour;
 	}
@@ -168,7 +166,7 @@ public class TimeExtractor {
 	 */
 	private int extractHourPM(String[] timeArray, int i) {
 		int hour;
-		timeArray[i] = timeArray[i].replace(PM, "");
+		timeArray[i] = timeArray[i].replaceAll(REGEX_PM_IGNORE_CASE, "");
 		hour = Integer.parseInt(timeArray[0]);
 		if (hour == 12) {
 			hour = 0;
@@ -188,17 +186,7 @@ public class TimeExtractor {
 	 */
 	private boolean is12HrFormat(String time) {
 
-		String timeFormat12Hr = REGEX_12_HOUR_FORMAT;
-		String timeFormat12HrWithoutMinutes = REGEX_12_HOUR_FORMAT_WITHOUT_MINUTES;
-
-		Pattern patternTimeFormat12Hr = Pattern.compile(timeFormat12Hr);
-		Pattern patternTimeFormat12HrWithoutMinutes = Pattern
-				.compile(timeFormat12HrWithoutMinutes);
-		Matcher matcherTimeFormat12Hr = patternTimeFormat12Hr.matcher(time);
-		Matcher matcherTimeFormat12HrWithoutMinutes = patternTimeFormat12HrWithoutMinutes
-				.matcher(time);
-
-		if (matcherTimeFormat12Hr.matches() || matcherTimeFormat12HrWithoutMinutes.matches()) {
+		if (time.matches(REGEX_12_HOUR_FORMAT) ||time.matches(REGEX_12_HOUR_FORMAT_WITHOUT_MINUTES)) {
 			return true;
 		}
 
@@ -215,11 +203,7 @@ public class TimeExtractor {
 	 */
 	private boolean is24HrFormat(String time) {
 
-		String timeFormat24Hr = REGEX_24_HOUR_FORMAT;
-		Pattern patternTimeFormat24Hr = Pattern.compile(timeFormat24Hr);
-		Matcher matcherTimeFormat24Hr = patternTimeFormat24Hr.matcher(time);
-
-		if (matcherTimeFormat24Hr.matches()) {
+		if (time.matches(REGEX_24_HOUR_FORMAT)) {
 			return true;
 		}
 		return false;

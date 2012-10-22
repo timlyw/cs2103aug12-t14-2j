@@ -28,6 +28,8 @@ public class Command {
 	private DateTime startDate;
 	private DateTime endDate;
 	private DateTime now;
+	
+	private int index;
 
 	/**
 	 * This is the constructor to set up the command object. 
@@ -43,7 +45,7 @@ public class Command {
 	public Command(String commandInput, String taskNameInput,
 			String edittedNameInput, LocalDate startDateInput,
 			LocalTime startTimeInput, LocalDate endDateInput,
-			LocalTime endTimeInput) {
+			LocalTime endTimeInput, int indexInput) {
 		now = DateTime.now();
 		for(command c: command.values()){
 			if(commandInput == c.name()){
@@ -52,7 +54,7 @@ public class Command {
 		}
 		taskName = taskNameInput;
 		edittedName = edittedNameInput;
-		
+		index = indexInput;
 
 		//no start date no start time
 		if ((startDateInput == null && startTimeInput == null)) {
@@ -104,16 +106,6 @@ public class Command {
 			}
 		}
 	
-		if(commandEnum!= null)
-			System.out.println("command " + commandEnum.name());
-		if(taskName!= null)
-			System.out.println("task name " + taskName);
-		if(edittedName!= null)
-			System.out.println("editted name " + edittedName);
-		if(startDate!= null)
-			System.out.println("start Date " + startDate.toString());
-		if(endDate!= null)
-			System.out.println("end Date " + endDate.toString());
 	}
 
 	/**
@@ -167,5 +159,22 @@ public class Command {
 		return commandEnum;
 	}
 
+	public String toString(){
+		
+		String outString = "";
+		if(commandEnum!= null)
+			outString = ("command " + commandEnum.name());
+		if(taskName!= null)
+			outString +=(" task name " + taskName);
+		if(edittedName!= null)
+			outString +=(" editted name " + edittedName);
+		if(startDate!= null)
+			outString += (" start Date " + startDate.toString());
+		if(endDate!= null)
+			outString += (" end Date " + endDate.toString());
+		outString += (" index is " + index);
+		
+		return outString;
+	}
 	
 }
