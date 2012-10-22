@@ -408,7 +408,6 @@ public class DatabaseTest {
 
 	@After
 	public void testAfter() throws IOException, ServiceException {
-		System.out.println(System.lineSeparator());
 		database.clearDatabase();
 	}
 }

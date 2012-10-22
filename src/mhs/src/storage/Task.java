@@ -99,14 +99,34 @@ public class Task {
 	}
 
 	public String toString() {
-		String taskToString = "taskId=" + taskId + "taskName=" + taskName
-				+ "taskCategory=" + taskCategory.getValue() + "taskCreated="
-				+ taskCreated.toString() + "taskUpdated="
-				+ taskUpdated.toString() + "taskLastSync="
-				+ taskLastSync.toString() + "gCalTaskId=" + gCalTaskId
-				+ "isDone=" + isDone.toString() + "isDeleted="
-				+ isDeleted.toString();
-
+		String taskToString = "";
+		if (taskId != null) {
+			taskToString += "taskId=" + taskId;
+		}
+		if (taskName != null) {
+			taskToString += "taskName=" + taskName;
+		}
+		if (taskCategory != null) {
+			taskToString += "taskCategory=" + taskCategory.getValue();
+		}
+		if (taskCreated != null) {
+			taskToString += "taskCreated=" + taskCreated.toString();
+		}
+		if (taskUpdated != null) {
+			taskToString += "taskUpdated=" + taskUpdated.toString();
+		}
+		if (taskLastSync != null) {
+			taskToString += "taskLastSync=" + taskLastSync.toString();
+		}
+		if (gCalTaskId != null) {
+			taskToString += "gCalTaskId=" + gCalTaskId;
+		}
+		if (isDone != null) {
+			taskToString += "isDone=" + isDone.toString();
+		}
+		if (isDeleted != null) {
+			taskToString += "isDeleted=" + isDeleted.toString();
+		}
 		return taskToString;
 	}
 
