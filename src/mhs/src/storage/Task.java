@@ -1,5 +1,5 @@
 /**
- * Superclass Task
+ * Task Base Class
  * 
  * @author timlyw
  */
