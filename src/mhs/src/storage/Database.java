@@ -101,11 +101,16 @@ public class Database {
 				}
 
 			} catch (UnknownHostException e) {
+				MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
 				throw e;
 			} catch (ServiceException e) {
+				MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
 			} catch (NullPointerException e) {
+				MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
 			} catch (IOException e) {
+				MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
 			} catch (Exception e) {
+				MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
 			}
 
 		}
@@ -447,8 +452,10 @@ public class Database {
 				try {
 					syncronize.pullSync();
 				} catch (UnknownHostException e) {
+					MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
 					disableRemoteSync();
 				} catch (Exception e) {
+					MhsLogger.getLogger().log(Level.FINER, e.getMessage());										
 				}
 			}
 		};
@@ -554,9 +561,11 @@ public class Database {
 			syncronize.syncronizeDatabases();
 			saveTaskRecordFile();
 		} catch (ServiceException e) {
+			MhsLogger.getLogger().log(Level.FINER, e.getMessage());								
 			disableRemoteSync();
 			throw e;
 		} catch (Exception e) {
+			MhsLogger.getLogger().log(Level.FINER, e.getMessage());								
 		}
 	}
 
