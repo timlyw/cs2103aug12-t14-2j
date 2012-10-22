@@ -29,6 +29,8 @@ public class CommandParser {
 	private LocalTime startTime;
 	private LocalTime endTime;
 
+	private int index;
+
 	/**
 	 * This is the function to take in a string and return a command object with
 	 * parameters set.
@@ -45,13 +47,47 @@ public class CommandParser {
 		parseString = setNameInQuotationMarks(parseString);
 
 		setCommand(parseString);
-		setName(parseString);
 		setTime(parseString);
 		setDate(parseString);
+		validateParameters(parseString);
+		setName(parseString);
 
 		return setUpCommandObject(command, taskName, edittedName, startDate,
-				startTime, endDate, endTime);
+				startTime, endDate, endTime, index);
 
+	}
+
+	private void validateParameters(String parseString) {
+		String[] processArray = parseString.split("\\s+");
+		if (processArray.length > 1) {
+			if (command.equals("remove") || command.equals("edit")) {
+				if (taskName == null) {
+					if (isInteger(processArray[1])) {
+						index = Integer.parseInt(processArray[1]);
+						taskNameFlag = true;
+					}
+				}
+
+			}
+		}
+
+	}
+
+	/**
+	 * This is the function to check if the string is an integer.
+	 * 
+	 * @param printString
+	 *            This is the string to be checked.
+	 * 
+	 * @return Returns true if the string is an int.
+	 */
+	private boolean isInteger(String printString) {
+		try {
+			Integer.parseInt(printString);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -75,6 +111,7 @@ public class CommandParser {
 		endDate = null;
 		startTime = null;
 		endTime = null;
+		index = 0;
 	}
 
 	/**
@@ -203,10 +240,10 @@ public class CommandParser {
 	 */
 	private Command setUpCommandObject(String command, String taskName,
 			String edittedName, LocalDate startDate, LocalTime startTime,
-			LocalDate endDate, LocalTime endTime) {
+			LocalDate endDate, LocalTime endTime, int index) {
 
 		Command object = new Command(command, taskName, edittedName, startDate,
-				startTime, endDate, endTime);
+				startTime, endDate, endTime, index);
 		return object;
 	}
 }
