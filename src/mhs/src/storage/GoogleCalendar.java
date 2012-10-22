@@ -16,6 +16,7 @@ import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.data.calendar.CalendarEventFeed;
 import com.google.gdata.data.extensions.When;
 import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 /**
@@ -287,7 +288,11 @@ public class GoogleCalendar {
 		List<CalendarEventEntry> eventList = retrieveEvents(startTime, endTime);
 		for(int i = 0; i < eventList.size(); i++) {
 			CalendarEventEntry eventToBeDeleted = eventList.get(i);
-			eventToBeDeleted.delete();
+			try{
+				eventToBeDeleted.delete();
+			}catch(ResourceNotFoundException e){
+				e.printStackTrace();
+			}
 		}
 	}
 
