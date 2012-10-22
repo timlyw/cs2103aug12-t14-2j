@@ -98,10 +98,16 @@ public class GoogleCalendar {
 		userEmail = email;
 	}
 	
+	/**
+	 * @return the token used to initialize an instance of GoogleCalendar
+	 */
 	public String getUserToken() {
 		return userToken;
 	}
 	
+	/**
+	 * @return the email used to initalize an instance of GoogleCalendar
+	 */
 	public String getUserEmail() {
 		return userEmail;
 	}
@@ -178,6 +184,24 @@ public class GoogleCalendar {
 			return null;
 		}
 	}
+	
+	/**
+	 * get a list of events within the range specified
+	 * 
+	 * @param startTime start date and time of range
+	 * @param endTime end date and time of range
+	 * @return list of events within range
+	 * @throws UnknownHostException Internet connection unavailable
+	 * @throws IOException Unable to read from GoogleCalendar
+	 * @throws ServiceException Internet connection unavailable
+	 */
+	public List<CalendarEventEntry> retrieveEvents(String startTime,
+			String endTime) throws UnknownHostException, IOException,
+			ServiceException, NullPointerException {
+		DateTime start = DateTime.parseDateTime(startTime);
+		DateTime end = DateTime.parseDateTime(endTime);
+		return retrieveEvents(start, end);
+	}
 
 	/**
 	 * update an event's parameters based on the specified event ID
@@ -248,6 +272,24 @@ public class GoogleCalendar {
 		CalendarEventEntry eventToBeDeleted = constructEvent(eventId);
 		eventToBeDeleted.delete();
 	}
+	
+	/**
+	 * delete all events within the specified date range
+	 * 
+	 * @param startTime start date of range
+	 * @param endTime end date of range
+	 * @throws UnknownHostException Internet connection unavailable
+	 * @throws NullPointerException one or more input parameters are null
+	 * @throws IOException unable to write to Google Calendar
+	 * @throws ServiceException Internet connection unavailable
+	 */
+	public void deleteEvents(String startTime, String endTime) throws UnknownHostException, NullPointerException, IOException, ServiceException {
+		List<CalendarEventEntry> eventList = retrieveEvents(startTime, endTime);
+		for(int i = 0; i < eventList.size(); i++) {
+			CalendarEventEntry eventToBeDeleted = eventList.get(i);
+			eventToBeDeleted.delete();
+		}
+	}
 
 	/**
 	 * @param calendarEvent
@@ -287,24 +329,6 @@ public class GoogleCalendar {
 
 		String timeSub2 = time1.substring(0, TIME_COMPARE_END_INDEX);
 		return timeSub1.equals(timeSub2);
-	}
-
-	/**
-	 * get a list of events within the range specified
-	 * 
-	 * @param startTime start date and time of range
-	 * @param endTime end date and time of range
-	 * @return list of events within range
-	 * @throws UnknownHostException Internet connection unavailable
-	 * @throws IOException Unable to read from GoogleCalendar
-	 * @throws ServiceException Internet connection unavailable
-	 */
-	public List<CalendarEventEntry> retrieveEvents(String startTime,
-			String endTime) throws UnknownHostException, IOException,
-			ServiceException, NullPointerException {
-		DateTime start = DateTime.parseDateTime(startTime);
-		DateTime end = DateTime.parseDateTime(endTime);
-		return retrieveEvents(start, end);
 	}
 	
 	/**
