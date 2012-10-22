@@ -271,7 +271,10 @@ public class GoogleCalendar {
 	public void deleteEvent(String eventId) throws IOException,
 			ServiceException, NullPointerException {
 		CalendarEventEntry eventToBeDeleted = constructEvent(eventId);
-		eventToBeDeleted.delete();
+		try{
+			eventToBeDeleted.delete();
+		}catch(ResourceNotFoundException e){
+		}		
 	}
 	
 	/**
@@ -291,7 +294,6 @@ public class GoogleCalendar {
 			try{
 				eventToBeDeleted.delete();
 			}catch(ResourceNotFoundException e){
-				e.printStackTrace();
 			}
 		}
 	}
