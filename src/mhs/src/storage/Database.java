@@ -101,15 +101,11 @@ public class Database {
 				}
 
 			} catch (UnknownHostException e) {
-				e.printStackTrace();
 				throw e;
 			} catch (ServiceException e) {
-				e.printStackTrace();
 			} catch (NullPointerException e) {
-				e.printStackTrace();
 			} catch (IOException e) {
 			} catch (Exception e) {
-				e.printStackTrace();
 			}
 
 		}
@@ -215,10 +211,8 @@ public class Database {
 					pushSyncTask(entry.getValue());
 				} catch (ServiceException e) {
 					MhsLogger.getLogger().log(Level.FINE, e.getMessage());
-					e.printStackTrace();
 				} catch (Exception e) {
 					MhsLogger.getLogger().log(Level.FINE, e.getMessage());
-					e.printStackTrace();
 				}
 			}
 		}
@@ -359,8 +353,6 @@ public class Database {
 		initializeSyncDateTimes();
 		initalizeDatabase();
 		syncronizeDatabases();
-
-		MhsLogger.getLogger().log(Level.INFO, "Database Initialized");
 	}
 
 	private void initializeSyncDateTimes() {
@@ -1031,7 +1023,8 @@ public class Database {
 	 */
 	public void clearRemoteDatabase() throws IOException, ServiceException {
 		if (isRemoteSyncEnabled) {
-			googleCalendar.deleteEvents(syncStartDateTime.toString(), syncEndDateTime.toString());
+			googleCalendar.deleteEvents(syncStartDateTime.toString(),
+					syncEndDateTime.toString());
 		}
 	}
 
