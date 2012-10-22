@@ -1,14 +1,10 @@
 package mhs.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import mhs.src.logic.Command;
 import mhs.src.logic.CommandParser;
-import mhs.src.logic.TimeExtractor;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
 

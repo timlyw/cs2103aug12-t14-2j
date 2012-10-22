@@ -103,6 +103,17 @@ public class Command {
 			startDate = temp;
 			}
 		}
+	
+		if(commandEnum!= null)
+			System.out.println("command " + commandEnum.name());
+		if(taskName!= null)
+			System.out.println("task name " + taskName);
+		if(edittedName!= null)
+			System.out.println("editted name " + edittedName);
+		if(startDate!= null)
+			System.out.println("start Date " + startDate.toString());
+		if(endDate!= null)
+			System.out.println("end Date " + endDate.toString());
 	}
 
 	/**
