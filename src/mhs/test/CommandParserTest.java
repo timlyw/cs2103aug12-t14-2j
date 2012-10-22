@@ -12,61 +12,13 @@ import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CommandProcessorTest {
+public class CommandParserTest {
 	DateTime now = new DateTime();
 
 	@Before
 	public void setUpEnvironment() {
 		
 		now = DateTime.now();
-	}
-
-	@Test
-	public void testcheckTimeFormat() {
-
-		TimeExtractor timeParser = new TimeExtractor();
-		assertTrue(timeParser.checkTimeFormat("12pm"));
-		assertTrue(timeParser.checkTimeFormat("3pm"));
-		assertTrue(timeParser.checkTimeFormat("4am"));
-		assertTrue(timeParser.checkTimeFormat("12.40pm"));
-		assertTrue(timeParser.checkTimeFormat("00:00"));
-		assertTrue(timeParser.checkTimeFormat("00:12"));
-		assertTrue(timeParser.checkTimeFormat("15:13"));
-
-		assertFalse(timeParser.checkTimeFormat("15pm"));
-		assertFalse(timeParser.checkTimeFormat("12.60pm"));
-		assertFalse(timeParser.checkTimeFormat("00:70"));
-		assertFalse(timeParser.checkTimeFormat("400"));
-		assertFalse(timeParser.checkTimeFormat("1600"));
-		assertFalse(timeParser.checkTimeFormat("27:00"));
-	}
-
-	@Test
-	public void testProcessTime() {
-
-		LocalTime expectedTime = null;
-		TimeExtractor timeParser = new TimeExtractor();
-		
-		expectedTime = new LocalTime(12, 4 );
-		assertEquals(timeParser.processTime("12:04"), expectedTime);
-
-		expectedTime = new LocalTime(12, 40 );
-		assertEquals(timeParser.processTime("12:40"), expectedTime);
-
-		expectedTime = new LocalTime(0, 0 );
-		assertEquals(timeParser.processTime("00:00"), expectedTime);
-
-		expectedTime = new LocalTime(0, 12 );
-		assertEquals(timeParser.processTime("00:12"), expectedTime);
-
-		expectedTime = new LocalTime(15, 13 );
-		assertEquals(timeParser.processTime("15:13"), expectedTime);
-
-		expectedTime = new LocalTime(15, 13 );
-		assertEquals(timeParser.processTime("3.13pm"), expectedTime);
-
-		expectedTime = new LocalTime(4, 0 );
-		assertEquals(timeParser.processTime("4am"), expectedTime);
 	}
 
 
@@ -115,14 +67,14 @@ public class CommandProcessorTest {
 		assertEquals(inputEndDate, expectedEndDate);
 		assertEquals(input.getCommandEnum(), Command.command.add);
 		
-		input = commandParser.getParsedCommand("edit \"watch movie\" \"laundry duties\"");
+		input = commandParser.getParsedCommand("edit \"watch movie\" to \"laundry duties\"");
 		inputName = input.getTaskName().trim();
 		edittedName = input.getEdittedName().trim();
 		assertEquals("watch movie", inputName);
 		assertEquals("laundry duties", edittedName);
 		assertEquals(input.getCommandEnum(), Command.command.edit);
 		
-		input = commandParser.getParsedCommand("edit watch movie to laundry duties");
+		input = commandParser.getParsedCommand("edit watch movie 5pm laundry duties");
 		inputName = input.getTaskName().trim();
 		edittedName = input.getEdittedName().trim();
 		assertEquals("watch movie", inputName);
