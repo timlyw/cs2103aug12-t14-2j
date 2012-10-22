@@ -353,6 +353,8 @@ public class Processor {
 			try {
 				dataHandler.syncronizeDatabases();
 				outputString = "Pulling events from your Google calender.... Sync complete !";
+			} catch (UnknownHostException e) {
+				outputString = "No internet connection detected !";
 			} catch (ServiceException e) {
 				outputString = "No internet connection detected !";
 			}

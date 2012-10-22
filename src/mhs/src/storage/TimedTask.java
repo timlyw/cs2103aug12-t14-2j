@@ -1,6 +1,6 @@
 /**
- * Timed Task - inherits from superclass Task
- * 
+ * Timed Task - inherits from base class Task
+ * - Task with startDateTime and endDateTime
  * @author timlyw
  */
 

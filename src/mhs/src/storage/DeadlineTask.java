@@ -1,5 +1,6 @@
 /**
- * Deadline Task - inherits from superclass Task
+ * Deadline Task - inherits from base class Task
+ * - Task with an endDateTime
  * 
  * @author timlyw
  */

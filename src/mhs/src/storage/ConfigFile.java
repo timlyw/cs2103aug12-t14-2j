@@ -1,5 +1,7 @@
 /**
- * Configuration File - handles File I/O operation for persistent user configuration in json file.
+ * Configuration File 
+ * - Handles File I/O operation for persistent user configuration in json file.
+ * - Supports Query/Set configuration parameters
  * 
  * @author timlyw
  */
@@ -26,6 +28,7 @@ import com.google.gson.stream.JsonReader;
 
 public class ConfigFile {
 
+	private static final String CHAR_ENCODING_UTF8 = "UTF-8";
 	private Gson gson;
 	private JsonReader jsonReader;
 	private InputStream inputStream;
@@ -44,6 +47,7 @@ public class ConfigFile {
 	}
 
 	public ConfigFile() throws IOException {
+		
 		CONFIG_FILENAME = DEFAULT_CONFIG_FILENAME;
 		configParameters = new HashMap<String, String>();
 		initializeGson();
@@ -76,7 +80,7 @@ public class ConfigFile {
 	@SuppressWarnings("unchecked")
 	private void loadConfigFile() throws IOException {
 		inputStream = new FileInputStream(configFile);
-		jsonReader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+		jsonReader = new JsonReader(new InputStreamReader(inputStream, CHAR_ENCODING_UTF8));
 
 		JsonParser parser = new JsonParser();
 		JsonObject configJObject = parser.parse(jsonReader).getAsJsonObject();

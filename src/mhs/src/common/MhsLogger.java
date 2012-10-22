@@ -1,3 +1,6 @@
+/**
+ * @author timlyw
+ */
 package mhs.src.common;
 
 import java.io.IOException;
@@ -19,14 +22,16 @@ public class MhsLogger {
 			logger = Logger.getLogger(LOGGER_NAME);
 			logger.addHandler(fileHandler);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Getter for logger instance
+	 * @return instance of logger
+	 */
 	public static Logger getLogger() {
 		if (instance == null) {
 			instance = new MhsLogger();
