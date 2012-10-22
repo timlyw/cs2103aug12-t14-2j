@@ -1031,7 +1031,7 @@ public class Database {
 	 */
 	public void clearRemoteDatabase() throws IOException, ServiceException {
 		if (isRemoteSyncEnabled) {
-			// googleCalendar.deleteAllEvents();
+			googleCalendar.deleteEvents(syncStartDateTime.toString(), syncEndDateTime.toString());
 		}
 	}
 
