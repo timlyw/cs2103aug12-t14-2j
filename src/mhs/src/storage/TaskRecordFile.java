@@ -17,7 +17,6 @@ import java.io.OutputStreamWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
 import org.joda.time.DateTime;
 
 import com.google.gson.Gson;
@@ -59,6 +58,7 @@ public class TaskRecordFile {
 		taskRecordFile = new File(RECORD_FILE_NAME);
 		if (!taskRecordFile.exists()) {
 			createNewJsonFile();
+			loadAllTaskLists();
 		} else {
 			loadAllTaskLists();
 		}
@@ -92,7 +92,7 @@ public class TaskRecordFile {
 
 		taskList = new LinkedHashMap<Integer, Task>();
 		gCalTaskList = new LinkedHashMap<String, Task>();
-
+				
 		JsonParser parser = new JsonParser();
 		JsonArray Jarray = parser.parse(jsonReader).getAsJsonArray();
 
