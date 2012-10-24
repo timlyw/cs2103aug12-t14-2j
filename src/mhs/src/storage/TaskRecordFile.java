@@ -1,5 +1,6 @@
 /**
- * Task Record File - Handles File I/O operations for tasks in json file
+ * Task Record File 
+ * - Handles File I/O operations for tasks in json file
  *  
  * @author timlyw
  */
@@ -29,6 +30,7 @@ import com.google.gson.stream.JsonWriter;
 
 public class TaskRecordFile {
 
+	private static final String CHAR_ENCODING_UTF8 = "UTF-8";
 	private Gson gson;
 	private JsonWriter jsonWriter;
 	private JsonReader jsonReader;
@@ -68,7 +70,7 @@ public class TaskRecordFile {
 		taskRecordFile.createNewFile();
 		outputStream = new FileOutputStream(RECORD_FILE_NAME);
 		jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream,
-				"UTF-8"));
+				CHAR_ENCODING_UTF8));
 		jsonWriter.setIndent("  ");
 		jsonWriter.beginArray();
 		jsonWriter.endArray();
@@ -85,14 +87,20 @@ public class TaskRecordFile {
 
 	}
 
+	/**
+	 * Loads tasks into taskList and gCalTaskList
+	 * 
+	 * @throws IOException
+	 */
 	public void loadAllTaskLists() throws IOException {
 
 		inputStream = new FileInputStream(RECORD_FILE_NAME);
-		jsonReader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+		jsonReader = new JsonReader(new InputStreamReader(inputStream,
+				CHAR_ENCODING_UTF8));
 
 		taskList = new LinkedHashMap<Integer, Task>();
 		gCalTaskList = new LinkedHashMap<String, Task>();
-				
+
 		JsonParser parser = new JsonParser();
 		JsonArray Jarray = parser.parse(jsonReader).getAsJsonArray();
 
@@ -108,7 +116,7 @@ public class TaskRecordFile {
 		inputStream.close();
 	}
 
-	public Map<Integer, Task> loadTaskList() throws IOException {
+	public void loadTaskList() throws IOException {
 
 		inputStream = new FileInputStream(RECORD_FILE_NAME);
 		jsonReader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
@@ -124,13 +132,18 @@ public class TaskRecordFile {
 
 		jsonReader.close();
 		inputStream.close();
-		return taskList;
 	}
 
+	/**
+	 * Saves Task List to file
+	 * 
+	 * @param taskList
+	 * @throws IOException
+	 */
 	public void saveTaskList(Map<Integer, Task> taskList) throws IOException {
 		outputStream = new FileOutputStream(RECORD_FILE_NAME);
 		jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream,
-				"UTF-8"));
+				CHAR_ENCODING_UTF8));
 
 		jsonWriter.setIndent("  ");
 		jsonWriter.beginArray();
@@ -146,11 +159,21 @@ public class TaskRecordFile {
 
 	}
 
+	/**
+	 * Getter for Task List
+	 * 
+	 * @return Task List with taskId as key
+	 */
 	public Map<Integer, Task> getTaskList() {
 		return taskList;
 	}
 
-	public Map<String, Task> getGCalTaskList() {
+	/**
+	 * Getter for GcalTask List
+	 * 
+	 * @return Task List with gCalTaskId as key
+	 */
+	public Map<String, Task> getGcalTaskList() {
 		return gCalTaskList;
 	}
 }

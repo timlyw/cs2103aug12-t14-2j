@@ -1,13 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project cs2103-MHS">
-
+<?xml version="1.0"?>
+<project name="Build Project cs2103-MHS"  default="main" basedir=".">
   <!-- Sets variables which can later be used. -->
   <!-- The value of a property is accessed via ${} -->
   <property name="src.dir" location="src" />
   <property name="bin.dir" location="bin" />
   <property name="build.dir" location="build" />
   <property name="dist.dir" location="dist" />
-  <property name="docs.dir" location="docs" />
+  <property name="docs.dir" location="javadocs" />
   <property name="libs.dir" location="libs" />
 
   <!-- libs dependencies -->
@@ -39,22 +38,23 @@
 
   <!-- Creates Javadoc -->
   <target name="docs" depends="compile">
-    <javadoc packagenames="src" sourcepath="${src.dir}" destdir="${docs.dir}">
+    <javadoc packagenames="mhs.*" sourcepath="${src.dir}" destdir="${docs.dir}">
       <!-- Define which files / directory should get included, we include all -->
        <fileset dir="${src.dir}">
-                <include name="**" />
+                <include name="**.java" />
            </fileset>
     </javadoc>
   </target>
-
-  <!-- combine jars --> 
-  <zip destfile="${libs.dir}/libs/mhs-dependencies.jar">
-  	<zipgroupfileset excludes="META-INF/*.SF" dir="${libs.dir}" includes="*.jar"/>
-  </zip>
   
+  <!-- combine jars --> 
+  <target name="combine_dependencies">
+  	<zip destfile="${libs.dir}/combined/mhs-dependencies.jar">
+  		<zipgroupfileset excludes="META-INF/*.SF" dir="${libs.dir}" includes="*.jar"/>
+  	</zip>
+  </target>  
   
   <!--Creates the deployable jar file  -->
-  <target name="create_run_jar" depends="compile">
+  <target name="create_run_jar" depends="compile,combine_dependencies">
     <jar destfile="${dist.dir}\mhs.jar" basedir="${build.dir}" filesetmanifest="mergewithoutmain">
       <manifest>
         <attribute name="Main-Class" value="mhs.src.Mhs" />
@@ -64,10 +64,10 @@
 	    <fileset dir="${bin.dir}"/>
 	
 		<!-- add combined jars -->	    
-	    <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/libs/mhs-dependencies.jar"/>
+	    <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/combined/mhs-dependencies.jar"/>
     </jar>
   </target>
-  
+
   <target name="main" depends="compile, create_run_jar, docs">
     <description>Main target</description>
   </target>

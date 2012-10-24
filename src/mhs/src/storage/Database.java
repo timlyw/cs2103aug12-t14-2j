@@ -1,8 +1,10 @@
 /**
  * Database 
  * 
- * Database interfaces persistent the data storage mechanism, on local disk and remote 
- * (Google Calendar Service). Handles task queries and operations and user configuration settings.
+ * - Database interfaces persistent the data storage mechanism, on local disk and remote 
+ * (Google Calendar Service). 
+ * - Handles task queries and CRUD operations 
+ * - Handles user configuration setting operations
  * 
  * @author timlyw
  */
@@ -31,8 +33,6 @@ import com.google.gdata.util.ServiceException;
 public class Database {
 
 	private static final String GOOGLE_CALENDAR_APP_NAME = "My Hot Secretary";
-	private static final int SYNC_TIMER_PERIOD = 300000;
-	private static final int SYNC_TIMER_DELAY = 300000;
 	private Syncronize syncronize;
 	private GoogleCalendar googleCalendar;
 	private TaskRecordFile taskRecordFile;
@@ -48,8 +48,6 @@ public class Database {
 	private DateTime syncStartDateTime;
 	private DateTime syncEndDateTime;
 	private boolean isRemoteSyncEnabled = true;
-	private Timer DatabaseServiceTimer;
-	private TimerTask pullSyncTimedTask;
 
 	// Exception Messages
 	private static final String EXCEPTION_MESSAGE_INVALID_TASK_FORMAT = "Invalid Task Format";
@@ -59,22 +57,95 @@ public class Database {
 	private static final String CONFIG_PARAM_GOOGLE_USER_ACCOUNT = "GOOGLE_USER_ACCOUNT";
 	private static final String CONFIG_PARAM_GOOGLE_AUTH_TOKEN = "GOOGLE_AUTH_TOKEN";
 
+	/**
+	 * Handles Syncronization operations between local storage and Google
+	 * Calendar Service.
+	 * 
+	 * @author timlyw
+	 */
 	private class Syncronize {
+
+		private Timer DatabaseServiceTimer;
+		private TimerTask pullSyncTimedTask;
+		private static final int SYNC_TIMER_DEFAULT_PERIOD = 300000;
+		private static final int SYNC_TIMER_DEFAULT_DELAY = 300000;
+
+		private Syncronize() throws IOException {
+			if (initializeGoogleCalendarService()) {
+				enableRemoteSync();
+			} else {
+				disableRemoteSync();
+			}
+		}
 
 		/**
 		 * Syncronizes Databases
 		 * 
 		 * @throws Exception
 		 */
-		public boolean syncronizeDatabases() throws ServiceException, Exception {
+		private boolean syncronizeDatabases() throws ServiceException,
+				Exception {
 			if (googleCalendar == null) {
 				return false;
 			}
-
+			
 			pullSync();
 			pushSync();
-
 			return true;
+		}
+
+		/**
+		 * Enables remote sync for task operations and auto-sync
+		 */
+		private void enableRemoteSync() {
+			isRemoteSyncEnabled = true;
+			syncronizePullSyncTimer(SYNC_TIMER_DEFAULT_PERIOD);
+		}
+
+		/**
+		 * Disables remote sync for task operations and auto-sync
+		 */
+		private void disableRemoteSync() {
+			isRemoteSyncEnabled = false;
+
+			cancelTimedPullSync();
+		}
+
+		/**
+		 * Automated Pull Sync Timed Task
+		 * 
+		 * @param syncPeriodInMilis
+		 */
+		private void syncronizePullSyncTimer(int syncPeriodInMilis) {
+			DatabaseServiceTimer = new Timer();
+
+			cancelTimedPullSync();
+
+			pullSyncTimedTask = new TimerTask() {
+				@Override
+				public void run() {
+					MhsLogger.getLogger().log(Level.INFO, "Timed pull-sync");
+					try {
+						syncronize.pullSync();
+					} catch (UnknownHostException e) {
+						MhsLogger.getLogger().log(Level.FINER, e.getMessage());
+						disableRemoteSync();
+					} catch (Exception e) {
+						MhsLogger.getLogger().log(Level.FINER, e.getMessage());
+					}
+				}
+			};
+
+			// schedule pull-sync
+			DatabaseServiceTimer.schedule(pullSyncTimedTask,
+					SYNC_TIMER_DEFAULT_DELAY, syncPeriodInMilis);
+		}
+
+		private void cancelTimedPullSync() {
+			// Cancel timed task if it exists
+			if (pullSyncTimedTask != null) {
+				pullSyncTimedTask.cancel();
+			}
 		}
 
 		/**
@@ -86,7 +157,9 @@ public class Database {
 		 * @throws Exception
 		 */
 		private void pullSync() throws UnknownHostException {
+
 			List<CalendarEventEntry> googleCalendarEvents;
+
 			try {
 				googleCalendarEvents = googleCalendar.retrieveEvents(
 						syncStartDateTime.toString(),
@@ -101,18 +174,16 @@ public class Database {
 				}
 
 			} catch (UnknownHostException e) {
-				MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
 				throw e;
 			} catch (ServiceException e) {
-				MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
+				MhsLogger.getLogger().log(Level.FINER, e.getMessage());
 			} catch (NullPointerException e) {
-				MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
+				MhsLogger.getLogger().log(Level.FINER, e.getMessage());
 			} catch (IOException e) {
-				MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
+				MhsLogger.getLogger().log(Level.FINER, e.getMessage());
 			} catch (Exception e) {
-				MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
+				MhsLogger.getLogger().log(Level.FINER, e.getMessage());
 			}
-
 		}
 
 		/**
@@ -122,34 +193,42 @@ public class Database {
 		 * @throws Exception
 		 */
 		private void pullSyncTask(CalendarEventEntry gCalEntry)
-				throws Exception {
+				throws UnknownHostException, Exception {
 
 			if (gCalTaskList.containsKey(gCalEntry.getIcalUID())) {
 
 				Task localTask = gCalTaskList.get(gCalEntry.getIcalUID());
 
 				// pull sync deleted events
-				MhsLogger.getLogger()
-						.log(Level.INFO, "Deleting cancelled task");
-
 				if (googleCalendar.isDeleted(gCalEntry)) {
+					MhsLogger.getLogger().log(
+							Level.INFO,
+							"Deleting cancelled task : "
+									+ gCalEntry.getTitle().getPlainText());
 					// delete local task
 					deleteTaskInTaskList(gCalTaskList.get(gCalEntry
 							.getIcalUID()));
 					return;
 				}
-
 				// pull sync newer task
 				if (localTask.getTaskLastSync().isBefore(
 						new DateTime(gCalEntry.getUpdated().getValue()))) {
+					MhsLogger.getLogger().log(Level.INFO,
+							"pulling newer event : " + localTask.getTaskName());
 					pullSyncExistingTask(gCalEntry, localTask);
 				}
 
 			} else {
+
 				// Skip deleted events
 				if (googleCalendar.isDeleted(gCalEntry)) {
 					return;
 				}
+
+				MhsLogger.getLogger().log(
+						Level.INFO,
+						"pulling new event : "
+								+ gCalEntry.getTitle().getPlainText());
 				pullSyncNewTask(gCalEntry);
 			}
 		}
@@ -162,25 +241,26 @@ public class Database {
 		 * @throws Exception
 		 */
 		private void pullSyncNewTask(CalendarEventEntry gCalEntry)
-				throws Exception {
-
-			// pull new remote task
-			MhsLogger.getLogger().log(Level.INFO, "pulling new event");
+				throws UnknownHostException, Exception {
 
 			DateTime syncDateTime = setSyncTime(gCalEntry);
 
 			// add task from google calendar entry
 			if (gCalEntry.getTimes().get(0).getStartTime()
 					.equals(gCalEntry.getTimes().get(0).getEndTime())) {
+
 				// create new deadline task
 				Task newTask = new DeadlineTask(getNewTaskId(), gCalEntry,
 						syncDateTime);
 				updateTaskLists(newTask);
+
 			} else {
+
 				// create new timed task
 				Task newTask = new TimedTask(getNewTaskId(), gCalEntry,
 						syncDateTime);
 				updateTaskLists(newTask);
+
 			}
 		}
 
@@ -193,12 +273,10 @@ public class Database {
 		 * @throws Exception
 		 */
 		private void pullSyncExistingTask(CalendarEventEntry gCalEntry,
-				Task localTaskEntry) throws Exception {
-
-			MhsLogger.getLogger().log(Level.INFO,
-					"pulling newer event : " + localTaskEntry.getTaskName());
+				Task localTaskEntry) throws UnknownHostException, Exception {
 
 			updateSyncTask(localTaskEntry, gCalEntry);
+
 		}
 
 		/**
@@ -210,10 +288,13 @@ public class Database {
 		 */
 		private void pushSync() throws IOException, UnknownHostException,
 				ServiceException {
+
 			// push sync tasks from local to google calendar
 			for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
 				try {
 					pushSyncTask(entry.getValue());
+				} catch (UnknownHostException e) {
+					throw e;
 				} catch (ServiceException e) {
 					MhsLogger.getLogger().log(Level.FINE, e.getMessage());
 				} catch (Exception e) {
@@ -228,7 +309,8 @@ public class Database {
 		 * @param localTask
 		 * @throws Exception
 		 */
-		private void pushSyncTask(Task localTask) throws Exception {
+		private void pushSyncTask(Task localTask) throws UnknownHostException,
+				Exception {
 
 			// skip floating tasks
 			if (localTask.getTaskCategory().equals(TaskCategory.FLOATING)) {
@@ -236,22 +318,27 @@ public class Database {
 			}
 			// remove deleted task
 			if (localTask.isDeleted()) {
-				MhsLogger.getLogger().log(Level.INFO,
-						"Removing deleted synced task");
+				MhsLogger.getLogger().log(
+						Level.INFO,
+						"Removing deleted synced task : "
+								+ localTask.getTaskName());
 				googleCalendar.deleteEvent(localTask.getgCalTaskId());
 				return;
 			}
 
 			// add unsynced tasks
 			if (isUnsyncedTask(localTask)) {
-				MhsLogger.getLogger().log(Level.INFO, "Pushing new sync task");
+				MhsLogger.getLogger().log(Level.INFO,
+						"Pushing new sync task : " + localTask.getTaskName());
 				pushSyncNewTask(localTask);
 			} else {
 				// add updated tasks
 				if (localTask.getTaskUpdated().isAfter(
 						localTask.getTaskLastSync())) {
-					MhsLogger.getLogger().log(Level.INFO,
-							"Pushing updated task");
+					MhsLogger.getLogger()
+							.log(Level.INFO,
+									"Pushing updated task : "
+											+ localTask.getTaskName());
 					pushSyncExistingTask(localTask);
 				}
 			}
@@ -264,7 +351,8 @@ public class Database {
 		 * @param localTask
 		 * @throws Exception
 		 */
-		private void pushSyncNewTask(Task localTask) throws Exception {
+		private void pushSyncNewTask(Task localTask)
+				throws UnknownHostException, Exception {
 
 			// adds event to google calendar
 			CalendarEventEntry addedGCalEvent = googleCalendar.createEvent(
@@ -275,14 +363,14 @@ public class Database {
 		}
 
 		/**
-		 * Push existing synced task Call pushSyncTask to sync task as it
-		 * handles sync logic Call pushSyncTask to sync tasks instead as it
-		 * contains sync validation logic.
+		 * Push existing synced task. Call pushSyncTask to sync tasks instead as
+		 * it contains sync validation logic.
 		 * 
 		 * @param localTask
 		 * @throws Exception
 		 */
-		private void pushSyncExistingTask(Task localTask) throws Exception {
+		private void pushSyncExistingTask(Task localTask)
+				throws UnknownHostException, Exception {
 
 			// update remote task
 			CalendarEventEntry updatedGcalEvent = googleCalendar
@@ -377,9 +465,9 @@ public class Database {
 			throws IOException, ServiceException {
 		initializeSyncDateTimes();
 		initalizeDatabase(taskRecordFileName);
-		// syncronize local and web databases
+		// syncronize local and remote databases
 		if (disableSyncronize) {
-			isRemoteSyncEnabled = false;
+			syncronize.disableRemoteSync();
 		} else {
 			syncronizeDatabases();
 		}
@@ -396,16 +484,12 @@ public class Database {
 			throws IOException {
 
 		configFile = new ConfigFile();
+
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
 		taskList = taskRecordFile.getTaskList();
-		gCalTaskList = taskRecordFile.getGCalTaskList();
+		gCalTaskList = taskRecordFile.getGcalTaskList();
 
 		syncronize = new Syncronize();
-		if (initializeGoogleCalendarService()) {
-			enableRemoteSync();
-		} else {
-			isRemoteSyncEnabled = false;
-		}
 	}
 
 	/**
@@ -420,49 +504,9 @@ public class Database {
 
 		taskRecordFile = new TaskRecordFile();
 		taskList = taskRecordFile.getTaskList();
-		gCalTaskList = taskRecordFile.getGCalTaskList();
+		gCalTaskList = taskRecordFile.getGcalTaskList();
 
 		syncronize = new Syncronize();
-		if (initializeGoogleCalendarService()) {
-			enableRemoteSync();
-		} else {
-			disableRemoteSync();
-		}
-	}
-
-	private void enableRemoteSync() {
-		isRemoteSyncEnabled = true;
-		syncronizePullSyncTimer();
-	}
-
-	private void disableRemoteSync() {
-		isRemoteSyncEnabled = false;
-
-		if (pullSyncTimedTask != null) {
-			pullSyncTimedTask.cancel();
-		}
-	}
-
-	private void syncronizePullSyncTimer() {
-		DatabaseServiceTimer = new Timer();
-		pullSyncTimedTask = new TimerTask() {
-			@Override
-			public void run() {
-				MhsLogger.getLogger().log(Level.INFO, "Timed pull-sync");
-				try {
-					syncronize.pullSync();
-				} catch (UnknownHostException e) {
-					MhsLogger.getLogger().log(Level.FINER, e.getMessage());					
-					disableRemoteSync();
-				} catch (Exception e) {
-					MhsLogger.getLogger().log(Level.FINER, e.getMessage());										
-				}
-			}
-		};
-
-		// schedule pull-sync every 5 minutes
-		DatabaseServiceTimer.schedule(pullSyncTimedTask, SYNC_TIMER_DELAY,
-				SYNC_TIMER_PERIOD);
 	}
 
 	/**
@@ -502,14 +546,14 @@ public class Database {
 	public void authenticateUserGoogleAccount(String userName,
 			String userPassword) throws IOException, ServiceException {
 
-		disableRemoteSync();
+		syncronize.disableRemoteSync();
 
 		String googleAccessToken = GoogleCalendar.retrieveUserToken(
 				GOOGLE_CALENDAR_APP_NAME, userName, userPassword);
 		googleCalendar = new GoogleCalendar(GOOGLE_CALENDAR_APP_NAME, userName,
 				googleAccessToken);
 
-		enableRemoteSync();
+		syncronize.enableRemoteSync();
 		saveGoogleAccountInfo();
 	}
 
@@ -519,10 +563,19 @@ public class Database {
 	 * @throws IOException
 	 */
 	public void logOutUserGoogleAccount() throws IOException {
-		disableRemoteSync();
+		syncronize.disableRemoteSync();
 		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN, null);
 		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT, null);
 		configFile.save();
+	}
+
+	/**
+	 * Checks if Remote Sync (Google Calendar) is currently active
+	 * 
+	 * @return
+	 */
+	public boolean isUserGoogleCalendarAuthenticated() {
+		return isRemoteSyncEnabled;
 	}
 
 	/**
@@ -547,25 +600,27 @@ public class Database {
 		configFile.save();
 	}
 
-	// TODO BATCH OPERATIONS FOR DATABASE
-
 	/**
 	 * Syncronizes Databases
 	 * 
 	 * @throws ServiceException
+	 * @throws UnknownHostException
 	 * 
 	 * @throws IOException
 	 */
-	public void syncronizeDatabases() throws ServiceException {
+	public void syncronizeDatabases() throws UnknownHostException,
+			ServiceException {
 		try {
 			syncronize.syncronizeDatabases();
 			saveTaskRecordFile();
+		} catch (UnknownHostException e) {
+			syncronize.disableRemoteSync();
+			throw e;
 		} catch (ServiceException e) {
-			MhsLogger.getLogger().log(Level.FINER, e.getMessage());								
-			disableRemoteSync();
+			MhsLogger.getLogger().log(Level.FINER, e.getMessage());
 			throw e;
 		} catch (Exception e) {
-			MhsLogger.getLogger().log(Level.FINER, e.getMessage());								
+			MhsLogger.getLogger().log(Level.FINER, e.getMessage());
 		}
 	}
 
@@ -734,7 +789,7 @@ public class Database {
 			}
 		}
 
-		return null;
+		return queriedTaskRecordset;
 	}
 
 	/**
@@ -780,11 +835,12 @@ public class Database {
 			}
 		}
 
-		return null;
+		return queriedTaskRecordset;
 	}
 
 	/**
-	 * Adds a task
+	 * Adds a task to local storage and remote (if authenticated and connection
+	 * exists)
 	 * 
 	 * @param task
 	 * @throws Exception
@@ -808,6 +864,11 @@ public class Database {
 		return taskToAdd;
 	}
 
+	/**
+	 * Add task to task list
+	 * 
+	 * @param taskToAdd
+	 */
 	private void addTaskToTaskList(Task taskToAdd) {
 		taskToAdd.setTaskId(getNewTaskId());
 		DateTime UpdateTime = new DateTime();
@@ -839,7 +900,6 @@ public class Database {
 		Task taskToUndelete = taskList.get(taskId);
 		undeleteTaskInTaskList(taskToUndelete);
 
-		// TODO undelete google calendar task
 		if (isRemoteSyncEnabled) {
 			syncronize.pushSyncTask(taskToUndelete);
 		}
@@ -847,6 +907,11 @@ public class Database {
 		saveTaskRecordFile();
 	}
 
+	/**
+	 * Undelete task in task list by setting deleted attribute
+	 * 
+	 * @param taskToUndelete
+	 */
 	private void undeleteTaskInTaskList(Task taskToUndelete) {
 		taskToUndelete.setDeleted(false);
 		DateTime UpdateTime = new DateTime();
@@ -880,6 +945,11 @@ public class Database {
 
 	}
 
+	/**
+	 * Deletes task in task list by setting deleted attribute
+	 * 
+	 * @param taskToDelete
+	 */
 	private void deleteTaskInTaskList(Task taskToDelete) {
 		taskToDelete.setDeleted(true);
 		DateTime UpdateTime = new DateTime();
@@ -925,6 +995,11 @@ public class Database {
 		return updatedTaskToSave;
 	}
 
+	/**
+	 * Updates task in task list
+	 * 
+	 * @param updatedTaskToSave
+	 */
 	private void updateTaskinTaskList(Task updatedTaskToSave) {
 		DateTime UpdateTime = new DateTime();
 		UpdateTime = DateTime.now();
@@ -956,6 +1031,11 @@ public class Database {
 	}
 
 	@SuppressWarnings("unused")
+	/**
+	 * Permanently removes task record from file 
+	 * @param gCalTaskId
+	 * @throws Exception
+	 */
 	private void removeRecord(String gCalTaskId) throws Exception {
 		if (!taskExists(gCalTaskId)) {
 			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
@@ -1037,6 +1117,11 @@ public class Database {
 		}
 	}
 
+	/**
+	 * Update Task Lists
+	 * 
+	 * @param task
+	 */
 	private void updateTaskLists(Task task) {
 		taskList.put(task.getTaskId(), task);
 		if (task.getgCalTaskId() != null && !task.getgCalTaskId().isEmpty()) {
@@ -1045,7 +1130,7 @@ public class Database {
 	}
 
 	/**
-	 * Checks if Task is valid for given format
+	 * Checks if Task format is valid for given type
 	 * 
 	 * @param task
 	 * @return boolean
@@ -1076,11 +1161,19 @@ public class Database {
 		return true;
 	}
 
+	/**
+	 * Clear All Task Lists (taskList and gCalTaskList)
+	 */
 	private void clearTaskLists() {
 		taskList.clear();
 		gCalTaskList.clear();
 	}
 
+	/**
+	 * 
+	 * @param gCalTaskId
+	 * @return true if task exists in gCalTaskList
+	 */
 	private boolean taskExists(String gCalTaskId) {
 		if (!gCalTaskList.containsKey(gCalTaskId)) {
 			return false;
@@ -1088,6 +1181,11 @@ public class Database {
 		return true;
 	}
 
+	/**
+	 * 
+	 * @param taskId
+	 * @return true of task exists in task list
+	 */
 	private boolean taskExists(int taskId) {
 		if (!taskList.containsKey(taskId)) {
 			return false;
@@ -1112,23 +1210,13 @@ public class Database {
 	 * @return
 	 */
 	private int getNewTaskId() {
-		Set<Integer> taskKeySet = taskList.keySet();
-
 		int getNewTaskId = 0;
+		Set<Integer> taskKeySet = taskList.keySet();
 		Iterator<Integer> iterator = taskKeySet.iterator();
 		while (iterator.hasNext()) {
 			getNewTaskId = iterator.next();
 		}
 		getNewTaskId++;
 		return getNewTaskId;
-	}
-
-	/**
-	 * Checks if Remote Sync (Google Calendar) is active
-	 * 
-	 * @return
-	 */
-	public boolean isUserGoogleCalendarAuthenticated() {
-		return isRemoteSyncEnabled;
 	}
 }

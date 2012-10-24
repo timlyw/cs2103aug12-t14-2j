@@ -1,5 +1,5 @@
 /**
- * Floating Task - inherits from superclass Task
+ * Floating Task - inherits from base class Task
  * 
  * @author timlyw
  */

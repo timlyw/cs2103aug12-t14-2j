@@ -85,7 +85,9 @@ public class TaskRecordFileTest {
 		Map<Integer, Task> loadTaskList = new LinkedHashMap<Integer, Task>();
 
 		taskRecordFile.saveTaskList(taskList);
-		loadTaskList = taskRecordFile.loadTaskList();
+		taskRecordFile.loadTaskList();
+
+		loadTaskList = taskRecordFile.getTaskList();
 
 		// Test size
 		assertEquals(taskList.size(), loadTaskList.size());
