@@ -14,7 +14,6 @@ package mhs.src.storage;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,7 +24,6 @@ import java.util.logging.Level;
 import mhs.src.common.MhsLogger;
 
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.ServiceException;
@@ -39,11 +37,7 @@ public class Database {
 	private ConfigFile configFile;
 
 	// Data Views - contains Task objects references
-
-	// primary task list with index as key
-	private Map<Integer, Task> taskList;
-	// task list with gCalId as key
-	private Map<String, Task> gCalTaskList;
+	private TaskLists taskLists;
 
 	private DateTime syncStartDateTime;
 	private DateTime syncEndDateTime;
@@ -88,7 +82,7 @@ public class Database {
 			if (googleCalendar == null) {
 				return false;
 			}
-			
+
 			pullSync();
 			pushSync();
 			return true;
@@ -195,9 +189,9 @@ public class Database {
 		private void pullSyncTask(CalendarEventEntry gCalEntry)
 				throws UnknownHostException, Exception {
 
-			if (gCalTaskList.containsKey(gCalEntry.getIcalUID())) {
+			if (taskLists.containsSyncTask(gCalEntry.getIcalUID())) {
 
-				Task localTask = gCalTaskList.get(gCalEntry.getIcalUID());
+				Task localTask = taskLists.getSyncTask(gCalEntry.getIcalUID());
 
 				// pull sync deleted events
 				if (googleCalendar.isDeleted(gCalEntry)) {
@@ -206,8 +200,7 @@ public class Database {
 							"Deleting cancelled task : "
 									+ gCalEntry.getTitle().getPlainText());
 					// delete local task
-					deleteTaskInTaskList(gCalTaskList.get(gCalEntry
-							.getIcalUID()));
+					deleteTaskInTaskList(localTask);
 					return;
 				}
 				// pull sync newer task
@@ -290,7 +283,8 @@ public class Database {
 				ServiceException {
 
 			// push sync tasks from local to google calendar
-			for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
+			for (Map.Entry<Integer, Task> entry : taskLists.getTaskList()
+					.entrySet()) {
 				try {
 					pushSyncTask(entry.getValue());
 				} catch (UnknownHostException e) {
@@ -389,7 +383,7 @@ public class Database {
 		private Task updateSyncTask(Task localSyncTaskToUpdate,
 				CalendarEventEntry UpdatedCalendarEvent) throws Exception {
 
-			if (!taskExists(localSyncTaskToUpdate.getTaskId())) {
+			if (!taskLists.containsTask(localSyncTaskToUpdate.getTaskId())) {
 				throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 			}
 
@@ -484,11 +478,8 @@ public class Database {
 			throws IOException {
 
 		configFile = new ConfigFile();
-
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
-		taskList = taskRecordFile.getTaskList();
-		gCalTaskList = taskRecordFile.getGcalTaskList();
-
+		taskLists = new TaskLists(taskRecordFile.getTaskList());
 		syncronize = new Syncronize();
 	}
 
@@ -501,11 +492,8 @@ public class Database {
 	private void initalizeDatabase() throws IOException {
 
 		configFile = new ConfigFile();
-
 		taskRecordFile = new TaskRecordFile();
-		taskList = taskRecordFile.getTaskList();
-		gCalTaskList = taskRecordFile.getGcalTaskList();
-
+		taskLists = new TaskLists(taskRecordFile.getTaskList());
 		syncronize = new Syncronize();
 	}
 
@@ -625,25 +613,6 @@ public class Database {
 	}
 
 	/**
-	 * Returns List of all tasks (exclusive of deleted tasks)
-	 * 
-	 * @return List of all Tasks
-	 * @throws IOException
-	 */
-	public List<Task> query() throws IOException {
-		List<Task> queryTaskList = new LinkedList<Task>();
-		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-
-			if (entry.getValue().isDeleted()) {
-				continue;
-			}
-
-			queryTaskList.add(entry.getValue().clone());
-		}
-		return queryTaskList;
-	}
-
-	/**
 	 * Returns single task with specified taskId (deleted tasks queriable)
 	 * 
 	 * @param taskId
@@ -651,191 +620,98 @@ public class Database {
 	 * @throws Exception
 	 */
 	public Task query(int taskId) throws Exception {
-		if (!taskExists(taskId)) {
+		if (!taskLists.containsTask(taskId)) {
 			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
-		return taskList.get(taskId).clone();
+		return taskLists.getTask(taskId);
+	}
+
+	/**
+	 * Returns List of all tasks (exclusive of deleted tasks)
+	 * 
+	 * @param orderByStartDateTime
+	 * @return List of all Tasks
+	 * @throws IOException
+	 */
+	public List<Task> query(boolean orderByStartDateTime) throws IOException {
+
+		return taskLists.getTasks(orderByStartDateTime);
+
 	}
 
 	/**
 	 * Return tasks with matching taskName, case-insensitive substring search
 	 * (exclusive of deleted tasks)
 	 * 
+	 * @param orderByStartDateTime
 	 * @param taskName
 	 * @return list of matched tasks
 	 */
-	public List<Task> query(String taskName) {
-		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-
-			if (entry.getValue().isDeleted()) {
-				continue;
-			}
-
-			if (entry.getValue().getTaskName().toLowerCase()
-					.contains(taskName.toLowerCase())) {
-				queriedTaskRecordset.add(entry.getValue().clone());
-			}
-		}
-		return queriedTaskRecordset;
+	public List<Task> query(String taskName, boolean orderByStartDateTime) {
+		return taskLists.getTasks(taskName, orderByStartDateTime);
 	}
 
 	/**
 	 * Returns tasks that match specified TaskCategory (exclusive of deleted
 	 * tasks)
 	 * 
+	 * @param orderByStartDateTime
 	 * @param queryTaskCategory
 	 * @return list of matched tasks
 	 */
-	public List<Task> query(TaskCategory queryTaskCategory) {
-		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-
-			if (entry.getValue().isDeleted()) {
-				continue;
-			}
-
-			TaskCategory taskCategory = entry.getValue().getTaskCategory();
-			if (taskCategory.equals(queryTaskCategory)) {
-				queriedTaskRecordset.add(entry.getValue().clone());
-			}
-		}
-		return queriedTaskRecordset;
+	public List<Task> query(TaskCategory queryTaskCategory,
+			boolean orderByStartDateTime) {
+		return taskLists.getTasks(queryTaskCategory, orderByStartDateTime);
 	}
 
 	/**
-	 * Returns tasks that is within startTime or endTime inclusive (exclusive of
-	 * deleted tasks)
+	 * Returns tasks that is within startDateTime or endDateTime inclusive
+	 * (exclusive of deleted tasks)
 	 * 
-	 * @param startTime
-	 * @param endTime
+	 * @param orderByStartDateTime
+	 * @param startDateTime
+	 * @param endDateTime
 	 * @return list of matched tasks
 	 */
-	public List<Task> query(DateTime startTime, DateTime endTime) {
-		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-
-		// Set interval for matched range (increase endtime by 1 ms to include)
-		Interval dateTimeInterval = new Interval(startTime,
-				endTime.plusMillis(1));
-
-		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-
-			if (entry.getValue().isDeleted()) {
-				continue;
-			}
-
-			switch (entry.getValue().getTaskCategory()) {
-			case TIMED:
-				if (dateTimeInterval.contains(entry.getValue()
-						.getStartDateTime())
-						|| dateTimeInterval.contains(entry.getValue()
-								.getEndDateTime())) {
-					if (!entry.getValue().isDeleted()) {
-						queriedTaskRecordset.add(entry.getValue().clone());
-					}
-				}
-				break;
-			case DEADLINE:
-				if (dateTimeInterval
-						.contains(entry.getValue().getEndDateTime())) {
-					if (!entry.getValue().isDeleted()) {
-						queriedTaskRecordset.add(entry.getValue().clone());
-					}
-				}
-				break;
-			case FLOATING:
-			default:
-				break;
-			}
-		}
-
-		return queriedTaskRecordset;
+	public List<Task> query(DateTime startDateTime, DateTime endDateTime,
+			boolean orderByStartDateTime) {
+		return taskLists.getTasks(startDateTime, endDateTime,
+				orderByStartDateTime);
 	}
 
 	/**
 	 * Returns task that matches any of the specified parameters (exclusive of
 	 * deleted tasks)
 	 * 
-	 * @param queriedTaskName
-	 * @param queriedStartTime
-	 * @param queriedEndTime
+	 * @param orderByStartDateTime
+	 * @param taskName
+	 * @param startDateTime
+	 * @param endDateTime
 	 * @return list of matched tasks
 	 */
-	public List<Task> query(String queriedTaskName, DateTime queriedStartTime,
-			DateTime queriedEndTime) {
-
-		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-
-		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-
-			if (entry.getValue().isDeleted()) {
-				continue;
-			}
-
-			Task taskEntry = entry.getValue();
-			// Set interval for matched range (increase endtime by 1 ms to
-			// include)
-			Interval dateTimeInterval = new Interval(queriedStartTime,
-					queriedEndTime.plusMillis(1));
-
-			if (taskEntry.getTaskName().contains(queriedTaskName)) {
-				queriedTaskRecordset.add(entry.getValue().clone());
-				continue;
-			}
-			if (dateTimeInterval.contains(taskEntry.getStartDateTime())
-					|| dateTimeInterval.contains(taskEntry.getEndDateTime())) {
-				queriedTaskRecordset.add(entry.getValue().clone());
-				continue;
-			}
-		}
-
-		return queriedTaskRecordset;
+	public List<Task> query(String taskName, DateTime startDateTime,
+			DateTime endDateTime, boolean orderByStartDateTime) {
+		return taskLists.getTasks(taskName, startDateTime, endDateTime,
+				orderByStartDateTime);
 	}
 
 	/**
 	 * Returns task that matches any of the specified parameters (exclusive of
 	 * deleted tasks)
 	 * 
-	 * @param queriedTaskName
-	 * @param queriedTaskCategory
-	 * @param queriedStartTime
-	 * @param queriedEndTime
+	 * @param orderByStartDateTime
+	 * @param taskName
+	 * @param taskCategory
+	 * @param startDateTime
+	 * @param endDateTime
 	 * @return list of matched tasks
 	 */
-	public List<Task> query(String queriedTaskName,
-			TaskCategory queriedTaskCategory, DateTime queriedStartTime,
-			DateTime queriedEndTime) {
+	public List<Task> query(String taskName, TaskCategory taskCategory,
+			DateTime startDateTime, DateTime endDateTime,
+			boolean orderByStartDateTime) {
 
-		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-
-		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-
-			if (entry.getValue().isDeleted()) {
-				continue;
-			}
-
-			Task taskEntry = entry.getValue();
-			// Set interval for matched range (increase endtime by 1 ms to
-			// include)
-			Interval dateTimeInterval = new Interval(queriedStartTime,
-					queriedEndTime.plusMillis(1));
-
-			if (taskEntry.getTaskCategory().equals(queriedTaskCategory)) {
-				queriedTaskRecordset.add(entry.getValue().clone());
-				continue;
-			}
-			if (taskEntry.getTaskName().contains(queriedTaskName)) {
-				queriedTaskRecordset.add(entry.getValue().clone());
-				continue;
-			}
-			if (dateTimeInterval.contains(taskEntry.getStartDateTime())
-					|| dateTimeInterval.contains(taskEntry.getEndDateTime())) {
-				queriedTaskRecordset.add(entry.getValue().clone());
-				continue;
-			}
-		}
-
-		return queriedTaskRecordset;
+		return taskLists.getTasks(taskName, taskCategory, startDateTime,
+				endDateTime, orderByStartDateTime);
 	}
 
 	/**
@@ -860,7 +736,6 @@ public class Database {
 		}
 
 		saveTaskRecordFile();
-
 		return taskToAdd;
 	}
 
@@ -893,11 +768,11 @@ public class Database {
 	 */
 	public void undelete(int taskId) throws Exception {
 
-		if (!taskExists(taskId)) {
+		if (!taskLists.containsTask(taskId)) {
 			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
 
-		Task taskToUndelete = taskList.get(taskId);
+		Task taskToUndelete = taskLists.getTask(taskId);
 		undeleteTaskInTaskList(taskToUndelete);
 
 		if (isRemoteSyncEnabled) {
@@ -930,11 +805,11 @@ public class Database {
 	 */
 	public void delete(int taskId) throws Exception {
 
-		if (!taskExists(taskId)) {
+		if (!taskLists.containsTask(taskId)) {
 			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
 
-		Task taskToDelete = taskList.get(taskId);
+		Task taskToDelete = taskLists.getTask(taskId);
 		deleteTaskInTaskList(taskToDelete);
 
 		if (isRemoteSyncEnabled) {
@@ -942,7 +817,6 @@ public class Database {
 		}
 
 		saveTaskRecordFile();
-
 	}
 
 	/**
@@ -951,11 +825,14 @@ public class Database {
 	 * @param taskToDelete
 	 */
 	private void deleteTaskInTaskList(Task taskToDelete) {
+
 		taskToDelete.setDeleted(true);
+
+		// set updated time further ahead to force sync (timing issues)
 		DateTime UpdateTime = new DateTime();
 		UpdateTime = DateTime.now().plusMinutes(1);
-		// set updated time further ahead to force sync (timing issues)
 		taskToDelete.setTaskUpdated(UpdateTime);
+
 		updateTaskLists(taskToDelete);
 	}
 
@@ -968,7 +845,7 @@ public class Database {
 	 */
 	public Task update(Task updatedTask) throws Exception {
 
-		if (!taskExists(updatedTask.getTaskId())) {
+		if (!taskLists.containsTask(updatedTask.getTaskId())) {
 			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
 
@@ -991,7 +868,6 @@ public class Database {
 		}
 
 		saveTaskRecordFile();
-
 		return updatedTaskToSave;
 	}
 
@@ -1001,10 +877,11 @@ public class Database {
 	 * @param updatedTaskToSave
 	 */
 	private void updateTaskinTaskList(Task updatedTaskToSave) {
+		// set updated time further ahead to force sync (timing issues)
 		DateTime UpdateTime = new DateTime();
 		UpdateTime = DateTime.now();
-		// set updated time further ahead to force sync (timing issues)
 		updatedTaskToSave.setTaskUpdated(UpdateTime.plusMinutes(1));
+
 		updateTaskLists(updatedTaskToSave);
 	}
 
@@ -1014,7 +891,7 @@ public class Database {
 	 * @throws IOException
 	 */
 	private void saveTaskRecordFile() throws IOException {
-		taskRecordFile.saveTaskList(taskList);
+		taskRecordFile.saveTaskList(taskLists.getTaskList());
 	}
 
 	/**
@@ -1023,24 +900,11 @@ public class Database {
 	 * @param taskId
 	 * @throws Exception
 	 */
-	private void removeRecord(int taskId) throws Exception {
-		if (!taskExists(taskId)) {
+	private void removeRecord(Task taskToRemove) throws Exception {
+		if (!taskLists.containsTask(taskToRemove.getTaskId())) {
 			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
-		taskList.remove(taskId);
-	}
-
-	@SuppressWarnings("unused")
-	/**
-	 * Permanently removes task record from file 
-	 * @param gCalTaskId
-	 * @throws Exception
-	 */
-	private void removeRecord(String gCalTaskId) throws Exception {
-		if (!taskExists(gCalTaskId)) {
-			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
-		}
-		taskList.remove(gCalTaskId);
+		taskLists.removeTaskInTaskLists(taskToRemove);
 	}
 
 	/**
@@ -1059,7 +923,8 @@ public class Database {
 	 * @throws Exception
 	 */
 	private void cleanupLocalTasks() throws Exception {
-		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
+		for (Map.Entry<Integer, Task> entry : taskLists.getTaskList()
+				.entrySet()) {
 
 			if (!entry.getValue().isDeleted()) {
 				continue;
@@ -1069,12 +934,12 @@ public class Database {
 			case TIMED:
 			case DEADLINE:
 				if (entry.getValue().getEndDateTime().isAfterNow()) {
-					removeRecord(entry.getValue().getTaskId());
+					removeRecord(entry.getValue());
 				}
 				break;
 			case FLOATING:
 				if (entry.getValue().isDone()) {
-					removeRecord(entry.getValue().getTaskId());
+					removeRecord(entry.getValue());
 				}
 				break;
 			}
@@ -1089,7 +954,7 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	public void clearDatabase() throws IOException, ServiceException {
-		clearTaskLists();
+		taskLists.clearTaskLists();
 		clearRemoteDatabase();
 		saveTaskRecordFile();
 	}
@@ -1100,7 +965,7 @@ public class Database {
 	 * @throws IOException
 	 */
 	public void clearLocalDatabase() throws IOException {
-		clearTaskLists();
+		taskLists.clearTaskLists();
 		saveTaskRecordFile();
 	}
 
@@ -1123,10 +988,7 @@ public class Database {
 	 * @param task
 	 */
 	private void updateTaskLists(Task task) {
-		taskList.put(task.getTaskId(), task);
-		if (task.getgCalTaskId() != null && !task.getgCalTaskId().isEmpty()) {
-			gCalTaskList.put(task.getgCalTaskId(), task);
-		}
+		taskLists.updateTaskInTaskLists(task);
 	}
 
 	/**
@@ -1162,38 +1024,6 @@ public class Database {
 	}
 
 	/**
-	 * Clear All Task Lists (taskList and gCalTaskList)
-	 */
-	private void clearTaskLists() {
-		taskList.clear();
-		gCalTaskList.clear();
-	}
-
-	/**
-	 * 
-	 * @param gCalTaskId
-	 * @return true if task exists in gCalTaskList
-	 */
-	private boolean taskExists(String gCalTaskId) {
-		if (!gCalTaskList.containsKey(gCalTaskId)) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * 
-	 * @param taskId
-	 * @return true of task exists in task list
-	 */
-	private boolean taskExists(int taskId) {
-		if (!taskList.containsKey(taskId)) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
 	 * Checks whether task is unsynced
 	 * 
 	 * @param localTask
@@ -1211,7 +1041,7 @@ public class Database {
 	 */
 	private int getNewTaskId() {
 		int getNewTaskId = 0;
-		Set<Integer> taskKeySet = taskList.keySet();
+		Set<Integer> taskKeySet = taskLists.getTaskList().keySet();
 		Iterator<Integer> iterator = taskKeySet.iterator();
 		while (iterator.hasNext()) {
 			getNewTaskId = iterator.next();

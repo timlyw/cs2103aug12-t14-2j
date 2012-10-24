@@ -42,7 +42,6 @@ public class TaskRecordFile {
 	private final static String DEFAULT_TASK_RECORD_FILENAME = "taskRecordFile.json";
 
 	private Map<Integer, Task> taskList;
-	private Map<String, Task> gCalTaskList;
 
 	public TaskRecordFile() throws IOException {
 		RECORD_FILE_NAME = DEFAULT_TASK_RECORD_FILENAME;
@@ -99,7 +98,6 @@ public class TaskRecordFile {
 				CHAR_ENCODING_UTF8));
 
 		taskList = new LinkedHashMap<Integer, Task>();
-		gCalTaskList = new LinkedHashMap<String, Task>();
 
 		JsonParser parser = new JsonParser();
 		JsonArray Jarray = parser.parse(jsonReader).getAsJsonArray();
@@ -107,9 +105,6 @@ public class TaskRecordFile {
 		for (JsonElement obj : Jarray) {
 			Task newTask = gson.fromJson(obj, Task.class);
 			taskList.put(newTask.getTaskId(), newTask);
-			if (newTask.getgCalTaskId() != null) {
-				gCalTaskList.put(newTask.getgCalTaskId(), newTask);
-			}
 		}
 
 		jsonReader.close();
@@ -166,14 +161,5 @@ public class TaskRecordFile {
 	 */
 	public Map<Integer, Task> getTaskList() {
 		return taskList;
-	}
-
-	/**
-	 * Getter for GcalTask List
-	 * 
-	 * @return Task List with gCalTaskId as key
-	 */
-	public Map<String, Task> getGcalTaskList() {
-		return gCalTaskList;
 	}
 }
