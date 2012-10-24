@@ -37,8 +37,7 @@ public class Processor {
 	private String username;
 	private String password;
 	private boolean userIsLoggedIn;
-	
-	
+
 	private class taskLog {
 		private Task previousTask;
 		private Task nextTask;
@@ -704,21 +703,24 @@ public class Processor {
 		endDate = inputCommand.getEndDate() == null ? false : true;
 		if (name && startDate && endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
-					inputCommand.getStartDate(), inputCommand.getEndDate());
+					inputCommand.getStartDate(), inputCommand.getEndDate(),
+					true);
 		} else if (startDate && endDate && !name) {
 			queryResultList = dataHandler.query(inputCommand.getStartDate(),
-					inputCommand.getEndDate());
+					inputCommand.getEndDate(), true);
 		} else if (name && !startDate && !endDate) {
-			queryResultList = dataHandler.query(inputCommand.getTaskName());
+			queryResultList = dataHandler.query(inputCommand.getTaskName(),
+					true);
 		} else if (name && startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					inputCommand.getStartDate(), inputCommand.getStartDate()
-							.toDateMidnight().toDateTime());
+							.toDateMidnight().toDateTime(), true);
 		} else if (!name && startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getStartDate(),
-					inputCommand.getStartDate().toDateMidnight().toDateTime());
+					inputCommand.getStartDate().toDateMidnight().toDateTime(),
+					true);
 		} else {
-			queryResultList = dataHandler.query();
+			queryResultList = dataHandler.query(true);
 		}
 		return queryResultList;
 	}
@@ -733,7 +735,7 @@ public class Processor {
 	private List<Task> queryTasksByTaskName(Command inputCommand)
 			throws IOException {
 		List<Task> queryResultList;
-		queryResultList = dataHandler.query(inputCommand.getTaskName());
+		queryResultList = dataHandler.query(inputCommand.getTaskName(), true);
 		return queryResultList;
 	}
 
