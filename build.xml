@@ -6,7 +6,7 @@
   <property name="bin.dir" location="bin" />
   <property name="build.dir" location="build" />
   <property name="dist.dir" location="dist" />
-  <property name="docs.dir" location="docs" />
+  <property name="docs.dir" location="javadocs" />
   <property name="libs.dir" location="libs" />
 
   <!-- libs dependencies -->
