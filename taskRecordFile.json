@@ -563,7 +563,7 @@
     "taskName": "task",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-21T03:00:50.563+08:00",
-    "taskUpdated": "2012-10-22T19:08:00.321+08:00",
+    "taskUpdated": "2012-10-25T00:03:53.408+08:00",
     "taskLastSync": "2012-10-21T03:00:54.000+08:00",
     "gCalTaskId": "9ffeht5f83gftg26tgrkpfq3t8@google.com",
     "isDone": false,
@@ -586,7 +586,7 @@
     "taskName": "seach",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-21T03:23:21.752+08:00",
-    "taskUpdated": "2012-10-22T19:08:00.322+08:00",
+    "taskUpdated": "2012-10-25T00:03:53.409+08:00",
     "taskLastSync": "2012-10-21T03:23:26.000+08:00",
     "gCalTaskId": "6qre91fqakh4aglluq7v6pf4p4@google.com",
     "isDone": false,
@@ -681,11 +681,11 @@
     "taskName": "holiday",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-22T16:55:55.069+08:00",
-    "taskUpdated": "2012-10-22T16:55:55.522+08:00",
+    "taskUpdated": "2012-10-25T00:03:53.408+08:00",
     "taskLastSync": "2012-10-22T16:55:55.522+08:00",
     "gCalTaskId": "42mebui5018d3kj0fqcjtk3rfo@google.com",
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-10-22T17:00:00.000+08:00",
