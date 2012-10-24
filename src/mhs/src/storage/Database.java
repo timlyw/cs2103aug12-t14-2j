@@ -789,7 +789,7 @@ public class Database {
 			}
 		}
 
-		return null;
+		return queriedTaskRecordset;
 	}
 
 	/**
@@ -835,7 +835,7 @@ public class Database {
 			}
 		}
 
-		return null;
+		return queriedTaskRecordset;
 	}
 
 	/**
