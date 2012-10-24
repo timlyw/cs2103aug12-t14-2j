@@ -32,6 +32,7 @@ public class ConfigFileTest {
 	@Test
 	/**
 	 * Test config file set/get config parameter and save
+	 * 
 	 * @throws IOException
 	 */
 	public void configFileTest() throws IOException {
@@ -49,6 +50,7 @@ public class ConfigFileTest {
 	@Test
 	/**
 	 * Test config file load
+	 * 
 	 * @throws IOException
 	 */
 	public void configFileTestLoad() throws IOException {
