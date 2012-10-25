@@ -2,7 +2,7 @@ package mhs.src.storage;
 
 import java.util.Comparator;
 
-public class TaskStartDateTimeComparator implements Comparator<Task> {
+class TaskStartDateTimeComparator implements Comparator<Task> {
 	@Override
 	public int compare(Task o1, Task o2) {
 

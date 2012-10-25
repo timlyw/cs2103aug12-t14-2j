@@ -554,6 +554,7 @@ public class Database {
 	 */
 	public void logOutUserGoogleAccount() throws IOException {
 		syncronize.disableRemoteSync();
+		googleCalendar = null;
 		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN, null);
 		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT, null);
 		configFile.save();
