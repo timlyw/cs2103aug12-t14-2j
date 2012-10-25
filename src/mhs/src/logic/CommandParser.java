@@ -218,7 +218,7 @@ public class CommandParser {
 	 */
 	private String setNameInQuotationMarks(String process) {
 
-		process = nameParser.processNameWithinQuotationMarks(process);
+		process = nameParser.processQuotationMarks(process);
 		return process;
 	}
 

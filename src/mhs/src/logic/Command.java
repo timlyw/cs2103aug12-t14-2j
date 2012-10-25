@@ -105,7 +105,7 @@ public class Command {
 			startDate = temp;
 			}
 		}
-	
+	System.out.println(toString());
 	}
 
 	/**
@@ -163,16 +163,16 @@ public class Command {
 		
 		String outString = "";
 		if(commandEnum!= null)
-			outString = ("command " + commandEnum.name());
+			outString = ("Command : " + commandEnum.name());
 		if(taskName!= null)
-			outString +=(" task name " + taskName);
+			outString +=(" Task name : " + taskName);
 		if(edittedName!= null)
-			outString +=(" editted name " + edittedName);
+			outString +=(" Editted name : " + edittedName);
 		if(startDate!= null)
-			outString += (" start Date " + startDate.toString());
+			outString += (" Start Date : " + startDate.toString());
 		if(endDate!= null)
-			outString += (" end Date " + endDate.toString());
-		outString += (" index is " + index);
+			outString += (" End Date : " + endDate.toString());
+		outString += (" Index is : " + index);
 		
 		return outString;
 	}

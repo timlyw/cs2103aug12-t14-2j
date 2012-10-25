@@ -33,18 +33,19 @@ public class NameExtractor {
 	private int counter;
 	private Queue<String> nameList;
 	private static NameExtractor nameExtractor;
-	
-	private NameExtractor(){
-		nameList= new LinkedList<String>();
+
+	private NameExtractor() {
+		nameList = new LinkedList<String>();
 		counter = 0;
 	}
-	
-	public static NameExtractor getNameExtractor(){
-		if(nameExtractor == null){
+
+	public static NameExtractor getNameExtractor() {
+		if (nameExtractor == null) {
 			nameExtractor = new NameExtractor();
 		}
 		return nameExtractor;
 	}
+
 	/**
 	 * This is the function to check the string if it is a name format.
 	 * 
@@ -55,25 +56,29 @@ public class NameExtractor {
 	 */
 	public boolean checkNameFormat(String printString) {
 
-		DateExtractor dateExtractor;
-		TimeExtractor timeExtractor;
-		CommandExtractor commandExtractor;
-		dateExtractor = DateExtractor.getDateExtractor();
-		timeExtractor = TimeExtractor.getTimeExtractor();
-		commandExtractor = CommandExtractor.getCommandExtractor();
-		
+		DateExtractor dateExtractor = DateExtractor.getDateExtractor();
+		TimeExtractor timeExtractor = TimeExtractor.getTimeExtractor();
+		CommandExtractor commandExtractor = CommandExtractor
+				.getCommandExtractor();
+
 		if (!(timeExtractor.checkTimeFormat(printString)
 				|| dateExtractor.checkDateFormat(printString) || commandExtractor
 					.isCommand(printString))) {
-			for (SpecialKeyWords k : SpecialKeyWords.values()) {
-				if (printString.equals(k.name())) {
-					return false;
-				}
+			if (!isSpecialKeyWord(printString)) {
+				return true;
 			}
-			return true;
 		}
 		return false;
 
+	}
+
+	private boolean isSpecialKeyWord(String printString) {
+		for (SpecialKeyWords k : SpecialKeyWords.values()) {
+			if (printString.equals(k.name())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -88,6 +93,7 @@ public class NameExtractor {
 
 		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 		Queue<String> nameQueue = new LinkedList<String>();
+
 		for (counter = 0; counter < processArray.length; counter++) {
 
 			if (checkNameFormat(processArray[counter])) {
@@ -97,12 +103,16 @@ public class NameExtractor {
 					String command = nameQueue.poll();
 					name += command + REGEX_BLANK;
 				}
-				name = name.trim();
-				nameList.add(name);
+				addNameToList(name);
 			}
 
 		}
 		return nameList;
+	}
+
+	private void addNameToList(String name) {
+		name = name.trim();
+		nameList.add(name);
 	}
 
 	/**
@@ -111,10 +121,11 @@ public class NameExtractor {
 	 * @param printString
 	 *            This is the entire string that needs to be processed.
 	 * 
-	 * @return Returns the name highlighted in the first quotation marks
+	 * @return Returns the string with everything within quotations removed
 	 */
-	public String processNameWithinQuotationMarks(String printString) {
+	public String processQuotationMarks(String printString) {
 		String name = "";
+		nameList = new LinkedList<String>();
 		if (hasQuotations(printString)) {
 			while (hasQuotations(printString)) {
 				Matcher matcher = Pattern.compile(REGEX_QUOTATION_MARKS)
@@ -122,15 +133,23 @@ public class NameExtractor {
 
 				if (matcher.find()) {
 					name = matcher.group();
-					printString = printString.replace(name, "");
-					name = name.replace(REGEX_QUOTATION, "");
-					name = name.trim();
-					nameList.add(name);
+					printString = removeNameInQuotationMarks(printString, name);
+					setNameInQuotationMarks(name);
 
 				}
 			}
 		}
 		printString = printString.trim();
+		return printString;
+	}
+
+	private void setNameInQuotationMarks(String name) {
+		name = name.replace(REGEX_QUOTATION, "");
+		addNameToList(name);
+	}
+
+	private String removeNameInQuotationMarks(String printString, String name) {
+		printString = printString.replace(name, "");
 		return printString;
 	}
 

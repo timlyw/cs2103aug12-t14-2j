@@ -5,9 +5,6 @@ package mhs.src.logic;
  * @author Cheong Kahou
  *A0086805X
  *
- */
-
-/**
  * 
  * This is a class that checks string if they are commands and set the commands.
  * 
@@ -35,8 +32,10 @@ public class CommandExtractor {
 	}
 	
 	private static final String REGEX_WHITE_SPACE = "\\s+";
+	
 	private String commandString;
 	private static CommandExtractor commandExtractor;
+	
 	private CommandExtractor(){
 		commandString = "";
 	}
