@@ -386,6 +386,7 @@ public class Processor {
 		String outputString;
 		try {
 			dataHandler.logOutUserGoogleAccount();
+			userIsLoggedIn = false;
 			outputString = "You have successfully logged out !";
 		} catch (IOException e) {
 			outputString = "Some error occurred during logout!";
