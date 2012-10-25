@@ -16,12 +16,7 @@ import org.joda.time.LocalTime;
  */
 public class TimeExtractor {
 
-	// These are the regex for clearing.
-	private static final String REGEX_NON_WORD_CHAR = "\\W";
-	private static final String REGEX_SPACE = " ";
-	private static final String REGEX_WHITE_SPACE = "\\s+";
-
-
+	private static final String REGEX_COLON = ":";
 	// These are the am and pm formats used in timings.
 	private static final String AM = "am";
 	private static final String PM = "pm";
@@ -32,8 +27,13 @@ public class TimeExtractor {
 	private static final String REGEX_12_HOUR_FORMAT = "(1[012]|[1-9])(.)([0-5][0-9])(\\s)?(?i)(am|pm)";
 	private static final String REGEX_PM_IGNORE_CASE = "(?i)pm";
 	private static final String REGEX_AM_IGNORE_CASE = "(?i)am";
+	
+	// These are the regex for clearing.
+	private static final String REGEX_NON_WORD_CHAR = "\\W";
+	private static final String REGEX_SPACE = " ";
+	private static final String REGEX_WHITE_SPACE = "\\s+";
 
-	private LocalTime setTime = null;
+	private LocalTime setTime;
 	private Queue<LocalTime> timeQueue;
 	private static TimeExtractor timeExtractor;
 	
@@ -85,7 +85,7 @@ public class TimeExtractor {
 	private void process24hrFormat(String time) {
 
 		String[] timeArray = new String[2];
-		timeArray = time.split(":");
+		timeArray = time.split(REGEX_COLON);
 		setTime = new LocalTime(Integer.parseInt(timeArray[0]),
 				Integer.parseInt(timeArray[1]));
 
@@ -99,8 +99,8 @@ public class TimeExtractor {
 	 */
 	private void process12HrFormat(String time) {
 
-		time = time.replaceAll(REGEX_NON_WORD_CHAR, REGEX_SPACE);
 		String[] timeArray = new String[2];
+		time = time.replaceAll(REGEX_NON_WORD_CHAR, REGEX_SPACE);
 		timeArray = time.split(REGEX_SPACE);
 
 		int hour, minute;

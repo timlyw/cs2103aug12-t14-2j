@@ -5,8 +5,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.joda.time.LocalDate;
 
@@ -21,12 +19,17 @@ import org.joda.time.LocalDate;
  */
 public class DateExtractor {
 
+	//This is the error messages
+	private static final String ERROR_MESSAGE_COULD_NOT_PARSE = "Could not parse %1$s";
+	
 	// This is the date format for checing if the date is valid.
 	private static final String DATE_FORMAT = "dd-MM-yyyy";
 
 	// These are the fixed number of days/months.
-	private static final int NUMBER_NUMBER_OF_DAYS_IN_A_WEEK = 7;
+	private static final int NUMBER_OF_DAYS_IN_A_WEEK = 7;
 	private static final int NUMBER_MONTHS_IN_YEAR = 12;
+	private static final int NUMBER_OF_DAYS_IN_NORMAL_YEAR = 365;
+	private static final int NUMBER_OF_DAYS_IN_LEAP_YEAR = 366;
 
 	// This an error message
 	private static final String ERROR_MESSAGE_NOT_NUMERICAL_DATE = "error not numerical date!";
@@ -35,11 +38,30 @@ public class DateExtractor {
 	private static final String REGEX_FULL_DATE_FORMAT = "(0?[1-9]|[12][0-9]|3[01])(/|-)(0?[1-9]|1[012])(/|-)(((20)\\d\\d)?)";
 	private static final String REGEX_NON_WORD_CHAR = "\\W";
 	private static final String REGEX_WHITE_SPACE = "\\s+";
+	private static final String REGEX_SPACE = " ";
+	private static final String REGEX_DASH = "-";
 
-	LocalDate setDate;
-	LocalDate now;
-	int day, month, year;
+	//These are the date parameters that can be set
+	private LocalDate setDate;
+	private LocalDate now;
+	private int day, month, year;
+	private LocalDate startDate;
+	private LocalDate endDate;
+	
+	private static DateExtractor dateExtractor;
 	private static DateFormat DEFAULT_FORMATTER;
+
+	private static int counter;
+	private static Queue<LocalDate> dateList;
+	private Queue<String> dateQueue;
+
+	//These are the flags to ensure a date parameter is not reset
+	private boolean monthFlag = false;
+	private boolean dayFlag = false;
+	private boolean yearFlag = false;
+	private boolean dateFlag = false;
+	private boolean startDateFlag = false;
+	private boolean uniqueDateFlag = false;
 
 	/**
 	 * This is the enum of the different days and the the day of the week they
@@ -84,10 +106,6 @@ public class DateExtractor {
 	/**
 	 * This is the constructor for this class that initializes the values.
 	 */
-	private LocalDate startDate;
-	private LocalDate endDate;
-	private static DateExtractor dateExtractor;
-	
 	private DateExtractor() {
 		setDate = null;
 		now = LocalDate.now();
@@ -97,25 +115,20 @@ public class DateExtractor {
 		startDate = new LocalDate();
 		endDate = new LocalDate();
 		DEFAULT_FORMATTER = new SimpleDateFormat(DATE_FORMAT);
+		counter = 0;
+
+		resetDateParameterFlags();
+		startDateFlag = false;
+		uniqueDateFlag = false;
 
 	}
-	
-	public static DateExtractor getDateExtractor(){
-		if(dateExtractor == null){
+
+	public static DateExtractor getDateExtractor() {
+		if (dateExtractor == null) {
 			dateExtractor = new DateExtractor();
 		}
 		return dateExtractor;
 	}
-	
-	private static int counter;
-	private static Queue<LocalDate> dateList;
-
-	private boolean monthFlag = false;
-	private boolean dayFlag = false;
-	private boolean yearFlag = false;
-	private boolean dateFlag = false;
-	private boolean startDateFlag = false;
-	private boolean uniqueDateFlag = false;
 
 	/**
 	 * This is the function to process the date and set the values.
@@ -128,101 +141,41 @@ public class DateExtractor {
 	public Queue<LocalDate> processDate(String parseString) {
 
 		String dateCommand;
-		Queue<String> dateQueue = new LinkedList<String>();
-		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
-		dateList = new LinkedList<LocalDate>();
-		startDate = null;
-		endDate = null;
-		startDateFlag = false;
-		uniqueDateFlag = false;
-
-		int parameters;
+		String[] processArray = setEnvironment(parseString);
 
 		for (counter = 0; counter < processArray.length; counter++) {
-			monthFlag = false;
-			dayFlag = false;
-			yearFlag = false;
-			dateFlag = false;
+			resetDateParameterFlags();
 
 			if (checkDateFormat(processArray[counter])) {
 				dateQueue = setUpDateQueue(processArray);
 
-				if (dateQueue.size() == 1) {
-					if (isInteger(dateQueue.peek())) {
-						if (isNumberOfDaysInMonth(Integer.parseInt(dateQueue
-								.peek()))) {
-							dateQueue.poll();
-						}
-					}
-				}
+				validateDateQueueParameters();
 				if (!dateQueue.isEmpty()) {
 					while (!dateQueue.isEmpty()) {
 						dateCommand = dateQueue.poll();
 						uniqueDateFlag = false;
 						if (isInteger(dateCommand)) {
-							parameters = Integer.parseInt(dateCommand);
-
-							if (isNumberOfDaysInMonth(parameters) && !dayFlag) {
-								day = parameters;
-								dayFlag = true;
-							}
-
-							else if (isMonthFormatInt(parameters) && !monthFlag) {
-								month = parameters;
-								monthFlag = true;
-							}
-
-							else if (isYearFormat(parameters) && !yearFlag) {
-								year = parameters;
-								yearFlag = true;
-							} else {
-								System.out
-										.println(ERROR_MESSAGE_NOT_NUMERICAL_DATE);
-
-							}
+							setIntegerDate(dateCommand);
 						}
 
 						else if (isDateStandardFormat(dateCommand) && !dateFlag) {
-							setDate(dateCommand);
-							dateFlag = true;
+							setFullDateFormat(dateCommand);
 						}
 
 						else if (isDateWithMonthSpelled(dateCommand)
 								&& !monthFlag) {
-							parameters = getMontParameters(dateCommand);
-							month = parameters;
-							monthFlag = true;
+							setStringMonth(dateCommand);
 						}
 
 						else if (isDayOfWeek(dateCommand) && !dayFlag) {
-							parameters = getDayParameters(dateCommand);
-							setDay(parameters);
-							dayFlag = true;
+							setStringDay(dateCommand);
 						}
 
 						else if (isUniqueDateType(dateCommand)) {
-							if (dateQueue.size() > 0
-									&& isUniqueDateType(dateQueue.peek())) {
-								dateCommand = dateCommand + " "
-										+ dateQueue.poll();
-							}
 							setUniqueDate(dateCommand);
 						}
 					}
-					if (!uniqueDateFlag) {
-						if (!isAllFlagsSet()) {
-							setDateRange();
-						}
-
-						else {
-							if (!isdateValid()) {
-								rectifyDate();
-							}
-							setDate = new LocalDate(year, month, day);
-							startDateFlag = true;
-							dateList.add(setDate);
-						}
-					}
+					addDateToDateList();
 				}
 			}
 		}
@@ -230,22 +183,121 @@ public class DateExtractor {
 
 	}
 
+	private void addDateToDateList() {
+		if (!uniqueDateFlag) {
+			if (!isAllFlagsSet()) {
+				setDateRange();
+			}
+
+			else {
+				if (!isdateValid()) {
+					rectifyDate();
+				}
+				setDate = new LocalDate(year, month, day);
+				startDateFlag = true;
+				dateList.add(setDate);
+			}
+		}
+	}
+
+	private String setUpUniqueDateCommand(String dateCommand) {
+		if (dateQueue.size() > 0 && isUniqueDateType(dateQueue.peek())) {
+			dateCommand = dateCommand + REGEX_SPACE + dateQueue.poll();
+		}
+		return dateCommand;
+	}
+
+	private void setStringDay(String dateCommand) {
+		int parameters;
+		parameters = getDayParameters(dateCommand);
+		setDay(parameters);
+		dayFlag = true;
+	}
+
+	private void setStringMonth(String dateCommand) {
+		int parameters;
+		parameters = getMontParameters(dateCommand);
+		setIntegerMonth(parameters);
+	}
+
+	private void setIntegerDate(String dateCommand) {
+		int parameters;
+		parameters = Integer.parseInt(dateCommand);
+
+		if (isNumberOfDaysInMonth(parameters) && !dayFlag) {
+			setIntegerDay(parameters);
+		}
+
+		else if (isMonthFormatInt(parameters) && !monthFlag) {
+			setIntegerMonth(parameters);
+		}
+
+		else if (isYearFormat(parameters) && !yearFlag) {
+			setIntegerYear(parameters);
+		} else {
+			System.out.println(ERROR_MESSAGE_NOT_NUMERICAL_DATE);
+
+		}
+	}
+
+	private void setIntegerYear(int parameters) {
+		year = parameters;
+		yearFlag = true;
+	}
+
+	private void setIntegerMonth(int parameters) {
+		month = parameters;
+		monthFlag = true;
+	}
+
+	private void setIntegerDay(int parameters) {
+		day = parameters;
+		dayFlag = true;
+	}
+
+	private void validateDateQueueParameters() {
+		if (dateQueue.size() == 1) {
+			if (isInteger(dateQueue.peek())) {
+				if (isNumberOfDaysInMonth(Integer.parseInt(dateQueue.peek()))) {
+					dateQueue.poll();
+				}
+			}
+		}
+	}
+
+	private void resetDateParameterFlags() {
+		monthFlag = false;
+		dayFlag = false;
+		yearFlag = false;
+		dateFlag = false;
+	}
+
+	private String[] setEnvironment(String parseString) {
+		dateQueue = new LinkedList<String>();
+		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
+		dateList = new LinkedList<LocalDate>();
+		startDate = null;
+		endDate = null;
+		startDateFlag = false;
+		uniqueDateFlag = false;
+		return processArray;
+	}
+
 	private void setDateRange() {
-		// 1 month time period
+
 		if (!dayFlag && monthFlag) {
-			startDate = new LocalDate(year, month, 1);
-			endDate = startDate.plusMonths(1);
+			setOneMonthPeriod();
 		}
-		// 1 year time period
+
 		else if (!dayFlag && !monthFlag && yearFlag) {
-			startDate = new LocalDate(year, 1, 1);
-			endDate = startDate.plusYears(1);
+			setOneYearPeriod();
 		}
-		// month and year
-		else if (!dayFlag && monthFlag && yearFlag) {
-			startDate = new LocalDate(year, month, 1);
-			endDate = startDate.plusMonths(1);
-		}
+
+		addDateRangesToList();
+
+	}
+
+	private void addDateRangesToList() {
 		if (startDate != null) {
 			dateList.add(startDate);
 
@@ -253,11 +305,21 @@ public class DateExtractor {
 				dateList.add(endDate);
 			}
 		}
+	}
 
+	private void setOneYearPeriod() {
+		startDate = new LocalDate(year, 1, 1);
+		endDate = startDate.plusYears(1);
+	}
+
+	private void setOneMonthPeriod() {
+		startDate = new LocalDate(year, month, 1);
+		endDate = startDate.plusMonths(1);
 	}
 
 	private boolean isAllFlagsSet() {
-		if ((dayFlag && monthFlag && yearFlag) || (dateFlag) || (dayFlag && monthFlag)) {
+		if ((dayFlag && monthFlag && yearFlag) || (dateFlag)
+				|| (dayFlag && monthFlag)) {
 			return true;
 		}
 		return false;
@@ -284,80 +346,103 @@ public class DateExtractor {
 	 * @param command
 	 *            This is the unique date type name.
 	 */
-	private void setUniqueDate(String command) {
-
+	private void setUniqueDate(String dateCommand) {
+		dateCommand = setUpUniqueDateCommand(dateCommand);
 		dateList = new LinkedList<LocalDate>();
-		if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.today.name())) {
-			if (!startDateFlag) {
-				startDate = now;
-				startDateFlag = true;
-			} else {
-				endDate = now;
-			}
+		if (dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.today.name())) {
+			setDateToday();
 
-		} else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.tomorrow
+		} else if (dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.tomorrow
 				.name())) {
-			if (!startDateFlag) {
-				startDate = now.plusDays(1);
-				startDateFlag = true;
-			} else {
-				endDate = now.plusDays(1);
-			}
-		} else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
-				+ " " + UniqueDateTypeKeyWord.week.name())) {
-			startDate = now;
-			int numberOfDaysToEndOfWeek = 7 - startDate.getDayOfWeek();
-			if (numberOfDaysToEndOfWeek == 0) {
-				endDate = startDate.plusDays(startDate.getDayOfWeek() + 7);
-			} else {
-				endDate = startDate.plusDays(numberOfDaysToEndOfWeek);
-			}
+			setDateTomorrow();
+		} else if (dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS
+				.name() + REGEX_SPACE + UniqueDateTypeKeyWord.week.name())) {
+			setDateThisWeek();
 		}
 
-		else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
-				+ " " + UniqueDateTypeKeyWord.month.name())) {
-			startDate = now;
-			int numberOfDaysToEndOfMonth = startDate.dayOfMonth()
-					.getMaximumValue() - startDate.getDayOfMonth();
-			if (numberOfDaysToEndOfMonth == 0) {
-				endDate = startDate.plusMonths(1);
-			} else {
-				endDate = startDate.plusDays(numberOfDaysToEndOfMonth);
-			}
+		else if (dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
+				+ REGEX_SPACE + UniqueDateTypeKeyWord.month.name())) {
+			setDateThisMonth();
 		}
 
-		else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
-				+ " " + UniqueDateTypeKeyWord.year.name())) {
-			startDate = now;
-			int numberOfDaysToEndOfYear;
-			if (startDate.year().isLeap()) {
-				numberOfDaysToEndOfYear = 366 - startDate.getDayOfYear();
-			} else {
-				numberOfDaysToEndOfYear = 365 - startDate.getDayOfYear();
-			}
-			if (numberOfDaysToEndOfYear == 0) {
-				endDate = startDate.plusYears(1);
-			} else {
-				endDate = startDate.plusDays(numberOfDaysToEndOfYear);
-			}
+		else if (dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
+				+ REGEX_SPACE + UniqueDateTypeKeyWord.year.name())) {
+			setDateThisYear();
 
 		}
 
-		else if (command.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
-				+ " " + UniqueDateTypeKeyWord.weekend.name())) {
-			int numberOfDaysToEndOfWeek = 7 - now.getDayOfWeek();
-			endDate = now.plusDays(numberOfDaysToEndOfWeek);
-			startDate = endDate.minusDays(1);
+		else if (dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
+				+ REGEX_SPACE + UniqueDateTypeKeyWord.weekend.name())) {
+			setDateThisWeekend();
 
 		}
 
 		uniqueDateFlag = true;
-		if (startDate != null) {
-			dateList.add(startDate);
+		addDateRangesToList();
+	}
 
-			if (endDate != null) {
-				dateList.add(endDate);
-			}
+	private void setDateThisWeekend() {
+		int numberOfDaysToEndOfWeek = NUMBER_OF_DAYS_IN_A_WEEK
+				- now.getDayOfWeek();
+		endDate = now.plusDays(numberOfDaysToEndOfWeek);
+		startDate = endDate.minusDays(1);
+	}
+
+	private void setDateThisYear() {
+		startDate = now;
+		int numberOfDaysToEndOfYear;
+		if (startDate.year().isLeap()) {
+			numberOfDaysToEndOfYear = NUMBER_OF_DAYS_IN_LEAP_YEAR
+					- startDate.getDayOfYear();
+		} else {
+			numberOfDaysToEndOfYear = NUMBER_OF_DAYS_IN_NORMAL_YEAR
+					- startDate.getDayOfYear();
+		}
+		if (numberOfDaysToEndOfYear == 0) {
+			endDate = startDate.plusYears(1);
+		} else {
+			endDate = startDate.plusDays(numberOfDaysToEndOfYear);
+		}
+	}
+
+	private void setDateThisMonth() {
+		startDate = now;
+		int numberOfDaysToEndOfMonth = startDate.dayOfMonth().getMaximumValue()
+				- startDate.getDayOfMonth();
+		if (numberOfDaysToEndOfMonth == 0) {
+			endDate = startDate.plusMonths(1);
+		} else {
+			endDate = startDate.plusDays(numberOfDaysToEndOfMonth);
+		}
+	}
+
+	private void setDateThisWeek() {
+		startDate = now;
+		int numberOfDaysToEndOfWeek = NUMBER_OF_DAYS_IN_A_WEEK
+				- startDate.getDayOfWeek();
+		if (numberOfDaysToEndOfWeek == 0) {
+			endDate = startDate.plusDays(startDate.getDayOfWeek()
+					+ NUMBER_OF_DAYS_IN_A_WEEK);
+		} else {
+			endDate = startDate.plusDays(numberOfDaysToEndOfWeek);
+		}
+	}
+
+	private void setDateTomorrow() {
+		if (!startDateFlag) {
+			startDate = now.plusDays(1);
+			startDateFlag = true;
+		} else {
+			endDate = now.plusDays(1);
+		}
+	}
+
+	private void setDateToday() {
+		if (!startDateFlag) {
+			startDate = now;
+			startDateFlag = true;
+		} else {
+			endDate = now;
 		}
 	}
 
@@ -392,12 +477,13 @@ public class DateExtractor {
 	private boolean isdateValid() {
 		DEFAULT_FORMATTER.setLenient(false);
 
-		String dateString = day + "-" + month + "-" + year;
+		String dateString = day + REGEX_DASH + month + REGEX_DASH + year;
 		try {
 			DEFAULT_FORMATTER.parse(dateString);
 			return true;
 		} catch (ParseException e) {
-			System.out.println("could not parse " + dateString);
+			System.out.println(String.format(ERROR_MESSAGE_COULD_NOT_PARSE,
+					dateString));
 		}
 		return false;
 
@@ -414,12 +500,12 @@ public class DateExtractor {
 	private void setDay(int parameters) {
 
 		if (parameters < now.getDayOfWeek()) {
-			day = (NUMBER_NUMBER_OF_DAYS_IN_A_WEEK - now.getDayOfWeek()
-					+ parameters + now.getDayOfMonth());
+			day = (NUMBER_OF_DAYS_IN_A_WEEK - now.getDayOfWeek() + parameters + now
+					.getDayOfMonth());
 		} else if (parameters > now.getDayOfWeek()) {
 			day = (parameters + now.getDayOfMonth() - 1);
 		} else if (parameters == now.getDayOfWeek()) {
-			day = (NUMBER_NUMBER_OF_DAYS_IN_A_WEEK + now.getDayOfMonth());
+			day = (NUMBER_OF_DAYS_IN_A_WEEK + now.getDayOfMonth());
 		}
 	}
 
@@ -469,7 +555,7 @@ public class DateExtractor {
 	 * @param command
 	 *            This is the string of the whole date.
 	 */
-	private void setDate(String command) {
+	private void setFullDateFormat(String command) {
 
 		int[] dateParameters = new int[3];
 		String[] dateArray = command.split(REGEX_NON_WORD_CHAR);
@@ -483,6 +569,7 @@ public class DateExtractor {
 		if (dateParameters[2] != 0) {
 			year = dateParameters[2];
 		}
+		dateFlag = true;
 	}
 
 	/**
@@ -643,11 +730,8 @@ public class DateExtractor {
 	 * @return Return true if valid
 	 */
 	private boolean isDateStandardFormat(String printString) {
-		String dateFormat = REGEX_FULL_DATE_FORMAT;
-		Pattern patternDateStandardFormat = Pattern.compile(dateFormat);
-		Matcher matcherDateStandardFormat = patternDateStandardFormat
-				.matcher(printString);
-		if (matcherDateStandardFormat.matches()) {
+
+		if (printString.matches(REGEX_FULL_DATE_FORMAT)) {
 			return true;
 		} else {
 			return false;
