@@ -17,7 +17,6 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.joda.time.DateTime;
 
 import com.google.gson.Gson;
@@ -37,7 +36,7 @@ public class ConfigFile {
 	private static String CONFIG_FILENAME;
 	private final static String DEFAULT_CONFIG_FILENAME = "configFile.json";
 
-	Map<String, String> configParameters;
+	private Map<String, String> configParameters;
 
 	public ConfigFile(String configFileName) throws IOException {
 		CONFIG_FILENAME = configFileName;
@@ -47,7 +46,7 @@ public class ConfigFile {
 	}
 
 	public ConfigFile() throws IOException {
-		
+
 		CONFIG_FILENAME = DEFAULT_CONFIG_FILENAME;
 		configParameters = new HashMap<String, String>();
 		initializeGson();
@@ -80,7 +79,8 @@ public class ConfigFile {
 	@SuppressWarnings("unchecked")
 	private void loadConfigFile() throws IOException {
 		inputStream = new FileInputStream(configFile);
-		jsonReader = new JsonReader(new InputStreamReader(inputStream, CHAR_ENCODING_UTF8));
+		jsonReader = new JsonReader(new InputStreamReader(inputStream,
+				CHAR_ENCODING_UTF8));
 
 		JsonParser parser = new JsonParser();
 		JsonObject configJObject = parser.parse(jsonReader).getAsJsonObject();
