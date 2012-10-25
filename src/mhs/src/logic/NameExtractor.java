@@ -30,9 +30,21 @@ public class NameExtractor {
 		at, by, from, to, on;
 	}
 
-	private int counter = 0;
-	private Queue<String> nameList = new LinkedList<String>();
-
+	private int counter;
+	private Queue<String> nameList;
+	private static NameExtractor nameExtractor;
+	
+	private NameExtractor(){
+		nameList= new LinkedList<String>();
+		counter = 0;
+	}
+	
+	public static NameExtractor getNameExtractor(){
+		if(nameExtractor == null){
+			nameExtractor = new NameExtractor();
+		}
+		return nameExtractor;
+	}
 	/**
 	 * This is the function to check the string if it is a name format.
 	 * 
@@ -43,12 +55,15 @@ public class NameExtractor {
 	 */
 	public boolean checkNameFormat(String printString) {
 
-		DateExtractor dateParser = new DateExtractor();
-		TimeExtractor timeParser = new TimeExtractor();
-		CommandExtractor commandParser = new CommandExtractor();
-
-		if (!(timeParser.checkTimeFormat(printString)
-				|| dateParser.checkDateFormat(printString) || commandParser
+		DateExtractor dateExtractor;
+		TimeExtractor timeExtractor;
+		CommandExtractor commandExtractor;
+		dateExtractor = DateExtractor.getDateExtractor();
+		timeExtractor = TimeExtractor.getTimeExtractor();
+		commandExtractor = CommandExtractor.getCommandExtractor();
+		
+		if (!(timeExtractor.checkTimeFormat(printString)
+				|| dateExtractor.checkDateFormat(printString) || commandExtractor
 					.isCommand(printString))) {
 			for (SpecialKeyWords k : SpecialKeyWords.values()) {
 				if (printString.equals(k.name())) {
@@ -151,7 +166,7 @@ public class NameExtractor {
 	 * 
 	 * @return Returns true if there are quotation marks.
 	 */
-	public boolean hasQuotations(String printString) {
+	private boolean hasQuotations(String printString) {
 		Matcher matcher = Pattern.compile(REGEX_QUOTATION_MARKS).matcher(
 				printString);
 		if (matcher.find()) {

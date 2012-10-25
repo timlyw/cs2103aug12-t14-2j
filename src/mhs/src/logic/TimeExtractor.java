@@ -35,7 +35,19 @@ public class TimeExtractor {
 
 	private LocalTime setTime = null;
 	private Queue<LocalTime> timeQueue;
+	private static TimeExtractor timeExtractor;
+	
+	private TimeExtractor(){
+		setTime = null;
+		timeQueue = new LinkedList<LocalTime>();
+	}
 
+	public static TimeExtractor getTimeExtractor(){
+		if(timeExtractor == null){
+			timeExtractor = new TimeExtractor();
+		}
+		return timeExtractor;
+	}
 	/**
 	 * This is the function to extract and set the time.
 	 * 

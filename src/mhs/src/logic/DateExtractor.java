@@ -86,8 +86,9 @@ public class DateExtractor {
 	 */
 	private LocalDate startDate;
 	private LocalDate endDate;
-
-	public DateExtractor() {
+	private static DateExtractor dateExtractor;
+	
+	private DateExtractor() {
 		setDate = null;
 		now = LocalDate.now();
 		day = now.getDayOfMonth();
@@ -98,7 +99,14 @@ public class DateExtractor {
 		DEFAULT_FORMATTER = new SimpleDateFormat(DATE_FORMAT);
 
 	}
-
+	
+	public static DateExtractor getDateExtractor(){
+		if(dateExtractor == null){
+			dateExtractor = new DateExtractor();
+		}
+		return dateExtractor;
+	}
+	
 	private static int counter;
 	private static Queue<LocalDate> dateList;
 

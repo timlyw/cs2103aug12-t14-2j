@@ -13,7 +13,7 @@ public class CommandParser {
 
 	private DateExtractor dateParser;
 	private TimeExtractor timeParser;
-	private CommandExtractor commandParser;
+	private CommandExtractor commandExtractor;
 	private NameExtractor nameParser;
 
 	private boolean taskNameFlag;
@@ -30,6 +30,17 @@ public class CommandParser {
 	private LocalTime endTime;
 
 	private int index;
+	private static CommandParser commandParser;
+	private CommandParser(){
+		setEnvironment();
+	}
+	
+	public static CommandParser getCommandParser(){
+		if(commandParser == null){
+			commandParser = new CommandParser();
+		}
+		return commandParser;
+	}
 
 	/**
 	 * This is the function to take in a string and return a command object with
@@ -94,10 +105,10 @@ public class CommandParser {
 	 * This is a function to set up the environment and set values to null.
 	 */
 	private void setEnvironment() {
-		dateParser = new DateExtractor();
-		timeParser = new TimeExtractor();
-		commandParser = new CommandExtractor();
-		nameParser = new NameExtractor();
+		dateParser = DateExtractor.getDateExtractor();
+		timeParser = TimeExtractor.getTimeExtractor();
+		commandExtractor = CommandExtractor.getCommandExtractor();
+		nameParser = NameExtractor.getNameExtractor();
 
 		taskNameFlag = false;
 		timeFlag = false;
@@ -192,7 +203,7 @@ public class CommandParser {
 	 */
 	private void setCommand(String parseString) {
 
-		command = commandParser.setCommand(parseString);
+		command = commandExtractor.setCommand(parseString);
 
 	}
 

@@ -33,9 +33,20 @@ public class CommandExtractor {
 		}
 
 	}
-
+	
 	private static final String REGEX_WHITE_SPACE = "\\s+";
 	private String commandString;
+	private static CommandExtractor commandExtractor;
+	private CommandExtractor(){
+		commandString = "";
+	}
+	
+	public static CommandExtractor getCommandExtractor(){
+		if(commandExtractor == null){
+			commandExtractor = new CommandExtractor();
+		}
+		return commandExtractor;
+	}
 
 	/**
 	 * This is a function to check if a string is a command.
