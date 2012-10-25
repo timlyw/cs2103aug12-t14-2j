@@ -79,10 +79,11 @@ public class Database {
 		 */
 		private boolean syncronizeDatabases() throws ServiceException,
 				Exception {
+
 			if (googleCalendar == null) {
 				return false;
 			}
-
+			
 			pullSync();
 			pushSync();
 			return true;
@@ -208,6 +209,7 @@ public class Database {
 						new DateTime(gCalEntry.getUpdated().getValue()))) {
 					MhsLogger.getLogger().log(Level.INFO,
 							"pulling newer event : " + localTask.getTaskName());
+					System.out.println(localTask.getTaskLastSync() + " " + gCalEntry.getUpdated().toString());
 					pullSyncExistingTask(gCalEntry, localTask);
 				}
 
@@ -552,6 +554,7 @@ public class Database {
 	 */
 	public void logOutUserGoogleAccount() throws IOException {
 		syncronize.disableRemoteSync();
+		googleCalendar = null;
 		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN, null);
 		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT, null);
 		configFile.save();
