@@ -367,7 +367,7 @@ public class DatabaseTest {
 					|| matchedTask.getTaskId() == 5);
 		}
 	}
-
+	
 	@Test
 	/**
 	 * Tests Sync methods 
@@ -381,14 +381,18 @@ public class DatabaseTest {
 
 		initializeCleanDatabaseWithSync();
 		GoogleCalendar gCal = initializeGoogleCalendar();
-
+		
 		System.out.println("Adding new Tasks to push");
 		database.add(task);
 		database.add(task2);
 
+		System.out.println("Push Sync Newer Task");
 		testPushSyncNewTask(gCal);
+		System.out.println("Push sync existing task");
 		testPushSyncExistingTask(gCal);
+		System.out.println("Pull sync new task");
 		CalendarEventEntry createdEvent = testPullSyncNewTask(gCal);
+		System.out.println("Pull sync newer task");
 		testPullSyncNewerTask(gCal, createdEvent);
 	}
 
@@ -404,6 +408,7 @@ public class DatabaseTest {
 	private void testPullSyncNewerTask(GoogleCalendar gCal,
 			CalendarEventEntry createdEvent) throws IOException,
 			ServiceException, UnknownHostException {
+
 		// Test pull newer task sync
 		String updatedEventName = "Updated Event on Google";
 		CalendarEventEntry updatedCreatedEvent = gCal.updateEvent(createdEvent
@@ -413,8 +418,10 @@ public class DatabaseTest {
 		database.syncronizeDatabases();
 		queryList = database.query(updatedCreatedEvent.getTitle()
 				.getPlainText(), false);
-
+		
+		// Check that task is updated and not created
 		assertEquals(1, queryList.size());
+		// Check that local task is updated
 		assertEquals(updatedCreatedEvent.getIcalUID(), queryList.get(0)
 				.getgCalTaskId());
 		assertEquals(updatedCreatedEvent.getTitle().getPlainText(), queryList
