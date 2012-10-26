@@ -12,7 +12,7 @@ import org.joda.time.LocalTime;
 /**
  * This is the class to package the parameters into a command object. 
  */
-public class Command {
+public class CommandInfo {
 
 	/**
 	 * This is the enum of the different type of commands. 
@@ -42,7 +42,7 @@ public class Command {
 	 * @param endDateInput This is the end date. 
 	 * @param endTimeInput This is the end time. 
 	 */
-	public Command(String commandInput, String taskNameInput,
+	public CommandInfo(String commandInput, String taskNameInput,
 			String edittedNameInput, LocalDate startDateInput,
 			LocalTime startTimeInput, LocalDate endDateInput,
 			LocalTime endTimeInput, int indexInput) {
@@ -111,7 +111,7 @@ public class Command {
 	/**
 	 * Default constructor setting all parameters to null.
 	 */
-	public Command() {
+	public CommandInfo() {
 		commandEnum = null;
 		taskName = null;
 		startDate = null;

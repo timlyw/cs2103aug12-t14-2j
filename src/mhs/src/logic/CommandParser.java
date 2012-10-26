@@ -40,7 +40,7 @@ public class CommandParser {
 	 * 
 	 * @return Returns a commandObject that has all the arguments set
 	 */
-	public Command getParsedCommand(String parseString) {
+	public CommandInfo getParsedCommand(String parseString) {
 
 		setEnvironment();
 
@@ -238,11 +238,11 @@ public class CommandParser {
 	 * 
 	 * @return Returns an object with all the parameters packaged together.
 	 */
-	private Command setUpCommandObject(String command, String taskName,
+	private CommandInfo setUpCommandObject(String command, String taskName,
 			String edittedName, LocalDate startDate, LocalTime startTime,
 			LocalDate endDate, LocalTime endTime, int index) {
 
-		Command object = new Command(command, taskName, edittedName, startDate,
+		CommandInfo object = new CommandInfo(command, taskName, edittedName, startDate,
 				startTime, endDate, endTime, index);
 		return object;
 	}
