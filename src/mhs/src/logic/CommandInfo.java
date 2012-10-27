@@ -158,6 +158,11 @@ public class CommandInfo {
 	public command getCommandEnum() {
 		return commandEnum;
 	}
+	
+	public int getIndex()
+	{
+		return index;
+	}
 
 	public String toString(){
 		
