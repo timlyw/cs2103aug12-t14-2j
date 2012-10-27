@@ -12,6 +12,7 @@ import mhs.src.storage.FloatingTask;
 import mhs.src.storage.Task;
 import mhs.src.storage.TaskCategory;
 import mhs.src.storage.TaskLists;
+import mhs.src.storage.TaskNotFoundException;
 import mhs.src.storage.TimedTask;
 
 import org.joda.time.DateTime;
@@ -82,7 +83,7 @@ public class TaskListsTest {
 	}
 
 	@Test
-	public void TaskListTestUpdate() {
+	public void TaskListTestUpdate() throws TaskNotFoundException {
 		taskList.clear();
 		taskLists = new TaskLists(taskList);
 		// Test add task
