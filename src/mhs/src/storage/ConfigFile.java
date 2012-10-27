@@ -20,21 +20,18 @@ import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
 
-import org.joda.time.DateTime;
-
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
 public class ConfigFile {
 
-	private Gson gson;
 	private JsonReader jsonReader;
 	private InputStream inputStream;
 	private File configFile;
 	private static final Logger logger = MhsLogger.getLogger();
+	private static Gson gson = MhsGson.getInstance();
 
 	private Map<String, String> configParameters;
 
@@ -55,7 +52,6 @@ public class ConfigFile {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		CONFIG_FILENAME = DEFAULT_CONFIG_FILENAME;
 		configParameters = new HashMap<String, String>();
-		initializeGson();
 		initializeConfigFile();
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
@@ -75,18 +71,7 @@ public class ConfigFile {
 		}
 		CONFIG_FILENAME = configFileName;
 		configParameters = new HashMap<String, String>();
-		initializeGson();
 		initializeConfigFile();
-		logger.exiting(getClass().getName(), this.getClass().getName());
-	}
-
-	private void initializeGson() {
-		logger.entering(getClass().getName(), this.getClass().getName());
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(DateTime.class,
-				new DateTimeTypeConverter());
-		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
-		gson = gsonBuilder.serializeNulls().create();
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
