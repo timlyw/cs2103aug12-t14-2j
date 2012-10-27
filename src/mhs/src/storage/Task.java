@@ -1,6 +1,11 @@
 /**
  * Task Base Class
  * 
+ * Inherited classes
+ * - FloatingTask
+ * - TimedTask
+ * - DeadlineTask
+ * 
  * @author timlyw
  */
 

@@ -19,22 +19,22 @@
     "taskName": "Floorball team talk",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-18T12:23:47.157+08:00",
-    "taskUpdated": "2012-10-26T21:07:20.689+08:00",
+    "taskUpdated": "2012-10-18T12:23:47.157+08:00",
     "taskLastSync": "2012-10-18T13:17:29.000+08:00",
     "gCalTaskId": "rl7dmk5e5im9e56d99bi9hrgfo@google.com",
     "isDone": false,
-    "isDeleted": true
+    "isDeleted": false
   },
   {
     "taskId": 3,
     "taskName": "Submit V0.1",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-18T12:24:04.598+08:00",
-    "taskUpdated": "2012-10-18T12:25:16.438+08:00",
+    "taskUpdated": "2012-10-26T01:06:38.484+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": true,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-10-18T21:00:00.000+08:00",
@@ -318,11 +318,11 @@
     "taskName": "testtimeing",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-21T00:47:50.444+08:00",
-    "taskUpdated": "2012-10-26T21:06:20.010+08:00",
+    "taskUpdated": "2012-10-21T00:47:50.444+08:00",
     "taskLastSync": "2012-10-21T00:47:53.000+08:00",
     "gCalTaskId": "gjni0ka1ntqr1kp8fjmjmr2cls@google.com",
     "isDone": false,
-    "isDeleted": true
+    "isDeleted": false
   },
   {
     "startDateTime": "2012-10-21T00:30:00.000+08:00",
@@ -343,22 +343,22 @@
     "taskName": "test",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-21T00:58:25.415+08:00",
-    "taskUpdated": "2012-10-26T21:06:16.692+08:00",
+    "taskUpdated": "2012-10-21T00:58:25.415+08:00",
     "taskLastSync": "2012-10-21T00:58:28.000+08:00",
     "gCalTaskId": "fkagbq62buf3tnokiilgifruik@google.com",
     "isDone": false,
-    "isDeleted": true
+    "isDeleted": false
   },
   {
     "taskId": 95,
     "taskName": "test 13pm",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-21T00:58:39.625+08:00",
-    "taskUpdated": "2012-10-26T21:05:58.108+08:00",
+    "taskUpdated": "2012-10-21T00:58:39.625+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": true
+    "isDeleted": false
   },
   {
     "endDateTime": "2012-10-21T00:00:00.000+08:00",
@@ -366,11 +366,11 @@
     "taskName": "test",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-21T00:59:55.225+08:00",
-    "taskUpdated": "2012-10-26T21:06:09.865+08:00",
+    "taskUpdated": "2012-10-21T00:59:55.225+08:00",
     "taskLastSync": "2012-10-21T00:59:58.000+08:00",
     "gCalTaskId": "kqgt04093t3k9ekrqn5h6mlnak@google.com",
     "isDone": false,
-    "isDeleted": true
+    "isDeleted": false
   },
   {
     "endDateTime": "2012-10-22T00:00:00.000+08:00",
@@ -479,11 +479,11 @@
     "taskName": "test",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-21T01:08:48.868+08:00",
-    "taskUpdated": "2012-10-26T21:06:03.413+08:00",
+    "taskUpdated": "2012-10-21T01:08:48.868+08:00",
     "taskLastSync": "2012-10-21T01:08:51.000+08:00",
     "gCalTaskId": "uumc6khv8v6uuacoinllas2538@google.com",
     "isDone": false,
-    "isDeleted": true
+    "isDeleted": false
   },
   {
     "endDateTime": "2012-10-21T01:11:32.000+08:00",
@@ -503,11 +503,11 @@
     "taskName": "Updated Task",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-21T01:13:09.450+08:00",
-    "taskUpdated": "2012-10-26T21:06:51.416+08:00",
+    "taskUpdated": "2012-10-21T01:13:09.450+08:00",
     "taskLastSync": "2012-10-21T01:13:09.450+08:00",
     "gCalTaskId": "hr8n4dglcngpnkcem62osd54ms@google.com",
     "isDone": false,
-    "isDeleted": true
+    "isDeleted": false
   },
   {
     "endDateTime": "2012-10-21T01:11:32.000+08:00",
@@ -563,7 +563,7 @@
     "taskName": "task",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-21T03:00:50.563+08:00",
-    "taskUpdated": "2012-10-26T18:33:41.851+08:00",
+    "taskUpdated": "2012-10-26T01:23:53.330+08:00",
     "taskLastSync": "2012-10-21T03:00:54.000+08:00",
     "gCalTaskId": "9ffeht5f83gftg26tgrkpfq3t8@google.com",
     "isDone": false,
@@ -574,11 +574,11 @@
     "taskName": "task 20/40/2012",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-21T03:02:06.838+08:00",
-    "taskUpdated": "2012-10-26T21:06:41.263+08:00",
+    "taskUpdated": "2012-10-21T03:02:06.838+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": true
+    "isDeleted": false
   },
   {
     "endDateTime": "2012-11-21T00:00:00.000+08:00",
@@ -586,7 +586,7 @@
     "taskName": "seach",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-21T03:23:21.752+08:00",
-    "taskUpdated": "2012-10-26T18:33:41.854+08:00",
+    "taskUpdated": "2012-10-26T01:23:53.331+08:00",
     "taskLastSync": "2012-10-21T03:23:26.000+08:00",
     "gCalTaskId": "6qre91fqakh4aglluq7v6pf4p4@google.com",
     "isDone": false,
@@ -681,7 +681,7 @@
     "taskName": "holiday",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-22T16:55:55.069+08:00",
-    "taskUpdated": "2012-10-26T18:33:41.847+08:00",
+    "taskUpdated": "2012-10-26T01:23:53.329+08:00",
     "taskLastSync": "2012-10-22T16:55:55.522+08:00",
     "gCalTaskId": "42mebui5018d3kj0fqcjtk3rfo@google.com",
     "isDone": false,
@@ -715,11 +715,11 @@
     "taskName": "dlete",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-24T23:30:33.512+08:00",
-    "taskUpdated": "2012-10-24T23:30:33.512+08:00",
+    "taskUpdated": "2012-10-26T01:14:11.755+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2000-05-01T00:00:00.000+08:00",
@@ -768,39 +768,38 @@
     "isDeleted": false
   },
   {
-    "endDateTime": "2012-10-21T01:11:32.000+08:00",
+    "endDateTime": "2012-10-26T15:00:00.000+08:00",
     "taskId": 130,
-    "taskName": "Updated Task",
+    "taskName": "deadline task",
     "taskCategory": "DEADLINE",
-    "taskCreated": "2012-10-26T21:05:56.272+08:00",
-    "taskUpdated": "2012-10-26T21:05:56.272+08:00",
-    "taskLastSync": null,
-    "gCalTaskId": null,
+    "taskCreated": "2012-10-26T01:02:42.318+08:00",
+    "taskUpdated": "2012-10-26T01:22:59.862+08:00",
+    "taskLastSync": "2012-10-26T01:22:59.862+08:00",
+    "gCalTaskId": "cb4jap54ogpqb7pr1efja7upf8@google.com",
     "isDone": false,
     "isDeleted": false
   },
   {
-    "startDateTime": "2012-10-18T22:00:00.000+08:00",
-    "endDateTime": "2012-10-18T23:00:00.000+08:00",
+    "endDateTime": "2012-10-26T15:00:00.000+08:00",
     "taskId": 131,
-    "taskName": "Floorball team talk",
-    "taskCategory": "TIMED",
-    "taskCreated": "2012-10-26T21:06:26.531+08:00",
-    "taskUpdated": "2012-10-26T21:06:26.531+08:00",
-    "taskLastSync": null,
-    "gCalTaskId": null,
+    "taskName": "deadline task",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-10-26T01:05:34.672+08:00",
+    "taskUpdated": "2012-10-26T01:23:53.328+08:00",
+    "taskLastSync": "2012-10-26T01:05:35.792+08:00",
+    "gCalTaskId": "ul8j30dmn4hbsjo9ovsaiaht50@google.com",
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 132,
-    "taskName": "",
+    "taskName": "task.;..",
     "taskCategory": "FLOATING",
-    "taskCreated": "2012-10-26T21:06:52.072+08:00",
-    "taskUpdated": "2012-10-26T21:08:16.499+08:00",
+    "taskCreated": "2012-10-26T01:13:02.303+08:00",
+    "taskUpdated": "2012-10-26T01:13:02.303+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": true
+    "isDeleted": false
   }
 ]
