@@ -1,4 +1,7 @@
 /**
+ * Mhs Logger Singleton Class
+ * - Creates a single logger instance 
+ * 
  * @author timlyw
  */
 package mhs.src.common;
