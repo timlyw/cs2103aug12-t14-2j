@@ -28,7 +28,7 @@ public class Processor {
 
 	private static final String MESSAGE_UNKNOWN_COMMAND = "Sorry, I didn't understand that";
 
-	private Command previousCommand;
+	private CommandInfo previousCommand;
 	private List<Task> matchedTasks;
 	private CommandParser commandParser;
 	private Database dataHandler;
@@ -110,7 +110,7 @@ public class Processor {
 				}
 
 			} else {
-				Command userCommand = commandParser.getParsedCommand(command);
+				CommandInfo userCommand = commandParser.getParsedCommand(command);
 				// store last command
 				screenOutput = "Command-" + userCommand.getCommandEnum()
 						+ " will be performed on event -"
@@ -160,7 +160,7 @@ public class Processor {
 						// e.printStackTrace();
 					}
 				} else {
-					Command userCommand = commandParser
+					CommandInfo userCommand = commandParser
 							.getParsedCommand(command);
 					// store last command
 					previousCommand = userCommand;
@@ -275,7 +275,7 @@ public class Processor {
 	 * @return confirmation string
 	 * @throws Exception
 	 */
-	private String processCommand(Command userCommand) throws Exception {
+	private String processCommand(CommandInfo userCommand) throws Exception {
 		String userOutputString = new String();
 		switch (userCommand.getCommandEnum()) {
 		case add:
@@ -311,7 +311,7 @@ public class Processor {
 		return userOutputString;
 	}
 
-	private String markTask(Command userCommand) throws Exception {
+	private String markTask(CommandInfo userCommand) throws Exception {
 		List<Task> resultList = queryTasksByTaskName(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
@@ -344,7 +344,7 @@ public class Processor {
 	 * @return String asking for username
 	 * @throws ServiceException
 	 */
-	private String syncGcal(Command inputCommand) throws ServiceException {
+	private String syncGcal(CommandInfo inputCommand) throws ServiceException {
 		String outputString = new String();
 		if (!userIsLoggedIn) {
 			outputString = loginUser();
@@ -432,7 +432,7 @@ public class Processor {
 	 * @return confirmations string
 	 * @throws Exception
 	 */
-	private String editTask(Command userCommand) throws Exception {
+	private String editTask(CommandInfo userCommand) throws Exception {
 		List<Task> resultList = queryTasksByTaskName(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
@@ -462,7 +462,7 @@ public class Processor {
 	 * @param taskToEdit
 	 * @return new edited Task to be updated in the DB
 	 */
-	private Task createEditedTask(Command inputCommand, Task taskToEdit) {
+	private Task createEditedTask(CommandInfo inputCommand, Task taskToEdit) {
 		// checks kind of task :floating/timed/deadline
 		int typeCount = 0;
 		if (inputCommand.getStartDate() != null) {
@@ -531,7 +531,7 @@ public class Processor {
 	 * @return confirmation string
 	 * @throws Exception
 	 */
-	private String removeTask(Command userCommand) throws Exception {
+	private String removeTask(CommandInfo userCommand) throws Exception {
 		List<Task> resultList = queryTask(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
@@ -604,7 +604,7 @@ public class Processor {
 	 * @return confirmation string
 	 * @throws Exception
 	 */
-	private String addTask(Command userCommand) throws Exception {
+	private String addTask(CommandInfo userCommand) throws Exception {
 		Task newTask = createTaskToAdd(userCommand);
 		if (newTask.getTaskName() == null) {
 			return "Some error ocurred";
@@ -627,7 +627,7 @@ public class Processor {
 	 * @param inputCommand
 	 * @return new task
 	 */
-	private Task createTaskToAdd(Command inputCommand) {
+	private Task createTaskToAdd(CommandInfo inputCommand) {
 		// checks kind of task :floating/timed/deadline
 		int typeCount = 0;
 		if (inputCommand.getStartDate() != null) {
@@ -667,7 +667,7 @@ public class Processor {
 	 * @return String to be displayed
 	 * @throws IOException
 	 */
-	private String displayTask(Command userCommand) throws IOException {
+	private String displayTask(CommandInfo userCommand) throws IOException {
 		List<Task> resultList = queryTask(userCommand);
 		matchedTasks = resultList;
 		String outputString = new String();
@@ -696,7 +696,7 @@ public class Processor {
 	 * @return matched list of tasks
 	 * @throws IOException
 	 */
-	private List<Task> queryTask(Command inputCommand) throws IOException {
+	private List<Task> queryTask(CommandInfo inputCommand) throws IOException {
 		boolean name, startDate, endDate;
 		List<Task> queryResultList;
 		name = inputCommand.getTaskName() == null ? false : true;
@@ -733,7 +733,7 @@ public class Processor {
 	 * @return
 	 * @throws IOException
 	 */
-	private List<Task> queryTasksByTaskName(Command inputCommand)
+	private List<Task> queryTasksByTaskName(CommandInfo inputCommand)
 			throws IOException {
 		List<Task> queryResultList;
 		queryResultList = dataHandler.query(inputCommand.getTaskName(), true);
