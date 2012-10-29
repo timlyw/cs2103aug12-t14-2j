@@ -1,6 +1,10 @@
 package mhs.src.logic;
 
 import java.util.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import mhs.src.common.MhsLogger;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -11,6 +15,10 @@ import org.joda.time.LocalTime;
  */
 public class CommandParser {
 
+	private static final String COMMAND_RENAME = "rename";
+	private static final String COMMAND_MARK = "mark";
+	private static final String COMMAND_EDIT = "edit";
+	private static final String COMMAND_REMOVE = "remove";
 	private DateExtractor dateParser;
 	private TimeExtractor timeParser;
 	private CommandExtractor commandExtractor;
@@ -29,6 +37,8 @@ public class CommandParser {
 	private LocalTime startTime;
 	private LocalTime endTime;
 
+	private static final Logger logger = MhsLogger.getLogger();
+	
 	private int index;
 	private static CommandParser commandParser;
 	private CommandParser(){
@@ -36,9 +46,11 @@ public class CommandParser {
 	}
 	
 	public static CommandParser getCommandParser(){
+		
 		if(commandParser == null){
 			commandParser = new CommandParser();
 		}
+		
 		return commandParser;
 	}
 
@@ -51,8 +63,8 @@ public class CommandParser {
 	 * 
 	 * @return Returns a commandObject that has all the arguments set
 	 */
-	public Command getParsedCommand(String parseString) {
-
+	public CommandInfo getParsedCommand(String parseString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		setEnvironment();
 
 		parseString = setNameInQuotationMarks(parseString);
@@ -62,16 +74,17 @@ public class CommandParser {
 		setDate(parseString);
 		validateParameters(parseString);
 		setName(parseString);
-
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return setUpCommandObject(command, taskName, edittedName, startDate,
 				startTime, endDate, endTime, index);
 
 	}
 
 	private void validateParameters(String parseString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String[] processArray = parseString.split("\\s+");
 		if (processArray.length > 1) {
-			if (command.equals("remove") || command.equals("edit") || command.equals("mark") || command.equals("rename")) {
+			if (command.equals(COMMAND_REMOVE) || command.equals(COMMAND_EDIT) || command.equals(COMMAND_MARK) || command.equals(COMMAND_RENAME)) {
 				if (taskName == null) {
 					if (isInteger(processArray[1])) {
 						index = Integer.parseInt(processArray[1]);
@@ -81,7 +94,7 @@ public class CommandParser {
 
 			}
 		}
-
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -93,18 +106,24 @@ public class CommandParser {
 	 * @return Returns true if the string is an int.
 	 */
 	private boolean isInteger(String printString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		try {
 			Integer.parseInt(printString);
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return true;
 		} catch (NumberFormatException e) {
+			logger.log(Level.FINER, e.getMessage());
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return false;
 		}
+
 	}
 
 	/**
 	 * This is a function to set up the environment and set values to null.
 	 */
 	private void setEnvironment() {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		dateParser = DateExtractor.getDateExtractor();
 		timeParser = TimeExtractor.getTimeExtractor();
 		commandExtractor = CommandExtractor.getCommandExtractor();
@@ -123,6 +142,7 @@ public class CommandParser {
 		startTime = null;
 		endTime = null;
 		index = 0;
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -132,7 +152,7 @@ public class CommandParser {
 	 *            Takes in a stringArray.
 	 */
 	private void setDate(String parseString) {
-
+		logger.entering(getClass().getName(), this.getClass().getName());
 		Queue<LocalDate> dateList;
 		dateList = dateParser.processDate(parseString);
 		if (dateList.isEmpty()) {
@@ -147,7 +167,7 @@ public class CommandParser {
 				break;
 			}
 		}
-
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -157,6 +177,7 @@ public class CommandParser {
 	 *            Takes in a string array.
 	 */
 	private void setTime(String parseString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		Queue<LocalTime> timeList;
 		timeList = timeParser.processTime(parseString);
 		if (timeList.isEmpty()) {
@@ -170,6 +191,7 @@ public class CommandParser {
 				endTime = timeList.poll();
 			}
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -179,7 +201,7 @@ public class CommandParser {
 	 *            Takes in a string array.
 	 */
 	private void setName(String parseString) {
-
+		logger.entering(getClass().getName(), this.getClass().getName());
 		Queue<String> nameList;
 		nameList = nameParser.processName(parseString);
 		if (nameList.isEmpty()) {
@@ -193,6 +215,7 @@ public class CommandParser {
 				edittedName = nameList.poll();
 			}
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -202,8 +225,9 @@ public class CommandParser {
 	 *            Takes in a string array.
 	 */
 	private void setCommand(String parseString) {
-
+		logger.entering(getClass().getName(), this.getClass().getName());
 		command = commandExtractor.setCommand(parseString);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 
 	}
 
@@ -217,9 +241,11 @@ public class CommandParser {
 	 * @return Returns the string with the quotation marks removed.
 	 */
 	private String setNameInQuotationMarks(String process) {
-
+		logger.entering(getClass().getName(), this.getClass().getName());
 		process = nameParser.processQuotationMarks(process);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return process;
+		
 	}
 
 	/**
@@ -249,12 +275,13 @@ public class CommandParser {
 	 * 
 	 * @return Returns an object with all the parameters packaged together.
 	 */
-	private Command setUpCommandObject(String command, String taskName,
+	private CommandInfo setUpCommandObject(String command, String taskName,
 			String edittedName, LocalDate startDate, LocalTime startTime,
 			LocalDate endDate, LocalTime endTime, int index) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		CommandValidator commandValidator = new CommandValidator();
-		Command object = commandValidator.validateCommand(command, taskName, edittedName, startDate, startTime, endDate, endTime, index);
-
+		CommandInfo object = commandValidator.validateCommand(command, taskName, edittedName, startDate, startTime, endDate, endTime, index);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return object;
 	}
 }

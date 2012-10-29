@@ -2,8 +2,11 @@ package mhs.src.logic;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import mhs.src.common.MhsLogger;
 
 /**
  * 
@@ -33,10 +36,13 @@ public class NameExtractor {
 	private int counter;
 	private Queue<String> nameList;
 	private static NameExtractor nameExtractor;
-
+	private static final Logger logger = MhsLogger.getLogger();
+	
 	private NameExtractor() {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		nameList = new LinkedList<String>();
 		counter = 0;
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	public static NameExtractor getNameExtractor() {
@@ -55,7 +61,8 @@ public class NameExtractor {
 	 * @return Returns a true if valid.
 	 */
 	public boolean checkNameFormat(String printString) {
-
+		logger.entering(getClass().getName(), this.getClass().getName());
+		
 		DateExtractor dateExtractor = DateExtractor.getDateExtractor();
 		TimeExtractor timeExtractor = TimeExtractor.getTimeExtractor();
 		CommandExtractor commandExtractor = CommandExtractor
@@ -65,19 +72,24 @@ public class NameExtractor {
 				|| dateExtractor.checkDateFormat(printString) || commandExtractor
 					.isCommand(printString))) {
 			if (!isSpecialKeyWord(printString)) {
+				logger.exiting(getClass().getName(), this.getClass().getName());
 				return true;
 			}
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return false;
 
 	}
 
 	private boolean isSpecialKeyWord(String printString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		for (SpecialKeyWords k : SpecialKeyWords.values()) {
 			if (printString.equals(k.name())) {
+				logger.exiting(getClass().getName(), this.getClass().getName());
 				return true;
 			}
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return false;
 	}
 
@@ -90,7 +102,8 @@ public class NameExtractor {
 	 * @return Returns a string with the full task name.
 	 */
 	public Queue<String> processName(String parseString) {
-
+		logger.entering(getClass().getName(), this.getClass().getName());
+		
 		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 		Queue<String> nameQueue = new LinkedList<String>();
 
@@ -107,12 +120,15 @@ public class NameExtractor {
 			}
 
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return nameList;
 	}
 
 	private void addNameToList(String name) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		name = name.trim();
 		nameList.add(name);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -124,6 +140,7 @@ public class NameExtractor {
 	 * @return Returns the string with everything within quotations removed
 	 */
 	public String processQuotationMarks(String printString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String name = "";
 		nameList = new LinkedList<String>();
 		if (hasQuotations(printString)) {
@@ -140,16 +157,21 @@ public class NameExtractor {
 			}
 		}
 		printString = printString.trim();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return printString;
 	}
 
 	private void setNameInQuotationMarks(String name) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		name = name.replace(REGEX_QUOTATION, "");
 		addNameToList(name);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	private String removeNameInQuotationMarks(String printString, String name) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		printString = printString.replace(name, "");
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return printString;
 	}
 
@@ -163,6 +185,7 @@ public class NameExtractor {
 	 * @return Returns a queue with all the name parameters.
 	 */
 	private Queue<String> setUpNameQueue(String[] processArray) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		int j;
 		Queue<String> commandQueue = new LinkedList<String>();
 		for (j = counter; j < processArray.length; j++) {
@@ -173,6 +196,7 @@ public class NameExtractor {
 			}
 		}
 		counter = j - 1;
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return commandQueue;
 	}
 
@@ -186,11 +210,14 @@ public class NameExtractor {
 	 * @return Returns true if there are quotation marks.
 	 */
 	private boolean hasQuotations(String printString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		Matcher matcher = Pattern.compile(REGEX_QUOTATION_MARKS).matcher(
 				printString);
 		if (matcher.find()) {
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return true;
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return false;
 	}
 

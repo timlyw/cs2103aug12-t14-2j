@@ -1,5 +1,9 @@
 package mhs.src.logic;
 
+import java.util.logging.Logger;
+
+import mhs.src.common.MhsLogger;
+
 import org.joda.time.DateTime;
 
 /**
@@ -11,7 +15,7 @@ import org.joda.time.DateTime;
 /**
  * This is the class to package the parameters into a command object. 
  */
-public class Command {
+public class CommandInfo {
 
 	/**
 	 * This is the enum of the different type of commands. 
@@ -26,7 +30,7 @@ public class Command {
 	
 	private DateTime startDate;
 	private DateTime endDate;
-
+	private static final Logger logger = MhsLogger.getLogger();
 	
 	private int index;
 
@@ -41,28 +45,31 @@ public class Command {
 	 * @param endDateInput This is the end date. 
 	 * @param endTimeInput This is the end time. 
 	 */
-	public Command(CommandKeyWords commandInput, String taskNameInput,
+	public CommandInfo(CommandKeyWords commandInput, String taskNameInput,
 			String edittedNameInput, DateTime startDateInput, DateTime endDateInput, int indexInput) {
-	
+		logger.entering(getClass().getName(), this.getClass().getName());
 		commandEnum = commandInput;
 		taskName = taskNameInput;
 		edittedName = edittedNameInput;
 		index = indexInput;
 		startDate = startDateInput;
 		endDate = endDateInput;
-		System.out.println(toString());
+		//System.out.println(toString());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		
 	}
 
 	/**
 	 * Default constructor setting all parameters to null.
 	 */
-	public Command() {
+	public CommandInfo() {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		commandEnum = null;
 		taskName = null;
 		startDate = null;
 		endDate = null;
 		edittedName = null;
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -70,6 +77,8 @@ public class Command {
 	 * @return Returns the task name. 
 	 */
 	public String getTaskName() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return taskName;
 	}
 
@@ -78,6 +87,8 @@ public class Command {
 	 * @return Returns the editeed name. 
 	 */
 	public String getEdittedName() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return edittedName;
 	}
 
@@ -86,6 +97,8 @@ public class Command {
 	 * @return Returns the end date. 
 	 */
 	public DateTime getEndDate() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return endDate;
 	}
 
@@ -94,6 +107,8 @@ public class Command {
 	 * @return Returns the start date. 
 	 */
 	public DateTime getStartDate() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return startDate;
 	}
 
@@ -102,10 +117,19 @@ public class Command {
 	 * @return Returns the command. 
 	 */
 	public CommandKeyWords getCommandEnum() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return commandEnum;
 	}
 
+	public int getIndex(){
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		return index;
+	}
 	public String toString(){
+		logger.entering(getClass().getName(), this.getClass().getName());
+	
 		
 		String outString = "";
 		if(commandEnum!= null)
@@ -120,6 +144,7 @@ public class Command {
 			outString += (" End Date : " + endDate.toString());
 		outString += (" Index is : " + index);
 		
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outString;
 	}
 	

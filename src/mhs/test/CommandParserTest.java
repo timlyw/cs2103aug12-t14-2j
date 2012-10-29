@@ -7,6 +7,7 @@ import java.util.Queue;
 
 import mhs.src.logic.Command;
 import mhs.src.logic.CommandExtractor;
+import mhs.src.logic.CommandInfo;
 import mhs.src.logic.CommandParser;
 import mhs.src.logic.DateExtractor;
 import mhs.src.logic.NameExtractor;
@@ -166,7 +167,7 @@ public class CommandParserTest {
 	public void testCommandParser(){
 
 
-		Command testInput;
+		CommandInfo testInput;
 		String inputName;
 		String edittedName;
 		CommandParser commandParser = CommandParser.getCommandParser();
@@ -205,21 +206,21 @@ public class CommandParserTest {
 		assertEquals("day after tomorrow", inputName);
 		assertEquals(inputStartDate, expectedStartDate);
 		assertEquals(inputEndDate, expectedEndDate);
-		assertEquals(testInput.getCommandEnum(), Command.CommandKeyWords.add);
+		assertEquals(testInput.getCommandEnum(), CommandInfo.CommandKeyWords.add);
 		
 		testInput = commandParser.getParsedCommand("edit \"watch movie\" to \"laundry duties\"");
 		inputName = testInput.getTaskName().trim();
 		edittedName = testInput.getEdittedName().trim();
 		assertEquals("watch movie", inputName);
 		assertEquals("laundry duties", edittedName);
-		assertEquals(testInput.getCommandEnum(), Command.CommandKeyWords.edit);
+		assertEquals(testInput.getCommandEnum(), CommandInfo.CommandKeyWords.edit);
 		
 		testInput = commandParser.getParsedCommand("edit watch movie 5pm laundry duties");
 		inputName = testInput.getTaskName().trim();
 		edittedName = testInput.getEdittedName().trim();
 		assertEquals("watch movie", inputName);
 		assertEquals("laundry duties", edittedName);
-		assertEquals(testInput.getCommandEnum(), Command.CommandKeyWords.edit);
+		assertEquals(testInput.getCommandEnum(), CommandInfo.CommandKeyWords.edit);
 	}
 
 
