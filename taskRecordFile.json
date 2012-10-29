@@ -54,33 +54,33 @@
     "taskName": "NUS run",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-28T22:36:31.722+08:00",
-    "taskUpdated": "2012-10-28T22:36:31.722+08:00",
+    "taskUpdated": "2012-10-29T12:38:22.597+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 6,
     "taskName": "Buy nexus",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-28T22:36:58.517+08:00",
-    "taskUpdated": "2012-10-28T23:47:49.130+08:00",
+    "taskUpdated": "2012-10-29T13:12:29.314+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": true,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 7,
     "taskName": "Buy iPad",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-28T22:37:34.050+08:00",
-    "taskUpdated": "2012-10-28T23:53:56.358+08:00",
+    "taskUpdated": "2012-10-29T13:09:37.544+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": true,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "startDateTime": "2012-10-28T20:00:00.000+08:00",
@@ -101,11 +101,11 @@
     "taskName": "jog",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-28T22:47:03.672+08:00",
-    "taskUpdated": "2012-10-28T22:47:03.672+08:00",
+    "taskUpdated": "2012-10-29T12:38:17.106+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "startDateTime": "2012-10-28T18:00:00.000+08:00",
@@ -114,11 +114,11 @@
     "taskName": "bruch",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-28T22:49:51.290+08:00",
-    "taskUpdated": "2012-10-28T22:49:51.290+08:00",
+    "taskUpdated": "2012-10-29T12:38:31.081+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "startDateTime": "2012-10-28T17:00:00.000+08:00",
@@ -127,11 +127,11 @@
     "taskName": "bucket list",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-28T22:52:33.862+08:00",
-    "taskUpdated": "2012-10-28T22:52:33.862+08:00",
+    "taskUpdated": "2012-10-29T13:57:10.584+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "startDateTime": "2012-10-28T18:00:00.000+08:00",
@@ -151,11 +151,11 @@
     "taskName": "",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-28T23:05:26.533+08:00",
-    "taskUpdated": "2012-10-28T23:05:26.533+08:00",
+    "taskUpdated": "2012-10-29T13:09:44.382+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-10-28T23:30:00.000+08:00",
@@ -163,11 +163,11 @@
     "taskName": "hello",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-28T23:06:10.345+08:00",
-    "taskUpdated": "2012-10-28T23:06:10.345+08:00",
+    "taskUpdated": "2012-10-29T13:52:38.844+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-10-29T20:00:00.000+08:00",
@@ -175,11 +175,11 @@
     "taskName": "service car",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-28T23:42:50.631+08:00",
-    "taskUpdated": "2012-10-28T23:42:50.631+08:00",
+    "taskUpdated": "2012-10-29T13:14:19.816+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-10-29T18:00:00.000+08:00",
@@ -199,11 +199,11 @@
     "taskName": "trump",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-28T23:44:16.116+08:00",
-    "taskUpdated": "2012-10-28T23:44:16.116+08:00",
+    "taskUpdated": "2012-10-29T12:38:37.423+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-10-29T18:00:00.000+08:00",
@@ -223,40 +223,129 @@
     "taskName": "bump",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-28T23:46:37.776+08:00",
-    "taskUpdated": "2012-10-28T23:46:37.776+08:00",
+    "taskUpdated": "2012-10-29T12:38:39.586+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 20,
     "taskName": "ballpark",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-29T00:12:21.893+08:00",
-    "taskUpdated": "2012-10-29T00:13:56.863+08:00",
+    "taskUpdated": "2012-10-29T12:37:53.271+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 21,
     "taskName": "test",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-29T00:52:46.440+08:00",
-    "taskUpdated": "2012-10-29T00:52:46.440+08:00",
+    "taskUpdated": "2012-10-29T13:14:09.772+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 22,
     "taskName": "test2",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-10-29T00:52:50.320+08:00",
-    "taskUpdated": "2012-10-29T00:52:50.320+08:00",
+    "taskUpdated": "2012-10-29T13:44:09.038+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": true,
+    "isDeleted": true
+  },
+  {
+    "taskId": 23,
+    "taskName": "do lab",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-10-29T12:35:41.076+08:00",
+    "taskUpdated": "2012-10-29T13:44:16.696+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 24,
+    "taskName": "ballpark",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-10-29T12:37:01.367+08:00",
+    "taskUpdated": "2012-10-29T12:38:09.830+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": true,
+    "isDeleted": false
+  },
+  {
+    "taskId": 25,
+    "taskName": "Buy nexus",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-10-29T13:11:36.868+08:00",
+    "taskUpdated": "2012-10-29T13:13:15.061+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": true,
+    "isDeleted": false
+  },
+  {
+    "endDateTime": "2012-10-29T20:00:00.000+08:00",
+    "taskId": 26,
+    "taskName": "service car",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-10-29T13:13:33.101+08:00",
+    "taskUpdated": "2012-10-29T13:14:37.636+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 27,
+    "taskName": "hello",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-10-29T13:51:24.327+08:00",
+    "taskUpdated": "2012-10-29T13:53:02.077+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 28,
+    "taskName": "hello",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-10-29T13:51:43.613+08:00",
+    "taskUpdated": "2012-10-29T13:53:10.576+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 29,
+    "taskName": "hi",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-10-29T13:52:21.692+08:00",
+    "taskUpdated": "2012-10-29T13:53:38.762+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 30,
+    "taskName": "helo",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-10-29T13:58:31.275+08:00",
+    "taskUpdated": "2012-10-29T13:59:44.129+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
