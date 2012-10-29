@@ -85,7 +85,7 @@ public class TaskRecordFileTest {
 		Map<Integer, Task> loadTaskList = new LinkedHashMap<Integer, Task>();
 
 		taskRecordFile.saveTaskList(taskList);
-		taskRecordFile.loadTaskList();
+		taskRecordFile.loadTaskListFromFile();
 
 		loadTaskList = taskRecordFile.getTaskList();
 

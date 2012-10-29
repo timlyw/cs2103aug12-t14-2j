@@ -1,6 +1,5 @@
 /**
  * Database 
- * 
  * - Database interfaces persistent the data storage mechanism, on local disk and remote 
  * (Google Calendar Service). 
  * - Handles task queries and CRUD operations 
@@ -20,6 +19,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
 
@@ -30,26 +30,30 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
-	private static final String GOOGLE_CALENDAR_APP_NAME = "My Hot Secretary";
 	private Syncronize syncronize;
 	private GoogleCalendar googleCalendar;
 	private TaskRecordFile taskRecordFile;
 	private ConfigFile configFile;
-
-	// Data Views - contains Task objects references
 	private TaskLists taskLists;
 
 	private DateTime syncStartDateTime;
 	private DateTime syncEndDateTime;
 	private boolean isRemoteSyncEnabled = true;
 
+	private static final Logger logger = MhsLogger.getLogger();
+
 	// Exception Messages
-	private static final String EXCEPTION_MESSAGE_INVALID_TASK_FORMAT = "Invalid Task Format";
-	private static final String EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST = "Task does not exist";
+	private static final String EXCEPTION_MESSAGE_INVALID_TASK_FORMAT = "Invalid Task Format!";
+	private static final String EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST = "Task does not exist!";
 
 	// Config parameters
 	private static final String CONFIG_PARAM_GOOGLE_USER_ACCOUNT = "GOOGLE_USER_ACCOUNT";
 	private static final String CONFIG_PARAM_GOOGLE_AUTH_TOKEN = "GOOGLE_AUTH_TOKEN";
+	private static final String EXCEPTION_MESSAGE_NULL_PARAMETER = "%1$s cannot be null!";
+	private static final String PARAMETER_TASK = "task";
+	private static final String PARAMETER_TASK_NAME = "taskName";
+	private static final String PARAMETERE_START_AND_END_DATE_TIMES = "start and end date times";
+	private static final String GOOGLE_CALENDAR_APP_NAME = "My Hot Secretary";
 
 	/**
 	 * Handles Syncronization operations between local storage and Google
@@ -65,27 +69,35 @@ public class Database {
 		private static final int SYNC_TIMER_DEFAULT_DELAY = 300000;
 
 		private Syncronize() throws IOException {
+			logger.entering(getClass().getName(), this.getClass().getName());
 			if (initializeGoogleCalendarService()) {
 				enableRemoteSync();
 			} else {
 				disableRemoteSync();
 			}
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
 		 * Syncronizes Databases
 		 * 
-		 * @throws Exception
+		 * @return
+		 * @throws ServiceException
+		 * @throws UnknownHostException
+		 * @throws IOException
+		 * @throws InvalidTaskFormatException
+		 * @throws TaskNotFoundException
 		 */
 		private boolean syncronizeDatabases() throws ServiceException,
-				Exception {
-
+				UnknownHostException, IOException, TaskNotFoundException,
+				InvalidTaskFormatException {
+			logger.entering(getClass().getName(), this.getClass().getName());
 			if (googleCalendar == null) {
 				return false;
 			}
-			
 			pullSync();
 			pushSync();
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return true;
 		}
 
@@ -93,17 +105,20 @@ public class Database {
 		 * Enables remote sync for task operations and auto-sync
 		 */
 		private void enableRemoteSync() {
+			logger.entering(getClass().getName(), this.getClass().getName());
 			isRemoteSyncEnabled = true;
 			syncronizePullSyncTimer(SYNC_TIMER_DEFAULT_PERIOD);
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
 		 * Disables remote sync for task operations and auto-sync
 		 */
 		private void disableRemoteSync() {
+			logger.entering(getClass().getName(), this.getClass().getName());
 			isRemoteSyncEnabled = false;
-
 			cancelTimedPullSync();
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
@@ -112,21 +127,24 @@ public class Database {
 		 * @param syncPeriodInMilis
 		 */
 		private void syncronizePullSyncTimer(int syncPeriodInMilis) {
-			DatabaseServiceTimer = new Timer();
+			logger.entering(getClass().getName(), this.getClass().getName());
 
+			DatabaseServiceTimer = new Timer();
 			cancelTimedPullSync();
 
 			pullSyncTimedTask = new TimerTask() {
 				@Override
 				public void run() {
-					MhsLogger.getLogger().log(Level.INFO, "Timed pull-sync");
+					logger.log(Level.INFO, "Timed pull-sync");
 					try {
 						syncronize.pullSync();
 					} catch (UnknownHostException e) {
-						MhsLogger.getLogger().log(Level.FINER, e.getMessage());
+						logger.log(Level.FINER, e.getMessage());
 						disableRemoteSync();
-					} catch (Exception e) {
-						MhsLogger.getLogger().log(Level.FINER, e.getMessage());
+					} catch (TaskNotFoundException e) {
+						// SilentFailSync Policy
+					} catch (InvalidTaskFormatException e) {
+						// SilentFailSync Policy
 					}
 				}
 			};
@@ -134,24 +152,28 @@ public class Database {
 			// schedule pull-sync
 			DatabaseServiceTimer.schedule(pullSyncTimedTask,
 					SYNC_TIMER_DEFAULT_DELAY, syncPeriodInMilis);
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		private void cancelTimedPullSync() {
-			// Cancel timed task if it exists
+			logger.entering(getClass().getName(), this.getClass().getName());
 			if (pullSyncTimedTask != null) {
 				pullSyncTimedTask.cancel();
 			}
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
 		 * Pull Sync remote tasks to local
 		 * 
 		 * @throws UnknownHostException
+		 * @throws InvalidTaskFormatException
+		 * @throws TaskNotFoundException
 		 * @throws ServiceException
-		 * 
-		 * @throws Exception
 		 */
-		private void pullSync() throws UnknownHostException {
+		private void pullSync() throws UnknownHostException,
+				TaskNotFoundException, InvalidTaskFormatException {
+			logger.entering(getClass().getName(), this.getClass().getName());
 
 			List<CalendarEventEntry> googleCalendarEvents;
 
@@ -171,35 +193,36 @@ public class Database {
 			} catch (UnknownHostException e) {
 				throw e;
 			} catch (ServiceException e) {
-				MhsLogger.getLogger().log(Level.FINER, e.getMessage());
+				logger.log(Level.FINER, e.getMessage());
 			} catch (NullPointerException e) {
-				MhsLogger.getLogger().log(Level.FINER, e.getMessage());
+				logger.log(Level.FINER, e.getMessage());
 			} catch (IOException e) {
-				MhsLogger.getLogger().log(Level.FINER, e.getMessage());
-			} catch (Exception e) {
-				MhsLogger.getLogger().log(Level.FINER, e.getMessage());
+				logger.log(Level.FINER, e.getMessage());
 			}
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
 		 * Pull sync new or existing task from remote
 		 * 
 		 * @param gCalEntry
-		 * @throws Exception
+		 * @throws TaskNotFoundException
+		 * @throws UnknownHostException
+		 * @throws InvalidTaskFormatException
 		 */
 		private void pullSyncTask(CalendarEventEntry gCalEntry)
-				throws UnknownHostException, Exception {
+				throws TaskNotFoundException, UnknownHostException,
+				InvalidTaskFormatException {
+			logger.entering(getClass().getName(), this.getClass().getName());
 
 			if (taskLists.containsSyncTask(gCalEntry.getIcalUID())) {
 
 				Task localTask = taskLists.getSyncTask(gCalEntry.getIcalUID());
 
-				// pull sync deleted events
+				// pull sync deleted event
 				if (googleCalendar.isDeleted(gCalEntry)) {
-					MhsLogger.getLogger().log(
-							Level.INFO,
-							"Deleting cancelled task : "
-									+ gCalEntry.getTitle().getPlainText());
+					logger.log(Level.INFO, "Deleting cancelled task : "
+							+ gCalEntry.getTitle().getPlainText());
 					// delete local task
 					deleteTaskInTaskList(localTask);
 					return;
@@ -207,25 +230,28 @@ public class Database {
 				// pull sync newer task
 				if (localTask.getTaskLastSync().isBefore(
 						new DateTime(gCalEntry.getUpdated().getValue()))) {
-					MhsLogger.getLogger().log(Level.INFO,
+
+					logger.log(Level.INFO,
 							"pulling newer event : " + localTask.getTaskName());
-					System.out.println(localTask.getTaskLastSync() + " " + gCalEntry.getUpdated().toString());
+
+					logger.log(Level.FINER, "Local Task last sync : "
+							+ localTask.getTaskLastSync()
+							+ " Google Event Last Updated : "
+							+ gCalEntry.getUpdated().toString());
+
 					pullSyncExistingTask(gCalEntry, localTask);
 				}
 
 			} else {
-
 				// Skip deleted events
 				if (googleCalendar.isDeleted(gCalEntry)) {
 					return;
 				}
-
-				MhsLogger.getLogger().log(
-						Level.INFO,
-						"pulling new event : "
-								+ gCalEntry.getTitle().getPlainText());
+				logger.log(Level.INFO, "pulling new event : "
+						+ gCalEntry.getTitle().getPlainText());
 				pullSyncNewTask(gCalEntry);
 			}
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
@@ -233,30 +259,28 @@ public class Database {
 		 * sync validation logic.
 		 * 
 		 * @param gCalEntry
-		 * @throws Exception
+		 * @throws UnknownHostException
 		 */
 		private void pullSyncNewTask(CalendarEventEntry gCalEntry)
-				throws UnknownHostException, Exception {
-
+				throws UnknownHostException {
+			logger.entering(getClass().getName(), this.getClass().getName());
 			DateTime syncDateTime = setSyncTime(gCalEntry);
 
 			// add task from google calendar entry
 			if (gCalEntry.getTimes().get(0).getStartTime()
 					.equals(gCalEntry.getTimes().get(0).getEndTime())) {
-
 				// create new deadline task
 				Task newTask = new DeadlineTask(getNewTaskId(), gCalEntry,
 						syncDateTime);
-				updateTaskLists(newTask);
+				taskLists.updateTaskInTaskLists(newTask);
 
 			} else {
-
 				// create new timed task
 				Task newTask = new TimedTask(getNewTaskId(), gCalEntry,
 						syncDateTime);
-				updateTaskLists(newTask);
-
+				taskLists.updateTaskInTaskLists(newTask);
 			}
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
@@ -265,13 +289,16 @@ public class Database {
 		 * 
 		 * @param gCalEntry
 		 * @param localTaskEntry
+		 * @throws InvalidTaskFormatException
+		 * @throws TaskNotFoundException
 		 * @throws Exception
 		 */
 		private void pullSyncExistingTask(CalendarEventEntry gCalEntry,
-				Task localTaskEntry) throws UnknownHostException, Exception {
-
+				Task localTaskEntry) throws UnknownHostException,
+				TaskNotFoundException, InvalidTaskFormatException {
+			logger.entering(getClass().getName(), this.getClass().getName());
 			updateSyncTask(localTaskEntry, gCalEntry);
-
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
@@ -280,64 +307,65 @@ public class Database {
 		 * 
 		 * @throws IOException
 		 * @throws ServiceException
+		 * @throws InvalidTaskFormatException
+		 * @throws TaskNotFoundException
+		 * @throws NullPointerException
 		 */
 		private void pushSync() throws IOException, UnknownHostException,
-				ServiceException {
-
+				ServiceException, NullPointerException, TaskNotFoundException,
+				InvalidTaskFormatException {
+			logger.entering(getClass().getName(), this.getClass().getName());
 			// push sync tasks from local to google calendar
 			for (Map.Entry<Integer, Task> entry : taskLists.getTaskList()
 					.entrySet()) {
-				try {
-					pushSyncTask(entry.getValue());
-				} catch (UnknownHostException e) {
-					throw e;
-				} catch (ServiceException e) {
-					MhsLogger.getLogger().log(Level.FINE, e.getMessage());
-				} catch (Exception e) {
-					MhsLogger.getLogger().log(Level.FINE, e.getMessage());
-				}
+				pushSyncTask(entry.getValue());
 			}
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
 		 * Push sync new or existing new tasks
 		 * 
 		 * @param localTask
-		 * @throws Exception
+		 * @throws NullPointerException
+		 * @throws IOException
+		 * @throws TaskNotFoundException
+		 * @throws InvalidTaskFormatException
+		 * @throws ServiceException
 		 */
-		private void pushSyncTask(Task localTask) throws UnknownHostException,
-				Exception {
-
+		private void pushSyncTask(Task localTask) throws NullPointerException,
+				IOException, TaskNotFoundException, InvalidTaskFormatException,
+				ServiceException {
+			logger.entering(getClass().getName(), this.getClass().getName());
 			// skip floating tasks
 			if (localTask.getTaskCategory().equals(TaskCategory.FLOATING)) {
+				logger.exiting(getClass().getName(), this.getClass().getName());
 				return;
 			}
 			// remove deleted task
 			if (localTask.isDeleted()) {
-				MhsLogger.getLogger().log(
-						Level.INFO,
-						"Removing deleted synced task : "
-								+ localTask.getTaskName());
+				logger.log(Level.INFO, "Removing deleted synced task : "
+						+ localTask.getTaskName());
 				googleCalendar.deleteEvent(localTask.getgCalTaskId());
+				logger.exiting(getClass().getName(), this.getClass().getName());
 				return;
 			}
 
 			// add unsynced tasks
 			if (isUnsyncedTask(localTask)) {
-				MhsLogger.getLogger().log(Level.INFO,
+				logger.log(Level.INFO,
 						"Pushing new sync task : " + localTask.getTaskName());
 				pushSyncNewTask(localTask);
 			} else {
 				// add updated tasks
 				if (localTask.getTaskUpdated().isAfter(
 						localTask.getTaskLastSync())) {
-					MhsLogger.getLogger()
-							.log(Level.INFO,
-									"Pushing updated task : "
-											+ localTask.getTaskName());
+					logger.log(Level.INFO, "Pushing updated task : "
+							+ localTask.getTaskName());
 					pushSyncExistingTask(localTask);
 				}
 			}
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
@@ -345,17 +373,24 @@ public class Database {
 		 * tasks instead as it contains sync validation logic.
 		 * 
 		 * @param localTask
+		 * @throws ServiceException
+		 * @throws IOException
+		 * @throws NullPointerException
+		 * @throws InvalidTaskFormatException
+		 * @throws TaskNotFoundException
 		 * @throws Exception
 		 */
 		private void pushSyncNewTask(Task localTask)
-				throws UnknownHostException, Exception {
-
+				throws NullPointerException, IOException, ServiceException,
+				TaskNotFoundException, InvalidTaskFormatException {
+			logger.entering(getClass().getName(), this.getClass().getName());
 			// adds event to google calendar
 			CalendarEventEntry addedGCalEvent = googleCalendar.createEvent(
 					localTask.getTaskName(), localTask.getStartDateTime()
 							.toString(), localTask.getEndDateTime().toString());
 
 			updateSyncTask(localTask, addedGCalEvent);
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
@@ -363,16 +398,23 @@ public class Database {
 		 * it contains sync validation logic.
 		 * 
 		 * @param localTask
+		 * @throws ServiceException
+		 * @throws IOException
+		 * @throws NullPointerException
+		 * @throws InvalidTaskFormatException
+		 * @throws TaskNotFoundException
 		 * @throws Exception
 		 */
 		private void pushSyncExistingTask(Task localTask)
-				throws UnknownHostException, Exception {
-
+				throws NullPointerException, IOException, ServiceException,
+				TaskNotFoundException, InvalidTaskFormatException {
+			logger.entering(getClass().getName(), this.getClass().getName());
 			// update remote task
 			CalendarEventEntry updatedGcalEvent = googleCalendar
 					.updateEvent(localTask.clone());
 
 			updateSyncTask(localTask, updatedGcalEvent);
+			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
@@ -383,14 +425,17 @@ public class Database {
 		 * @throws ServiceException
 		 */
 		private Task updateSyncTask(Task localSyncTaskToUpdate,
-				CalendarEventEntry UpdatedCalendarEvent) throws Exception {
-
+				CalendarEventEntry UpdatedCalendarEvent)
+				throws TaskNotFoundException, InvalidTaskFormatException {
+			logger.entering(getClass().getName(), this.getClass().getName());
 			if (!taskLists.containsTask(localSyncTaskToUpdate.getTaskId())) {
-				throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
+				throw new TaskNotFoundException(
+						EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 			}
 
 			if (!isTaskValid(localSyncTaskToUpdate)) {
-				throw new Exception(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
+				throw new InvalidTaskFormatException(
+						EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 			}
 
 			DateTime syncDateTime = setSyncTime(UpdatedCalendarEvent);
@@ -409,7 +454,8 @@ public class Database {
 			localSyncTaskToUpdate.setTaskLastSync(syncDateTime);
 			localSyncTaskToUpdate.setTaskUpdated(syncDateTime);
 
-			updateTaskLists(localSyncTaskToUpdate);
+			taskLists.updateTaskInTaskLists(localSyncTaskToUpdate);
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return localSyncTaskToUpdate;
 		}
 
@@ -422,12 +468,12 @@ public class Database {
 		private DateTime setSyncTime(CalendarEventEntry gCalEntry) {
 			new DateTime();
 			DateTime syncDateTime = DateTime.now();
-
+			logger.entering(getClass().getName(), this.getClass().getName());
 			if (gCalEntry != null) {
 				gCalEntry.setUpdated(com.google.gdata.data.DateTime.now());
 				syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
 			}
-
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return syncDateTime;
 		}
 	}
@@ -439,15 +485,19 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	public Database() throws IOException, ServiceException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		initializeSyncDateTimes();
 		initalizeDatabase();
 		syncronizeDatabases();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	private void initializeSyncDateTimes() {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		syncStartDateTime = DateTime.now().toDateMidnight().toDateTime();
 		syncEndDateTime = DateTime.now().plusMonths(12).toDateMidnight()
 				.toDateTime();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -459,6 +509,12 @@ public class Database {
 	 */
 	public Database(String taskRecordFileName, boolean disableSyncronize)
 			throws IOException, ServiceException {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		if (taskRecordFileName == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, "taskRecordFileName"));
+		}
+
 		initializeSyncDateTimes();
 		initalizeDatabase(taskRecordFileName);
 		// syncronize local and remote databases
@@ -467,6 +523,7 @@ public class Database {
 		} else {
 			syncronizeDatabases();
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -478,11 +535,12 @@ public class Database {
 	 */
 	private void initalizeDatabase(String taskRecordFileName)
 			throws IOException {
-
+		logger.entering(getClass().getName(), this.getClass().getName());
 		configFile = new ConfigFile();
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
 		taskLists = new TaskLists(taskRecordFile.getTaskList());
 		syncronize = new Syncronize();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -492,11 +550,12 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	private void initalizeDatabase() throws IOException {
-
+		logger.entering(getClass().getName(), this.getClass().getName());
 		configFile = new ConfigFile();
 		taskRecordFile = new TaskRecordFile();
 		taskLists = new TaskLists(taskRecordFile.getTaskList());
 		syncronize = new Syncronize();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -506,15 +565,19 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	private boolean initializeGoogleCalendarService() throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (!configFile.hasConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)
 				|| configFile
 						.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)
 						.isEmpty()) {
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return false;
 		}
 		if (!configFile.hasConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)
 				|| configFile.getConfigParameter(
 						CONFIG_PARAM_GOOGLE_USER_ACCOUNT).isEmpty()) {
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return false;
 		}
 		googleCalendar = new GoogleCalendar(
@@ -522,6 +585,8 @@ public class Database {
 				configFile.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT),
 				configFile.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN));
 		saveGoogleAccountInfo();
+
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return true;
 	}
 
@@ -535,6 +600,16 @@ public class Database {
 	 */
 	public void authenticateUserGoogleAccount(String userName,
 			String userPassword) throws IOException, ServiceException {
+		logger.entering(getClass().getName(), this.getClass().getName());
+
+		if (userName == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, "userName"));
+		}
+		if (userPassword == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, "userPassword"));
+		}
 
 		syncronize.disableRemoteSync();
 
@@ -545,6 +620,8 @@ public class Database {
 
 		syncronize.enableRemoteSync();
 		saveGoogleAccountInfo();
+
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -553,11 +630,13 @@ public class Database {
 	 * @throws IOException
 	 */
 	public void logOutUserGoogleAccount() throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		syncronize.disableRemoteSync();
 		googleCalendar = null;
 		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN, null);
 		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT, null);
 		configFile.save();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -566,6 +645,8 @@ public class Database {
 	 * @return
 	 */
 	public boolean isUserGoogleCalendarAuthenticated() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return isRemoteSyncEnabled;
 	}
 
@@ -576,6 +657,7 @@ public class Database {
 	 * @throws IOException
 	 */
 	private void saveGoogleAccountInfo() throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String googleAuthToken = googleCalendar.getUserToken();
 		String googleUserAccount = googleCalendar.getUserEmail();
 
@@ -588,7 +670,9 @@ public class Database {
 			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT,
 					googleUserAccount);
 		}
+
 		configFile.save();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -601,18 +685,21 @@ public class Database {
 	 */
 	public void syncronizeDatabases() throws UnknownHostException,
 			ServiceException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		try {
 			syncronize.syncronizeDatabases();
 			saveTaskRecordFile();
 		} catch (UnknownHostException e) {
+			logger.log(Level.FINER, e.getMessage());
 			syncronize.disableRemoteSync();
 			throw e;
 		} catch (ServiceException e) {
-			MhsLogger.getLogger().log(Level.FINER, e.getMessage());
+			logger.log(Level.FINER, e.getMessage());
 			throw e;
 		} catch (Exception e) {
-			MhsLogger.getLogger().log(Level.FINER, e.getMessage());
+			logger.log(Level.FINER, e.getMessage());
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -622,10 +709,13 @@ public class Database {
 	 * @return matched task
 	 * @throws Exception
 	 */
-	public Task query(int taskId) throws Exception {
+	public Task query(int taskId) throws TaskNotFoundException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		if (!taskLists.containsTask(taskId)) {
-			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
+			throw new TaskNotFoundException(
+					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return taskLists.getTask(taskId);
 	}
 
@@ -637,9 +727,9 @@ public class Database {
 	 * @throws IOException
 	 */
 	public List<Task> query(boolean orderByStartDateTime) throws IOException {
-
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return taskLists.getTasks(orderByStartDateTime);
-
 	}
 
 	/**
@@ -651,6 +741,12 @@ public class Database {
 	 * @return list of matched tasks
 	 */
 	public List<Task> query(String taskName, boolean orderByStartDateTime) {
+		logger.entering(getClass().getName(), "query");
+		if (taskName == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_TASK_NAME));
+		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return taskLists.getTasks(taskName, orderByStartDateTime);
 	}
 
@@ -664,6 +760,12 @@ public class Database {
 	 */
 	public List<Task> query(TaskCategory queryTaskCategory,
 			boolean orderByStartDateTime) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		if (queryTaskCategory == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, "queryTaskCategory"));
+		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return taskLists.getTasks(queryTaskCategory, orderByStartDateTime);
 	}
 
@@ -678,6 +780,13 @@ public class Database {
 	 */
 	public List<Task> query(DateTime startDateTime, DateTime endDateTime,
 			boolean orderByStartDateTime) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		if (startDateTime == null || endDateTime == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETERE_START_AND_END_DATE_TIMES));
+		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return taskLists.getTasks(startDateTime, endDateTime,
 				orderByStartDateTime);
 	}
@@ -694,6 +803,17 @@ public class Database {
 	 */
 	public List<Task> query(String taskName, DateTime startDateTime,
 			DateTime endDateTime, boolean orderByStartDateTime) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		if (taskName == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_TASK_NAME));
+		}
+		if (startDateTime == null || endDateTime == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETERE_START_AND_END_DATE_TIMES));
+		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return taskLists.getTasks(taskName, startDateTime, endDateTime,
 				orderByStartDateTime);
 	}
@@ -712,7 +832,19 @@ public class Database {
 	public List<Task> query(String taskName, TaskCategory taskCategory,
 			DateTime startDateTime, DateTime endDateTime,
 			boolean orderByStartDateTime) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 
+		if (taskName == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_TASK_NAME));
+		}
+		if (startDateTime == null || endDateTime == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETERE_START_AND_END_DATE_TIMES));
+		}
+
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return taskLists.getTasks(taskName, taskCategory, startDateTime,
 				endDateTime, orderByStartDateTime);
 	}
@@ -722,23 +854,39 @@ public class Database {
 	 * exists)
 	 * 
 	 * @param task
+	 * @throws InvalidTaskFormatException
+	 * @throws IOException
 	 * @throws Exception
 	 * @throws ServiceException
 	 */
-	public Task add(Task task) throws Exception {
+	public Task add(Task task) throws InvalidTaskFormatException, IOException,
+			InvalidTaskFormatException {
+		logger.entering(getClass().getName(), this.getClass().getName());
+
+		if (task == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_TASK));
+		}
 
 		if (!isTaskValid(task)) {
-			throw new Exception(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
+			throw new InvalidTaskFormatException(
+					EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		}
 
 		Task taskToAdd = task.clone();
 		addTaskToTaskList(taskToAdd);
 
 		if (isRemoteSyncEnabled) {
-			syncronize.pushSyncTask(taskToAdd);
+			try {
+				syncronize.pushSyncTask(taskToAdd);
+			} catch (NullPointerException e) {
+			} catch (ServiceException e) {
+			} catch (TaskNotFoundException e) {
+			}
 		}
 
 		saveTaskRecordFile();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return taskToAdd;
 	}
 
@@ -748,6 +896,8 @@ public class Database {
 	 * @param taskToAdd
 	 */
 	private void addTaskToTaskList(Task taskToAdd) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+
 		taskToAdd.setTaskId(getNewTaskId());
 		DateTime UpdateTime = new DateTime();
 		UpdateTime = DateTime.now();
@@ -758,68 +908,41 @@ public class Database {
 		taskToAdd.setTaskLastSync(null);
 		taskToAdd.setgCalTaskId(null);
 
-		updateTaskLists(taskToAdd);
-	}
+		taskLists.updateTaskInTaskLists(taskToAdd);
 
-	/**
-	 * Undeletes a task (deprecated due to Google Calendar Sync, manually re-add
-	 * task instead)
-	 * 
-	 * @param taskId
-	 * @throws Exception
-	 * @throws ServiceException
-	 */
-	public void undelete(int taskId) throws Exception {
-
-		if (!taskLists.containsTask(taskId)) {
-			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
-		}
-
-		Task taskToUndelete = taskLists.getTask(taskId);
-		undeleteTaskInTaskList(taskToUndelete);
-
-		if (isRemoteSyncEnabled) {
-			syncronize.pushSyncTask(taskToUndelete);
-		}
-
-		saveTaskRecordFile();
-	}
-
-	/**
-	 * Undelete task in task list by setting deleted attribute
-	 * 
-	 * @param taskToUndelete
-	 */
-	private void undeleteTaskInTaskList(Task taskToUndelete) {
-		taskToUndelete.setDeleted(false);
-		DateTime UpdateTime = new DateTime();
-		UpdateTime = DateTime.now().plusMinutes(1);
-		// set updated time further ahead to force sync (timing issues)
-		taskToUndelete.setTaskUpdated(UpdateTime.plusMinutes(1));
-		updateTaskLists(taskToUndelete);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
 	 * Deletes a task
 	 * 
 	 * @param taskId
+	 * @throws IOException
 	 * @throws Exception
 	 * @throws ServiceException
 	 */
-	public void delete(int taskId) throws Exception {
+	public void delete(int taskId) throws TaskNotFoundException, IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 
 		if (!taskLists.containsTask(taskId)) {
-			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
+			throw new TaskNotFoundException(
+					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
 
 		Task taskToDelete = taskLists.getTask(taskId);
 		deleteTaskInTaskList(taskToDelete);
 
 		if (isRemoteSyncEnabled) {
-			syncronize.pushSyncTask(taskToDelete);
+			try {
+				syncronize.pushSyncTask(taskToDelete);
+			} catch (NullPointerException | ServiceException
+					| InvalidTaskFormatException e) {
+				// SilentFailSync Policy
+				logger.log(Level.FINE, e.getMessage());
+			}
 		}
-
 		saveTaskRecordFile();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -828,7 +951,7 @@ public class Database {
 	 * @param taskToDelete
 	 */
 	private void deleteTaskInTaskList(Task taskToDelete) {
-
+		logger.entering(getClass().getName(), this.getClass().getName());
 		taskToDelete.setDeleted(true);
 
 		// set updated time further ahead to force sync (timing issues)
@@ -836,24 +959,34 @@ public class Database {
 		UpdateTime = DateTime.now().plusMinutes(1);
 		taskToDelete.setTaskUpdated(UpdateTime);
 
-		updateTaskLists(taskToDelete);
+		taskLists.updateTaskInTaskLists(taskToDelete);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
 	 * Updates task
 	 * 
 	 * @param updatedTask
+	 * @throws InvalidTaskFormatException
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 * @throws NullPointerException
 	 * @throws Exception
 	 * @throws ServiceException
 	 */
-	public Task update(Task updatedTask) throws Exception {
+	public Task update(Task updatedTask) throws NullPointerException,
+			IOException, ServiceException, TaskNotFoundException,
+			InvalidTaskFormatException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 
 		if (!taskLists.containsTask(updatedTask.getTaskId())) {
-			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
+			throw new TaskNotFoundException(
+					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
 
 		if (!isTaskValid(updatedTask)) {
-			throw new Exception(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
+			throw new InvalidTaskFormatException(
+					EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		}
 
 		Task updatedTaskToSave = updatedTask.clone();
@@ -867,10 +1000,17 @@ public class Database {
 		updateTaskinTaskList(updatedTaskToSave);
 
 		if (isRemoteSyncEnabled) {
-			syncronize.pushSyncTask(updatedTaskToSave);
+			try {
+				syncronize.pushSyncTask(updatedTaskToSave);
+			} catch (NullPointerException | ServiceException
+					| InvalidTaskFormatException e) {
+				// SilentFailSync Policy
+				logger.log(Level.FINE, e.getMessage());
+			}
 		}
 
 		saveTaskRecordFile();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return updatedTaskToSave;
 	}
 
@@ -880,12 +1020,15 @@ public class Database {
 	 * @param updatedTaskToSave
 	 */
 	private void updateTaskinTaskList(Task updatedTaskToSave) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+
 		// set updated time further ahead to force sync (timing issues)
 		DateTime UpdateTime = new DateTime();
 		UpdateTime = DateTime.now();
 		updatedTaskToSave.setTaskUpdated(UpdateTime.plusMinutes(1));
 
-		updateTaskLists(updatedTaskToSave);
+		taskLists.updateTaskInTaskLists(updatedTaskToSave);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -894,7 +1037,9 @@ public class Database {
 	 * @throws IOException
 	 */
 	private void saveTaskRecordFile() throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		taskRecordFile.saveTaskList(taskLists.getTaskList());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -904,10 +1049,13 @@ public class Database {
 	 * @throws Exception
 	 */
 	private void removeRecord(Task taskToRemove) throws Exception {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		if (!taskLists.containsTask(taskToRemove.getTaskId())) {
-			throw new Exception(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
+			throw new TaskNotFoundException(
+					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
 		taskLists.removeTaskInTaskLists(taskToRemove);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -916,8 +1064,10 @@ public class Database {
 	 * @throws Exception
 	 */
 	public void cleanupTasks() throws Exception {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		syncronizeDatabases();
 		cleanupLocalTasks();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -926,13 +1076,12 @@ public class Database {
 	 * @throws Exception
 	 */
 	private void cleanupLocalTasks() throws Exception {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		for (Map.Entry<Integer, Task> entry : taskLists.getTaskList()
 				.entrySet()) {
-
 			if (!entry.getValue().isDeleted()) {
 				continue;
 			}
-
 			switch (entry.getValue().getTaskCategory()) {
 			case TIMED:
 			case DEADLINE:
@@ -948,6 +1097,7 @@ public class Database {
 			}
 		}
 		saveTaskRecordFile();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -957,9 +1107,11 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	public void clearDatabase() throws IOException, ServiceException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		taskLists.clearTaskLists();
 		clearRemoteDatabase();
 		saveTaskRecordFile();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -968,8 +1120,10 @@ public class Database {
 	 * @throws IOException
 	 */
 	public void clearLocalDatabase() throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		taskLists.clearTaskLists();
 		saveTaskRecordFile();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -979,19 +1133,17 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	public void clearRemoteDatabase() throws IOException, ServiceException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		if (isRemoteSyncEnabled) {
-			googleCalendar.deleteEvents(syncStartDateTime.toString(),
-					syncEndDateTime.toString());
+			try {
+				googleCalendar.deleteEvents(syncStartDateTime.toString(),
+						syncEndDateTime.toString());
+			} catch (NullPointerException | ServiceException e) {
+				// SilentFailSync Policy
+				logger.log(Level.FINE, e.getMessage());
+			}
 		}
-	}
-
-	/**
-	 * Update Task Lists
-	 * 
-	 * @param task
-	 */
-	private void updateTaskLists(Task task) {
-		taskLists.updateTaskInTaskLists(task);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -1001,29 +1153,49 @@ public class Database {
 	 * @return boolean
 	 */
 	private boolean isTaskValid(Task task) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 
 		if (task.getTaskCategory() == null || task.getTaskName() == null) {
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return false;
 		}
+
+		boolean taskIsValid = true;
 
 		switch (task.getTaskCategory()) {
 		case FLOATING:
 			break;
 		case TIMED:
-			if (task.getStartDateTime() == null
-					|| task.getEndDateTime() == null) {
-				return false;
-			}
+			taskIsValid = isTimedTaskValid(task, taskIsValid);
 			break;
 		case DEADLINE:
-			if (task.getEndDateTime() == null) {
-				return false;
-			}
+			taskIsValid = isDeadlineTaskValid(task, taskIsValid);
 			break;
 		default:
-			return false;
+			taskIsValid = false;
+			break;
 		}
-		return true;
+
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		return taskIsValid;
+	}
+
+	private boolean isDeadlineTaskValid(Task task, boolean taskIsValid) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		if (task.getEndDateTime() == null) {
+			taskIsValid = false;
+		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		return taskIsValid;
+	}
+
+	private boolean isTimedTaskValid(Task task, boolean taskIsValid) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		if (task.getStartDateTime() == null || task.getEndDateTime() == null) {
+			taskIsValid = false;
+		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		return taskIsValid;
 	}
 
 	/**
@@ -1032,7 +1204,9 @@ public class Database {
 	 * @param localTask
 	 * @return true if task is unsynced
 	 */
-	private static boolean isUnsyncedTask(Task localTask) {
+	private boolean isUnsyncedTask(Task localTask) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return localTask.getgCalTaskId() == null
 				|| localTask.getTaskLastSync() == null;
 	}
@@ -1043,6 +1217,8 @@ public class Database {
 	 * @return
 	 */
 	private int getNewTaskId() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+
 		int getNewTaskId = 0;
 		Set<Integer> taskKeySet = taskLists.getTaskList().keySet();
 		Iterator<Integer> iterator = taskKeySet.iterator();
@@ -1050,6 +1226,8 @@ public class Database {
 			getNewTaskId = iterator.next();
 		}
 		getNewTaskId++;
+
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return getNewTaskId;
 	}
 }
