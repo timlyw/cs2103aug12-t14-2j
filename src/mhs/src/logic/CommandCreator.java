@@ -78,32 +78,29 @@ public class CommandCreator {
 
 	private String executeCommandByIndex(CommandInfo userCommand) {
 		String userOutputString = new String();
+		int local_index = userCommand.getIndex();
 		switch (userCommand.getCommandEnum()) {
 		case add:
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		case remove:
-			currentCommand = new CommandRemove();
-			userOutputString = currentCommand.executeByIndex(userCommand
-					.getIndex());
+			currentCommand = new CommandRemove(previousCommand.matchedTasks);
+			userOutputString = currentCommand.executeByIndexAndType(local_index-1);
 			break;
 		case edit:
 			currentCommand = new CommandEdit();
-			userOutputString = currentCommand.executeByIndex(userCommand
-					.getIndex());
+			userOutputString = currentCommand.executeByIndex(local_index-1);
 			break;
 		case search:
-			currentCommand = new CommandSearch();
-			userOutputString = currentCommand.executeByIndex(userCommand
-					.getIndex());
+			currentCommand = new CommandSearch(previousCommand.matchedTasks);
+			userOutputString = currentCommand.executeByIndexAndType(local_index-1);
 			break;
 		case undo:
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		case mark:
-			currentCommand = new CommandMark();
-			userOutputString = currentCommand.executeByIndex(userCommand
-					.getIndex());
+			currentCommand = new CommandMark(previousCommand.matchedTasks);
+			userOutputString = currentCommand.executeByIndexAndType(local_index-1);
 			break;
 		case help:
 			userOutputString = MESSAGE_INVALID_COMMAND;

@@ -20,11 +20,10 @@ public class CommandRemove extends Command {
 		}
 	}
 
-	public CommandRemove() {
-		
+	public CommandRemove(List<Task> lastUsedList) {
+		matchedTasks = lastUsedList;
 	}
-	
-	
+
 	@Override
 	public String executeCommand() {
 		String outputString = new String();
@@ -75,20 +74,39 @@ public class CommandRemove extends Command {
 	@Override
 	public String executeByIndex(int index) {
 		String outputString = new String();
-		if (indexExpected & matchedTasks.size()<=index) {
-			try{
-			dataHandler.delete(matchedTasks.get(index).getTaskId());
-			outputString = "Deleted "+matchedTasks.get(index).getTaskName();
-			lastDeletedTask = matchedTasks.get(index);
-			indexExpected = false;
-			isUndoable =  true;
-			}
-			catch(Exception e)
-			{
-				
+		System.out.println("delet by index-in");
+		if (indexExpected & matchedTasks.size() <= index) {
+			try {
+				dataHandler.delete(matchedTasks.get(index).getTaskId());
+				outputString = "Deleted "
+						+ matchedTasks.get(index).getTaskName();
+				lastDeletedTask = matchedTasks.get(index);
+				indexExpected = false;
+				isUndoable = true;
+			} catch (Exception e) {
+
 			}
 		} else {
-				outputString = "Invalid Command";
+			outputString = "Invalid Command";
+		}
+		return outputString;
+	}
+
+	@Override
+	public String executeByIndexAndType(int index) {
+		String outputString = new String();
+		if (index < matchedTasks.size()) {
+			try {
+				dataHandler.delete(matchedTasks.get(index).getTaskId());
+				outputString = "Deleted "
+						+ matchedTasks.get(index).getTaskName();
+				lastDeletedTask = matchedTasks.get(index);
+				isUndoable = true;
+			} catch (Exception e) {
+
+			}
+		} else {
+			outputString = "Invalid Command";
 		}
 		return outputString;
 	}
