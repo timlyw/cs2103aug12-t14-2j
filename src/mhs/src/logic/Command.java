@@ -13,11 +13,14 @@ public abstract class Command {
 
 	protected static final String MESSAGE_UNDO_FAIL = "Cannot Undo";
 	protected static final String MESSAGE_UNDO_CONFIRM = "Undo Successful";
-	protected boolean isUndoable = false;
+	protected boolean isUndoable;
 	protected List<Task> matchedTasks;
 	protected Database dataHandler;
+	protected boolean indexExpected;
 
 	public Command() {
+		indexExpected = false;
+		isUndoable = false;
 		try {
 			dataHandler = new Database();
 		} catch (IOException | ServiceException e1) {

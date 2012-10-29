@@ -31,6 +31,9 @@ public class CommandEdit extends Command {
 		}
 	}
 
+	public CommandEdit() {
+	}
+
 	@Override
 	public String executeCommand() {
 
@@ -52,8 +55,7 @@ public class CommandEdit extends Command {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			outputString = "Edited Task - '"
-					+ oldTask.getTaskName() + "'";
+			outputString = "Edited Task - '" + oldTask.getTaskName() + "'";
 		}
 		// if multiple matches are found display the list
 		else {
@@ -61,7 +63,7 @@ public class CommandEdit extends Command {
 		}
 		return outputString;
 	}
- 
+
 	private Task createEditedTask(CommandInfo inputCommand, Task taskToEdit) {
 		int typeCount = 0;
 		if (inputCommand.getStartDate() != null) {
