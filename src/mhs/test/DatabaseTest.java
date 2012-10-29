@@ -504,7 +504,7 @@ public class DatabaseTest {
 			ServiceException {
 		// Clear database (local and remote)
 		database = new Database(TEST_TASK_RECORD_FILENAME, false);
-		database.authenticateUserGoogleAccount(GOOGLE_TEST_ACCOUNT_NAME,
+		database.loginUserGoogleAccount(GOOGLE_TEST_ACCOUNT_NAME,
 				GOOGLE_TEST_ACCOUNT_PASSWORD);
 		database.clearDatabase();
 	}
