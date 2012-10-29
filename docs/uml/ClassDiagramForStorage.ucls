@@ -1,0 +1,204 @@
+<class-diagram version="1.0.10" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true">  
+  <class id="1" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.ConfigFile" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/ConfigFile.java" binary="false">    
+    <position height="350" width="209" x="6" y="693"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="2" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.Database" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/Database.java" binary="false">    
+    <position height="1013" width="304" x="933" y="-360"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="3" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.DateTimeTypeConverter" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/DateTimeTypeConverter.java" binary="false">    
+    <position height="112" width="350" x="63" y="-360"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="4" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.FloatingTask" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/FloatingTask.java" binary="false">    
+    <position height="95" width="424" x="6" y="2391"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="5" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.TaskRecordFile" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/TaskRecordFile.java" binary="false">    
+    <position height="367" width="238" x="674" y="693"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="6" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.TimedTask" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/TimedTask.java" binary="false">    
+    <position height="231" width="540" x="470" y="2391"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="7" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.TaskTypeConverter" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/TaskTypeConverter.java" binary="false">    
+    <position height="299" width="328" x="509" y="-360"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="8" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.GoogleCalendar" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/GoogleCalendar.java" binary="false">    
+    <position height="928" width="379" x="255" y="693"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <enumeration id="9" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.TaskCategory" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/TaskCategory.java" binary="false">    
+    <position height="163" width="146" x="1596" y="2391"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </enumeration>  
+  <class id="10" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.DeadlineTask" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/DeadlineTask.java" binary="false">    
+    <position height="-1" width="-1" x="1296" y="2502"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="11" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.Database.Syncronize" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/Database.java" binary="false">    
+    <position height="-1" width="-1" x="1250" y="875"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="12" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage.Task" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage/Task.java" binary="false">    
+    <position height="690" width="418" x="933" y="1661"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <association id="13">    
+    <bendpoint x="1665" y="2210"/>    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="14" name="taskCategory"/>      
+      <multiplicity id="15" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="16">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="11"/>  
+  </nesting>  
+  <generalization id="17">    
+    <bendpoint x="219" y="1999"/>    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="12"/>  
+  </generalization>  
+  <generalization id="18">    
+    <bendpoint x="737" y="2210"/>    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="12"/>  
+  </generalization>  
+  <association id="19">    
+    <bendpoint x="109" y="147"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="20" name="configFile"/>      
+      <multiplicity id="21" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="22">    
+    <bendpoint x="979" y="985"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="23" name="taskList"/>      
+      <multiplicity id="24" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="25">    
+    <bendpoint x="791" y="492"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="26" name="taskRecordFile"/>      
+      <multiplicity id="27" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="28">    
+    <bendpoint x="1085" y="1072"/>    
+    <bendpoint x="1246" y="1317"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="29" name="gCalTaskList"/>      
+      <multiplicity id="30" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="31">    
+    <bendpoint x="888" y="1328"/>    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="32" name="taskList"/>      
+      <multiplicity id="33" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="34">    
+    <bendpoint x="797" y="1417"/>    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="35" name="gCalTaskList"/>      
+      <multiplicity id="36" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="37">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="12"/>  
+  </generalization>  
+  <association id="38">    
+    <bendpoint x="440" y="343"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="39" name="googleCalendar"/>      
+      <multiplicity id="40" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="41">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="42" name="syncronize"/>      
+      <multiplicity id="43" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true"/>    
+    <operations public="true" package="true" protected="true" private="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
