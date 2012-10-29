@@ -9,7 +9,7 @@ import mhs.src.storage.TaskCategory;
 public class CommandMark extends Command {
 
 	Task lastTask;
-	Task undoedTask;
+
 	public CommandMark(CommandInfo inputCommand) {
 		List<Task> resultList;
 		try {
@@ -19,6 +19,9 @@ public class CommandMark extends Command {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public CommandMark() {
 	}
 
 	@Override
@@ -56,28 +59,42 @@ public class CommandMark extends Command {
 
 	@Override
 	public String undo() {
-		if(isUndoable())
-		{
-			undoedTask = new Task();
-			undoedTask.setDone(false);
+		if (isUndoable()) {
+			lastTask.setDone(false);
 			try {
-				dataHandler.update(undoedTask);
+				dataHandler.update(lastTask);
 				return MESSAGE_UNDO_CONFIRM;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return MESSAGE_UNDO_FAIL;
 			}
-		}
-		else{
+		} else {
 			return MESSAGE_UNDO_FAIL;
 		}
 	}
 
 	@Override
 	public String executeByIndex(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		String outputString = new String();
+		if (indexExpected & matchedTasks.size() <= index) {
+			Task tempTask = matchedTasks.get(index);
+			tempTask.setDone(true);
+			lastTask = tempTask;
+			try {
+				dataHandler.update(tempTask);
+				outputString = "Marked Task as done - '"
+						+ matchedTasks.get(index).getTaskName() + "'"
+						+ "-Done? " + matchedTasks.get(index).isDone();
+				indexExpected = false;
+				isUndoable = true;
+			} catch (Exception e) {
+
+			}
+		} else {
+			outputString = "Invalid Command";
+		}
+		return outputString;
 	}
 
 }

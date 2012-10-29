@@ -20,6 +20,11 @@ public class CommandRemove extends Command {
 		}
 	}
 
+	public CommandRemove() {
+		
+	}
+	
+	
 	@Override
 	public String executeCommand() {
 		String outputString = new String();
@@ -44,6 +49,7 @@ public class CommandRemove extends Command {
 		// if multiple matches are found display the list
 		else {
 			outputString = displayListOfTasks(matchedTasks);
+			indexExpected = true;
 		}
 		return outputString;
 	}
@@ -68,8 +74,23 @@ public class CommandRemove extends Command {
 
 	@Override
 	public String executeByIndex(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		String outputString = new String();
+		if (indexExpected & matchedTasks.size()<=index) {
+			try{
+			dataHandler.delete(matchedTasks.get(index).getTaskId());
+			outputString = "Deleted "+matchedTasks.get(index).getTaskName();
+			lastDeletedTask = matchedTasks.get(index);
+			indexExpected = false;
+			isUndoable =  true;
+			}
+			catch(Exception e)
+			{
+				
+			}
+		} else {
+				outputString = "Invalid Command";
+		}
+		return outputString;
 	}
 
 }

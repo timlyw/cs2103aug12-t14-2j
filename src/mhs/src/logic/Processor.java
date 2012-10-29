@@ -23,12 +23,14 @@ public class Processor {
 	private String username;
 	private String password;
 	private boolean userIsLoggedIn;
+	private CommandCreator createCommand;
 
 	public Processor() {
 		try {
 			dataHandler = new Database();
 			commandParser = new CommandParser();
 			userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
+			createCommand = new CommandCreator();
 		} catch (UnknownHostException e) {
 			// no internet
 			e.printStackTrace();
@@ -85,7 +87,6 @@ public class Processor {
 			userOutputString = logoutUser();
 			break;
 		default:
-			CommandCreator createCommand = new CommandCreator();
 			userOutputString = createCommand.createCommand(userCommand);
 			break;
 

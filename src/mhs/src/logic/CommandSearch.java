@@ -18,6 +18,10 @@ public class CommandSearch extends Command {
 		}
 	}
 
+	public CommandSearch() {
+
+	}
+
 	@Override
 	public String executeCommand() {
 		String outputString = new String();
@@ -34,20 +38,32 @@ public class CommandSearch extends Command {
 		// if multiple matches are found display the list
 		else {
 			outputString = displayListOfTasks(matchedTasks);
+			indexExpected = true;
 		}
 		return outputString;
 	}
 
 	@Override
 	public String undo() {
-		// TODO Auto-generated method stub
+		// is never called
 		return null;
 	}
 
 	@Override
 	public String executeByIndex(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		String outputString = new String();
+		if (indexExpected & matchedTasks.size() <= index) {
+			outputString = "Chosen Task - "
+					+ matchedTasks.get(index).getTaskName() + "\nTime: "
+					+ matchedTasks.get(index).getStartDateTime() + " , "
+					+ matchedTasks.get(index).getEndDateTime();
+			;
+			indexExpected = false;
+			isUndoable = true;
+		} else {
+			outputString = "Invalid Command";
+		}
+		return outputString;
 	}
 
 }

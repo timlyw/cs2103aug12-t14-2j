@@ -39,10 +39,12 @@ public class CommandAdd extends Command {
 			taskToAddTask = deadlineTaskToAdd;
 			break;
 		case 2:
+			System.out.println(inputCommand.getTaskName()+"/"+inputCommand.getStartDate()+"/"+inputCommand.getEndDate());
 			Task timedTaskToAdd = new TimedTask(0, inputCommand.getTaskName(),
 					TaskCategory.TIMED, inputCommand.getStartDate(),
 					inputCommand.getEndDate(), DateTime.now(), null, null,
 					null, false, false);
+			System.out.println(timedTaskToAdd.getTaskName()+"/"+timedTaskToAdd.getStartDateTime()+"/"+timedTaskToAdd.getEndDateTime());
 			taskToAddTask = timedTaskToAdd;
 			break;
 		default:
