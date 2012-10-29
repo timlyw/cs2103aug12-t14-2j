@@ -34,12 +34,12 @@ public class MhsFrame extends JFrame {
 	private static final String DEFAULT_FONT_TYPE = "calibri";
 
 	private static final int DISPLAY_SCREEN_POSITION_Y = 0;
-	private static final int DISPLAY_SCREEN_WEIGHT_Y = 12;
+	private static final int DISPLAY_SCREEN_WEIGHT_Y = 1;
 	private static final int DISPLAY_SCREEN_HEIGHT = 1;
 	private static final int DISPLAY_SCREEN_BOTTOM_PADDING = 0;
 
 	private static final int FEEDBACK_SCREEN_POSITION_Y = 1;
-	private static final int FEEDBACK_SCREEN_WEIGHT_Y = 1;
+	private static final int FEEDBACK_SCREEN_WEIGHT_Y = 0;
 	private static final int FEEDBACK_SCREEN_HEIGHT = 1;
 	private static final int FEEDBACK_SCREEN_TOP_PADDING = 0;
 
@@ -68,6 +68,11 @@ public class MhsFrame extends JFrame {
 
 	public void open() {
 		this.setVisible(true);
+	}
+	
+	public int getDisplayScreenHeight() {
+		int displayScreenHeight = displayScreen.getHeight();
+		return displayScreenHeight;
 	}
 
 	public String getCommand() {
@@ -266,7 +271,7 @@ public class MhsFrame extends JFrame {
 		framePanel.setBackground(FRAME_BACKGROUND_COLOR);
 	}
 
-	private GridBagConstraints getDefaultConstraints(int positionY,
+	protected static GridBagConstraints getDefaultConstraints(int positionY,
 			int weightY, int height) {
 		GridBagConstraints gbc = new GridBagConstraints();
 		setConstraintsPosition(gbc, DEFAULT_CONSTRAINT_POSITION_X, positionY);
@@ -276,25 +281,25 @@ public class MhsFrame extends JFrame {
 		return gbc;
 	}
 
-	private void setConstraintsPosition(GridBagConstraints gbc, int positionX,
+	private static void setConstraintsPosition(GridBagConstraints gbc, int positionX,
 			int positionY) {
 		gbc.gridx = positionX;
 		gbc.gridy = positionY;
 	}
 
-	private void setConstraintsWeight(GridBagConstraints gbc, int weightX,
+	private static void setConstraintsWeight(GridBagConstraints gbc, int weightX,
 			int weightY) {
 		gbc.weightx = weightX;
 		gbc.weighty = weightY;
 	}
 
-	private void setConstraintsSize(GridBagConstraints gbc, int width,
+	private static void setConstraintsSize(GridBagConstraints gbc, int width,
 			int height) {
 		gbc.gridwidth = width;
 		gbc.gridheight = height;
 	}
 
-	private void setConstraintsToFillAvailableSpace(GridBagConstraints gbc) {
+	private static void setConstraintsToFillAvailableSpace(GridBagConstraints gbc) {
 		gbc.fill = GridBagConstraints.BOTH;
 	}
 
