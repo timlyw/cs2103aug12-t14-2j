@@ -147,4 +147,10 @@ public class CommandEdit extends Command {
 		return null;
 	}
 
+	@Override
+	public String executeByIndexAndType(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -21,7 +21,8 @@ public class CommandMark extends Command {
 		}
 	}
 
-	public CommandMark() {
+	public CommandMark(List<Task> lastUsedList) {
+		matchedTasks = lastUsedList;
 	}
 
 	@Override
@@ -77,7 +78,7 @@ public class CommandMark extends Command {
 	@Override
 	public String executeByIndex(int index) {
 		String outputString = new String();
-		if (indexExpected & matchedTasks.size() <= index) {
+		if (indexExpected & index <= matchedTasks.size()) {
 			Task tempTask = matchedTasks.get(index);
 			tempTask.setDone(true);
 			lastTask = tempTask;
@@ -87,6 +88,28 @@ public class CommandMark extends Command {
 						+ matchedTasks.get(index).getTaskName() + "'"
 						+ "-Done? " + matchedTasks.get(index).isDone();
 				indexExpected = false;
+				isUndoable = true;
+			} catch (Exception e) {
+
+			}
+		} else {
+			outputString = "Invalid Command";
+		}
+		return outputString;
+	}
+
+	@Override
+	public String executeByIndexAndType(int index) {
+		String outputString = new String();
+		if (index < matchedTasks.size()) {
+			Task tempTask = matchedTasks.get(index);
+			tempTask.setDone(true);
+			lastTask = tempTask;
+			try {
+				dataHandler.update(tempTask);
+				outputString = "Marked Task as done - '"
+						+ matchedTasks.get(index).getTaskName() + "'"
+						+ "-Done? " + matchedTasks.get(index).isDone();
 				isUndoable = true;
 			} catch (Exception e) {
 
