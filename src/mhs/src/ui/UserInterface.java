@@ -113,7 +113,7 @@ public class UserInterface {
 	}
 	
 	private class ProcessorStateListener implements StateListener {
-		public void updateState() {
+		public void stateChanged() {
 			updateDisplayScreen();
 			updateFeedbackText();
 			updateInputType();

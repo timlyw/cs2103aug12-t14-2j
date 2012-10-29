@@ -62,7 +62,7 @@ public class ProcessorStub {
 	public void updateStateListeners() {
 		for(int i = 0; i < stateListeners.size(); i++) {
 			StateListener stateListener = stateListeners.get(i);
-			stateListener.updateState();
+			stateListener.stateChanged();
 		}
 	}
 	
