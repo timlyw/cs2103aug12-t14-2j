@@ -1,5 +1,5 @@
 package mhs.src.logic;
 
 public interface StateListener {
-	public void updateState();
+	public void stateChanged();
 }
