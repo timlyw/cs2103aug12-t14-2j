@@ -1,126 +1,103 @@
 package mhs.src.logic;
 
-import org.joda.time.DateTime;
+import java.io.IOException;
+import java.util.List;
 
-/**
- * 
- * @author Cheong Kahou
- * A0086805X
- */
+import com.google.gdata.util.ServiceException;
 
-/**
- * This is the class to package the parameters into a command object. 
- */
-public class Command {
+import mhs.src.storage.Database;
+import mhs.src.storage.Task;
+import mhs.src.storage.TaskCategory;
 
-	/**
-	 * This is the enum of the different type of commands. 
-	 */
-	public static enum CommandKeyWords{
-		add, remove,edit, search, sync, undo, login, logout, rename, redo, mark, help;
-	}
-	
-	private String taskName;
-	private String edittedName;
-	private CommandKeyWords commandEnum;
-	
-	private DateTime startDate;
-	private DateTime endDate;
+public abstract class Command {
 
-	
-	private int index;
+	protected static final String MESSAGE_UNDO_FAIL = "Cannot Undo";
+	protected static final String MESSAGE_UNDO_CONFIRM = "Undo Successful";
+	protected boolean isUndoable;
+	protected List<Task> matchedTasks;
+	protected Database dataHandler;
+	protected boolean indexExpected;
 
-	/**
-	 * This is the constructor to set up the command object. 
-	 * 
-	 * @param commandInput This is the command.
-	 * @param taskNameInput This is the name of the task.
-	 * @param edittedNameInput This is the editted name of the task.
-	 * @param startDateInput This is the start date.
-	 * @param startTimeInput This is the start time.
-	 * @param endDateInput This is the end date. 
-	 * @param endTimeInput This is the end time. 
-	 */
-	public Command(CommandKeyWords commandInput, String taskNameInput,
-			String edittedNameInput, DateTime startDateInput, DateTime endDateInput, int indexInput) {
-	
-		commandEnum = commandInput;
-		taskName = taskNameInput;
-		edittedName = edittedNameInput;
-		index = indexInput;
-		startDate = startDateInput;
-		endDate = endDateInput;
-		System.out.println(toString());
-		
-	}
-
-	/**
-	 * Default constructor setting all parameters to null.
-	 */
 	public Command() {
-		commandEnum = null;
-		taskName = null;
-		startDate = null;
-		endDate = null;
-		edittedName = null;
+		indexExpected = false;
+		isUndoable = false;
+		try {
+			dataHandler = new Database();
+		} catch (IOException | ServiceException e1) {
+
+		}
 	}
 
-	/**
-	 * Getter for task name.
-	 * @return Returns the task name. 
-	 */
-	public String getTaskName() {
-		return taskName;
+	abstract public String executeCommand();
+
+	abstract public String undo();
+
+	public boolean isUndoable() {
+		return isUndoable;
 	}
 
-	/**
-	 * Getter for editted name.
-	 * @return Returns the editeed name. 
-	 */
-	public String getEdittedName() {
-		return edittedName;
+	abstract public String executeByIndex(int index);
+
+	protected List<Task> queryTask(CommandInfo inputCommand) throws IOException {
+		boolean name, startDate, endDate;
+		List<Task> queryResultList;
+		name = inputCommand.getTaskName() == null ? false : true;
+		startDate = inputCommand.getStartDate() == null ? false : true;
+		endDate = inputCommand.getEndDate() == null ? false : true;
+		if (name && startDate && endDate) {
+			queryResultList = dataHandler.query(inputCommand.getTaskName(),
+					inputCommand.getStartDate(), inputCommand.getEndDate(),
+					true);
+		} else if (startDate && endDate && !name) {
+			queryResultList = dataHandler.query(inputCommand.getStartDate(),
+					inputCommand.getEndDate(), true);
+		} else if (name && !startDate && !endDate) {
+			queryResultList = dataHandler.query(inputCommand.getTaskName(),
+					true);
+		} else if (name && startDate && !endDate) {
+			queryResultList = dataHandler.query(inputCommand.getTaskName(),
+					inputCommand.getStartDate(), inputCommand.getStartDate()
+							.toDateMidnight().toDateTime(), true);
+		} else if (!name && startDate && !endDate) {
+			queryResultList = dataHandler.query(inputCommand.getStartDate(),
+					inputCommand.getStartDate().toDateMidnight().toDateTime(),
+					true);
+		} else {
+			queryResultList = dataHandler.query(true);
+		}
+		return queryResultList;
 	}
 
-	/**
-	 * Getter for end date.
-	 * @return Returns the end date. 
-	 */
-	public DateTime getEndDate() {
-		return endDate;
+	protected String displayListOfTasks(List<Task> resultList) {
+		int count = 1;
+		String outputString = new String();
+		for (Task selectedTask : resultList) {
+			if (selectedTask.getTaskCategory() == TaskCategory.FLOATING) {
+				outputString += count + ". " + selectedTask.getTaskName() + "-"
+						+ selectedTask.getTaskCategory() + "("
+						+ selectedTask.isDone() + ")\n";
+			} else {
+				outputString += count + ". " + selectedTask.getTaskName() + "-"
+						+ selectedTask.getTaskCategory() + "\n";
+			}
+			count++;
+		}
+		return outputString;
 	}
 
-	/**
-	 * Getter for start date.
-	 * @return Returns the start date. 
-	 */
-	public DateTime getStartDate() {
-		return startDate;
+	protected String displayListOfTasksCategory(List<Task> resultList,
+			TaskCategory category) {
+		int count = 1;
+		String outputString = new String();
+		for (Task selectedTask : resultList) {
+			if (selectedTask.getTaskCategory() == category) {
+				outputString += count + ". " + selectedTask.getTaskName() + "-"
+						+ selectedTask.getTaskCategory() + "("
+						+ selectedTask.isDone() + ")\n";
+			}
+			count++;
+		}
+		return outputString;
 	}
 
-	/**
-	 * Getter for the command.
-	 * @return Returns the command. 
-	 */
-	public CommandKeyWords getCommandEnum() {
-		return commandEnum;
-	}
-
-	public String toString(){
-		
-		String outString = "";
-		if(commandEnum!= null)
-			outString = ("Command : " + commandEnum.name());
-		if(taskName!= null)
-			outString +=(" Task name : " + taskName);
-		if(edittedName!= null)
-			outString +=(" Editted name : " + edittedName);
-		if(startDate!= null)
-			outString += (" Start Date : " + startDate.toString());
-		if(endDate!= null)
-			outString += (" End Date : " + endDate.toString());
-		outString += (" Index is : " + index);
-		
-		return outString;
-	}
-	
 }
