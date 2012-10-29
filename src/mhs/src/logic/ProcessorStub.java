@@ -13,7 +13,7 @@ public class ProcessorStub {
 	private String currentState = null;
 	private boolean isPasswordExpected = false;
 	private int lineLimit = 0;
-	public int LINE_HEIGHT = 27;
+	public int LINE_HEIGHT = 22;
 	
 	public void addStateListener(StateListener stateListener) {
 		stateListeners.add(stateListener);
