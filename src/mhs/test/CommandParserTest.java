@@ -205,21 +205,21 @@ public class CommandParserTest {
 		assertEquals("day after tomorrow", inputName);
 		assertEquals(inputStartDate, expectedStartDate);
 		assertEquals(inputEndDate, expectedEndDate);
-		assertEquals(testInput.getCommandEnum(), Command.command.add);
+		assertEquals(testInput.getCommandEnum(), Command.CommandKeyWords.add);
 		
 		testInput = commandParser.getParsedCommand("edit \"watch movie\" to \"laundry duties\"");
 		inputName = testInput.getTaskName().trim();
 		edittedName = testInput.getEdittedName().trim();
 		assertEquals("watch movie", inputName);
 		assertEquals("laundry duties", edittedName);
-		assertEquals(testInput.getCommandEnum(), Command.command.edit);
+		assertEquals(testInput.getCommandEnum(), Command.CommandKeyWords.edit);
 		
 		testInput = commandParser.getParsedCommand("edit watch movie 5pm laundry duties");
 		inputName = testInput.getTaskName().trim();
 		edittedName = testInput.getEdittedName().trim();
 		assertEquals("watch movie", inputName);
 		assertEquals("laundry duties", edittedName);
-		assertEquals(testInput.getCommandEnum(), Command.command.edit);
+		assertEquals(testInput.getCommandEnum(), Command.CommandKeyWords.edit);
 	}
 
 

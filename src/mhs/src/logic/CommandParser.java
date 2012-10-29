@@ -71,7 +71,7 @@ public class CommandParser {
 	private void validateParameters(String parseString) {
 		String[] processArray = parseString.split("\\s+");
 		if (processArray.length > 1) {
-			if (command.equals("remove") || command.equals("edit")) {
+			if (command.equals("remove") || command.equals("edit") || command.equals("mark") || command.equals("rename")) {
 				if (taskName == null) {
 					if (isInteger(processArray[1])) {
 						index = Integer.parseInt(processArray[1]);
@@ -252,9 +252,9 @@ public class CommandParser {
 	private Command setUpCommandObject(String command, String taskName,
 			String edittedName, LocalDate startDate, LocalTime startTime,
 			LocalDate endDate, LocalTime endTime, int index) {
+		CommandValidator commandValidator = new CommandValidator();
+		Command object = commandValidator.validateCommand(command, taskName, edittedName, startDate, startTime, endDate, endTime, index);
 
-		Command object = new Command(command, taskName, edittedName, startDate,
-				startTime, endDate, endTime, index);
 		return object;
 	}
 }

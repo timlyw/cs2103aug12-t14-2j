@@ -343,7 +343,7 @@ public class DateExtractor {
 	/**
 	 * This is the function to set the unique date types.
 	 * 
-	 * @param command
+	 * @param CommandKeyWords
 	 *            This is the unique date type name.
 	 */
 	private void setUniqueDate(String dateCommand) {
