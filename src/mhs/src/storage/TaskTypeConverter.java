@@ -1,6 +1,10 @@
 /**
  * Json converter for Task
  * 
+ * - Serializes task to jObject
+ * - Deserializes jObject to Task
+ * - Support for floating, timed and deadline tasks
+ * 
  * @author timlyw
  */
 
@@ -45,86 +49,142 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 
 		JsonObject jObject = (JsonObject) json.getAsJsonObject();
 
-		String gCalTaskId;
-		DateTime startDatetime;
-		DateTime endDatetime;
-		DateTime taskCreated;
-		DateTime taskUpdated;
-		DateTime taskLastSync;
-
-		if (jObject.get(JSON_KEY_TASK_CREATED).isJsonNull()) {
-			taskCreated = null;
-		} else {
-			taskCreated = new DateTime(jObject.get(JSON_KEY_TASK_CREATED)
-					.getAsString());
-		}
-		if (jObject.get(JSON_KEY_TASK_UPDATED).isJsonNull()) {
-			taskUpdated = null;
-		} else {
-			taskUpdated = new DateTime(jObject.get(JSON_KEY_TASK_UPDATED)
-					.getAsString());
-		}
-		if (jObject.get(JSON_KEY_TASK_LAST_SYNC).isJsonNull()) {
-			taskLastSync = null;
-		} else {
-			taskLastSync = new DateTime(jObject.get(JSON_KEY_TASK_LAST_SYNC)
-					.getAsString());
-		}
-
 		switch (jObject.get(JSON_KEY_TASK_CATEGORY).getAsString()) {
 		case "TIMED":
-			if (jObject.get(JSON_KEY_START_DATE_TIME).isJsonNull()) {
-				startDatetime = null;
-			} else {
-				startDatetime = new DateTime(jObject.get(
-						JSON_KEY_START_DATE_TIME).getAsString());
-			}
-			if (jObject.get(JSON_KEY_END_DATE_TIME).isJsonNull()) {
-				endDatetime = null;
-			} else {
-				endDatetime = new DateTime(jObject.get(JSON_KEY_END_DATE_TIME)
-						.getAsString());
-			}
-			if (jObject.get(JSON_KEY_G_CAL_TASK_ID).isJsonNull()) {
-				gCalTaskId = null;
-			} else {
-				gCalTaskId = jObject.get(JSON_KEY_G_CAL_TASK_ID).getAsString();
-			}
-			return new TimedTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(),
-					jObject.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
-							JSON_KEY_TASK_CATEGORY).getAsString(),
-					startDatetime, endDatetime, taskCreated, taskUpdated,
-					taskLastSync, gCalTaskId, jObject.get(JSON_KEY_IS_DONE)
-							.getAsBoolean(), jObject.get(JSON_KEY_IS_DELETED)
-							.getAsBoolean());
+			return convertJObjectToTimedTask(jObject);
 		case "DEADLINE":
-			if (jObject.get(JSON_KEY_END_DATE_TIME).isJsonNull()) {
-				endDatetime = null;
-			} else {
-				endDatetime = new DateTime(jObject.get(JSON_KEY_END_DATE_TIME)
-						.getAsString());
-			}
-			if (jObject.get(JSON_KEY_G_CAL_TASK_ID).isJsonNull()) {
-				gCalTaskId = null;
-			} else {
-				gCalTaskId = jObject.get(JSON_KEY_G_CAL_TASK_ID).getAsString();
-			}
-			return new DeadlineTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(),
-					jObject.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
-							JSON_KEY_TASK_CATEGORY).getAsString(), endDatetime,
-					taskCreated, taskUpdated, taskLastSync, gCalTaskId, jObject
-							.get(JSON_KEY_IS_DONE).getAsBoolean(), jObject.get(
-							JSON_KEY_IS_DELETED).getAsBoolean());
+			return convertJObjectToDeadlineTask(jObject);
 		case "FLOATING":
-			return new FloatingTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(),
-					jObject.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
-							JSON_KEY_TASK_CATEGORY).getAsString(), taskCreated,
-					taskUpdated, taskLastSync, jObject.get(JSON_KEY_IS_DONE)
-							.getAsBoolean(), jObject.get(JSON_KEY_IS_DELETED)
-							.getAsBoolean());
+			return convertJObjectToFloatingTask(jObject);
 		default:
 			break;
 		}
 		return null;
+	}
+
+	/**
+	 * Converts jObject to floating task
+	 * @param jObject
+	 * @return floating task
+	 */
+	private Task convertJObjectToFloatingTask(JsonObject jObject) {
+		DateTime floatingTasktaskCreated = convertJsonElementToDateTime(
+				JSON_KEY_TASK_CREATED, jObject);
+		DateTime floatingTasktaskUpdated = convertJsonElementToDateTime(
+				JSON_KEY_TASK_UPDATED, jObject);
+		DateTime floatingTasktaskLastSync = convertJsonElementToDateTime(
+				JSON_KEY_TASK_LAST_SYNC, jObject);
+		return new FloatingTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(),
+				jObject.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
+						JSON_KEY_TASK_CATEGORY).getAsString(),
+				floatingTasktaskCreated, floatingTasktaskUpdated,
+				floatingTasktaskLastSync, jObject.get(JSON_KEY_IS_DONE)
+						.getAsBoolean(), jObject.get(JSON_KEY_IS_DELETED)
+						.getAsBoolean());
+	}
+
+	/**
+	 * Converts jObject to deadline task
+	 * @param jObject
+	 * @return deadline task
+	 */
+	private Task convertJObjectToDeadlineTask(JsonObject jObject) {
+		String deadlineTaskgCalTaskId;
+		DateTime deadlineTaskendDatetime;
+		DateTime deadlineTasktaskCreated;
+		DateTime deadlineTasktaskUpdated;
+		DateTime deadlineTasktaskLastSync;
+
+		deadlineTasktaskCreated = convertJsonElementToDateTime(
+				JSON_KEY_TASK_CREATED, jObject);
+		deadlineTasktaskUpdated = convertJsonElementToDateTime(
+				JSON_KEY_TASK_UPDATED, jObject);
+		deadlineTasktaskLastSync = convertJsonElementToDateTime(
+				JSON_KEY_TASK_LAST_SYNC, jObject);
+		deadlineTaskendDatetime = convertJsonElementToDateTime(
+				JSON_KEY_END_DATE_TIME, jObject);
+		deadlineTaskgCalTaskId = convertJsonElementToString(
+				JSON_KEY_G_CAL_TASK_ID, jObject);
+
+		return new DeadlineTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(),
+				jObject.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
+						JSON_KEY_TASK_CATEGORY).getAsString(),
+				deadlineTaskendDatetime, deadlineTasktaskCreated,
+				deadlineTasktaskUpdated, deadlineTasktaskLastSync,
+				deadlineTaskgCalTaskId, jObject.get(JSON_KEY_IS_DONE)
+						.getAsBoolean(), jObject.get(JSON_KEY_IS_DELETED)
+						.getAsBoolean());
+	}
+
+	/**
+	 * Converts jObject to Timed Task
+	 * @param jObject
+	 * @return timed task
+	 */
+	private Task convertJObjectToTimedTask(JsonObject jObject) {
+		String timedTaskgCalTaskId;
+		DateTime timedTaskstartDatetime;
+		DateTime timedTaskendDatetime;
+		DateTime timedTasktaskCreated;
+		DateTime timedTasktaskUpdated;
+		DateTime timedTasktaskLastSync;
+
+		timedTasktaskCreated = convertJsonElementToDateTime(
+				JSON_KEY_TASK_CREATED, jObject);
+		timedTasktaskUpdated = convertJsonElementToDateTime(
+				JSON_KEY_TASK_UPDATED, jObject);
+		timedTasktaskLastSync = convertJsonElementToDateTime(
+				JSON_KEY_TASK_LAST_SYNC, jObject);
+
+		timedTaskstartDatetime = convertJsonElementToDateTime(
+				JSON_KEY_START_DATE_TIME, jObject);
+		timedTaskendDatetime = convertJsonElementToDateTime(
+				JSON_KEY_END_DATE_TIME, jObject);
+		timedTaskgCalTaskId = convertJsonElementToString(
+				JSON_KEY_G_CAL_TASK_ID, jObject);
+
+		return new TimedTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(), jObject
+				.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
+				JSON_KEY_TASK_CATEGORY).getAsString(), timedTaskstartDatetime,
+				timedTaskendDatetime, timedTasktaskCreated,
+				timedTasktaskUpdated, timedTasktaskLastSync,
+				timedTaskgCalTaskId, jObject.get(JSON_KEY_IS_DONE)
+						.getAsBoolean(), jObject.get(JSON_KEY_IS_DELETED)
+						.getAsBoolean());
+	}
+
+	/**
+	 * Converts Json Element to string
+	 * 
+	 * @param jsonKey
+	 * @param jObject
+	 * @return
+	 */
+	private String convertJsonElementToString(String jsonKey, JsonObject jObject) {
+		String convertedString;
+		if (jObject.get(jsonKey).isJsonNull()) {
+			convertedString = null;
+		} else {
+			convertedString = jObject.get(jsonKey).getAsString();
+		}
+		return convertedString;
+	}
+
+	/**
+	 * Converts Json Element to DateTime
+	 * 
+	 * @param jsonKey
+	 * @param jObject
+	 * @return DateTime
+	 */
+	private DateTime convertJsonElementToDateTime(String jsonKey,
+			JsonObject jObject) {
+		DateTime convertedDateTime;
+		if (jObject.get(jsonKey).isJsonNull()) {
+			convertedDateTime = null;
+		} else {
+			convertedDateTime = new DateTime(jObject.get(jsonKey).getAsString());
+		}
+		return convertedDateTime;
 	}
 }
