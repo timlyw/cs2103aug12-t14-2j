@@ -28,7 +28,7 @@ public class Processor {
 	public Processor() {
 		try {
 			dataHandler = new Database();
-			commandParser = new CommandParser();
+			commandParser = CommandParser.getCommandParser();
 			userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
 			createCommand = new CommandCreator();
 		} catch (UnknownHostException e) {

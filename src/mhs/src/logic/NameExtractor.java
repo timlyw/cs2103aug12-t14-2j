@@ -2,8 +2,11 @@ package mhs.src.logic;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import mhs.src.common.MhsLogger;
 
 /**
  * 
@@ -30,8 +33,24 @@ public class NameExtractor {
 		at, by, from, to, on;
 	}
 
-	private int counter = 0;
-	private Queue<String> nameList = new LinkedList<String>();
+	private int counter;
+	private Queue<String> nameList;
+	private static NameExtractor nameExtractor;
+	private static final Logger logger = MhsLogger.getLogger();
+	
+	private NameExtractor() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		nameList = new LinkedList<String>();
+		counter = 0;
+		logger.exiting(getClass().getName(), this.getClass().getName());
+	}
+
+	public static NameExtractor getNameExtractor() {
+		if (nameExtractor == null) {
+			nameExtractor = new NameExtractor();
+		}
+		return nameExtractor;
+	}
 
 	/**
 	 * This is the function to check the string if it is a name format.
@@ -42,23 +61,36 @@ public class NameExtractor {
 	 * @return Returns a true if valid.
 	 */
 	public boolean checkNameFormat(String printString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		
+		DateExtractor dateExtractor = DateExtractor.getDateExtractor();
+		TimeExtractor timeExtractor = TimeExtractor.getTimeExtractor();
+		CommandExtractor commandExtractor = CommandExtractor
+				.getCommandExtractor();
 
-		DateExtractor dateParser = new DateExtractor();
-		TimeExtractor timeParser = new TimeExtractor();
-		CommandExtractor commandParser = new CommandExtractor();
-
-		if (!(timeParser.checkTimeFormat(printString)
-				|| dateParser.checkDateFormat(printString) || commandParser
+		if (!(timeExtractor.checkTimeFormat(printString)
+				|| dateExtractor.checkDateFormat(printString) || commandExtractor
 					.isCommand(printString))) {
-			for (SpecialKeyWords k : SpecialKeyWords.values()) {
-				if (printString.equals(k.name())) {
-					return false;
-				}
+			if (!isSpecialKeyWord(printString)) {
+				logger.exiting(getClass().getName(), this.getClass().getName());
+				return true;
 			}
-			return true;
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return false;
 
+	}
+
+	private boolean isSpecialKeyWord(String printString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		for (SpecialKeyWords k : SpecialKeyWords.values()) {
+			if (printString.equals(k.name())) {
+				logger.exiting(getClass().getName(), this.getClass().getName());
+				return true;
+			}
+		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		return false;
 	}
 
 	/**
@@ -70,9 +102,11 @@ public class NameExtractor {
 	 * @return Returns a string with the full task name.
 	 */
 	public Queue<String> processName(String parseString) {
-
+		logger.entering(getClass().getName(), this.getClass().getName());
+		
 		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 		Queue<String> nameQueue = new LinkedList<String>();
+
 		for (counter = 0; counter < processArray.length; counter++) {
 
 			if (checkNameFormat(processArray[counter])) {
@@ -82,12 +116,19 @@ public class NameExtractor {
 					String command = nameQueue.poll();
 					name += command + REGEX_BLANK;
 				}
-				name = name.trim();
-				nameList.add(name);
+				addNameToList(name);
 			}
 
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return nameList;
+	}
+
+	private void addNameToList(String name) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		name = name.trim();
+		nameList.add(name);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -96,10 +137,12 @@ public class NameExtractor {
 	 * @param printString
 	 *            This is the entire string that needs to be processed.
 	 * 
-	 * @return Returns the name highlighted in the first quotation marks
+	 * @return Returns the string with everything within quotations removed
 	 */
-	public String processNameWithinQuotationMarks(String printString) {
+	public String processQuotationMarks(String printString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String name = "";
+		nameList = new LinkedList<String>();
 		if (hasQuotations(printString)) {
 			while (hasQuotations(printString)) {
 				Matcher matcher = Pattern.compile(REGEX_QUOTATION_MARKS)
@@ -107,15 +150,28 @@ public class NameExtractor {
 
 				if (matcher.find()) {
 					name = matcher.group();
-					printString = printString.replace(name, "");
-					name = name.replace(REGEX_QUOTATION, "");
-					name = name.trim();
-					nameList.add(name);
+					printString = removeNameInQuotationMarks(printString, name);
+					setNameInQuotationMarks(name);
 
 				}
 			}
 		}
 		printString = printString.trim();
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		return printString;
+	}
+
+	private void setNameInQuotationMarks(String name) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		name = name.replace(REGEX_QUOTATION, "");
+		addNameToList(name);
+		logger.exiting(getClass().getName(), this.getClass().getName());
+	}
+
+	private String removeNameInQuotationMarks(String printString, String name) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		printString = printString.replace(name, "");
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return printString;
 	}
 
@@ -129,6 +185,7 @@ public class NameExtractor {
 	 * @return Returns a queue with all the name parameters.
 	 */
 	private Queue<String> setUpNameQueue(String[] processArray) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		int j;
 		Queue<String> commandQueue = new LinkedList<String>();
 		for (j = counter; j < processArray.length; j++) {
@@ -139,6 +196,7 @@ public class NameExtractor {
 			}
 		}
 		counter = j - 1;
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return commandQueue;
 	}
 
@@ -151,12 +209,15 @@ public class NameExtractor {
 	 * 
 	 * @return Returns true if there are quotation marks.
 	 */
-	public boolean hasQuotations(String printString) {
+	private boolean hasQuotations(String printString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		Matcher matcher = Pattern.compile(REGEX_QUOTATION_MARKS).matcher(
 				printString);
 		if (matcher.find()) {
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return true;
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return false;
 	}
 
