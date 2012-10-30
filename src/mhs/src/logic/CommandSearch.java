@@ -18,8 +18,8 @@ public class CommandSearch extends Command {
 		}
 	}
 
-	public CommandSearch() {
-
+	public CommandSearch(List<Task> lastUsedList) {
+		matchedTasks = lastUsedList;
 	}
 
 	@Override
@@ -52,13 +52,29 @@ public class CommandSearch extends Command {
 	@Override
 	public String executeByIndex(int index) {
 		String outputString = new String();
-		if (indexExpected & matchedTasks.size() <= index) {
+		if (indexExpected & index <= matchedTasks.size()) {
 			outputString = "Chosen Task - "
 					+ matchedTasks.get(index).getTaskName() + "\nTime: "
 					+ matchedTasks.get(index).getStartDateTime() + " , "
 					+ matchedTasks.get(index).getEndDateTime();
 			;
 			indexExpected = false;
+			isUndoable = true;
+		} else {
+			outputString = "Invalid Command";
+		}
+		return outputString;
+	}
+
+	@Override
+	public String executeByIndexAndType(int index) {
+		String outputString = new String();
+		if (index < matchedTasks.size()) {
+			outputString = "Chosen Task - "
+					+ matchedTasks.get(index).getTaskName() + "\nTime: "
+					+ matchedTasks.get(index).getStartDateTime() + " , "
+					+ matchedTasks.get(index).getEndDateTime();
+			;
 			isUndoable = true;
 		} else {
 			outputString = "Invalid Command";
