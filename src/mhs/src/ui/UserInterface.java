@@ -12,10 +12,6 @@ import javax.swing.event.DocumentListener;
 import mhs.src.logic.ProcessorStub;
 import mhs.src.logic.StateListener;
 
-import chrriis.common.UIUtils;
-import chrriis.dj.nativeswing.NativeSwing;
-import chrriis.dj.nativeswing.swtimpl.NativeInterface;
-
 public class UserInterface {
 	
 	MhsFrame mhsFrame;
@@ -25,7 +21,6 @@ public class UserInterface {
 	int lineLimit;
 	
 	public UserInterface() {
-		initSwingUtilities();
 		initMhsFrame();
 		waitForMhsFrameToinit();
 		initListeners();
@@ -83,12 +78,6 @@ public class UserInterface {
 		processor.addStateListener(processorStateListener);
 	}
 	
-	private void initSwingUtilities() {
-		NativeInterface.open();
-		NativeSwing.initialize();
-	    UIUtils.setPreferredLookAndFeel();
-	}
-
 	private void updateProcesorCommand() {
 		String command = mhsFrame.getCommand();
 		if(command.isEmpty()) {
