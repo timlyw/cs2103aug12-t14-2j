@@ -37,7 +37,7 @@ public class NameExtractor {
 	private Queue<String> nameList;
 	private static NameExtractor nameExtractor;
 	private static final Logger logger = MhsLogger.getLogger();
-	
+
 	private NameExtractor() {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		nameList = new LinkedList<String>();
@@ -55,23 +55,23 @@ public class NameExtractor {
 	/**
 	 * This is the function to check the string if it is a name format.
 	 * 
-	 * @param printString
+	 * @param parseString
 	 *            This is the string to be checked.
 	 * 
 	 * @return Returns a true if valid.
 	 */
-	public boolean checkNameFormat(String printString) {
+	public boolean checkNameFormat(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		
+
 		DateExtractor dateExtractor = DateExtractor.getDateExtractor();
 		TimeExtractor timeExtractor = TimeExtractor.getTimeExtractor();
 		CommandExtractor commandExtractor = CommandExtractor
 				.getCommandExtractor();
-
-		if (!(timeExtractor.checkTimeFormat(printString)
-				|| dateExtractor.checkDateFormat(printString) || commandExtractor
-					.isCommand(printString))) {
-			if (!isSpecialKeyWord(printString)) {
+		assert (parseString != null);
+		if (!(timeExtractor.checkTimeFormat(parseString)
+				|| dateExtractor.checkDateFormat(parseString) || commandExtractor
+					.isCommand(parseString))) {
+			if (!isSpecialKeyWord(parseString)) {
 				logger.exiting(getClass().getName(), this.getClass().getName());
 				return true;
 			}
@@ -103,22 +103,27 @@ public class NameExtractor {
 	 */
 	public Queue<String> processName(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		
-		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
-		Queue<String> nameQueue = new LinkedList<String>();
+		assert (parseString != null);
+		try {
+			String[] processArray = parseString.split(REGEX_WHITE_SPACE);
+			Queue<String> nameQueue = new LinkedList<String>();
 
-		for (counter = 0; counter < processArray.length; counter++) {
+			for (counter = 0; counter < processArray.length; counter++) {
 
-			if (checkNameFormat(processArray[counter])) {
-				nameQueue = setUpNameQueue(processArray);
-				String name = "";
-				while (!nameQueue.isEmpty()) {
-					String command = nameQueue.poll();
-					name += command + REGEX_BLANK;
+				if (checkNameFormat(processArray[counter])) {
+					nameQueue = setUpNameQueue(processArray);
+					String name = "";
+					while (!nameQueue.isEmpty()) {
+						String command = nameQueue.poll();
+						name += command + REGEX_BLANK;
+					}
+					addNameToList(name);
 				}
-				addNameToList(name);
-			}
 
+			}
+		} catch (NullPointerException e) {
+			logger.exiting(getClass().getName(), this.getClass().getName());
+			return null;
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return nameList;
@@ -134,31 +139,36 @@ public class NameExtractor {
 	/**
 	 * This is the function to process the name which is within quotation marks.
 	 * 
-	 * @param printString
+	 * @param parseString
 	 *            This is the entire string that needs to be processed.
 	 * 
 	 * @return Returns the string with everything within quotations removed
 	 */
-	public String processQuotationMarks(String printString) {
+	public String processQuotationMarks(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (parseString != null);
 		String name = "";
 		nameList = new LinkedList<String>();
-		if (hasQuotations(printString)) {
-			while (hasQuotations(printString)) {
+		if (hasQuotations(parseString)) {
+			while (hasQuotations(parseString)) {
 				Matcher matcher = Pattern.compile(REGEX_QUOTATION_MARKS)
-						.matcher(printString);
+						.matcher(parseString);
 
 				if (matcher.find()) {
 					name = matcher.group();
-					printString = removeNameInQuotationMarks(printString, name);
+					parseString = removeNameInQuotationMarks(parseString, name);
 					setNameInQuotationMarks(name);
 
 				}
 			}
 		}
-		printString = printString.trim();
+		try {
+			parseString = parseString.trim();
+		} catch (NullPointerException e) {
+			return parseString;
+		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
-		return printString;
+		return parseString;
 	}
 
 	private void setNameInQuotationMarks(String name) {
@@ -211,11 +221,15 @@ public class NameExtractor {
 	 */
 	private boolean hasQuotations(String printString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		Matcher matcher = Pattern.compile(REGEX_QUOTATION_MARKS).matcher(
-				printString);
-		if (matcher.find()) {
-			logger.exiting(getClass().getName(), this.getClass().getName());
-			return true;
+		try {
+			Matcher matcher = Pattern.compile(REGEX_QUOTATION_MARKS).matcher(
+					printString);
+			if (matcher.find()) {
+				logger.exiting(getClass().getName(), this.getClass().getName());
+				return true;
+			}
+		} catch (NullPointerException e) {
+			return false;
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return false;
