@@ -17,6 +17,7 @@ public class CommandCreator {
 	public String createCommand(CommandInfo userCommand) {
 		String userOutputString = new String();
 		if (userCommand.getCommandEnum() != null) {
+			System.out.println("INDEX: "+userCommand.getIndex());
 			if (userCommand.getIndex() != 0) {
 				userOutputString = executeCommandByIndex(userCommand);
 			} else {
@@ -34,6 +35,7 @@ public class CommandCreator {
 	}
 
 	private String executeCommand(CommandInfo userCommand) {
+		System.out.println(userCommand.toString());
 		String userOutputString = new String();
 		switch (userCommand.getCommandEnum()) {
 		case add:

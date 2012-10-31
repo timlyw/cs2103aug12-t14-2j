@@ -48,34 +48,55 @@ public class TaskLists {
 	 */
 	public TaskLists(Map<Integer, Task> taskListToInitialize) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (taskListToInitialize == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER,
 					PARAMETER_TASK_LIST_TO_INITIALIZE));
 		}
+
 		initializeTaskLists(taskListToInitialize);
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
+	/**
+	 * Initialize task lists
+	 * 
+	 * @param taskListToInitialize
+	 */
 	private void initializeTaskLists(Map<Integer, Task> taskListToInitialize) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+		assert(taskListToInitialize != null);
+		
 		createTaskLists();
 		loadTaskListsFromTaskListToInitialize(taskListToInitialize);
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
+	/**
+	 * Create task lists - taskList - gCalTaskList
+	 */
 	private void createTaskLists() {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		taskList = new LinkedHashMap<Integer, Task>();
 		gCalTaskList = new LinkedHashMap<String, Task>();
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
+	/**
+	 * Load task lists with tasks from taskListToInitialize
+	 * 
+	 * @param taskListToInitialize
+	 */
 	private void loadTaskListsFromTaskListToInitialize(
 			Map<Integer, Task> taskListToInitialize) {
-
 		logger.entering(getClass().getName(), this.getClass().getName());
-
+		assert(taskListToInitialize != null);
+		
 		for (Map.Entry<Integer, Task> entry : taskListToInitialize.entrySet()) {
 			Task taskToAdd = entry.getValue();
 			taskList.put(taskToAdd.getTaskId(), taskToAdd);
@@ -96,6 +117,7 @@ public class TaskLists {
 	 */
 	public void updateTaskInTaskLists(Task taskToUpdateInTaskLists) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (taskToUpdateInTaskLists == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER,
@@ -109,6 +131,7 @@ public class TaskLists {
 			gCalTaskList.put(taskToUpdateInTaskLists.getgCalTaskId(),
 					taskToUpdateInTaskLists);
 		}
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
@@ -119,6 +142,7 @@ public class TaskLists {
 	 */
 	public void removeTaskInTaskLists(Task taskToRemoveFromTaskLists) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (taskToRemoveFromTaskLists == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER,
@@ -127,6 +151,7 @@ public class TaskLists {
 
 		taskList.remove(taskToRemoveFromTaskLists.getTaskId());
 		gCalTaskList.remove(taskToRemoveFromTaskLists.getgCalTaskId());
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
@@ -141,10 +166,12 @@ public class TaskLists {
 	 */
 	public Task getTask(int taskId) throws TaskNotFoundException {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (!containsTask(taskId)) {
 			throw new TaskNotFoundException(
 					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return taskList.get(taskId).clone();
 	}
@@ -158,6 +185,7 @@ public class TaskLists {
 	 */
 	public Task getSyncTask(String gCalTaskId) throws TaskNotFoundException {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (gCalTaskId == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_G_CAL_TASK_ID));
@@ -166,6 +194,7 @@ public class TaskLists {
 			throw new TaskNotFoundException(
 					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return gCalTaskList.get(gCalTaskId).clone();
 	}
@@ -187,23 +216,21 @@ public class TaskLists {
 		return queriedTaskRecordset;
 	}
 
-	private void sortTaskList(boolean orderByStartDateTime,
-			List<Task> queriedTaskRecordset) {
-		logger.entering(getClass().getName(), this.getClass().getName());
-		if (orderByStartDateTime) {
-			orderTaskRecordSetByStartDateTime(queriedTaskRecordset);
-		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
-	}
-
+	/**
+	 * Get all non-deleted tasks from taskList
+	 * 
+	 * @param queriedTaskRecordset
+	 */
 	private void getAllNonDeletedTasks(List<Task> queriedTaskRecordset) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
 			if (entry.getValue().isDeleted()) {
 				continue;
 			}
 			queriedTaskRecordset.add(entry.getValue().clone());
 		}
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
@@ -231,6 +258,12 @@ public class TaskLists {
 		return queriedTaskRecordset;
 	}
 
+	/**
+	 * Get all non-deleted tasks with matching task name
+	 * 
+	 * @param taskName
+	 * @param queriedTaskRecordset
+	 */
 	private void getAllNonDeletedTasksWithMatchingTaskName(String taskName,
 			List<Task> queriedTaskRecordset) {
 		logger.entering(getClass().getName(), this.getClass().getName());
@@ -281,7 +314,6 @@ public class TaskLists {
 	 */
 	private void getAllNonDeletedTasksWithTaskCategory(
 			TaskCategory queryTaskCategory, List<Task> queriedTaskRecordset) {
-
 		logger.entering(getClass().getName(), this.getClass().getName());
 
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
@@ -328,11 +360,11 @@ public class TaskLists {
 	}
 
 	/**
-	 * Get DateTime interval from two DateTimes
+	 * Get DateTime interval from two DateTimes inclusive
 	 * 
 	 * @param startDateTime
 	 * @param endDateTime
-	 * @return
+	 * @return dateTimeInterval
 	 */
 	private Interval getDateTimeInterval(DateTime startDateTime,
 			DateTime endDateTime) {
@@ -353,6 +385,7 @@ public class TaskLists {
 	private void getAllTasksWithinInterval(List<Task> queriedTaskRecordset,
 			Interval dateTimeInterval) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
 			Task taskEntry = entry.getValue();
 			if (taskEntry.isDeleted()) {
@@ -381,6 +414,14 @@ public class TaskLists {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
+	/**
+	 * Checks if startDateTime and endDateTime are within a dateTime interval
+	 * 
+	 * @param dateTimeInterval
+	 * @param startDateTime
+	 * @param endDateTime
+	 * @return true if start and end DateTime are with dateTimeInterval
+	 */
 	private boolean isWithinInterval(Interval dateTimeInterval,
 			DateTime startDateTime, DateTime endDateTime) {
 		logger.entering(getClass().getName(), this.getClass().getName());
@@ -402,6 +443,7 @@ public class TaskLists {
 	public List<Task> getTasks(String taskName, DateTime startDateTime,
 			DateTime endDateTime, boolean orderByStartDateTime) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (taskName == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_TASK_NAME));
@@ -423,7 +465,8 @@ public class TaskLists {
 	}
 
 	/**
-	 * Gets tasks matching parameters and adds them to queriedTaskRecordset
+	 * Gets tasks matching any of the specified parameters and adds them to
+	 * queriedTaskRecordset
 	 * 
 	 * @param taskName
 	 * @param startDateTime
@@ -473,6 +516,7 @@ public class TaskLists {
 			DateTime startDateTime, DateTime endDateTime,
 			boolean orderByStartDateTime) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (taskName == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_TASK_NAME));
@@ -494,7 +538,8 @@ public class TaskLists {
 	}
 
 	/**
-	 * Gets tasks matching parameters and adds them to queriedTaskRecordset
+	 * Gets tasks matching any of the specified parameters and adds them to
+	 * queriedTaskRecordset
 	 * 
 	 * @param taskName
 	 * @param taskCategory
@@ -507,8 +552,8 @@ public class TaskLists {
 			DateTime endDateTime, List<Task> queriedTaskRecordset) {
 
 		logger.entering(getClass().getName(), this.getClass().getName());
-		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
 
+		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
 			Task taskEntry = entry.getValue();
 			if (taskEntry.isDeleted()) {
 				continue;
@@ -535,6 +580,22 @@ public class TaskLists {
 	}
 
 	/**
+	 * Sort task list by startDateTime if orderByStartDateTime is true,
+	 * otherwise, normal ordering by taskId is used
+	 * 
+	 * @param orderByStartDateTime
+	 * @param queriedTaskRecordset
+	 */
+	private void sortTaskList(boolean orderByStartDateTime,
+			List<Task> queriedTaskRecordset) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		if (orderByStartDateTime) {
+			orderTaskRecordSetByStartDateTime(queriedTaskRecordset);
+		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
+	}
+
+	/**
 	 * Orders list of tasks by start DateTime
 	 * 
 	 * @param queriedTaskRecordset
@@ -542,8 +603,10 @@ public class TaskLists {
 	private void orderTaskRecordSetByStartDateTime(
 			List<Task> queriedTaskRecordset) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		TaskStartDateTimeComparator taskStartDateTimeComparator = new TaskStartDateTimeComparator();
 		Collections.sort(queriedTaskRecordset, taskStartDateTimeComparator);
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
