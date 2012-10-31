@@ -98,7 +98,9 @@ public class ConfigFile {
 	 * Initialize config parameters
 	 */
 	private void initializeConfigParameters() {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		configParameters = new HashMap<String, String>();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -108,8 +110,8 @@ public class ConfigFile {
 	 */
 	private void createNewJsonFile() throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
-
 		assert (configFile != null && configParameters != null);
+
 		configFile.createNewFile();
 		FileWriter fileWriter = new FileWriter(configFile);
 		fileWriter.write(gson.toJson(configParameters));
@@ -139,11 +141,15 @@ public class ConfigFile {
 	 */
 	@SuppressWarnings("unchecked")
 	private void loadConfigParametersFromJobject() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (gson != null);
+
 		JsonParser parser = new JsonParser();
 		JsonObject configJObject = parser.parse(jsonReader).getAsJsonObject();
 
 		configParameters = gson.fromJson(configJObject,
 				configParameters.getClass());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -154,9 +160,14 @@ public class ConfigFile {
 	 */
 	private void openJsonInputStream() throws FileNotFoundException,
 			UnsupportedEncodingException {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (configFile != null);
+
 		inputStream = new FileInputStream(configFile);
 		jsonReader = new JsonReader(new InputStreamReader(inputStream,
 				CHAR_ENCODING_UTF8));
+
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -165,8 +176,12 @@ public class ConfigFile {
 	 * @throws IOException
 	 */
 	private void closeJsonInputStream() throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (jsonReader != null && inputStream != null);
+
 		jsonReader.close();
 		inputStream.close();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**

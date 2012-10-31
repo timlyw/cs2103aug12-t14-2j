@@ -18,6 +18,8 @@ import com.google.gson.GsonBuilder;
 
 public class Task {
 
+	private static Gson gson = MhsGson.getInstance();
+
 	protected Integer taskId;
 	protected String taskName;
 	protected TaskCategory taskCategory;
@@ -94,12 +96,6 @@ public class Task {
 	 * Returns cloned Task
 	 */
 	public Task clone() {
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(DateTime.class,
-				new DateTimeTypeConverter());
-		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
-		Gson gson = gsonBuilder.create();
-
 		return gson.fromJson(gson.toJson(this), this.getClass());
 	}
 
