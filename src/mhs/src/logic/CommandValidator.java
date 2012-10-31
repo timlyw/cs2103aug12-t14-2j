@@ -161,7 +161,7 @@ public class CommandValidator {
 
 	private void enforceTaskName() {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		taskName = "<Default task>";
+		taskName = "Default task";
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
