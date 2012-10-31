@@ -38,19 +38,20 @@ public class CommandParser {
 	private LocalTime endTime;
 
 	private static final Logger logger = MhsLogger.getLogger();
-	
+
 	private int index;
 	private static CommandParser commandParser;
-	private CommandParser(){
+
+	private CommandParser() {
 		setEnvironment();
 	}
-	
-	public static CommandParser getCommandParser(){
-		
-		if(commandParser == null){
+
+	public static CommandParser getCommandParser() {
+
+		if (commandParser == null) {
 			commandParser = new CommandParser();
 		}
-		
+
 		return commandParser;
 	}
 
@@ -67,12 +68,13 @@ public class CommandParser {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		setEnvironment();
 
+		getIndexAtFirstLocation(parseString);
 		parseString = setNameInQuotationMarks(parseString);
 
 		setCommand(parseString);
 		setTime(parseString);
 		setDate(parseString);
-		validateParameters(parseString);
+		setIndex(parseString);
 		setName(parseString);
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return setUpCommandObject(command, taskName, edittedName, startDate,
@@ -80,11 +82,27 @@ public class CommandParser {
 
 	}
 
-	private void validateParameters(String parseString) {
+	private void getIndexAtFirstLocation(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		String[] processArray = parseString.split("\\s+");
-		if (processArray.length > 1) {
-			if (command.equals(COMMAND_REMOVE) || command.equals(COMMAND_EDIT) || command.equals(COMMAND_MARK) || command.equals(COMMAND_RENAME)) {
+		
+		if(isInteger(processArray[0])){
+			index = Integer.parseInt(processArray[0]);
+			command = null;
+		}
+		
+		logger.exiting(getClass().getName(), this.getClass().getName());
+	}
+
+	private void setIndex(String parseString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		String[] processArray = parseString.split("\\s+");
+
+		if (processArray.length > 0) {
+
+			if (command.equals(COMMAND_REMOVE) || command.equals(COMMAND_EDIT)
+					|| command.equals(COMMAND_MARK)
+					|| command.equals(COMMAND_RENAME)) {
 				if (taskName == null) {
 					if (isInteger(processArray[1])) {
 						index = Integer.parseInt(processArray[1]);
@@ -245,7 +263,7 @@ public class CommandParser {
 		process = nameParser.processQuotationMarks(process);
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return process;
-		
+
 	}
 
 	/**
@@ -280,7 +298,9 @@ public class CommandParser {
 			LocalDate endDate, LocalTime endTime, int index) {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		CommandValidator commandValidator = new CommandValidator();
-		CommandInfo object = commandValidator.validateCommand(command, taskName, edittedName, startDate, startTime, endDate, endTime, index);
+		CommandInfo object = commandValidator.validateCommand(command,
+				taskName, edittedName, startDate, startTime, endDate, endTime,
+				index);
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return object;
 	}
