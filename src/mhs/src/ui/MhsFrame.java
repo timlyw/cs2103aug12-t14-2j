@@ -1,5 +1,17 @@
 package mhs.src.ui;
 
+/**
+ * This class provides the interface to display program output to the user and
+ * to read user input, this is provided by:
+ * 		1) Display Screen: Show program output to user
+ * 		2) Feedback Screen: Show command feedback to user
+ * 		3) Input Box: two format types available	
+ * 			a) plain text input
+ * 			b) password input
+ * 
+ * @author John Wong
+ */
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -9,6 +21,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -18,14 +31,19 @@ import javax.swing.event.DocumentListener;
 
 public class MhsFrame extends JFrame {
 
+	// enumeration of the input formats available
 	private static enum INPUT_TYPE {PLAIN_TEXT, PASSWORD};
 	
+	// this variable is required by JFrame
 	private static final long serialVersionUID = 1L;
+	
+	// frame parameters
 	private static final int FRAME_WIDTH = 550;
 	private static final int FRAME_HEIGHT = 450;
 	private static final String FRAME_TITLE = "My Hot Secretary";
 	private static final Color FRAME_BACKGROUND_COLOR = new Color(0, 0, 0);
 
+	// default margin, position and font parameters
 	private static final int DEFAULT_CONSTRAINT_POSITION_X = 0;
 	private static final int DEFAULT_CONSTRAINT_WEIGHT_X = 1;
 	private static final int DEFAULT_CONSTRAINT_WIDTH = 1;
@@ -33,16 +51,20 @@ public class MhsFrame extends JFrame {
 	private static final int DEFAULT_FONT_SIZE = 14;
 	private static final String DEFAULT_FONT_TYPE = "calibri";
 
+	// display screen sizing and position parameters
 	private static final int DISPLAY_SCREEN_POSITION_Y = 0;
 	private static final int DISPLAY_SCREEN_WEIGHT_Y = 1;
 	private static final int DISPLAY_SCREEN_HEIGHT = 1;
 	private static final int DISPLAY_SCREEN_BOTTOM_PADDING = 0;
 
+	// feedback screen sizing and position parameters
 	private static final int FEEDBACK_SCREEN_POSITION_Y = 1;
 	private static final int FEEDBACK_SCREEN_WEIGHT_Y = 0;
 	private static final int FEEDBACK_SCREEN_HEIGHT = 1;
 	private static final int FEEDBACK_SCREEN_TOP_PADDING = 0;
+	private static final String CONTENT_TYPE_HTML = "text/html";
 
+	// input box sizing and position parameters
 	private static final int INPUT_BOX_POSITION_Y = 2;
 	private static final int INPUT_BOX_WEIGHT_Y = 0;
 	private static final int INPUT_BOX_HEIGHT = 1;
@@ -50,16 +72,32 @@ public class MhsFrame extends JFrame {
 	public static final Font INPUT_BOX_FONT = new Font(DEFAULT_FONT_TYPE,
 			Font.BOLD, DEFAULT_FONT_SIZE);
 
+	// string used to blank out input boxes after user hits enter
 	private static final String BLANK = "";
 	
+	// panel used to contain all frame components
 	private final JPanel framePanel = new JPanel();
-	private final HtmlScreen displayScreen = new HtmlScreen();
-	private final HtmlScreen feedbackScreen = new HtmlScreen();
+	
+	// display area for program output
+	private final JEditorPane displayScreen = new JEditorPane();
+	
+	// display area for feedback output
+	private final JEditorPane feedbackScreen = new JEditorPane();
+	
+	// input area for plain text
 	private final JTextField plainTextBox = new JTextField();
+	
+	// input area for password
 	private final JPasswordField passwordBox = new JPasswordField();
 	
+	// used to format text for display and feedback
 	private final HtmlCreator htmlCreator = new HtmlCreator();
+	
+	// keep track of current input type
 	private INPUT_TYPE inputType = null;
+	
+	// used to keep track if input is enabled
+	private boolean isInputDisabled = false;
 	
 	public MhsFrame() {
 		super(FRAME_TITLE);
@@ -68,6 +106,10 @@ public class MhsFrame extends JFrame {
 
 	public void open() {
 		this.setVisible(true);
+	}
+	
+	public boolean inputDisabled() {
+		return isInputDisabled;
 	}
 	
 	public int getDisplayScreenHeight() {
@@ -97,18 +139,20 @@ public class MhsFrame extends JFrame {
 	}
 	
 	public void clearInput() {
+		isInputDisabled = true;
 		plainTextBox.setText(BLANK);
 		passwordBox.setText(BLANK);
+		isInputDisabled = false;
 	}
 	
 	public void setDisplayText(String displayText) {
 		String htmlText = htmlCreator.createDisplayScreenHtml(displayText);
-		displayScreen.setHtml(htmlText);
+		displayScreen.setText(htmlText);
 	}
 
 	public void setFeedbackText(String feedbackText) {
 		String htmlText = htmlCreator.createFeedbackScreenHtml(feedbackText);
-		feedbackScreen.setHtml(htmlText);
+		feedbackScreen.setText(htmlText);
 	}
 	
 	public void setInputToPlainText() {
@@ -188,10 +232,14 @@ public class MhsFrame extends JFrame {
 
 	private void initDisplayScreen() {
 		addDisplayScreenToFramePanel();
+		displayScreen.setEditable(false);
+		displayScreen.setContentType(CONTENT_TYPE_HTML);
 	}
 
 	private void initFeedbackScreen() {
 		addFeedbackScreenToPanel();
+		feedbackScreen.setEditable(false);
+		feedbackScreen.setContentType(CONTENT_TYPE_HTML);
 	}
 
 	private void addFeedbackScreenToPanel() {
