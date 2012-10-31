@@ -1041,9 +1041,9 @@ public class Database {
 
 		taskToDelete.setDeleted(true);
 
-		// set updated time further ahead to force sync (timing issues)
+		// set updated time 
 		DateTime UpdateTime = new DateTime();
-		UpdateTime = DateTime.now().plusMinutes(1);
+		UpdateTime = DateTime.now();
 		taskToDelete.setTaskUpdated(UpdateTime);
 
 		taskLists.updateTaskInTaskLists(taskToDelete);
@@ -1111,10 +1111,10 @@ public class Database {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		assert (updatedTaskToSave != null);
 
-		// set updated time further ahead to force sync (timing issues)
+		// set updated time
 		DateTime UpdateTime = new DateTime();
 		UpdateTime = DateTime.now();
-		updatedTaskToSave.setTaskUpdated(UpdateTime.plusMinutes(1));
+		updatedTaskToSave.setTaskUpdated(UpdateTime);
 
 		taskLists.updateTaskInTaskLists(updatedTaskToSave);
 		logger.exiting(getClass().getName(), this.getClass().getName());
@@ -1288,6 +1288,13 @@ public class Database {
 		return taskIsValid;
 	}
 
+	/**
+	 * Checks if deadline task format is valid
+	 * 
+	 * @param task
+	 * @param taskIsValid
+	 * @return true if deadline task format is valid
+	 */
 	private boolean isDeadlineTaskValid(Task task, boolean taskIsValid) {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		assert (task != null);
@@ -1299,6 +1306,13 @@ public class Database {
 		return taskIsValid;
 	}
 
+	/**
+	 * Checks if timed task is valid
+	 * 
+	 * @param task
+	 * @param taskIsValid
+	 * @return
+	 */
 	private boolean isTimedTaskValid(Task task, boolean taskIsValid) {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		assert (task != null);
@@ -1336,6 +1350,7 @@ public class Database {
 		int getNewTaskId = 0;
 		Set<Integer> taskKeySet = taskLists.getTaskList().keySet();
 		Iterator<Integer> iterator = taskKeySet.iterator();
+
 		while (iterator.hasNext()) {
 			getNewTaskId = iterator.next();
 		}
