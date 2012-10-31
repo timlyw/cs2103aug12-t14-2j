@@ -96,7 +96,7 @@ public class Database {
 		 * @throws IOException
 		 * @throws InvalidTaskFormatException
 		 * @throws TaskNotFoundException
-		 * @return 
+		 * @return
 		 */
 		private boolean syncronizeDatabases() throws ServiceException,
 				UnknownHostException, IOException, TaskNotFoundException,
@@ -702,11 +702,16 @@ public class Database {
 		String googleUserAccount = googleCalendar.getUserEmail();
 
 		if (googleAuthToken != null) {
+			logger.log(Level.INFO, "Saving Google : "
+					+ CONFIG_PARAM_GOOGLE_AUTH_TOKEN + " " + googleAuthToken);
 			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN,
 					googleAuthToken);
 		}
 
 		if (googleUserAccount != null) {
+			logger.log(Level.INFO, "Saving Google : "
+					+ CONFIG_PARAM_GOOGLE_USER_ACCOUNT + " "
+					+ googleUserAccount);
 			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT,
 					googleUserAccount);
 		}

@@ -57,7 +57,7 @@ public class GoogleCalendar {
 	private String userEmail = null;
 
 	// access token used to authorize communication with Google Calendar
-	private String userToken = null;
+	private static String userToken = null;
 
 	// calendarService used to interface with Google Calendar
 	private CalendarService calendarService;
@@ -700,6 +700,7 @@ public class GoogleCalendar {
 			throws NullPointerException {
 		UserToken token = (UserToken) calService.getAuthTokenFactory()
 				.getAuthToken();
+		userToken = token.getValue();
 		return token;
 	}
 
