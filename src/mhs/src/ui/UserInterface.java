@@ -18,7 +18,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import mhs.src.common.MhsLogger;
-import mhs.src.logic.ProcessorStub;
+import mhs.src.logic.Processor;
 import mhs.src.logic.StateListener;
 
 public class UserInterface {
@@ -27,7 +27,7 @@ public class UserInterface {
 	private MhsFrame mhsFrame;
 	
 	// processor used to process user commands
-	private ProcessorStub processor = new ProcessorStub();
+	private Processor processor = new Processor();
 	
 	// enter key constant used to check when user hits enter key
 	private static final int ENTER_KEY = KeyEvent.VK_ENTER;
