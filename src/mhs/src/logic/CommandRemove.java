@@ -74,7 +74,6 @@ public class CommandRemove extends Command {
 	@Override
 	public String executeByIndex(int index) {
 		String outputString = new String();
-		System.out.println("delet by index-in");
 		if (indexExpected & matchedTasks.size() <= index) {
 			try {
 				dataHandler.delete(matchedTasks.get(index).getTaskId());
