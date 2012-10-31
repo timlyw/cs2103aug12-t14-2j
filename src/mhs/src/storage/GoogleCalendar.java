@@ -352,15 +352,11 @@ public class GoogleCalendar {
 	 *             Internet connection unavailable
 	 */
 	public void deleteEvent(String eventId) throws IOException,
-			ServiceException, NullPointerException {
+			ServiceException, NullPointerException, ResourceNotFoundException {
 		startLog();
 		CalendarEventEntry eventToBeDeleted = constructEvent(eventId);
-		try {
-			eventToBeDeleted.delete();
-			endLog();
-		} catch (ResourceNotFoundException e) {
-			endLog();
-		}
+		eventToBeDeleted.delete();
+		endLog();
 	}
 
 	/**
@@ -381,15 +377,12 @@ public class GoogleCalendar {
 	 */
 	public void deleteEvents(String startTime, String endTime)
 			throws UnknownHostException, NullPointerException, IOException,
-			ServiceException {
+			ServiceException, ResourceNotFoundException {
 		startLog();
 		List<CalendarEventEntry> eventList = retrieveEvents(startTime, endTime);
 		for (int i = 0; i < eventList.size(); i++) {
 			CalendarEventEntry eventToBeDeleted = eventList.get(i);
-			try {
-				eventToBeDeleted.delete();
-			} catch (ResourceNotFoundException e) {
-			}
+			eventToBeDeleted.delete();
 		}
 		endLog();
 	}
