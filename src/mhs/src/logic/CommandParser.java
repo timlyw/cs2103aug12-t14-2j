@@ -66,6 +66,7 @@ public class CommandParser {
 	 */
 	public CommandInfo getParsedCommand(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (parseString != null);
 		setEnvironment();
 
 		getIndexAtFirstLocation(parseString);
@@ -84,34 +85,44 @@ public class CommandParser {
 
 	private void getIndexAtFirstLocation(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		String[] processArray = parseString.split("\\s+");
-		
-		if(isInteger(processArray[0])){
-			index = Integer.parseInt(processArray[0]);
-			command = null;
+		try {
+			String[] processArray = parseString.split("\\s+");
+			if (processArray.length > 0) {
+				if (isInteger(processArray[0])) {
+					index = Integer.parseInt(processArray[0]);
+					command = null;
+				}
+			}
+		} catch (NullPointerException e) {
+			return;
 		}
-		
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	private void setIndex(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		String[] processArray = parseString.split("\\s+");
+		try {
+			String[] processArray = parseString.split("\\s+");
 
-		if (processArray.length > 0) {
+			if (processArray.length > 1) {
 
-			if (command.equals(COMMAND_REMOVE) || command.equals(COMMAND_EDIT)
-					|| command.equals(COMMAND_MARK)
-					|| command.equals(COMMAND_RENAME)) {
-				if (taskName == null) {
-					if (isInteger(processArray[1])) {
-						index = Integer.parseInt(processArray[1]);
-						taskNameFlag = true;
+				if (command.equals(COMMAND_REMOVE)
+						|| command.equals(COMMAND_EDIT)
+						|| command.equals(COMMAND_MARK)
+						|| command.equals(COMMAND_RENAME)) {
+					if (taskName == null) {
+						if (isInteger(processArray[1])) {
+							index = Integer.parseInt(processArray[1]);
+							taskNameFlag = true;
+						}
 					}
-				}
 
+				}
 			}
+		} catch (NullPointerException e) {
+			return;
 		}
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
@@ -173,17 +184,22 @@ public class CommandParser {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		Queue<LocalDate> dateList;
 		dateList = dateParser.processDate(parseString);
-		if (dateList.isEmpty()) {
-			return;
-		}
-		while (!dateList.isEmpty()) {
-			if (!dateFlag) {
-				startDate = dateList.poll();
-				dateFlag = true;
-			} else if (dateFlag) {
-				endDate = dateList.poll();
-				break;
+		try {
+			if (dateList.isEmpty()) {
+				return;
 			}
+			while (!dateList.isEmpty()) {
+				if (!dateFlag) {
+					startDate = dateList.poll();
+					dateFlag = true;
+				} else if (dateFlag) {
+					endDate = dateList.poll();
+					break;
+				}
+			}
+		} catch (NullPointerException e) {
+			logger.exiting(getClass().getName(), this.getClass().getName());
+			return;
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
@@ -222,16 +238,21 @@ public class CommandParser {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		Queue<String> nameList;
 		nameList = nameParser.processName(parseString);
-		if (nameList.isEmpty()) {
-			return;
-		}
-		for (int i = 0; i < 2; i++) {
-			if (!taskNameFlag) {
-				taskName = nameList.poll();
-				taskNameFlag = true;
-			} else if (taskNameFlag && !nameList.isEmpty()) {
-				edittedName = nameList.poll();
+		try {
+			if (nameList.isEmpty()) {
+				return;
 			}
+			for (int i = 0; i < 2; i++) {
+				if (!taskNameFlag) {
+					taskName = nameList.poll();
+					taskNameFlag = true;
+				} else if (taskNameFlag && !nameList.isEmpty()) {
+					edittedName = nameList.poll();
+				}
+			}
+		} catch (NullPointerException e) {
+			logger.exiting(getClass().getName(), this.getClass().getName());
+			return;
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
