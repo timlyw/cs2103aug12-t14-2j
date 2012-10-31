@@ -48,22 +48,7 @@ public class CommandValidator {
 		if (startDateInput != null && startTimeInput == null) {
 			startDate = startDateInput.toDateTimeAtStartOfDay();
 		}
-		// only start time
-		if (startDateInput == null && startTimeInput != null) {
-			startDateInput = LocalDate.now();
-			startDate = startDateInput.toDateTime(startTimeInput);
-			if (startDate.isBefore(now)) {
-				startDate = startDate.plusDays(1);
-			}
-		}
-		// only end time
-		if (endDateInput == null && endTimeInput != null) {
-			endDateInput = LocalDate.now();
-			endDate = endDateInput.toDateTime(endTimeInput);
-			if (endDate.isBefore(now)) {
-				endDate = endDate.plusDays(1);
-			}
-		}
+		
 		// no end date no end time
 		if (endDateInput == null && endTimeInput == null) {
 			endDate = null;
@@ -76,6 +61,27 @@ public class CommandValidator {
 		if (endDateInput != null && endTimeInput == null) {
 			endDate = endDateInput.toDateTimeAtStartOfDay();
 		}
+		
+		// only start time
+		if (startDateInput == null && startTimeInput != null) {
+			startDateInput = LocalDate.now();
+			startDate = startDateInput.toDateTime(startTimeInput);
+			if (startDate.isBefore(now)) {
+				startDate = startDate.plusDays(1);
+				System.out.println("startDate " + startDate.toString());
+			}
+		}
+		// only end time
+		if (endDateInput == null && endTimeInput != null) {
+			endDateInput = LocalDate.now();
+			endDate = endDateInput.toDateTime(endTimeInput);
+			if (endDate.isBefore(now)) {
+				endDate = endDate.plusDays(1);
+				System.out.println(" end date " +endDate.toString());
+			}
+		}
+		
+
 		// ensure start date is before end date.
 		if (startDate != null && endDate != null) {
 			if (startDate.isAfter(endDate)) {
@@ -84,6 +90,8 @@ public class CommandValidator {
 				endDate = startDate;
 				startDate = temp;
 			}
+			System.out.println("startDate : " + startDate.toString());
+			System.out.println("endDate : " + endDate.toString());
 		}
 
 		checkParameters();
