@@ -15,9 +15,9 @@ public class CommandCreator {
 	}
 
 	public String createCommand(CommandInfo userCommand) {
+		System.out.println(userCommand.toString());
 		String userOutputString = new String();
 		if (userCommand.getCommandEnum() != null) {
-			System.out.println("INDEX: "+userCommand.getIndex());
 			if (userCommand.getIndex() != 0) {
 				userOutputString = executeCommandByIndex(userCommand);
 			} else {
@@ -25,7 +25,7 @@ public class CommandCreator {
 				// Add to undo stack if undoable
 			}
 		} else {
-			System.out.println(previousCommand.indexExpected+" expected");
+			System.out.println(previousCommand.indexExpected + " expected");
 			userOutputString = previousCommand.executeByIndex(userCommand
 					.getIndex());
 
@@ -35,7 +35,6 @@ public class CommandCreator {
 	}
 
 	private String executeCommand(CommandInfo userCommand) {
-		System.out.println(userCommand.toString());
 		String userOutputString = new String();
 		switch (userCommand.getCommandEnum()) {
 		case add:
@@ -69,11 +68,8 @@ public class CommandCreator {
 		default:
 			break;
 		}
-		System.out.println(currentCommand.isUndoable);
-		System.out.println(undoListCommands.size() + "$$");
 		if (currentCommand.isUndoable()) {
 			undoListCommands.push(currentCommand);
-			System.out.println(undoListCommands.size());
 		}
 		return userOutputString;
 	}
@@ -87,22 +83,25 @@ public class CommandCreator {
 			break;
 		case remove:
 			currentCommand = new CommandRemove(previousCommand.matchedTasks);
-			userOutputString = currentCommand.executeByIndexAndType(local_index-1);
+			userOutputString = currentCommand
+					.executeByIndexAndType(local_index - 1);
 			break;
 		case edit:
 			currentCommand = new CommandEdit();
-			userOutputString = currentCommand.executeByIndex(local_index-1);
+			userOutputString = currentCommand.executeByIndex(local_index - 1);
 			break;
 		case search:
 			currentCommand = new CommandSearch(previousCommand.matchedTasks);
-			userOutputString = currentCommand.executeByIndexAndType(local_index-1);
+			userOutputString = currentCommand
+					.executeByIndexAndType(local_index - 1);
 			break;
 		case undo:
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		case mark:
 			currentCommand = new CommandMark(previousCommand.matchedTasks);
-			userOutputString = currentCommand.executeByIndexAndType(local_index-1);
+			userOutputString = currentCommand
+					.executeByIndexAndType(local_index - 1);
 			break;
 		case help:
 			userOutputString = MESSAGE_INVALID_COMMAND;
@@ -113,11 +112,8 @@ public class CommandCreator {
 		default:
 			break;
 		}
-		System.out.println(currentCommand.isUndoable);
-		System.out.println(undoListCommands.size() + "##");
 		if (currentCommand.isUndoable()) {
 			undoListCommands.push(currentCommand);
-			System.out.println(undoListCommands.size());
 		}
 		return userOutputString;
 	}

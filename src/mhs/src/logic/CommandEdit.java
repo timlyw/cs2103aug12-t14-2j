@@ -17,7 +17,6 @@ public class CommandEdit extends Command {
 	private CommandInfo tempCommandInfo;
 
 	public CommandEdit(CommandInfo userCommand) {
-		System.out.println("hello");
 
 		List<Task> resultList;
 		tempCommandInfo = new CommandInfo();
@@ -26,8 +25,7 @@ public class CommandEdit extends Command {
 			matchedTasks = resultList;
 			tempCommandInfo = userCommand;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
 		}
 	}
 
@@ -105,6 +103,7 @@ public class CommandEdit extends Command {
 						false, false);
 				return floatingTaskToAdd;
 			case 1:
+				System.out.println("checkpoint");
 				Task deadlineTaskToAdd = new DeadlineTask(
 						taskToEdit.getTaskId(), inputCommand.getTaskName(),
 						TaskCategory.DEADLINE, inputCommand.getStartDate(),
