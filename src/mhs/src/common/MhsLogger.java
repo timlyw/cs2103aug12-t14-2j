@@ -9,12 +9,13 @@ package mhs.src.common;
 import java.io.IOException;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MhsLogger {
 
-	private static final Level LEVEL_LOG_CONSOLE_LEVEL = Level.INFO;
+	private static final Level LEVEL_LOG_CONSOLE_LEVEL = Level.ALL;
 	private static final Level LEVEL_LOG_LEVEL = Level.ALL;
 
 	private static final String MHS_LOG_FILE = "MHS.log";
@@ -40,6 +41,7 @@ public class MhsLogger {
 	private void setUpLogger() {
 		logger = Logger.getLogger(LOGGER_NAME);
 		logger.setLevel(LEVEL_LOG_LEVEL);
+		logger.setUseParentHandlers(false);
 	}
 
 	private void setUpFileHandler() throws IOException {
