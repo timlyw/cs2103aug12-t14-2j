@@ -554,10 +554,6 @@ public class DatabaseTest {
 
 		assertTrue(database.isUserGoogleCalendarAuthenticated());
 
-		System.out.println("Adding new Tasks to push");
-		database.add(task);
-		database.add(task2);
-
 		System.out.println("Push Sync Newer Task");
 		testPushSyncNewTask(gCal);
 		System.out.println("Push sync existing task");
@@ -581,15 +577,20 @@ public class DatabaseTest {
 			CalendarEventEntry createdEvent) throws IOException,
 			ServiceException, UnknownHostException {
 
+		queryList = database.query(createdEvent.getTitle().getPlainText().toString(), false);
+		Task addedTask = queryList.get(0);
+		
 		// Test pull newer task sync
 		String updatedEventName = "Updated Event on Google";
-		CalendarEventEntry updatedCreatedEvent = gCal.updateEvent(createdEvent
-				.getIcalUID(), updatedEventName, task3.getStartDateTime()
-				.toString(), task3.getEndDateTime().toString());
+		addedTask.setTaskName(updatedEventName);
+		addedTask.setgCalTaskId(createdEvent.getIcalUID());
+		CalendarEventEntry updatedCreatedEvent = gCal.updateEvent(addedTask);
 
+		assertTrue(addedTask.getTaskLastSync().isBefore(
+				new DateTime(updatedCreatedEvent.getUpdated().getValue())));
+		
 		database.syncronizeDatabases();
-		queryList = database.query(updatedCreatedEvent.getTitle()
-				.getPlainText(), false);
+		queryList = database.query(updatedEventName, false);
 
 		// Check that task is updated and not created
 		assertEquals(1, queryList.size());
@@ -647,8 +648,13 @@ public class DatabaseTest {
 	 * 
 	 * @param gCal
 	 * @throws IOException
+	 * @throws InvalidTaskFormatException
 	 */
-	private void testPushSyncNewTask(GoogleCalendar gCal) throws IOException {
+	private void testPushSyncNewTask(GoogleCalendar gCal) throws IOException,
+			InvalidTaskFormatException {
+		database.add(task);
+		database.add(task2);
+
 		// Test push new task sync
 		queryList = database.query(false);
 
