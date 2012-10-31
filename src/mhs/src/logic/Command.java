@@ -41,8 +41,6 @@ public abstract class Command {
 	abstract public String executeByIndex(int index);
 	abstract public String executeByIndexAndType(int index);
 
-	abstract public String executeByIndexAndType(int index);
-
 	protected List<Task> queryTask(CommandInfo inputCommand) throws IOException {
 		boolean name, startDate, endDate;
 		List<Task> queryResultList;
