@@ -48,9 +48,10 @@ public abstract class Command {
 		name = inputCommand.getTaskName() == null ? false : true;
 		System.out.println("name=(" + inputCommand.getTaskName() + ")" + name);
 		startDate = inputCommand.getStartDate() == null ? false : true;
-		System.out.println("START:("+inputCommand.getStartDate()+")"+startDate);
+		System.out.println("START:(" + inputCommand.getStartDate() + ")"
+				+ startDate);
 		endDate = inputCommand.getEndDate() == null ? false : true;
-		System.out.println("END:("+inputCommand.getEndDate()+")"+endDate);
+		System.out.println("END:(" + inputCommand.getEndDate() + ")" + endDate);
 		if (name && startDate && endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					inputCommand.getStartDate(), inputCommand.getEndDate(),
@@ -63,16 +64,32 @@ public abstract class Command {
 					true);
 		} else if (name && startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
-					inputCommand.getStartDate(), inputCommand.getStartDate().plusDays(1)
-							.toDateMidnight().toDateTime(), true);
+					inputCommand.getStartDate(), inputCommand.getStartDate()
+							.plusDays(1).toDateMidnight().toDateTime(), true);
 		} else if (!name && startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getStartDate(),
-					inputCommand.getStartDate().plusDays(1).toDateMidnight().toDateTime(),
-					true);
+					inputCommand.getStartDate().plusDays(1).toDateMidnight()
+							.toDateTime(), true);
 		} else {
 			queryResultList = dataHandler.query(true);
 		}
 		System.out.println(displayListOfTasks(queryResultList));
+		return queryResultList;
+	}
+
+	protected List<Task> queryTaskByName(CommandInfo inputCommand)
+			throws IOException {
+		boolean name, startDate, endDate;
+		List<Task> queryResultList;
+		name = inputCommand.getTaskName() == null ? false : true;
+		System.out.println("name=(" + inputCommand.getTaskName() + ")" + name);
+		if (name) {
+			queryResultList = dataHandler.query(inputCommand.getTaskName(),
+					true);
+		} 
+		else{
+			queryResultList = null;
+		}
 		return queryResultList;
 	}
 
@@ -101,7 +118,7 @@ public abstract class Command {
 			if (selectedTask.getTaskCategory() == category) {
 				outputString += count + ". " + selectedTask.getTaskName() + "-"
 						+ selectedTask.getTaskCategory() + "("
-						+ selectedTask.isDone() + ")\n";
+						+ selectedTask.isDone() + ")" + htmlCreator.NEW_LINE;
 			}
 			count++;
 		}

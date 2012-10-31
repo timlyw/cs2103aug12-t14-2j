@@ -21,7 +21,7 @@ public class CommandEdit extends Command {
 		List<Task> resultList;
 		tempCommandInfo = new CommandInfo();
 		try {
-			resultList = queryTask(userCommand);
+			resultList = queryTaskByName(userCommand);
 			matchedTasks = resultList;
 			tempCommandInfo = userCommand;
 		} catch (IOException e) {
