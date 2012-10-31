@@ -577,9 +577,10 @@ public class DatabaseTest {
 			CalendarEventEntry createdEvent) throws IOException,
 			ServiceException, UnknownHostException {
 
-		queryList = database.query(createdEvent.getTitle().getPlainText().toString(), false);
+		queryList = database.query(createdEvent.getTitle().getPlainText()
+				.toString(), false);
 		Task addedTask = queryList.get(0);
-		
+
 		// Test pull newer task sync
 		String updatedEventName = "Updated Event on Google";
 		addedTask.setTaskName(updatedEventName);
@@ -588,7 +589,7 @@ public class DatabaseTest {
 
 		assertTrue(addedTask.getTaskLastSync().isBefore(
 				new DateTime(updatedCreatedEvent.getUpdated().getValue())));
-		
+
 		database.syncronizeDatabases();
 		queryList = database.query(updatedEventName, false);
 
@@ -631,6 +632,7 @@ public class DatabaseTest {
 	 */
 	private void testPushSyncExistingTask(GoogleCalendar gCal)
 			throws Exception, IOException {
+		
 		// Test push updated task sync
 		Task updatedTask = queryList.get(0);
 		updatedTask.setTaskName("Updated Task");
