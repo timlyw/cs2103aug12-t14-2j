@@ -73,7 +73,6 @@ public abstract class Command {
 		} else {
 			queryResultList = dataHandler.query(true);
 		}
-		System.out.println(displayListOfTasks(queryResultList));
 		return queryResultList;
 	}
 
@@ -82,12 +81,10 @@ public abstract class Command {
 		boolean name, startDate, endDate;
 		List<Task> queryResultList;
 		name = inputCommand.getTaskName() == null ? false : true;
-		System.out.println("name=(" + inputCommand.getTaskName() + ")" + name);
 		if (name) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					true);
-		} 
-		else{
+		} else {
 			queryResultList = null;
 		}
 		return queryResultList;
