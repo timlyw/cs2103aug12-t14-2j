@@ -4,6 +4,7 @@
  */
 package mhs.test;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -19,14 +20,18 @@ import mhs.src.storage.Database;
 import mhs.src.storage.DeadlineTask;
 import mhs.src.storage.FloatingTask;
 import mhs.src.storage.GoogleCalendar;
+import mhs.src.storage.InvalidTaskFormatException;
 import mhs.src.storage.Task;
 import mhs.src.storage.TaskCategory;
+import mhs.src.storage.TaskNotFoundException;
 import mhs.src.storage.TimedTask;
 
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.AuthenticationException;
@@ -43,6 +48,16 @@ public class DatabaseTest {
 	private static final String GOOGLE_TEST_ACCOUNT_NAME = "cs2103mhs@gmail.com";
 	private static final String GOOGLE_TEST_ACCOUNT_PASSWORD = "myhotsec2103";
 
+	// Exception Messages
+	private static final String EXCEPTION_MESSAGE_INVALID_TASK_FORMAT = "Invalid Task Format!";
+	private static final String EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST = "Task does not exist!";
+	private static final String EXCEPTION_MESSAGE_NULL_PARAMETER = "%1$s cannot be null!";
+
+	private static final String PARAMETER_TASK_RECORD_FILE_NAME = "taskRecordFileName";
+	private static final String PARAMETER_TASK = "task";
+	private static final String PARAMETER_TASK_NAME = "taskName";
+	private static final String PARAMETERE_START_AND_END_DATE_TIMES = "start and end date times";
+
 	Database database;
 	Map<Integer, Task> taskList;
 	List<Task> queryList;
@@ -56,11 +71,19 @@ public class DatabaseTest {
 	private final static String TEST_TASK_RECORD_FILENAME = "testTaskRecordFile.json";
 
 	@Before
+	/**
+	 * Setup database environment for test
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	public void testDatabaseSetup() throws IOException, ServiceException {
 		initializeTasks();
 		initializeTaskList();
 	}
 
+	/**
+	 * Initialize tasklist with test tasks
+	 */
 	private void initializeTaskList() {
 		// create new taskList
 		taskList = new LinkedHashMap<Integer, Task>();
@@ -72,6 +95,9 @@ public class DatabaseTest {
 		taskList.put(task5.getTaskId(), task5);
 	}
 
+	/**
+	 * Initilize test tasks
+	 */
 	private void initializeTasks() {
 		// create test tasks
 		DateTime dt = DateTime.now();
@@ -89,13 +115,31 @@ public class DatabaseTest {
 				null, null, null, false, false);
 	}
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
+	@Test
+	/**
+	 * Tests for database initialize exceptions 
+	 * @throws IllegalArgumentException
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	public void testDatabaseExceptions() throws IllegalArgumentException,
+			IOException, ServiceException, TaskNotFoundException {
+		thrown.expect(IllegalArgumentException.class);
+		thrown.expectMessage(String.format(EXCEPTION_MESSAGE_NULL_PARAMETER,
+				PARAMETER_TASK_RECORD_FILE_NAME));
+		database = new Database(null, true);
+	}
+
 	@Test
 	/**
 	 * Tests database query under local environment
 	 * 
-	 * @throws Exception
 	 */
-	public void testQueryDatabase() throws Exception {
+	public void testQueryDatabase() throws InvalidTaskFormatException,
+			IOException, ServiceException, TaskNotFoundException {
 
 		initializeCleanDatabaseWithoutSync();
 
@@ -111,7 +155,17 @@ public class DatabaseTest {
 		testQueryByDate();
 	}
 
-	private void testQueryByDate() throws Exception {
+	/**
+	 * Test query by date
+	 * 
+	 * @throws NullPointerException
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws TaskNotFoundException
+	 * @throws InvalidTaskFormatException
+	 */
+	private void testQueryByDate() throws NullPointerException, IOException,
+			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
 		// Query by date
 		new DateTime();
 		DateTime testStartDt = DateTime.now().minusDays(1).minusHours(1);
@@ -145,6 +199,9 @@ public class DatabaseTest {
 		assertEquals(queryList.get(0).getTaskId(), 1);
 	}
 
+	/**
+	 * Test Query by task category
+	 */
 	private void testQueryByTaskCategory() {
 		Iterator<Task> iterator;
 		// Test query by task category
@@ -179,6 +236,9 @@ public class DatabaseTest {
 		}
 	}
 
+	/**
+	 * Test query by task name
+	 */
 	private void testQueryByTaskName() {
 		// Test query by task name
 		// word query
@@ -212,7 +272,12 @@ public class DatabaseTest {
 		}
 	}
 
-	private void testQueryByTaskId() throws Exception {
+	/**
+	 * Test query by task id
+	 * 
+	 * @throws TaskNotFoundException
+	 */
+	private void testQueryByTaskId() throws TaskNotFoundException {
 		// Test query by taskId
 		Task queriedTask = database.query(1);
 		assertEquals(queriedTask.getTaskId(), 1);
@@ -220,10 +285,43 @@ public class DatabaseTest {
 
 	@Test
 	/**
+	 * Test IllegalArgumentException for query
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws TaskNotFoundException
+	 */
+	public void testQueryTaskIllegalArgumentException() throws IOException,
+			ServiceException, TaskNotFoundException {
+		thrown.expect(IllegalArgumentException.class);
+		thrown.expectMessage(String.format(EXCEPTION_MESSAGE_NULL_PARAMETER,
+				PARAMETER_TASK_NAME));
+		initializeCleanDatabaseWithoutSync();
+		database.query(null, null, null, false);
+	}
+
+	@Test
+	/**
+	 * Test TaskNotFoundException for query
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws TaskNotFoundException
+	 */
+	public void testQueryTaskNotFoundException() throws IOException,
+			ServiceException, TaskNotFoundException {
+		thrown.expect(TaskNotFoundException.class);
+		thrown.expectMessage(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
+		initializeCleanDatabaseWithoutSync();
+		database.query(-1);
+	}
+
+	@Test
+	/**
 	 * Test database add, and taskKeyId generator under local environment
 	 * @throws IOException
 	 */
-	public void testAddDatabase() throws Exception {
+	public void testAddDatabase() throws IOException, ServiceException,
+			InvalidTaskFormatException, TaskNotFoundException {
 
 		initializeCleanDatabaseWithoutSync();
 
@@ -239,7 +337,7 @@ public class DatabaseTest {
 
 	}
 
-	private void testAddFloatingTask() throws Exception {
+	private void testAddFloatingTask() throws TaskNotFoundException {
 		// Add floating task
 		Task addedTask3 = database.query(3);
 		assertEquals(task5.getTaskName(), addedTask3.getTaskName());
@@ -249,7 +347,7 @@ public class DatabaseTest {
 		assertEquals(task5.getTaskCategory(), addedTask3.getTaskCategory());
 	}
 
-	private void testAddDeadlineTask() throws Exception {
+	private void testAddDeadlineTask() throws TaskNotFoundException {
 		// Add deadline task
 		Task addedTask2 = database.query(2);
 		assertEquals(task3.getTaskName(), addedTask2.getTaskName());
@@ -258,7 +356,7 @@ public class DatabaseTest {
 		assertEquals(task3.getTaskCategory(), addedTask2.getTaskCategory());
 	}
 
-	private void testAddTimedTask() throws Exception {
+	private void testAddTimedTask() throws TaskNotFoundException {
 		// Add timed task
 		Task addedTask = database.query(1);
 		assertEquals(task.getTaskName(), addedTask.getTaskName());
@@ -270,16 +368,79 @@ public class DatabaseTest {
 
 	@Test
 	/**
-	 * Tests update database under local environment
-	 * @throws Exception
+	 * Test TaskNotFoundException for query
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws TaskNotFoundException
 	 */
-	public void testUpdateDatabase() throws Exception {
+	public void testInvalidTaskFormatAdd() throws IOException,
+			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
+		thrown.expect(InvalidTaskFormatException.class);
+		thrown.expectMessage(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
+		initializeCleanDatabaseWithoutSync();
+
+		// Set task with null
+		task.setTaskName(null);
+		database.add(task);
+	}
+
+	@Test
+	public void testInvalidTaskFormatAddInvalidTimed() throws IOException,
+			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
+		thrown.expect(InvalidTaskFormatException.class);
+		thrown.expectMessage(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
+		initializeCleanDatabaseWithoutSync();
+
+		// Set timed task without endDateTime
+		task.setStartDateTime(null);
+		database.add(task);
+	}
+
+	@Test
+	public void testInvalidTaskFormatAddInvalidDeadline() throws IOException,
+			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
+		thrown.expect(InvalidTaskFormatException.class);
+		thrown.expectMessage(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
+		initializeCleanDatabaseWithoutSync();
+
+		// Set deadline task without endDateTime
+		task3.setEndDateTime(null);
+		database.add(task3);
+	}
+
+	@Test
+	/**
+	 * Test TaskNotFoundException for query
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws TaskNotFoundException
+	 */
+	public void testInvalidTaskFormatAddFloating() throws IOException,
+			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
+		thrown.expect(InvalidTaskFormatException.class);
+		thrown.expectMessage(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
+		initializeCleanDatabaseWithoutSync();
+
+		// Set task with null
+		task.setTaskName(null);
+		database.add(task);
+	}
+
+	@Test
+	/**
+	 * Tests update database under local environment
+	 */
+	public void testUpdateDatabase() throws IOException, ServiceException,
+			NullPointerException, TaskNotFoundException,
+			InvalidTaskFormatException {
 
 		initializeCleanDatabaseWithoutSync();
 
 		System.out.println("Test update Database...");
-		database.add(task);
 
+		database.add(task);
 		queryList = database.query(false);
 
 		Task editTask = task.clone();
@@ -324,19 +485,29 @@ public class DatabaseTest {
 
 	}
 
+	/**
+	 * Initializes a clean database with sync disabled
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	private void initializeCleanDatabaseWithoutSync() throws IOException,
 			ServiceException {
 		// initialize database without sync for testing
 		database = new Database(TEST_TASK_RECORD_FILENAME, true);
 		database.clearDatabase();
+
+		// Test whether isUserGoogleCalendarAuthenticated reflects correct
+		// status
+		assertFalse(database.isUserGoogleCalendarAuthenticated());
 	}
 
 	@Test
 	/**
 	 * Test delete under local environment
-	 * @throws Exception
 	 */
-	public void testDeleteDatabase() throws Exception {
+	public void testDeleteDatabase() throws IOException, ServiceException,
+			InvalidTaskFormatException, TaskNotFoundException {
 
 		initializeCleanDatabaseWithoutSync();
 
@@ -367,7 +538,7 @@ public class DatabaseTest {
 					|| matchedTask.getTaskId() == 5);
 		}
 	}
-	
+
 	@Test
 	/**
 	 * Tests Sync methods 
@@ -375,13 +546,14 @@ public class DatabaseTest {
 	 *  - push sync existing task
 	 *  - pull-sync new task 
 	 *  - pull-sync existing task
-	 * @throws Exception
 	 */
 	public void testSyncDatabase() throws Exception {
 
 		initializeCleanDatabaseWithSync();
 		GoogleCalendar gCal = initializeGoogleCalendar();
-		
+
+		assertTrue(database.isUserGoogleCalendarAuthenticated());
+
 		System.out.println("Adding new Tasks to push");
 		database.add(task);
 		database.add(task2);
@@ -418,7 +590,7 @@ public class DatabaseTest {
 		database.syncronizeDatabases();
 		queryList = database.query(updatedCreatedEvent.getTitle()
 				.getPlainText(), false);
-		
+
 		// Check that task is updated and not created
 		assertEquals(1, queryList.size());
 		// Check that local task is updated
@@ -454,7 +626,6 @@ public class DatabaseTest {
 	 * Test Push Sync Existing Task
 	 * 
 	 * @param gCal
-	 * @throws Exception
 	 * @throws IOException
 	 */
 	private void testPushSyncExistingTask(GoogleCalendar gCal)
@@ -475,11 +646,9 @@ public class DatabaseTest {
 	 * Test Push Sync New Task
 	 * 
 	 * @param gCal
-	 * @throws Exception
 	 * @throws IOException
 	 */
-	private void testPushSyncNewTask(GoogleCalendar gCal) throws Exception,
-			IOException {
+	private void testPushSyncNewTask(GoogleCalendar gCal) throws IOException {
 		// Test push new task sync
 		queryList = database.query(false);
 
@@ -487,6 +656,12 @@ public class DatabaseTest {
 		assertTrue(gCal.retrieveEvent(queryList.get(1).getgCalTaskId()) != null);
 	}
 
+	/**
+	 * Initialize google calendar
+	 * 
+	 * @return
+	 * @throws AuthenticationException
+	 */
 	private GoogleCalendar initializeGoogleCalendar()
 			throws AuthenticationException {
 		// we use a separate GoogleCalendar to query events (need to pullEvents
@@ -500,6 +675,12 @@ public class DatabaseTest {
 		return gCal;
 	}
 
+	/**
+	 * Initialize empty database with sync enabled
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	private void initializeCleanDatabaseWithSync() throws IOException,
 			ServiceException {
 		// Clear database (local and remote)
@@ -507,10 +688,16 @@ public class DatabaseTest {
 		database.loginUserGoogleAccount(GOOGLE_TEST_ACCOUNT_NAME,
 				GOOGLE_TEST_ACCOUNT_PASSWORD);
 		database.clearDatabase();
+
+		// Test whether isUserGoogleCalendarAuthenticated reflects correct
+		// status
+		assertTrue(database.isUserGoogleCalendarAuthenticated());
 	}
 
 	@After
 	public void testAfter() throws IOException, ServiceException {
-		database.clearDatabase();
+		if (database != null) {
+			database.clearDatabase();
+		}
 	}
 }
