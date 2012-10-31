@@ -5,8 +5,8 @@ public class HtmlCreator {
 	private static final String COLOR_GRAY = "color: #383838;";
 	private static final String STYLE_FEEDBACK = "margin-top:-8px; margin-left:-7px; font-family=" + FONT_TYPE_DEFAULT + COLOR_GRAY;
 	private static final String STYLE_DISPLAY = "margin-top:-8px; margin-left:-7px; font-family=" + FONT_TYPE_DEFAULT;
-	private static final String HTML_FEEDBACK = "<html><body style='overflow:hidden;'><div style='%1$s'>%2$s</div></body></html>";
-	private static final String HTML_DISPLAY = "<html><body style='overflow:hidden;'><div style='%1$s'>%2$s</div></body></html>";
+	private static final String HTML_FEEDBACK = "<html><body style='overflow:hidden;'><div style='%1$s'><font color='#383838' size='5' face='calibri'>%2$s</font></div></body></html>";
+	private static final String HTML_DISPLAY = "<html><body style='overflow:hidden;'><div style='%1$s'><font size='5' face='calibri'>%2$s</font></div></body></html>";
 	private static final String FORMAT_BOLD = "<b>%1$s</b>";
 	public final String NEW_LINE = "<br/>";
 	
