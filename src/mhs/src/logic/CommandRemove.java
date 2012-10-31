@@ -12,7 +12,7 @@ public class CommandRemove extends Command {
 	public CommandRemove(CommandInfo userCommand) {
 		List<Task> resultList;
 		try {
-			resultList = queryTask(userCommand);
+			resultList = queryTaskByName(userCommand);
 			matchedTasks = resultList;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
