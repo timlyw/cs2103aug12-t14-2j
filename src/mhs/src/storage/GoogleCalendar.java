@@ -229,6 +229,15 @@ public class GoogleCalendar {
 		DateTime end = DateTime.parseDateTime(endTime);
 		return retrieveEvents(start, end);
 	}
+	
+	public List<CalendarEventEntry> retrieveEvents(String startTime,
+			String endTime, String minUpdatedTime) throws UnknownHostException, IOException,
+			ServiceException, NullPointerException {
+		DateTime start = DateTime.parseDateTime(startTime);
+		DateTime end = DateTime.parseDateTime(endTime);
+		DateTime minUpdated = DateTime.parseDateTime(minUpdatedTime);
+		return retrieveEvents(start, end, minUpdated);
+	}
 
 	/**
 	 * update an event's parameters based on the specified event ID
@@ -407,6 +416,17 @@ public class GoogleCalendar {
 			NullPointerException {
 		CalendarQuery calendarQuery = createCalendarQuery();
 		setQueryParametersForRetrieval(calendarQuery, start, end);
+		CalendarEventFeed eventFeed = getEventFeed(calendarQuery);
+		List<CalendarEventEntry> eventList = eventFeed.getEntries();
+		return eventList;
+	}
+	
+	public List<CalendarEventEntry> retrieveEvents(DateTime start, DateTime end, DateTime minUpdated)
+			throws IOException, ServiceException, UnknownHostException,
+			NullPointerException {
+		CalendarQuery calendarQuery = createCalendarQuery();
+		setQueryParametersForRetrieval(calendarQuery, start, end);
+		calendarQuery.setUpdatedMin(minUpdated);
 		CalendarEventFeed eventFeed = getEventFeed(calendarQuery);
 		List<CalendarEventEntry> eventList = eventFeed.getEntries();
 		return eventList;
