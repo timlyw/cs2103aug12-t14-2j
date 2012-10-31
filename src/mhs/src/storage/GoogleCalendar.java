@@ -84,6 +84,7 @@ public class GoogleCalendar {
 		calService.setUserCredentials(email, password);
 		UserToken token = getTokenFromService(calService);
 		String tokenString = token.getValue();
+		
 		return tokenString;
 	}
 

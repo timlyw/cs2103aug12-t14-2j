@@ -39,16 +39,32 @@ public abstract class Command {
 	}
 
 	abstract public String executeByIndex(int index);
+
 	abstract public String executeByIndexAndType(int index);
 
 	protected List<Task> queryTask(CommandInfo inputCommand) throws IOException {
+
 		boolean name, startDate, endDate;
+		name = startDate = endDate = false;
+
 		List<Task> queryResultList;
 		System.out.println("check1");
-		name = inputCommand.getTaskName().matches("<Default task>") ? false : true;
-		System.out.println("name=("+inputCommand.getTaskName()+")"+name);
-		startDate = inputCommand.getStartDate() == null ? false : true;
-		endDate = inputCommand.getEndDate() == null ? false : true;
+
+		if (inputCommand.getTaskName() != null) {
+			name = inputCommand.getTaskName().matches("<Default task>") ? false
+					: true;
+			System.out.println("name=(" + inputCommand.getTaskName() + ")"
+					+ name);
+		}
+
+		if (inputCommand.getStartDate() != null) {
+			startDate = inputCommand.getStartDate() == null ? false : true;
+		}
+
+		if (inputCommand.getEndDate() != null) {
+			endDate = inputCommand.getEndDate() == null ? false : true;
+		}
+
 		if (name && startDate && endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					inputCommand.getStartDate(), inputCommand.getEndDate(),
