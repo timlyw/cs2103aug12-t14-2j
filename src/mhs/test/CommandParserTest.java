@@ -186,6 +186,14 @@ public class CommandParserTest {
 		inputStartDate = testInput.getStartDate();
 		assertEquals("class project", inputName);
 		assertEquals(inputStartDate, expectedStartDate);
+		
+		testInput = commandParser.getParsedCommand("class project by 10/12/2012 10pm to 10/12/2012 3pm");
+		inputName = testInput.getTaskName().trim();
+		expectedStartDate = new DateTime(2012, 12, 10, 15, 0);
+		expectedEndDate = new DateTime(2012, 12, 10, 22, 0);
+		inputStartDate = testInput.getStartDate();
+		assertEquals("class project", inputName);
+		assertEquals(inputStartDate, expectedStartDate);
 
 		testInput = commandParser.getParsedCommand("\"day after tomorrow\" on 4 dec 2012 22:12 to 6 12 2012 4.15pm");
 		inputName = testInput.getTaskName().trim();
@@ -197,7 +205,7 @@ public class CommandParserTest {
 		assertEquals(inputStartDate, expectedStartDate);
 		assertEquals(inputEndDate, expectedEndDate);
 		
-		testInput = commandParser.getParsedCommand("\"day after tomorrow\" 2 nov 2012 22:12 7 11 2012 4.15pm");
+		testInput = commandParser.getParsedCommand("\"day after tomorrow\"  7 11 2012 4.15pm 2 nov 2012 22:12");
 		inputName = testInput.getTaskName().trim();
 		expectedStartDate = new DateTime(2012, 11, 2, 22, 12);
 		inputStartDate = testInput.getStartDate();

@@ -115,9 +115,7 @@ public class CommandValidator {
 			clearAllParameters();
 		}
 		if (commandEnum == CommandInfo.CommandKeyWords.mark) {
-			if(index == 0){
-				enforceTaskName();
-			}
+
 			edittedName = null;
 			startDate = null;
 			endDate = null;		
@@ -127,25 +125,19 @@ public class CommandValidator {
 			clearAllParameters();
 		}
 		if (commandEnum == CommandInfo.CommandKeyWords.remove) {
-			if(index==0){
-				enforceTaskName();
-			}
+	
 			edittedName = null;
 			startDate = null;
 			endDate = null;		
 
 		}
 		if (commandEnum == CommandInfo.CommandKeyWords.rename) {
-			if(taskName == null && index == 0){
-				enforceTaskName();
-				}
+
 			startDate = null;
 			endDate = null;		
 		}
 		if (commandEnum == CommandInfo.CommandKeyWords.search) {
-			if(index==0){
-				enforceTaskName();
-				}
+	
 			if(endDate == null && startDate != null){
 				endDate = startDate.plusDays(1);
 			}
