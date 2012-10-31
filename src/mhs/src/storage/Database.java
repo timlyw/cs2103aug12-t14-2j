@@ -30,15 +30,15 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
-	private Syncronize syncronize;
-	private GoogleCalendar googleCalendar;
-	private TaskRecordFile taskRecordFile;
-	private ConfigFile configFile;
-	private TaskLists taskLists;
+	private static GoogleCalendar googleCalendar;
+	private static TaskRecordFile taskRecordFile;
+	private static ConfigFile configFile;
+	private static TaskLists taskLists;
+	private static Syncronize syncronize;
 
-	private DateTime syncStartDateTime;
-	private DateTime syncEndDateTime;
-	private boolean isRemoteSyncEnabled = true;
+	private static DateTime syncStartDateTime;
+	private static DateTime syncEndDateTime;
+	private static boolean isRemoteSyncEnabled = true;
 
 	private static final Logger logger = MhsLogger.getLogger();
 
@@ -91,12 +91,12 @@ public class Database {
 		/**
 		 * Syncronizes Databases
 		 * 
-		 * @return
 		 * @throws ServiceException
 		 * @throws UnknownHostException
 		 * @throws IOException
 		 * @throws InvalidTaskFormatException
 		 * @throws TaskNotFoundException
+		 * @return 
 		 */
 		private boolean syncronizeDatabases() throws ServiceException,
 				UnknownHostException, IOException, TaskNotFoundException,
@@ -652,6 +652,7 @@ public class Database {
 
 		syncronize.disableRemoteSync();
 
+		// TODO
 		String googleAccessToken = GoogleCalendar.retrieveUserToken(
 				GOOGLE_CALENDAR_APP_NAME, userName, userPassword);
 		googleCalendar = new GoogleCalendar(GOOGLE_CALENDAR_APP_NAME, userName,
