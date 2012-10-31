@@ -1,8 +1,11 @@
 package mhs.src.logic;
 
+import java.util.logging.Logger;
+
+import mhs.src.common.MhsLogger;
+
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
+
 /**
  * 
  * @author Cheong Kahou
@@ -17,17 +20,17 @@ public class CommandInfo {
 	/**
 	 * This is the enum of the different type of commands. 
 	 */
-	public enum command{
+	public static enum CommandKeyWords{
 		add, remove,edit, search, sync, undo, login, logout, rename, redo, mark, help;
 	}
 	
 	private String taskName;
 	private String edittedName;
-	private command commandEnum;
+	private CommandKeyWords commandEnum;
 	
 	private DateTime startDate;
 	private DateTime endDate;
-	private DateTime now;
+	private static final Logger logger = MhsLogger.getLogger();
 	
 	private int index;
 
@@ -42,81 +45,31 @@ public class CommandInfo {
 	 * @param endDateInput This is the end date. 
 	 * @param endTimeInput This is the end time. 
 	 */
-	public CommandInfo(String commandInput, String taskNameInput,
-			String edittedNameInput, LocalDate startDateInput,
-			LocalTime startTimeInput, LocalDate endDateInput,
-			LocalTime endTimeInput, int indexInput) {
-		now = DateTime.now();
-		for(command c: command.values()){
-			if(commandInput == c.name()){
-				commandEnum = c;
-			}
-		}
+	public CommandInfo(CommandKeyWords commandInput, String taskNameInput,
+			String edittedNameInput, DateTime startDateInput, DateTime endDateInput, int indexInput) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		commandEnum = commandInput;
 		taskName = taskNameInput;
 		edittedName = edittedNameInput;
 		index = indexInput;
-
-		//no start date no start time
-		if ((startDateInput == null && startTimeInput == null)) {
-			startDate = null;
-		}
-		//both start date and start time
-		if (startDateInput != null && startTimeInput!=null) {
-			startDate = startDateInput.toDateTime(startTimeInput);
-		}
-		//only start date
-		if(startDateInput !=null && startTimeInput==null){
-			startDate = startDateInput.toDateTimeAtStartOfDay();
-		}
-		//only start time
-		if(startDateInput == null && startTimeInput != null){
-			startDateInput = LocalDate.now();
-			startDate = startDateInput.toDateTime(startTimeInput);
-			if(startDate.isBefore(now)){
-				startDate = startDate.plusDays(1);
-			}
-		}
-		//only end time
-		if(endDateInput == null && endTimeInput != null){
-			endDateInput = LocalDate.now();
-			endDate = endDateInput.toDateTime(endTimeInput);
-			if(endDate.isBefore(now)){
-				endDate = endDate.plusDays(1);
-			}
-		}
-		//no end date no end time
-		if (endDateInput == null && endTimeInput == null) {
-			endDate = null;
-		}
-		//both end date and end time
-		if (endDateInput != null && endTimeInput != null) {
-			endDate = endDateInput.toDateTime(endTimeInput);
-		}
-		//only end date
-		if(endDateInput !=null && endTimeInput==null){
-			endDate = endDateInput.toDateTimeAtStartOfDay();
-		}
-		//ensure start date is before end date. 
-		if(startDate != null && endDate != null){
-			if(startDate.isAfter(endDate)){
-			DateTime temp = new DateTime();
-			temp = endDate; 
-			endDate = startDate; 
-			startDate = temp;
-			}
-		}
-	
+		startDate = startDateInput;
+		endDate = endDateInput;
+		//System.out.println(toString());
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		
 	}
 
 	/**
 	 * Default constructor setting all parameters to null.
 	 */
 	public CommandInfo() {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		commandEnum = null;
 		taskName = null;
 		startDate = null;
 		endDate = null;
 		edittedName = null;
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -124,6 +77,8 @@ public class CommandInfo {
 	 * @return Returns the task name. 
 	 */
 	public String getTaskName() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return taskName;
 	}
 
@@ -132,6 +87,8 @@ public class CommandInfo {
 	 * @return Returns the editeed name. 
 	 */
 	public String getEdittedName() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return edittedName;
 	}
 
@@ -140,6 +97,8 @@ public class CommandInfo {
 	 * @return Returns the end date. 
 	 */
 	public DateTime getEndDate() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return endDate;
 	}
 
@@ -148,6 +107,8 @@ public class CommandInfo {
 	 * @return Returns the start date. 
 	 */
 	public DateTime getStartDate() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return startDate;
 	}
 
@@ -155,25 +116,35 @@ public class CommandInfo {
 	 * Getter for the command.
 	 * @return Returns the command. 
 	 */
-	public command getCommandEnum() {
+	public CommandKeyWords getCommandEnum() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return commandEnum;
 	}
 
+	public int getIndex(){
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		return index;
+	}
 	public String toString(){
+		logger.entering(getClass().getName(), this.getClass().getName());
+	
 		
 		String outString = "";
 		if(commandEnum!= null)
-			outString = ("command " + commandEnum.name());
+			outString = ("Command : " + commandEnum.name());
 		if(taskName!= null)
-			outString +=(" task name " + taskName);
+			outString +=(" Task name : " + taskName);
 		if(edittedName!= null)
-			outString +=(" editted name " + edittedName);
+			outString +=(" Editted name : " + edittedName);
 		if(startDate!= null)
-			outString += (" start Date " + startDate.toString());
+			outString += (" Start Date : " + startDate.toString());
 		if(endDate!= null)
-			outString += (" end Date " + endDate.toString());
-		outString += (" index is " + index);
+			outString += (" End Date : " + endDate.toString());
+		outString += (" Index is : " + index);
 		
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outString;
 	}
 	
