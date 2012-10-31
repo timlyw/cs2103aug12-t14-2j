@@ -94,7 +94,7 @@ public class CommandValidator {
 			System.out.println("endDate : " + endDate.toString());
 		}
 
-		checkParameters();
+		//checkParameters();
 		command = new CommandInfo(commandEnum, taskName, edittedName, startDate,
 				endDate, index);
 		logger.exiting(getClass().getName(), this.getClass().getName());

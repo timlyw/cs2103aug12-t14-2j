@@ -20,11 +20,17 @@ import com.google.gdata.util.ServiceException;
 
 /**
  * This class provides services to connect with a user's Google Calendar
- * Supported functionality: 1) Create event entry 2) Retrieve event entry(s) 3)
- * Update event entry 4) delete event entry
+ * Supported functionality: 
  * 
- * To use the above services: 1) retrieve access token with user's email and
- * password 2) create an instance of this class with retrieved access token
+ * 1) Create event entry 
+ * 2) Retrieve event entry(s) 
+ * 3) Update event entry 
+ * 4) delete event entry
+ * 
+ * To use the above services: 
+ * 1) retrieve access token with user's email and
+ * password 
+ * 2) create an instance of this class with retrieved access token
  * 
  * @author John Wong
  */
