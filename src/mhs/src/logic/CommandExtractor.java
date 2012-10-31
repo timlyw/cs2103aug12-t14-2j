@@ -1,17 +1,19 @@
 package mhs.src.logic;
 
+import java.util.logging.Logger;
+
+import mhs.src.common.MhsLogger;
+
 /**
  * 
  * @author Cheong Kahou
  *A0086805X
  *
- */
-
-/**
  * 
  * This is a class that checks string if they are commands and set the commands.
  * 
  */
+
 public class CommandExtractor {
 
 	/**
@@ -33,9 +35,24 @@ public class CommandExtractor {
 		}
 
 	}
-
+	
 	private static final String REGEX_WHITE_SPACE = "\\s+";
+	private static final Logger logger = MhsLogger.getLogger();
 	private String commandString;
+	private static CommandExtractor commandExtractor;
+	
+	private CommandExtractor(){
+		logger.entering(getClass().getName(), this.getClass().getName());
+		commandString = "";
+		logger.exiting(getClass().getName(), this.getClass().getName());
+	}
+	
+	public static CommandExtractor getCommandExtractor(){
+		if(commandExtractor == null){
+			commandExtractor = new CommandExtractor();
+		}
+		return commandExtractor;
+	}
 
 	/**
 	 * This is a function to check if a string is a command.
@@ -46,11 +63,14 @@ public class CommandExtractor {
 	 * @return Returns if the string is a command type.
 	 */
 	public boolean isCommand(String parseString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		for (CommandKeyWord c : CommandKeyWord.values()) {
 			if (parseString.equalsIgnoreCase(c.name())) {
+				logger.exiting(getClass().getName(), this.getClass().getName());
 				return true;
 			}
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return false;
 	}
 
@@ -63,6 +83,7 @@ public class CommandExtractor {
 	 * @return Returns the command that is set.
 	 */
 	public String setCommand(String parseString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 		if (isCommand(processArray[0])) {
 			for (CommandKeyWord c : CommandKeyWord.values()) {
@@ -74,6 +95,7 @@ public class CommandExtractor {
 		else {
 			commandString = CommandKeyWord.add.name();
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return commandString;
 	}
 }
