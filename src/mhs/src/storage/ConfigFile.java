@@ -10,10 +10,12 @@ package mhs.src.storage;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -50,9 +52,11 @@ public class ConfigFile {
 	 */
 	public ConfigFile() throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		CONFIG_FILENAME = DEFAULT_CONFIG_FILENAME;
-		configParameters = new HashMap<String, String>();
+		initializeConfigParameters();
 		initializeConfigFile();
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
@@ -70,11 +74,16 @@ public class ConfigFile {
 					EXCEPTION_MESSAGE_NULL_PARAMETER, "taskRecordFileName"));
 		}
 		CONFIG_FILENAME = configFileName;
-		configParameters = new HashMap<String, String>();
+		initializeConfigParameters();
 		initializeConfigFile();
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
+	/**
+	 * Initialize config file
+	 * 
+	 * @throws IOException
+	 */
 	private void initializeConfigFile() throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		configFile = new File(CONFIG_FILENAME);
@@ -85,33 +94,79 @@ public class ConfigFile {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
+	/**
+	 * Initialize config parameters
+	 */
+	private void initializeConfigParameters() {
+		configParameters = new HashMap<String, String>();
+	}
+
+	/**
+	 * Create new json file
+	 * 
+	 * @throws IOException
+	 */
 	private void createNewJsonFile() throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		assert (configFile != null && configParameters != null);
 		configFile.createNewFile();
 		FileWriter fileWriter = new FileWriter(configFile);
 		fileWriter.write(gson.toJson(configParameters));
 		fileWriter.close();
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Load Config File
+	 * 
+	 * @throws IOException
+	 */
 	private void loadConfigFile() throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		assert (configFile != null);
-		inputStream = new FileInputStream(configFile);
-		jsonReader = new JsonReader(new InputStreamReader(inputStream,
-				CHAR_ENCODING_UTF8));
 
+		openJsonInputStream();
+		loadConfigParametersFromJobject();
+		closeJsonInputStream();
+
+		logger.exiting(getClass().getName(), this.getClass().getName());
+	}
+
+	/**
+	 * Load config parameters from jobject
+	 */
+	@SuppressWarnings("unchecked")
+	private void loadConfigParametersFromJobject() {
 		JsonParser parser = new JsonParser();
 		JsonObject configJObject = parser.parse(jsonReader).getAsJsonObject();
 
 		configParameters = gson.fromJson(configJObject,
 				configParameters.getClass());
+	}
 
+	/**
+	 * Open json input stream for reading
+	 * 
+	 * @throws FileNotFoundException
+	 * @throws UnsupportedEncodingException
+	 */
+	private void openJsonInputStream() throws FileNotFoundException,
+			UnsupportedEncodingException {
+		inputStream = new FileInputStream(configFile);
+		jsonReader = new JsonReader(new InputStreamReader(inputStream,
+				CHAR_ENCODING_UTF8));
+	}
+
+	/**
+	 * Close json input stream
+	 * 
+	 * @throws IOException
+	 */
+	private void closeJsonInputStream() throws IOException {
 		jsonReader.close();
 		inputStream.close();
-		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -121,9 +176,11 @@ public class ConfigFile {
 	 */
 	public void save() throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		FileWriter fileWriter = new FileWriter(configFile);
 		fileWriter.write(gson.toJson(configParameters));
 		fileWriter.close();
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
@@ -135,6 +192,7 @@ public class ConfigFile {
 	 */
 	public boolean hasConfigParameter(String parameter) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (parameter == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_PARAMETER));
@@ -143,8 +201,37 @@ public class ConfigFile {
 			logger.exiting(getClass().getName(), this.getClass().getName());
 			return false;
 		}
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return true;
+	}
+
+	/**
+	 * Checks whether configuration parameter exists and is not empty
+	 * 
+	 * @param parameter
+	 * @return boolean
+	 */
+	public boolean hasNonEmptyConfigParameter(String parameter) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+
+		if (parameter == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_PARAMETER));
+		}
+
+		boolean hasNonEmptyConfigParameter = false;
+
+		if (configParameters.get(parameter) == null) {
+			hasNonEmptyConfigParameter = false;
+		} else {
+			if (!configParameters.get(parameter).isEmpty()) {
+				hasNonEmptyConfigParameter = true;
+			}
+		}
+
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		return hasNonEmptyConfigParameter;
 	}
 
 	/**
@@ -155,10 +242,12 @@ public class ConfigFile {
 	 */
 	public String getConfigParameter(String parameter) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (parameter == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_PARAMETER));
 		}
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return configParameters.get(parameter);
 	}
@@ -173,6 +262,7 @@ public class ConfigFile {
 	public void setConfigParameter(String parameter, String value)
 			throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (parameter == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_PARAMETER));
@@ -181,6 +271,7 @@ public class ConfigFile {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_VALUE));
 		}
+
 		configParameters.put(parameter, value);
 		save();
 		logger.exiting(getClass().getName(), this.getClass().getName());

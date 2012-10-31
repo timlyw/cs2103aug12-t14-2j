@@ -30,29 +30,32 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
-	private Syncronize syncronize;
-	private GoogleCalendar googleCalendar;
-	private TaskRecordFile taskRecordFile;
-	private ConfigFile configFile;
-	private TaskLists taskLists;
+	private static GoogleCalendar googleCalendar;
+	private static TaskRecordFile taskRecordFile;
+	private static ConfigFile configFile;
+	private static TaskLists taskLists;
+	private static Syncronize syncronize;
 
-	private DateTime syncStartDateTime;
-	private DateTime syncEndDateTime;
-	private boolean isRemoteSyncEnabled = true;
+	private static DateTime syncStartDateTime;
+	private static DateTime syncEndDateTime;
+	private static boolean isRemoteSyncEnabled = true;
 
 	private static final Logger logger = MhsLogger.getLogger();
 
 	// Exception Messages
 	private static final String EXCEPTION_MESSAGE_INVALID_TASK_FORMAT = "Invalid Task Format!";
 	private static final String EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST = "Task does not exist!";
+	private static final String EXCEPTION_MESSAGE_NULL_PARAMETER = "%1$s cannot be null!";
+
+	private static final String PARAMETER_TASK_RECORD_FILE_NAME = "taskRecordFileName";
+	private static final String PARAMETER_TASK = "task";
+	private static final String PARAMETER_TASK_NAME = "taskName";
+	private static final String PARAMETERE_START_AND_END_DATE_TIMES = "start and end date times";
 
 	// Config parameters
 	private static final String CONFIG_PARAM_GOOGLE_USER_ACCOUNT = "GOOGLE_USER_ACCOUNT";
 	private static final String CONFIG_PARAM_GOOGLE_AUTH_TOKEN = "GOOGLE_AUTH_TOKEN";
-	private static final String EXCEPTION_MESSAGE_NULL_PARAMETER = "%1$s cannot be null!";
-	private static final String PARAMETER_TASK = "task";
-	private static final String PARAMETER_TASK_NAME = "taskName";
-	private static final String PARAMETERE_START_AND_END_DATE_TIMES = "start and end date times";
+
 	private static final String GOOGLE_CALENDAR_APP_NAME = "My Hot Secretary";
 
 	/**
@@ -68,33 +71,43 @@ public class Database {
 		private static final int SYNC_TIMER_DEFAULT_PERIOD = 300000;
 		private static final int SYNC_TIMER_DEFAULT_DELAY = 300000;
 
+		/**
+		 * Default Constructor for Syncronize
+		 * 
+		 * @throws IOException
+		 */
 		private Syncronize() throws IOException {
 			logger.entering(getClass().getName(), this.getClass().getName());
+
 			if (initializeGoogleCalendarService()) {
 				enableRemoteSync();
 			} else {
 				disableRemoteSync();
 			}
+
 			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
 		/**
 		 * Syncronizes Databases
 		 * 
-		 * @return
 		 * @throws ServiceException
 		 * @throws UnknownHostException
 		 * @throws IOException
 		 * @throws InvalidTaskFormatException
 		 * @throws TaskNotFoundException
+		 * @return
 		 */
 		private boolean syncronizeDatabases() throws ServiceException,
 				UnknownHostException, IOException, TaskNotFoundException,
 				InvalidTaskFormatException {
 			logger.entering(getClass().getName(), this.getClass().getName());
+
+			// checks if user is logged out
 			if (googleCalendar == null) {
 				return false;
 			}
+
 			pullSync();
 			pushSync();
 			logger.exiting(getClass().getName(), this.getClass().getName());
@@ -106,8 +119,10 @@ public class Database {
 		 */
 		private void enableRemoteSync() {
 			logger.entering(getClass().getName(), this.getClass().getName());
+
 			isRemoteSyncEnabled = true;
 			syncronizePullSyncTimer(SYNC_TIMER_DEFAULT_PERIOD);
+
 			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
@@ -116,8 +131,10 @@ public class Database {
 		 */
 		private void disableRemoteSync() {
 			logger.entering(getClass().getName(), this.getClass().getName());
+
 			isRemoteSyncEnabled = false;
 			cancelTimedPullSync();
+
 			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
@@ -315,11 +332,13 @@ public class Database {
 				ServiceException, NullPointerException, TaskNotFoundException,
 				InvalidTaskFormatException {
 			logger.entering(getClass().getName(), this.getClass().getName());
+
 			// push sync tasks from local to google calendar
 			for (Map.Entry<Integer, Task> entry : taskLists.getTaskList()
 					.entrySet()) {
 				pushSyncTask(entry.getValue());
 			}
+
 			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
@@ -365,6 +384,7 @@ public class Database {
 					pushSyncExistingTask(localTask);
 				}
 			}
+
 			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
@@ -384,12 +404,13 @@ public class Database {
 				throws NullPointerException, IOException, ServiceException,
 				TaskNotFoundException, InvalidTaskFormatException {
 			logger.entering(getClass().getName(), this.getClass().getName());
+
 			// adds event to google calendar
 			CalendarEventEntry addedGCalEvent = googleCalendar.createEvent(
 					localTask.getTaskName(), localTask.getStartDateTime()
 							.toString(), localTask.getEndDateTime().toString());
-
 			updateSyncTask(localTask, addedGCalEvent);
+
 			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
@@ -409,11 +430,12 @@ public class Database {
 				throws NullPointerException, IOException, ServiceException,
 				TaskNotFoundException, InvalidTaskFormatException {
 			logger.entering(getClass().getName(), this.getClass().getName());
+
 			// update remote task
 			CalendarEventEntry updatedGcalEvent = googleCalendar
 					.updateEvent(localTask.clone());
-
 			updateSyncTask(localTask, updatedGcalEvent);
+
 			logger.exiting(getClass().getName(), this.getClass().getName());
 		}
 
@@ -428,6 +450,7 @@ public class Database {
 				CalendarEventEntry UpdatedCalendarEvent)
 				throws TaskNotFoundException, InvalidTaskFormatException {
 			logger.entering(getClass().getName(), this.getClass().getName());
+
 			if (!taskLists.containsTask(localSyncTaskToUpdate.getTaskId())) {
 				throw new TaskNotFoundException(
 						EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
@@ -439,8 +462,23 @@ public class Database {
 			}
 
 			DateTime syncDateTime = setSyncTime(UpdatedCalendarEvent);
+			updateLocalSyncTask(localSyncTaskToUpdate, UpdatedCalendarEvent,
+					syncDateTime);
+			taskLists.updateTaskInTaskLists(localSyncTaskToUpdate);
 
-			// update local task
+			logger.exiting(getClass().getName(), this.getClass().getName());
+			return localSyncTaskToUpdate;
+		}
+
+		/**
+		 * Updates local sync task
+		 * 
+		 * @param localSyncTaskToUpdate
+		 * @param UpdatedCalendarEvent
+		 * @param syncDateTime
+		 */
+		private void updateLocalSyncTask(Task localSyncTaskToUpdate,
+				CalendarEventEntry UpdatedCalendarEvent, DateTime syncDateTime) {
 			localSyncTaskToUpdate.setgCalTaskId(UpdatedCalendarEvent
 					.getIcalUID());
 			localSyncTaskToUpdate.setTaskName(UpdatedCalendarEvent.getTitle()
@@ -453,10 +491,6 @@ public class Database {
 							.toString()));
 			localSyncTaskToUpdate.setTaskLastSync(syncDateTime);
 			localSyncTaskToUpdate.setTaskUpdated(syncDateTime);
-
-			taskLists.updateTaskInTaskLists(localSyncTaskToUpdate);
-			logger.exiting(getClass().getName(), this.getClass().getName());
-			return localSyncTaskToUpdate;
 		}
 
 		/**
@@ -469,10 +503,12 @@ public class Database {
 			new DateTime();
 			DateTime syncDateTime = DateTime.now();
 			logger.entering(getClass().getName(), this.getClass().getName());
+
 			if (gCalEntry != null) {
 				gCalEntry.setUpdated(com.google.gdata.data.DateTime.now());
 				syncDateTime = new DateTime(gCalEntry.getUpdated().toString());
 			}
+
 			logger.exiting(getClass().getName(), this.getClass().getName());
 			return syncDateTime;
 		}
@@ -492,14 +528,6 @@ public class Database {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
-	private void initializeSyncDateTimes() {
-		logger.entering(getClass().getName(), this.getClass().getName());
-		syncStartDateTime = DateTime.now().toDateMidnight().toDateTime();
-		syncEndDateTime = DateTime.now().plusMonths(12).toDateMidnight()
-				.toDateTime();
-		logger.exiting(getClass().getName(), this.getClass().getName());
-	}
-
 	/**
 	 * Database constructor
 	 * 
@@ -508,11 +536,13 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	public Database(String taskRecordFileName, boolean disableSyncronize)
-			throws IOException, ServiceException {
+			throws IllegalArgumentException, IOException, ServiceException {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		if (taskRecordFileName == null) {
 			throw new IllegalArgumentException(String.format(
-					EXCEPTION_MESSAGE_NULL_PARAMETER, "taskRecordFileName"));
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETER_TASK_RECORD_FILE_NAME));
 		}
 
 		initializeSyncDateTimes();
@@ -526,6 +556,14 @@ public class Database {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
+	private void initializeSyncDateTimes() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		syncStartDateTime = DateTime.now().toDateMidnight().toDateTime();
+		syncEndDateTime = DateTime.now().plusMonths(12).toDateMidnight()
+				.toDateTime();
+		logger.exiting(getClass().getName(), this.getClass().getName());
+	}
+
 	/**
 	 * Initialize database with specified taskRecordFile
 	 * 
@@ -536,10 +574,12 @@ public class Database {
 	private void initalizeDatabase(String taskRecordFileName)
 			throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		configFile = new ConfigFile();
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
 		taskLists = new TaskLists(taskRecordFile.getTaskList());
 		syncronize = new Syncronize();
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
@@ -551,10 +591,12 @@ public class Database {
 	 */
 	private void initalizeDatabase() throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
+
 		configFile = new ConfigFile();
 		taskRecordFile = new TaskRecordFile();
 		taskLists = new TaskLists(taskRecordFile.getTaskList());
 		syncronize = new Syncronize();
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
@@ -567,16 +609,13 @@ public class Database {
 	private boolean initializeGoogleCalendarService() throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
 
-		if (!configFile.hasConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)
-				|| configFile
-						.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)
-						.isEmpty()) {
+		if (!configFile
+				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)) {
 			logger.exiting(getClass().getName(), this.getClass().getName());
 			return false;
 		}
-		if (!configFile.hasConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)
-				|| configFile.getConfigParameter(
-						CONFIG_PARAM_GOOGLE_USER_ACCOUNT).isEmpty()) {
+		if (!configFile
+				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
 			logger.exiting(getClass().getName(), this.getClass().getName());
 			return false;
 		}
@@ -598,8 +637,8 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void authenticateUserGoogleAccount(String userName,
-			String userPassword) throws IOException, ServiceException {
+	public void loginUserGoogleAccount(String userName, String userPassword)
+			throws IOException, ServiceException {
 		logger.entering(getClass().getName(), this.getClass().getName());
 
 		if (userName == null) {
@@ -662,11 +701,16 @@ public class Database {
 		String googleUserAccount = googleCalendar.getUserEmail();
 
 		if (googleAuthToken != null) {
+			logger.log(Level.INFO, "Saving Google : "
+					+ CONFIG_PARAM_GOOGLE_AUTH_TOKEN + " " + googleAuthToken);
 			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN,
 					googleAuthToken);
 		}
 
 		if (googleUserAccount != null) {
+			logger.log(Level.INFO, "Saving Google : "
+					+ CONFIG_PARAM_GOOGLE_USER_ACCOUNT + " "
+					+ googleUserAccount);
 			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT,
 					googleUserAccount);
 		}

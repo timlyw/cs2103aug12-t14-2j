@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.google.gdata.util.ServiceException;
-
+import mhs.src.ui.HtmlCreator;
 import mhs.src.storage.Database;
 import mhs.src.storage.Task;
 import mhs.src.storage.TaskCategory;
@@ -17,10 +17,12 @@ public abstract class Command {
 	protected List<Task> matchedTasks;
 	protected Database dataHandler;
 	protected boolean indexExpected;
+	private HtmlCreator htmlCreator;
 
 	public Command() {
 		indexExpected = false;
 		isUndoable = false;
+		htmlCreator = new HtmlCreator();
 		try {
 			dataHandler = new Database();
 		} catch (IOException | ServiceException e1) {
@@ -37,14 +39,32 @@ public abstract class Command {
 	}
 
 	abstract public String executeByIndex(int index);
+
 	abstract public String executeByIndexAndType(int index);
 
 	protected List<Task> queryTask(CommandInfo inputCommand) throws IOException {
+
 		boolean name, startDate, endDate;
+		name = startDate = endDate = false;
+
 		List<Task> queryResultList;
-		name = inputCommand.getTaskName() == null ? false : true;
-		startDate = inputCommand.getStartDate() == null ? false : true;
-		endDate = inputCommand.getEndDate() == null ? false : true;
+		System.out.println("check1");
+
+		if (inputCommand.getTaskName() != null) {
+			name = inputCommand.getTaskName().matches("<Default task>") ? false
+					: true;
+			System.out.println("name=(" + inputCommand.getTaskName() + ")"
+					+ name);
+		}
+
+		if (inputCommand.getStartDate() != null) {
+			startDate = inputCommand.getStartDate() == null ? false : true;
+		}
+
+		if (inputCommand.getEndDate() != null) {
+			endDate = inputCommand.getEndDate() == null ? false : true;
+		}
+
 		if (name && startDate && endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					inputCommand.getStartDate(), inputCommand.getEndDate(),
@@ -64,8 +84,10 @@ public abstract class Command {
 					inputCommand.getStartDate().toDateMidnight().toDateTime(),
 					true);
 		} else {
+			System.out.println("check2");
 			queryResultList = dataHandler.query(true);
 		}
+		System.out.println("check3");
 		return queryResultList;
 	}
 
@@ -76,10 +98,10 @@ public abstract class Command {
 			if (selectedTask.getTaskCategory() == TaskCategory.FLOATING) {
 				outputString += count + ". " + selectedTask.getTaskName() + "-"
 						+ selectedTask.getTaskCategory() + "("
-						+ selectedTask.isDone() + ")\n";
+						+ selectedTask.isDone() + ")" + htmlCreator.NEW_LINE;
 			} else {
 				outputString += count + ". " + selectedTask.getTaskName() + "-"
-						+ selectedTask.getTaskCategory() + "\n";
+						+ selectedTask.getTaskCategory() + htmlCreator.NEW_LINE;
 			}
 			count++;
 		}
