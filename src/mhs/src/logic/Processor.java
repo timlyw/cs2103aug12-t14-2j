@@ -177,7 +177,7 @@ public class Processor {
 	private String authenticateUser(String userName, String password)
 			throws IOException, ServiceException {
 		try {
-			dataHandler.authenticateUserGoogleAccount(userName, password);
+			dataHandler.loginUserGoogleAccount(userName, password);
 			userIsLoggedIn = true;
 			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
 		} catch (AuthenticationException e) {
