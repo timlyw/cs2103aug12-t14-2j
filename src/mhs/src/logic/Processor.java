@@ -2,8 +2,10 @@ package mhs.src.logic;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import mhs.src.storage.Database;
+import java.util.ArrayList;
 
+import mhs.src.storage.Database;
+import mhs.src.ui.HtmlCreator;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
@@ -19,11 +21,18 @@ public class Processor {
 	private Database dataHandler;
 	private CommandParser commandParser;
 	private boolean usernameIsExpected = false;
-	private boolean passwordIsExpected = false;
 	private String username;
 	private String password;
 	private boolean userIsLoggedIn;
 	private CommandCreator createCommand;
+
+	private ArrayList<StateListener> stateListeners = new ArrayList<StateListener>();
+	private String commandFeedback = null;
+	private HtmlCreator htmlCreator = new HtmlCreator();
+	private String currentCommand = null;
+	private String currentState = null;
+	private boolean isPasswordExpected = false;
+	public int LINE_HEIGHT = 30;
 
 	public Processor() {
 		try {
@@ -46,25 +55,40 @@ public class Processor {
 		}
 	}
 
+	public void addStateListener(StateListener stateListener) {
+		stateListeners.add(stateListener);
+	}
+
+	public void setLineLimit(int limit) {
+		updateStateListeners();
+	}
+
+	public String getCommandFeedback() {
+		return commandFeedback;
+	}
+
+	public boolean passwordExpected() {
+		return isPasswordExpected;
+	}
+
+	public String getState() {
+		return currentState;
+	}
+
+	public void updateStateListeners() {
+		for (int i = 0; i < stateListeners.size(); i++) {
+			StateListener stateListener = stateListeners.get(i);
+			stateListener.stateChanged();
+		}
+	}
+
 	/**
 	 * Checks if the input field needs to be masked for password
 	 * 
 	 * @return whether password is expected
 	 */
 	public boolean isPasswordExpected() {
-		return passwordIsExpected;
-	}
-
-	/**
-	 * Method that handles the live command feedback mechanism
-	 * 
-	 * @param command
-	 * @return Command Feedback string
-	 */
-	public String getCommandFeedback(String command) {
-		String screenOutput = "Testing only";
-
-		return screenOutput;
+		return isPasswordExpected;
 	}
 
 	/**
@@ -97,39 +121,48 @@ public class Processor {
 	/**
 	 * Executes the given command after a carriage return
 	 * 
-	 * @param command
+	 * @param currentCommand
 	 * @return
 	 */
-	public String executeCommand(String command) {
+	public void executeCommand() {
 		String screenOutput = null;
 		try {
 			if (usernameIsExpected) {
-				username = command;
+				username = currentCommand;
 				usernameIsExpected = false;
-				passwordIsExpected = true;
+				isPasswordExpected = true;
 				screenOutput = "Enter password";
-			} else if (passwordIsExpected) {
-				password = command;
-				passwordIsExpected = false;
+			} else if (isPasswordExpected) {
+				password = currentCommand;
+				isPasswordExpected = false;
 				try {
 					screenOutput = authenticateUser(username, password);
 				} catch (AuthenticationException e) {
-					System.out.println("Login Failed!");
 					screenOutput = "Login failed! Check username and password.";
 					// login failed scenario goes here
 					// e.printStackTrace();
 				}
 			} else {
 				CommandInfo userCommand = commandParser
-						.getParsedCommand(command);
+						.getParsedCommand(currentCommand);
 				// store last command
 				screenOutput = processCommand(userCommand);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			screenOutput = "Exceptional Situation";
 			e.printStackTrace();
 		}
-		return screenOutput;
+		commandFeedback = "Completed";
+		currentState = screenOutput;
+		updateStateListeners();
+	}
+
+
+	public void setCommand(String command) {
+		currentCommand = command;
+		String boldCommand = htmlCreator.makeBold(currentCommand);
+		commandFeedback = "feedback for " + boldCommand;
+		updateStateListeners();
 	}
 
 	/**
@@ -151,7 +184,6 @@ public class Processor {
 			return "Login unsuccessful! Please check username and password.";
 		}
 	}
-
 
 	/**
 	 * Prompts user for username
