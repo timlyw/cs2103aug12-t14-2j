@@ -56,7 +56,7 @@ public class DatabaseTest {
 	private static final String PARAMETER_TASK_RECORD_FILE_NAME = "taskRecordFileName";
 	private static final String PARAMETER_TASK = "task";
 	private static final String PARAMETER_TASK_NAME = "taskName";
-	private static final String PARAMETERE_START_AND_END_DATE_TIMES = "start and end date times";
+	private static final String PARAMETER_START_AND_END_DATE_TIMES = "start and end date times";
 
 	Database database;
 	Map<Integer, Task> taskList;
