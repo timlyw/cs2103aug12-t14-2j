@@ -652,7 +652,6 @@ public class Database {
 
 		syncronize.disableRemoteSync();
 
-		// TODO
 		String googleAccessToken = GoogleCalendar.retrieveUserToken(
 				GOOGLE_CALENDAR_APP_NAME, userName, userPassword);
 		googleCalendar = new GoogleCalendar(GOOGLE_CALENDAR_APP_NAME, userName,
