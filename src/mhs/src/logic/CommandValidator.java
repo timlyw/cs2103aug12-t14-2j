@@ -109,9 +109,7 @@ public class CommandValidator {
 			}
 		}
 		if (commandEnum == CommandInfo.CommandKeyWords.edit) {
-			if(index == 0 && taskName == null){
-				enforceTaskName();
-			}
+
 		}
 		if (commandEnum == CommandInfo.CommandKeyWords.help) {
 			clearAllParameters();
