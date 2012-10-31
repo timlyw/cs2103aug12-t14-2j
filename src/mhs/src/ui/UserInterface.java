@@ -5,7 +5,6 @@ import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -22,7 +21,6 @@ public class UserInterface {
 	
 	public UserInterface() {
 		initMhsFrame();
-		waitForMhsFrameToinit();
 		initListeners();
 	}
 	
@@ -43,12 +41,7 @@ public class UserInterface {
 	}
 	
 	private void initMhsFrame() {
-		MhsFrameThread mhsFrameThread = new MhsFrameThread();
-		SwingUtilities.invokeLater(mhsFrameThread);
-	}
-	
-	private void waitForMhsFrameToinit() {
-		while(mhsFrame == null);
+    	mhsFrame = new MhsFrame();
 	}
 	
 	private void initListeners() {
@@ -120,12 +113,6 @@ public class UserInterface {
 			if(feedbackText != null) {
 				mhsFrame.setFeedbackText(feedbackText);
 			}
-		}
-	}
-	
-	private class MhsFrameThread implements Runnable {
-		public void run() {
-        	mhsFrame = new MhsFrame();
 		}
 	}
 	
