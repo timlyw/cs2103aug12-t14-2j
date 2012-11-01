@@ -1048,9 +1048,9 @@ public class Database {
 
 		taskToDelete.setDeleted(true);
 
-		// set updated time
+		// set updated time to force push
 		DateTime UpdateTime = new DateTime();
-		UpdateTime = DateTime.now();
+		UpdateTime = DateTime.now().plusMinutes(1);
 		taskToDelete.setTaskUpdated(UpdateTime);
 
 		taskLists.updateTaskInTaskLists(taskToDelete);
@@ -1118,9 +1118,9 @@ public class Database {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		assert (updatedTaskToSave != null);
 
-		// set updated time
+		// set updated time ahead to force push
 		DateTime UpdateTime = new DateTime();
-		UpdateTime = DateTime.now();
+		UpdateTime = DateTime.now().plusMinutes(1);
 		updatedTaskToSave.setTaskUpdated(UpdateTime);
 
 		taskLists.updateTaskInTaskLists(updatedTaskToSave);
