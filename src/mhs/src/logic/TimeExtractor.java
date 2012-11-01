@@ -70,22 +70,25 @@ public class TimeExtractor {
 	 */
 	public Queue<LocalTime> processTime(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (parseString != null);
+		try {
+			timeQueue = new LinkedList<LocalTime>();
+			String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 
-		timeQueue = new LinkedList<LocalTime>();
-		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
+			for (int i = 0; i < processArray.length; i++) {
 
-		for (int i = 0; i < processArray.length; i++) {
-
-			if (checkTimeFormat(processArray[i])) {
-				if (is24HrFormat(processArray[i])) {
-					process24hrFormat(processArray[i]);
-				} else if (is12HrFormat(processArray[i])) {
-					process12HrFormat(processArray[i]);
+				if (checkTimeFormat(processArray[i])) {
+					if (is24HrFormat(processArray[i])) {
+						process24hrFormat(processArray[i]);
+					} else if (is12HrFormat(processArray[i])) {
+						process12HrFormat(processArray[i]);
+					}
+					timeQueue.add(setTime);
 				}
-				timeQueue.add(setTime);
 			}
+		} catch (NullPointerException e) {
+			return timeQueue;
 		}
-
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return timeQueue;
 	}
@@ -267,6 +270,7 @@ public class TimeExtractor {
 	 */
 	public boolean checkTimeFormat(String time) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (time != null);
 		if (is12HrFormat(time) || is24HrFormat(time)) {
 			logger.exiting(getClass().getName(), this.getClass().getName());
 			return true;

@@ -23,7 +23,9 @@ public class MhsGson {
 	private static GsonBuilder gsonBuilder;
 
 	private MhsGson() {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		initializeGson();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
