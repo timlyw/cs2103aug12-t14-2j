@@ -467,13 +467,14 @@
     "isDeleted": true
   },
   {
+    "endDateTime": "2012-11-01T17:00:00.000+08:00",
     "taskId": 42,
-    "taskName": "task app",
-    "taskCategory": "FLOATING",
+    "taskName": "lalal",
+    "taskCategory": "DEADLINE",
     "taskCreated": "2012-10-31T21:55:22.492+08:00",
-    "taskUpdated": "2012-10-31T21:55:22.492+08:00",
-    "taskLastSync": null,
-    "gCalTaskId": null,
+    "taskUpdated": "2012-11-01T09:48:45.708+08:00",
+    "taskLastSync": "2012-11-01T09:48:45.708+08:00",
+    "gCalTaskId": "nvm3eo106jan0b1k4o5gkv2ulk@google.com",
     "isDone": false,
     "isDeleted": false
   },
@@ -648,5 +649,28 @@
     "gCalTaskId": null,
     "isDone": false,
     "isDeleted": true
+  },
+  {
+    "endDateTime": "2012-11-01T16:00:00.000+08:00",
+    "taskId": 58,
+    "taskName": "lab test",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-01T09:40:57.488+08:00",
+    "taskUpdated": "2012-11-01T09:40:57.488+08:00",
+    "taskLastSync": "2012-11-01T09:40:57.488+08:00",
+    "gCalTaskId": "ufn0aot9i89nta0ppcmj7uobl4@google.com",
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 59,
+    "taskName": "running",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T09:48:45.718+08:00",
+    "taskUpdated": "2012-11-01T09:48:45.718+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
   }
 ]

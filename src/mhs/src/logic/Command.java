@@ -46,12 +46,8 @@ public abstract class Command {
 		boolean name, startDate, endDate;
 		List<Task> queryResultList;
 		name = inputCommand.getTaskName() == null ? false : true;
-		System.out.println("name=(" + inputCommand.getTaskName() + ")" + name);
 		startDate = inputCommand.getStartDate() == null ? false : true;
-		System.out.println("START:(" + inputCommand.getStartDate() + ")"
-				+ startDate);
 		endDate = inputCommand.getEndDate() == null ? false : true;
-		System.out.println("END:(" + inputCommand.getEndDate() + ")" + endDate);
 		if (name && startDate && endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					inputCommand.getStartDate(), inputCommand.getEndDate(),
