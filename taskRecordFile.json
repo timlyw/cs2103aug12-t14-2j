@@ -451,11 +451,11 @@
     "taskName": "\u003cDefault task\u003e",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-31T18:04:46.723+08:00",
-    "taskUpdated": "2012-10-31T18:04:46.723+08:00",
+    "taskUpdated": "2012-11-01T02:23:36.572+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "startDateTime": "2012-10-31T18:00:00.000+08:00",
@@ -567,11 +567,11 @@
     "taskName": "\u003cDefault task\u003e",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-31T18:08:20.931+08:00",
-    "taskUpdated": "2012-10-31T18:08:20.931+08:00",
+    "taskUpdated": "2012-11-01T02:25:32.943+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "startDateTime": "2012-10-31T16:00:00.000+08:00",
@@ -629,11 +629,11 @@
     "taskName": "\u003cDefault task\u003e",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-31T18:10:35.336+08:00",
-    "taskUpdated": "2012-10-31T18:10:35.336+08:00",
+    "taskUpdated": "2012-11-01T02:23:42.587+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-11-01T16:00:00.000+08:00",
@@ -667,11 +667,11 @@
     "taskName": "\u003cDefault task\u003e",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-31T18:17:29.694+08:00",
-    "taskUpdated": "2012-10-31T18:17:29.694+08:00",
+    "taskUpdated": "2012-11-01T02:23:21.268+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "startDateTime": "2012-10-31T17:00:00.000+08:00",
@@ -680,11 +680,11 @@
     "taskName": "\u003cDefault task\u003e",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-31T18:18:51.352+08:00",
-    "taskUpdated": "2012-10-31T18:18:51.352+08:00",
+    "taskUpdated": "2012-11-01T02:23:26.271+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "startDateTime": "2012-10-31T17:00:00.000+08:00",
@@ -742,6 +742,84 @@
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-01T00:04:52.017+08:00",
     "taskUpdated": "2012-11-01T00:04:52.017+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "endDateTime": "2012-11-01T15:00:00.000+08:00",
+    "taskId": 64,
+    "taskName": "timed task 2om",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-01T02:18:16.341+08:00",
+    "taskUpdated": "2012-11-01T02:18:16.341+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 65,
+    "taskName": "",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T02:18:33.462+08:00",
+    "taskUpdated": "2012-11-01T02:18:33.462+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 66,
+    "taskName": "",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T02:19:04.843+08:00",
+    "taskUpdated": "2012-11-01T02:25:40.673+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 67,
+    "taskName": "",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T02:19:09.841+08:00",
+    "taskUpdated": "2012-11-01T02:19:09.841+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 68,
+    "taskName": "",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T02:19:32.147+08:00",
+    "taskUpdated": "2012-11-01T02:19:32.147+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 69,
+    "taskName": "delete5",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T02:23:14.737+08:00",
+    "taskUpdated": "2012-11-01T02:23:14.737+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 70,
+    "taskName": "dispaly",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T02:23:20.539+08:00",
+    "taskUpdated": "2012-11-01T02:23:20.539+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
