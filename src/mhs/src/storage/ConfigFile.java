@@ -291,4 +291,25 @@ public class ConfigFile {
 		save();
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
+
+	/**
+	 * Remove config parameter
+	 * 
+	 * @param parameter
+	 * @param value
+	 * @throws IOException
+	 */
+	public void removeConfigParameter(String parameter)
+			throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
+
+		if (parameter == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_PARAMETER));
+		}
+
+		configParameters.remove(parameter);
+		save();
+		logger.exiting(getClass().getName(), this.getClass().getName());
+	}
 }
