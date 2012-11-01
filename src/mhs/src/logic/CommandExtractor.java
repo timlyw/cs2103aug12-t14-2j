@@ -99,6 +99,8 @@ public class CommandExtractor {
 			}
 		} catch (NullPointerException e) {
 			return null;
+		}catch(ArrayIndexOutOfBoundsException e){
+			return null;
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return commandString;
