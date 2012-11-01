@@ -99,11 +99,15 @@ public class MhsFrame extends JFrame {
 	// used to keep track if input is enabled
 	private boolean isInputDisabled = false;
 	
-	public MhsFrame() {
-		super(FRAME_TITLE);
-		initFrame();
+	private static MhsFrame mhsFrameInstance = null;
+	
+	public static MhsFrame getInstance() {
+		if(mhsFrameInstance == null) {
+			mhsFrameInstance = new MhsFrame();
+		}
+		return mhsFrameInstance;
 	}
-
+	
 	public void open() {
 		this.setVisible(true);
 	}
@@ -367,4 +371,10 @@ public class MhsFrame extends JFrame {
 				bottomPadding, padding);
 		return paddingBorder;
 	}
+
+	private MhsFrame() {
+		super(FRAME_TITLE);
+		initFrame();
+	}
+
 }
