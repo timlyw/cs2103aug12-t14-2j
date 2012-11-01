@@ -19,9 +19,9 @@ public abstract class Command {
 	protected List<Task> matchedTasks;
 	protected Database dataHandler;
 	protected boolean indexExpected;
-	private HtmlCreator htmlCreator;
+	protected HtmlCreator htmlCreator;
 	private static final Logger logger = MhsLogger.getLogger();
-	
+
 	public Command() {
 		indexExpected = false;
 		isUndoable = false;
@@ -47,6 +47,7 @@ public abstract class Command {
 
 	/**
 	 * Queries task based on task name/start time/end time
+	 * 
 	 * @param inputCommand
 	 * @return List of matched tasks
 	 * @throws IOException
@@ -85,6 +86,7 @@ public abstract class Command {
 
 	/**
 	 * Queries tasks exclusively by name
+	 * 
 	 * @param inputCommand
 	 * @return matched Tasks
 	 * @throws IOException
@@ -107,7 +109,7 @@ public abstract class Command {
 
 	/*
 	 * 
-	 * Displays list of all kinds of  tasks
+	 * Displays list of all kinds of tasks
 	 */
 	protected String displayListOfTasks(List<Task> resultList) {
 		logger.entering(getClass().getName(), this.getClass().getName());
@@ -115,9 +117,19 @@ public abstract class Command {
 		String outputString = new String();
 		for (Task selectedTask : resultList) {
 			if (selectedTask.getTaskCategory() == TaskCategory.FLOATING) {
-				outputString += count + ". " +htmlCreator.makeBold(selectedTask.getTaskName() + "-"
-						+ selectedTask.getTaskCategory() + "("
-						+ selectedTask.isDone() + ")") + htmlCreator.NEW_LINE;
+				if (selectedTask.isDone()) {
+					outputString += count
+							+ ". "
+							+ htmlCreator.makeBold(selectedTask.getTaskName()
+									+ "-" + selectedTask.getTaskCategory()
+									+ "[DONE]") + htmlCreator.NEW_LINE;
+				} else {
+					outputString += count
+							+ ". "
+							+ htmlCreator.makeBold(selectedTask.getTaskName()
+									+ "-" + selectedTask.getTaskCategory()
+									+ "[PENDING]") + htmlCreator.NEW_LINE;
+				}
 			} else {
 				outputString += count + ". " + selectedTask.getTaskName() + "-"
 						+ selectedTask.getTaskCategory() + htmlCreator.NEW_LINE;
@@ -130,6 +142,7 @@ public abstract class Command {
 
 	/**
 	 * Displays tasks by category
+	 * 
 	 * @param resultList
 	 * @param category
 	 * @return
@@ -141,9 +154,12 @@ public abstract class Command {
 		String outputString = new String();
 		for (Task selectedTask : resultList) {
 			if (selectedTask.getTaskCategory() == category) {
-				outputString += count + ". " + htmlCreator.makeBold(selectedTask.getTaskName() + "-"
-						+ selectedTask.getTaskCategory() + "("
-						+ selectedTask.isDone() + ")") + htmlCreator.NEW_LINE;
+				outputString += count
+						+ ". "
+						+ htmlCreator.makeBold(selectedTask.getTaskName() + "-"
+								+ selectedTask.getTaskCategory() + "("
+								+ selectedTask.isDone() + ")")
+						+ htmlCreator.NEW_LINE;
 			}
 			count++;
 		}

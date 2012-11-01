@@ -94,7 +94,7 @@ public class CommandRemove extends Command {
 			try {
 				System.out.println("entered");
 				dataHandler.delete(matchedTasks.get(index).getTaskId());
-				outputString = "Deleted "
+				outputString = "Deleted task -"
 						+ matchedTasks.get(index).getTaskName();
 				lastDeletedTask = matchedTasks.get(index);
 				indexExpected = false;
@@ -117,7 +117,7 @@ public class CommandRemove extends Command {
 		if (index < matchedTasks.size()) {
 			try {
 				dataHandler.delete(matchedTasks.get(index).getTaskId());
-				outputString = "Deleted "
+				outputString = "Deleted task -"
 						+ matchedTasks.get(index).getTaskName();
 				lastDeletedTask = matchedTasks.get(index);
 				isUndoable = true;

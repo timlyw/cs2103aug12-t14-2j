@@ -77,11 +77,11 @@
     "taskName": "drink tea",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-28T22:44:09.586+08:00",
-    "taskUpdated": "2012-10-28T22:44:09.586+08:00",
+    "taskUpdated": "2012-11-01T13:24:41.495+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-10-29T21:00:00.000+08:00",
@@ -128,11 +128,11 @@
     "taskName": "funfall",
     "taskCategory": "TIMED",
     "taskCreated": "2012-10-28T22:54:12.083+08:00",
-    "taskUpdated": "2012-10-28T22:54:12.083+08:00",
+    "taskUpdated": "2012-11-01T13:23:10.940+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 13,
@@ -255,12 +255,13 @@
     "isDeleted": false
   },
   {
-    "endDateTime": "2012-11-01T17:00:00.000+08:00",
+    "startDateTime": "2012-11-01T19:00:00.000+08:00",
+    "endDateTime": "2012-11-01T20:00:00.000+08:00",
     "taskId": 23,
-    "taskName": "football",
-    "taskCategory": "DEADLINE",
+    "taskName": "Meeting",
+    "taskCategory": "TIMED",
     "taskCreated": "2012-11-01T08:05:07.000+08:00",
-    "taskUpdated": "2012-11-01T08:05:07.000+08:00",
+    "taskUpdated": "2012-11-01T13:33:17.180+08:00",
     "taskLastSync": "2012-11-01T08:05:07.000+08:00",
     "gCalTaskId": "7pkue648npuhs3ske6tadq4nhc@google.com",
     "isDone": false,
@@ -326,10 +327,10 @@
     "taskName": "Buy Bread",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-01T13:00:22.339+08:00",
-    "taskUpdated": "2012-11-01T13:00:22.339+08:00",
+    "taskUpdated": "2012-11-01T13:28:15.335+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": false,
+    "isDone": true,
     "isDeleted": false
   },
   {
@@ -337,10 +338,10 @@
     "taskName": "clean room",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-01T13:00:27.652+08:00",
-    "taskUpdated": "2012-11-01T13:00:41.204+08:00",
+    "taskUpdated": "2012-11-01T13:28:29.384+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": false,
+    "isDone": true,
     "isDeleted": false
   },
   {
@@ -377,5 +378,38 @@
     "gCalTaskId": null,
     "isDone": false,
     "isDeleted": true
+  },
+  {
+    "taskId": 34,
+    "taskName": "hello",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T13:17:38.196+08:00",
+    "taskUpdated": "2012-11-01T13:19:06.296+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 35,
+    "taskName": "hello",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T13:18:28.768+08:00",
+    "taskUpdated": "2012-11-01T13:19:31.319+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 36,
+    "taskName": "Furnish house",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T13:27:40.304+08:00",
+    "taskUpdated": "2012-11-01T13:27:40.304+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
   }
 ]
