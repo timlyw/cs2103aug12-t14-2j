@@ -160,6 +160,7 @@ public class MhsFrame extends JFrame {
 	}
 	
 	public void setInputToPlainText() {
+		plainTextBox.setVisible(true);
 		inputType = INPUT_TYPE.PLAIN_TEXT;
 		selectInputBox();
 	}
