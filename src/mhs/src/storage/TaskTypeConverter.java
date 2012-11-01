@@ -11,6 +11,9 @@
 package mhs.src.storage;
 
 import java.lang.reflect.Type;
+import java.util.logging.Logger;
+
+import mhs.src.common.MhsLogger;
 
 import org.joda.time.DateTime;
 
@@ -24,6 +27,8 @@ import com.google.gson.JsonSerializer;
 
 public class TaskTypeConverter implements JsonSerializer<Task>,
 		JsonDeserializer<Task> {
+
+	private static final Logger logger = MhsLogger.getLogger();
 
 	private static final String JSON_KEY_IS_DELETED = "isDeleted";
 	private static final String JSON_KEY_IS_DONE = "isDone";
@@ -40,6 +45,8 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	@Override
 	public JsonElement serialize(Task src, Type typeOfSrc,
 			JsonSerializationContext context) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return context.serialize(src);
 	}
 
@@ -47,6 +54,7 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	public Task deserialize(JsonElement json, Type type,
 			JsonDeserializationContext context) throws JsonParseException {
 
+		logger.entering(getClass().getName(), this.getClass().getName());
 		JsonObject jObject = (JsonObject) json.getAsJsonObject();
 
 		switch (jObject.get(JSON_KEY_TASK_CATEGORY).getAsString()) {
@@ -59,6 +67,7 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 		default:
 			break;
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());		
 		return null;
 	}
 
@@ -68,12 +77,14 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	 * @return floating task
 	 */
 	private Task convertJObjectToFloatingTask(JsonObject jObject) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		DateTime floatingTasktaskCreated = convertJsonElementToDateTime(
 				JSON_KEY_TASK_CREATED, jObject);
 		DateTime floatingTasktaskUpdated = convertJsonElementToDateTime(
 				JSON_KEY_TASK_UPDATED, jObject);
 		DateTime floatingTasktaskLastSync = convertJsonElementToDateTime(
 				JSON_KEY_TASK_LAST_SYNC, jObject);
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return new FloatingTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(),
 				jObject.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
 						JSON_KEY_TASK_CATEGORY).getAsString(),
@@ -89,6 +100,7 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	 * @return deadline task
 	 */
 	private Task convertJObjectToDeadlineTask(JsonObject jObject) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String deadlineTaskgCalTaskId;
 		DateTime deadlineTaskendDatetime;
 		DateTime deadlineTasktaskCreated;
@@ -106,6 +118,8 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 		deadlineTaskgCalTaskId = convertJsonElementToString(
 				JSON_KEY_G_CAL_TASK_ID, jObject);
 
+		logger.exiting(getClass().getName(), this.getClass().getName());
+
 		return new DeadlineTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(),
 				jObject.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
 						JSON_KEY_TASK_CATEGORY).getAsString(),
@@ -122,6 +136,7 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	 * @return timed task
 	 */
 	private Task convertJObjectToTimedTask(JsonObject jObject) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String timedTaskgCalTaskId;
 		DateTime timedTaskstartDatetime;
 		DateTime timedTaskendDatetime;
@@ -143,6 +158,7 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 		timedTaskgCalTaskId = convertJsonElementToString(
 				JSON_KEY_G_CAL_TASK_ID, jObject);
 
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return new TimedTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(), jObject
 				.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
 				JSON_KEY_TASK_CATEGORY).getAsString(), timedTaskstartDatetime,
@@ -161,12 +177,14 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	 * @return
 	 */
 	private String convertJsonElementToString(String jsonKey, JsonObject jObject) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String convertedString;
 		if (jObject.get(jsonKey).isJsonNull()) {
 			convertedString = null;
 		} else {
 			convertedString = jObject.get(jsonKey).getAsString();
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return convertedString;
 	}
 
@@ -179,12 +197,14 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	 */
 	private DateTime convertJsonElementToDateTime(String jsonKey,
 			JsonObject jObject) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		DateTime convertedDateTime;
 		if (jObject.get(jsonKey).isJsonNull()) {
 			convertedDateTime = null;
 		} else {
 			convertedDateTime = new DateTime(jObject.get(jsonKey).getAsString());
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return convertedDateTime;
 	}
 }

@@ -91,7 +91,9 @@ public class TaskRecordFile {
 	 * Initialize task list
 	 */
 	private void initializeTaskList() {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		taskList = new LinkedHashMap<Integer, Task>();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -101,6 +103,7 @@ public class TaskRecordFile {
 	 */
 	private void initalizeRecordFile() throws IOException {
 		logger.exiting(getClass().getName(), this.getClass().getName());
+		assert (RECORD_FILE_NAME != null);
 
 		taskRecordFile = new File(RECORD_FILE_NAME);
 
@@ -120,7 +123,6 @@ public class TaskRecordFile {
 	 */
 	private void createNewJsonFile() throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
-
 		assert (taskRecordFile != null);
 
 		taskRecordFile.createNewFile();
@@ -139,9 +141,14 @@ public class TaskRecordFile {
 	 */
 	private void openJsonOutputStream() throws FileNotFoundException,
 			UnsupportedEncodingException {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (RECORD_FILE_NAME != null);
+
 		outputStream = new FileOutputStream(RECORD_FILE_NAME);
 		jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream,
 				CHAR_ENCODING_UTF8));
+
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -150,8 +157,10 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	private void closeJsonOutputStream() throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		jsonWriter.close();
 		outputStream.close();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -160,9 +169,11 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	private void writeEmptyJsonArray() throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		jsonWriter.setIndent(JSON_INDENT);
 		jsonWriter.beginArray();
 		jsonWriter.endArray();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -184,6 +195,11 @@ public class TaskRecordFile {
 	 * Loads Jarray from json reader
 	 */
 	private void loadTaskListFromJarray() {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (gson != null);
+		assert (jsonReader != null);
+		assert (taskList != null);
+
 		JsonParser parser = new JsonParser();
 		JsonArray Jarray = parser.parse(jsonReader).getAsJsonArray();
 
@@ -191,6 +207,7 @@ public class TaskRecordFile {
 			Task newTask = gson.fromJson(obj, Task.class);
 			taskList.put(newTask.getTaskId(), newTask);
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -201,9 +218,13 @@ public class TaskRecordFile {
 	 */
 	private void openJsonInputStream() throws FileNotFoundException,
 			UnsupportedEncodingException {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (RECORD_FILE_NAME != null);
+
 		inputStream = new FileInputStream(RECORD_FILE_NAME);
 		jsonReader = new JsonReader(new InputStreamReader(inputStream,
 				CHAR_ENCODING_UTF8));
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -212,8 +233,10 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	private void closeJsonInputStream() throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		jsonReader.close();
 		inputStream.close();
+		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
 	/**
@@ -224,18 +247,33 @@ public class TaskRecordFile {
 	 */
 	public void saveTaskList(Map<Integer, Task> taskList) throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
+		
 		openJsonOutputStream();
+		writeJsonArray(taskList);
+		closeJsonOutputStream();
+
+		logger.exiting(getClass().getName(), this.getClass().getName());
+	}
+
+	/**
+	 * Write Map to Json Array
+	 * @param taskList
+	 * @throws IOException
+	 */
+	private void writeJsonArray(Map<Integer, Task> taskList) throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		assert(jsonWriter != null);
 
 		jsonWriter.setIndent(JSON_INDENT);
 		jsonWriter.beginArray();
-
+		
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
 			gson.toJson(entry.getValue(), entry.getValue().getClass(),
 					jsonWriter);
 		}
-
+		
 		jsonWriter.endArray();
-		closeJsonOutputStream();
+		
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
