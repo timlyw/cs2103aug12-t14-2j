@@ -12,7 +12,7 @@ public class CommandRemove extends Command {
 	public CommandRemove(CommandInfo userCommand) {
 		List<Task> resultList;
 		try {
-			resultList = queryTask(userCommand);
+			resultList = queryTaskByName(userCommand);
 			matchedTasks = resultList;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -74,9 +74,9 @@ public class CommandRemove extends Command {
 	@Override
 	public String executeByIndex(int index) {
 		String outputString = new String();
-		System.out.println("delet by index-in");
-		if (indexExpected & matchedTasks.size() <= index) {
+		if (indexExpected & index < matchedTasks.size()) {
 			try {
+				System.out.println("entered");
 				dataHandler.delete(matchedTasks.get(index).getTaskId());
 				outputString = "Deleted "
 						+ matchedTasks.get(index).getTaskName();

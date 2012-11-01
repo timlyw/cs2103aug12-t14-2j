@@ -143,10 +143,15 @@ public class Processor {
 					// e.printStackTrace();
 				}
 			} else {
+				try{
 				CommandInfo userCommand = commandParser
 						.getParsedCommand(currentCommand);
-				// store last command
 				screenOutput = processCommand(userCommand);
+				}
+				catch(NullPointerException e1)
+				{
+					screenOutput = "Parse Error";
+				}
 			}
 		} catch (Exception e) {
 			screenOutput = "Exceptional Situation";
@@ -232,12 +237,20 @@ public class Processor {
 	 */
 	private String logoutUser() {
 		String outputString;
-		try {
-			dataHandler.logOutUserGoogleAccount();
-			userIsLoggedIn = false;
-			outputString = "You have successfully logged out !";
-		} catch (IOException e) {
-			outputString = "Some error occurred during logout!";
+		if (!userIsLoggedIn) {
+			outputString = "You are not logged in! Cannot logout";
+		} else {
+			try {
+				System.out.println("inside logout");
+				dataHandler.logOutUserGoogleAccount();
+				userIsLoggedIn = false;
+				outputString = "You have successfully logged out !";
+			} catch (IOException e) {
+				outputString = "Some error occurred during logout!";
+			} catch (Exception e1) {
+				outputString = "Some error occurred during logout!";
+				e1.printStackTrace();
+			}
 		}
 		return outputString;
 	}
