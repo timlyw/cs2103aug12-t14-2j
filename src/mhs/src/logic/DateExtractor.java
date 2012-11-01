@@ -191,7 +191,10 @@ public class DateExtractor {
 				}
 			}
 		} catch (NullPointerException e) {
-			return null;
+			return dateList;
+		}
+		catch(ArrayIndexOutOfBoundsException e){
+			return dateList;
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return dateList;
@@ -326,6 +329,9 @@ public class DateExtractor {
 			return processArray;
 		} catch (NullPointerException e) {
 			logger.exiting(getClass().getName(), this.getClass().getName());
+			return null;
+		}
+		catch(ArrayIndexOutOfBoundsException e){
 			return null;
 		}
 
