@@ -52,11 +52,11 @@ public class CommandEdit extends Command {
 			isUndoable = true;
 			try {
 				dataHandler.update(editedTask);
+				outputString = "Edited Task - '" + oldTask.getTaskName() + "' to " + editedTask.getTaskName() +" - "+editedTask.getTaskCategory();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				outputString = "Edit task failed!";
 			}
-			outputString = "Edited Task - '" + oldTask.getTaskName() + "'";
+			
 		}
 		// if multiple matches are found display the list
 		else {
@@ -218,8 +218,7 @@ public class CommandEdit extends Command {
 				isUndoable = true;
 				try {
 					dataHandler.update(newTask);
-					outputString = "Edited Task - '" + oldTask.getTaskName()
-							+ "'";
+					outputString = "Edited Task - '" + givenTask.getTaskName() + "' to " + newTask.getTaskName() +" - "+newTask.getTaskCategory();
 					indexExpected = false;
 				} catch (Exception e) {
 					outputString = "Edit/Update failed!";
@@ -249,7 +248,7 @@ public class CommandEdit extends Command {
 				} catch (Exception e) {
 					outputString = "Update Failed!";
 				}
-				outputString = "Edited Task - '" + oldTask.getTaskName() + "'";
+				outputString = "Edited Task - '" + givenTask.getTaskName() + "' to " + newTask.getTaskName() +" - "+newTask.getTaskCategory();
 			} catch (Exception e) {
 				outputString = "Excpetional Situation.";
 			}

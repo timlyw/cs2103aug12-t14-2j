@@ -48,6 +48,7 @@ public class Processor {
 			userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
 			createCommand = new CommandCreator();
 			userCommand = new CommandInfo();
+			showHome();
 		} catch (UnknownHostException e) {
 			// no internet
 			e.printStackTrace();
@@ -61,6 +62,11 @@ public class Processor {
 			//
 			e.printStackTrace();
 		}
+	}
+
+	private void showHome() {
+		setCommand("display today");
+		executeCommand();
 	}
 
 	public void addStateListener(StateListener stateListener) {
@@ -247,7 +253,7 @@ public class Processor {
 			outputString = "To Sync you need to log in. \nEnter Google username . e.g: tom.sawyer@gmail.com ";
 			usernameIsExpected = true;
 		} else {
-			outputString = "You are already loggen in!";
+			outputString = "You are already logged in!";
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
