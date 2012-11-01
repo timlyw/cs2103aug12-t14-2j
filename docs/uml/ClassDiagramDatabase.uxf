@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="11.5.1">
+  <zoom_level>8</zoom_level>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>424</x>
+      <y>0</y>
+      <w>184</w>
+      <h>176</h>
+    </coordinates>
+    <panel_attributes>Database
+--
+-taskRecordFile:TaskRecordFile
+-configFile:ConfigFile
+-googleCalendar:GoogleCalendar
+-taskList:Map&lt;Integer, Task&gt; 
+-gCalTaskList:Map&lt;String, Task&gt; 
+--
++add(Task):Task
++delete(int)
++undelete(int)
++query() &lt;&lt;overloaded&gt;&gt;
++update(Task):Task
++ syncronizeDatabases()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>592</x>
+      <y>232</y>
+      <w>168</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>Syncronize
+--
+--
++syncronize()
++pushSyncTask()
++pullSyncTask()
+-pullExistingTask()
+-pullNewTask()
+-pushNewTask()
+-pushExistingTask()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>512</x>
+      <y>152</y>
+      <w>176</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;
+nested class of</panel_attributes>
+    <additional_attributes>24;24;24;64;160;64;160;80</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>208</x>
+      <y>384</y>
+      <w>200</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>TaskRecordFile
+--
+taskList:Map&lt;Integer, Task&gt; 
+gCalTaskList:Map&lt;String, Task&gt; 
+--
+loadTaskList()
+loadAllTaskList()
+saveTaskList()
+getTaskList()
+getGCalTaskList()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>424</x>
+      <y>384</y>
+      <w>528</w>
+      <h>176</h>
+    </coordinates>
+    <panel_attributes>Google Calendar
+--
+-calendarServive: CalendarService
+-minStartTime: String
+-minEndTime: String
+- _eventList
+--
++ setup(): void
++ pullEvents(): void
++ getEvent(String taskId): CalendarEventEntry
++ createEvent(String taskTitle, String startDate, String endDate): String
++ updateEvent(String taskId, String newTitle, String newStartDate, newEndDate): CalendarEventEntry
++ deleteEvent(String taskId): void
++ getEventList(): List&lt;CalendarEventEntry&gt;
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>288</x>
+      <y>152</y>
+      <w>192</w>
+      <h>248</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+has 
+1</panel_attributes>
+    <additional_attributes>176;24;176;120;24;120;24;232</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>480</x>
+      <y>152</y>
+      <w>56</w>
+      <h>248</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+     has 
+  1</panel_attributes>
+    <additional_attributes>32;24;32;232</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>0</x>
+      <y>384</y>
+      <w>200</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>ConfigFile
+--
+configParameters:Map&lt;String, String&gt; 
+--
++save()
++getConfigParameter()
++hasConfigParameter()
++setConfigParameter()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>64</x>
+      <y>152</y>
+      <w>384</w>
+      <h>248</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+has
+1</panel_attributes>
+    <additional_attributes>368;24;368;104;24;104;24;232</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>240</x>
+      <y>560</y>
+      <w>128</w>
+      <h>200</h>
+    </coordinates>
+    <panel_attributes>Task
+--
+-taskId
+-taskName 
+-taskCreated 
+-taskLastUpdated
+-gCalEventId
+-taskLastSync
+-isDone
+-isDeleted
+--
++clone()
++getters() &lt;&lt;generic&gt;&gt;
++setters() &lt;&lt;generic&gt;&gt; 
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>432</x>
+      <y>808</y>
+      <w>80</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>FloatingTask
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>88</x>
+      <y>808</y>
+      <w>88</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>TimedTask
+--
+-startDateTime
+-endDateTime </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>264</x>
+      <y>808</y>
+      <w>80</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>DeadlineTask
+
+--
+-endDateTime </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>104</x>
+      <y>736</y>
+      <w>216</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>200;24;200;40;152;40;24;40;24;72</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>280</x>
+      <y>736</y>
+      <w>208</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>24;24;24;40;192;40;192;72</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>280</x>
+      <y>736</y>
+      <w>40</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>24;24;24;72</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>272</x>
+      <y>488</y>
+      <w>56</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+    has
+  *</panel_attributes>
+    <additional_attributes>32;24;32;72</additional_attributes>
+  </element>
+</diagram>
