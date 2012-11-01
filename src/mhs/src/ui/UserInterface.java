@@ -90,7 +90,7 @@ public class UserInterface {
 	 */
 	private void initMhsFrame() {
 		startLog();
-    	mhsFrame = new MhsFrame();
+    	mhsFrame = MhsFrame.getInstance();
     	endLog();
 	}
 	
