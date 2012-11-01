@@ -61,6 +61,7 @@ public class CommandEdit extends Command {
 		// if multiple matches are found display the list
 		else {
 			outputString = displayListOfTasks(matchedTasks);
+			indexExpected = true;
 		}
 		return outputString;
 	}
@@ -125,8 +126,9 @@ public class CommandEdit extends Command {
 
 		}
 	}
-	
-	private Task createEditedTaskByIndex(CommandInfo inputCommand, Task taskToEdit) {
+
+	private Task createEditedTaskByIndex(CommandInfo inputCommand,
+			Task taskToEdit) {
 		int typeCount = 0;
 		if (inputCommand.getStartDate() != null) {
 			typeCount++;
@@ -207,21 +209,22 @@ public class CommandEdit extends Command {
 	@Override
 	public String executeByIndex(int index) {
 		String outputString = new String();
-		if (indexExpected && matchedTasks.size() <= index) {
+		if (indexExpected && index < matchedTasks.size()) {
 			try {
 				Task givenTask = matchedTasks.get(index);
-				// create task
+				oldTask = givenTask;
 				Task newTask = new Task();
 				newTask = createEditedTask(tempCommandInfo, oldTask);
 				isUndoable = true;
 				try {
-					dataHandler.update(editedTask);
+					dataHandler.update(newTask);
+					outputString = "Edited Task - '" + oldTask.getTaskName()
+							+ "'";
+					indexExpected = false;
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					outputString = "Edit/Update failed!";
 				}
-				outputString = "Edited Task - '" + oldTask.getTaskName() + "'";
-				indexExpected = false;
+
 			} catch (Exception e) {
 
 			}
