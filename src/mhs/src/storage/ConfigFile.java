@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
@@ -25,6 +26,7 @@ import mhs.src.common.MhsLogger;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
 public class ConfigFile {
@@ -145,10 +147,21 @@ public class ConfigFile {
 		assert (gson != null);
 
 		JsonParser parser = new JsonParser();
-		JsonObject configJObject = parser.parse(jsonReader).getAsJsonObject();
+		JsonObject configJObject = null;
+		
+		try {
+			configJObject = parser.parse(jsonReader)
+					.getAsJsonObject();
+		} catch (JsonSyntaxException | java.lang.IllegalStateException e) {
+			// File corrupted
+			logger.log(Level.INFO, "Json file corrupted.");
+		} finally{
+			if(configJObject != null){
+				configParameters = gson.fromJson(configJObject,
+						configParameters.getClass());
+			}
+		}
 
-		configParameters = gson.fromJson(configJObject,
-				configParameters.getClass());
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
@@ -299,8 +312,7 @@ public class ConfigFile {
 	 * @param value
 	 * @throws IOException
 	 */
-	public void removeConfigParameter(String parameter)
-			throws IOException {
+	public void removeConfigParameter(String parameter) throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
 
 		if (parameter == null) {

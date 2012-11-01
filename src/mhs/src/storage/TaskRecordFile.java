@@ -20,6 +20,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
@@ -28,8 +29,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.google.gson.stream.MalformedJsonException;
 
 public class TaskRecordFile {
 
@@ -201,11 +204,19 @@ public class TaskRecordFile {
 		assert (taskList != null);
 
 		JsonParser parser = new JsonParser();
-		JsonArray Jarray = parser.parse(jsonReader).getAsJsonArray();
-
-		for (JsonElement obj : Jarray) {
-			Task newTask = gson.fromJson(obj, Task.class);
-			taskList.put(newTask.getTaskId(), newTask);
+		JsonArray Jarray = null;
+		try {
+			Jarray = parser.parse(jsonReader).getAsJsonArray();
+		} catch (JsonSyntaxException | java.lang.IllegalStateException e) {
+			// File corrupted
+			logger.log(Level.INFO, "Json file corrupted.");
+		} finally {
+			if (Jarray != null) {
+				for (JsonElement obj : Jarray) {
+					Task newTask = gson.fromJson(obj, Task.class);
+					taskList.put(newTask.getTaskId(), newTask);
+				}
+			}
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
@@ -247,7 +258,7 @@ public class TaskRecordFile {
 	 */
 	public void saveTaskList(Map<Integer, Task> taskList) throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		
+
 		openJsonOutputStream();
 		writeJsonArray(taskList);
 		closeJsonOutputStream();
@@ -257,23 +268,24 @@ public class TaskRecordFile {
 
 	/**
 	 * Write Map to Json Array
+	 * 
 	 * @param taskList
 	 * @throws IOException
 	 */
 	private void writeJsonArray(Map<Integer, Task> taskList) throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		assert(jsonWriter != null);
+		assert (jsonWriter != null);
 
 		jsonWriter.setIndent(JSON_INDENT);
 		jsonWriter.beginArray();
-		
+
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
 			gson.toJson(entry.getValue(), entry.getValue().getClass(),
 					jsonWriter);
 		}
-		
+
 		jsonWriter.endArray();
-		
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
