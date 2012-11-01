@@ -177,9 +177,15 @@ public class Processor {
 	}
 
 	public void setCommand(String command) {
+		if(!isPasswordExpected)
+		{
 		currentCommand = command;
 		String boldCommand = htmlCreator.makeBold(currentCommand);
 		commandFeedback = "feedback for " + boldCommand;
+		}
+		else{
+			commandFeedback = "Please ensure that CAPS lock is not on..";
+		}
 		updateStateListeners();
 	}
 
@@ -194,14 +200,11 @@ public class Processor {
 	 */
 	private String authenticateUser(String userName, String password)
 			throws IOException, ServiceException {
-		logger.entering(getClass().getName(), this.getClass().getName());
 		try {
 			dataHandler.loginUserGoogleAccount(userName, password);
 			userIsLoggedIn = true;
-			logger.exiting(getClass().getName(), this.getClass().getName());
 			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
 		} catch (AuthenticationException e) {
-			logger.exiting(getClass().getName(), this.getClass().getName());
 			return "Login unsuccessful! Please check username and password.";
 		}
 	}
