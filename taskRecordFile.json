@@ -196,12 +196,12 @@
     "isDeleted": false
   },
   {
-    "endDateTime": "2012-11-01T21:00:00.000+08:00",
+    "endDateTime": "2012-11-01T22:00:00.000+08:00",
     "taskId": 18,
-    "taskName": "Watch movie",
+    "taskName": "watch skyfall",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-01T11:36:34.060+08:00",
-    "taskUpdated": "2012-11-01T11:36:34.060+08:00",
+    "taskUpdated": "2012-11-01T14:18:15.279+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
@@ -411,5 +411,28 @@
     "gCalTaskId": null,
     "isDone": false,
     "isDeleted": false
+  },
+  {
+    "taskId": 37,
+    "taskName": "wer",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T14:07:18.551+08:00",
+    "taskUpdated": "2012-11-01T14:09:24.497+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "endDateTime": "2012-11-01T00:00:00.000+08:00",
+    "taskId": 38,
+    "taskName": "Default task",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-01T14:18:41.628+08:00",
+    "taskUpdated": "2012-11-01T14:20:02.328+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
   }
 ]

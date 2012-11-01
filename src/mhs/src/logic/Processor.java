@@ -115,7 +115,9 @@ public class Processor {
 	private String processCommand(CommandInfo userCommand) throws Exception {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		String userOutputString = new String();
-		if (userCommand.getCommandEnum() != null) {
+		if (userCommand.getCommandEnum() == null) {
+			userOutputString = createCommand.createCommand(userCommand);
+		} else {
 			switch (userCommand.getCommandEnum()) {
 			case sync:
 				userOutputString = syncGcal(userCommand);
@@ -130,8 +132,7 @@ public class Processor {
 				userOutputString = createCommand.createCommand(userCommand);
 				break;
 			}
-		} else {
-			userOutputString = createCommand.createCommand(userCommand);
+
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return userOutputString;
@@ -183,13 +184,11 @@ public class Processor {
 	}
 
 	public void setCommand(String command) {
-		if(!isPasswordExpected)
-		{
 		currentCommand = command;
-		String boldCommand = htmlCreator.makeBold(currentCommand);
-		commandFeedback = "feedback for " + boldCommand;
-		}
-		else{
+		if (!isPasswordExpected) {
+			String boldCommand = htmlCreator.makeBold(currentCommand);
+			commandFeedback = "feedback for " + boldCommand;
+		} else {
 			commandFeedback = "Please ensure that CAPS lock is not on..";
 		}
 		updateStateListeners();
