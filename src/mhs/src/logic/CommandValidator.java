@@ -94,7 +94,7 @@ public class CommandValidator {
 			System.out.println("endDate : " + endDate.toString());
 		}
 
-		checkParameters();
+		//checkParameters();
 		command = new CommandInfo(commandEnum, taskName, edittedName, startDate,
 				endDate, index);
 		logger.exiting(getClass().getName(), this.getClass().getName());
@@ -161,7 +161,7 @@ public class CommandValidator {
 
 	private void enforceTaskName() {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		taskName = "<Default task>";
+		taskName = "Default task";
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 

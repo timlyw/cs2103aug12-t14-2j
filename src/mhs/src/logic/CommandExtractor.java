@@ -6,11 +6,11 @@ import mhs.src.common.MhsLogger;
 
 /**
  * 
- * @author Cheong Kahou
- *A0086805X
- *
+ * @author Cheong Kahou A0086805X
  * 
- * This is a class that checks string if they are commands and set the commands.
+ * 
+ *         This is a class that checks string if they are commands and set the
+ *         commands.
  * 
  */
 
@@ -35,20 +35,20 @@ public class CommandExtractor {
 		}
 
 	}
-	
+
 	private static final String REGEX_WHITE_SPACE = "\\s+";
 	private static final Logger logger = MhsLogger.getLogger();
 	private String commandString;
 	private static CommandExtractor commandExtractor;
-	
-	private CommandExtractor(){
+
+	private CommandExtractor() {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		commandString = "";
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
-	
-	public static CommandExtractor getCommandExtractor(){
-		if(commandExtractor == null){
+
+	public static CommandExtractor getCommandExtractor() {
+		if (commandExtractor == null) {
 			commandExtractor = new CommandExtractor();
 		}
 		return commandExtractor;
@@ -64,6 +64,7 @@ public class CommandExtractor {
 	 */
 	public boolean isCommand(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (parseString != null);
 		for (CommandKeyWord c : CommandKeyWord.values()) {
 			if (parseString.equalsIgnoreCase(c.name())) {
 				logger.exiting(getClass().getName(), this.getClass().getName());
@@ -84,16 +85,20 @@ public class CommandExtractor {
 	 */
 	public String setCommand(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
-		if (isCommand(processArray[0])) {
-			for (CommandKeyWord c : CommandKeyWord.values()) {
-				if (processArray[0].equalsIgnoreCase(c.name())) {
-					commandString = c.command;
+		assert (parseString != null);
+		try {
+			String[] processArray = parseString.split(REGEX_WHITE_SPACE);
+			if (isCommand(processArray[0])) {
+				for (CommandKeyWord c : CommandKeyWord.values()) {
+					if (processArray[0].equalsIgnoreCase(c.name())) {
+						commandString = c.command;
+					}
 				}
+			} else {
+				commandString = CommandKeyWord.add.name();
 			}
-		}
-		else {
-			commandString = CommandKeyWord.add.name();
+		} catch (NullPointerException e) {
+			return null;
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return commandString;

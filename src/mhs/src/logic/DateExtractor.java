@@ -149,44 +149,49 @@ public class DateExtractor {
 	 */
 	public Queue<LocalDate> processDate(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+		assert (parseString != null);
 		String dateCommand;
 		String[] processArray = setEnvironment(parseString);
+		try {
+			for (counter = 0; counter < processArray.length; counter++) {
+				resetDateParameterFlags();
 
-		for (counter = 0; counter < processArray.length; counter++) {
-			resetDateParameterFlags();
+				if (checkDateFormat(processArray[counter])) {
+					dateQueue = setUpDateQueue(processArray);
 
-			if (checkDateFormat(processArray[counter])) {
-				dateQueue = setUpDateQueue(processArray);
+					validateDateQueueParameters();
+					if (!dateQueue.isEmpty()) {
+						while (!dateQueue.isEmpty()) {
+							dateCommand = dateQueue.poll();
+							uniqueDateFlag = false;
+							if (isInteger(dateCommand)) {
+								setIntegerDate(dateCommand);
+							}
 
-				validateDateQueueParameters();
-				if (!dateQueue.isEmpty()) {
-					while (!dateQueue.isEmpty()) {
-						dateCommand = dateQueue.poll();
-						uniqueDateFlag = false;
-						if (isInteger(dateCommand)) {
-							setIntegerDate(dateCommand);
+							else if (isDateStandardFormat(dateCommand)
+									&& !dateFlag) {
+								setFullDateFormat(dateCommand);
+							}
+
+							else if (isDateWithMonthSpelled(dateCommand)
+									&& !monthFlag) {
+								setStringMonth(dateCommand);
+							}
+
+							else if (isDayOfWeek(dateCommand) && !dayFlag) {
+								setStringDay(dateCommand);
+							}
+
+							else if (isUniqueDateType(dateCommand)) {
+								setUniqueDate(dateCommand);
+							}
 						}
-
-						else if (isDateStandardFormat(dateCommand) && !dateFlag) {
-							setFullDateFormat(dateCommand);
-						}
-
-						else if (isDateWithMonthSpelled(dateCommand)
-								&& !monthFlag) {
-							setStringMonth(dateCommand);
-						}
-
-						else if (isDayOfWeek(dateCommand) && !dayFlag) {
-							setStringDay(dateCommand);
-						}
-
-						else if (isUniqueDateType(dateCommand)) {
-							setUniqueDate(dateCommand);
-						}
+						addDateToDateList();
 					}
-					addDateToDateList();
 				}
 			}
+		} catch (NullPointerException e) {
+			return null;
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return dateList;
@@ -204,15 +209,14 @@ public class DateExtractor {
 				if (!isdateValid()) {
 					rectifyDate();
 				}
-				try{
+				try {
 					setDate = new LocalDate(year, month, day);
 					startDateFlag = true;
 					dateList.add(setDate);
-				}
-				catch(InvalidParameterException e){
+				} catch (InvalidParameterException e) {
 					logger.log(Level.FINER, e.getMessage());
 				}
-	
+
 			}
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
@@ -311,14 +315,20 @@ public class DateExtractor {
 	private String[] setEnvironment(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		dateQueue = new LinkedList<String>();
-		String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 		dateList = new LinkedList<LocalDate>();
 		startDate = null;
 		endDate = null;
 		startDateFlag = false;
 		uniqueDateFlag = false;
-		logger.exiting(getClass().getName(), this.getClass().getName());
-		return processArray;
+		try {
+			String[] processArray = parseString.split(REGEX_WHITE_SPACE);
+			logger.exiting(getClass().getName(), this.getClass().getName());
+			return processArray;
+		} catch (NullPointerException e) {
+			logger.exiting(getClass().getName(), this.getClass().getName());
+			return null;
+		}
+
 	}
 
 	private void setDateRange() {
@@ -548,8 +558,8 @@ public class DateExtractor {
 			return true;
 		} catch (ParseException e) {
 			logger.log(Level.FINER, e.getMessage());
-			logger.log(Level.FINER, String.format(ERROR_MESSAGE_COULD_NOT_PARSE,
-					dateString));
+			logger.log(Level.FINER,
+					String.format(ERROR_MESSAGE_COULD_NOT_PARSE, dateString));
 
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
@@ -667,7 +677,7 @@ public class DateExtractor {
 	/**
 	 * This is the function to check if the input is within the range of number
 	 * of months in a year.
-	 *  	
+	 * 
 	 * @param number
 	 *            This is the number that is being checked.
 	 * 
