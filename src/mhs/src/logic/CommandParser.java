@@ -95,6 +95,8 @@ public class CommandParser {
 			}
 		} catch (NullPointerException e) {
 			return;
+		}catch(ArrayIndexOutOfBoundsException e){
+			return;
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
@@ -120,6 +122,8 @@ public class CommandParser {
 				}
 			}
 		} catch (NullPointerException e) {
+			return;
+		}catch(ArrayIndexOutOfBoundsException e){
 			return;
 		}
 

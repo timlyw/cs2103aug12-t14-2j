@@ -54,7 +54,7 @@ public class CommandInfo {
 		index = indexInput;
 		startDate = startDateInput;
 		endDate = endDateInput;
-		//System.out.println(toString());
+		System.out.println(toString());
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		
 	}

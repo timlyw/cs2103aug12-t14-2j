@@ -89,6 +89,9 @@ public class TimeExtractor {
 		} catch (NullPointerException e) {
 			return timeQueue;
 		}
+		catch(ArrayIndexOutOfBoundsException e){
+			return timeQueue;
+		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return timeQueue;
 	}
