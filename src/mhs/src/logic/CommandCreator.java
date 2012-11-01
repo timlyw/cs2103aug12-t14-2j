@@ -25,7 +25,6 @@ public class CommandCreator {
 				// Add to undo stack if undoable
 			}
 		} else {
-			System.out.println(previousCommand.indexExpected + " expected");
 			userOutputString = previousCommand.executeByIndex(userCommand
 					.getIndex());
 
@@ -62,10 +61,13 @@ public class CommandCreator {
 			userOutputString = currentCommand.executeCommand();
 			break;
 		case help:
+			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		case rename:
+			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		default:
+			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		}
 		if (currentCommand.isUndoable()) {
@@ -87,8 +89,8 @@ public class CommandCreator {
 					.executeByIndexAndType(local_index - 1);
 			break;
 		case edit:
-			currentCommand = new CommandEdit();
-			userOutputString = currentCommand.executeByIndex(local_index - 1);
+			currentCommand = new CommandEdit(previousCommand.matchedTasks,userCommand);
+			userOutputString = currentCommand.executeByIndexAndType(local_index - 1);
 			break;
 		case search:
 			currentCommand = new CommandSearch(previousCommand.matchedTasks);
@@ -110,6 +112,7 @@ public class CommandCreator {
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		default:
+			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		}
 		if (currentCommand.isUndoable()) {

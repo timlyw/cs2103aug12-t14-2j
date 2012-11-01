@@ -15,6 +15,7 @@ public class CommandEdit extends Command {
 	private Task editedTask;
 	private Task oldTask;
 	private CommandInfo tempCommandInfo;
+	private CommandInfo updatedInfo;
 
 	public CommandEdit(CommandInfo userCommand) {
 
@@ -25,11 +26,13 @@ public class CommandEdit extends Command {
 			matchedTasks = resultList;
 			tempCommandInfo = userCommand;
 		} catch (IOException e) {
-			
+
 		}
 	}
 
-	public CommandEdit() {
+	public CommandEdit(List<Task> lastUsedList, CommandInfo changedInfo) {
+		matchedTasks = lastUsedList;
+		updatedInfo = changedInfo;
 	}
 
 	@Override
@@ -122,6 +125,67 @@ public class CommandEdit extends Command {
 
 		}
 	}
+	
+	private Task createEditedTaskByIndex(CommandInfo inputCommand, Task taskToEdit) {
+		int typeCount = 0;
+		if (inputCommand.getStartDate() != null) {
+			typeCount++;
+		}
+		if (inputCommand.getEndDate() != null) {
+			typeCount++;
+		}
+		if (inputCommand.getEdittedName() != null) {
+			switch (typeCount) {
+			case 0:
+				Task floatingTaskToAdd = new FloatingTask(
+						taskToEdit.getTaskId(), inputCommand.getEdittedName(),
+						TaskCategory.FLOATING, DateTime.now(), null, null,
+						false, false);
+				return floatingTaskToAdd;
+			case 1:
+				Task deadlineTaskToAdd = new DeadlineTask(
+						taskToEdit.getTaskId(), inputCommand.getEdittedName(),
+						TaskCategory.DEADLINE, inputCommand.getStartDate(),
+						DateTime.now(), null, null, null, false, false);
+				return deadlineTaskToAdd;
+			case 2:
+				Task timedTaskToAdd = new TimedTask(taskToEdit.getTaskId(),
+						inputCommand.getEdittedName(), TaskCategory.TIMED,
+						inputCommand.getStartDate(), inputCommand.getEndDate(),
+						DateTime.now(), null, null, null, false, false);
+				return timedTaskToAdd;
+			default:
+				Task nullTask = new Task();
+				return nullTask;
+			}
+		} else {
+			switch (typeCount) {
+			case 0:
+				Task floatingTaskToAdd = new FloatingTask(
+						taskToEdit.getTaskId(), taskToEdit.getTaskName(),
+						TaskCategory.FLOATING, DateTime.now(), null, null,
+						false, false);
+				return floatingTaskToAdd;
+			case 1:
+				System.out.println("checkpoint");
+				Task deadlineTaskToAdd = new DeadlineTask(
+						taskToEdit.getTaskId(), taskToEdit.getTaskName(),
+						TaskCategory.DEADLINE, inputCommand.getStartDate(),
+						DateTime.now(), null, null, null, false, false);
+				return deadlineTaskToAdd;
+			case 2:
+				Task timedTaskToAdd = new TimedTask(taskToEdit.getTaskId(),
+						taskToEdit.getTaskName(), TaskCategory.TIMED,
+						inputCommand.getStartDate(), inputCommand.getEndDate(),
+						DateTime.now(), null, null, null, false, false);
+				return timedTaskToAdd;
+			default:
+				Task nullTask = new Task();
+				return nullTask;
+			}
+
+		}
+	}
 
 	@Override
 	public String undo() {
@@ -142,14 +206,54 @@ public class CommandEdit extends Command {
 
 	@Override
 	public String executeByIndex(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		String outputString = new String();
+		if (indexExpected && matchedTasks.size() <= index) {
+			try {
+				Task givenTask = matchedTasks.get(index);
+				// create task
+				Task newTask = new Task();
+				newTask = createEditedTask(tempCommandInfo, oldTask);
+				isUndoable = true;
+				try {
+					dataHandler.update(editedTask);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				outputString = "Edited Task - '" + oldTask.getTaskName() + "'";
+				indexExpected = false;
+			} catch (Exception e) {
+
+			}
+		} else {
+			outputString = "Invalid Command";
+		}
+		return outputString;
 	}
 
 	@Override
 	public String executeByIndexAndType(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		String outputString = new String();
+		if (index < matchedTasks.size()) {
+			try {
+				Task givenTask = matchedTasks.get(index);
+				Task newTask = new Task();
+				newTask = createEditedTaskByIndex(updatedInfo, givenTask);
+				isUndoable = true;
+				try {
+					dataHandler.update(newTask);
+					oldTask = givenTask;
+				} catch (Exception e) {
+					outputString = "Update Failed!";
+				}
+				outputString = "Edited Task - '" + oldTask.getTaskName() + "'";
+			} catch (Exception e) {
+				outputString = "Excpetional Situation.";
+			}
+		} else {
+			outputString = "Invalid Command";
+		}
+		return outputString;
 	}
 
 }
