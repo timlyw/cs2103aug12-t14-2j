@@ -143,7 +143,7 @@ public class CommandInfo {
 		if(endDate!= null)
 			outString += (" End Date : " + endDate.toString());
 		outString += (" Index is : " + index);
-		
+		System.out.println(" was sent");
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outString;
 	}
