@@ -68,7 +68,6 @@ public class CommandValidator {
 			startDate = startDateInput.toDateTime(startTimeInput);
 			if (startDate.isBefore(now)) {
 				startDate = startDate.plusDays(1);
-				System.out.println("startDate " + startDate.toString());
 			}
 		}
 		// only end time
@@ -77,7 +76,6 @@ public class CommandValidator {
 			endDate = endDateInput.toDateTime(endTimeInput);
 			if (endDate.isBefore(now)) {
 				endDate = endDate.plusDays(1);
-				System.out.println(" end date " +endDate.toString());
 			}
 		}
 		
@@ -90,11 +88,9 @@ public class CommandValidator {
 				endDate = startDate;
 				startDate = temp;
 			}
-			System.out.println("startDate : " + startDate.toString());
-			System.out.println("endDate : " + endDate.toString());
 		}
 
-		//checkParameters();
+		checkParameters();
 		command = new CommandInfo(commandEnum, taskName, edittedName, startDate,
 				endDate, index);
 		logger.exiting(getClass().getName(), this.getClass().getName());

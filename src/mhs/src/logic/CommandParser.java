@@ -69,10 +69,10 @@ public class CommandParser {
 		assert (parseString != null);
 		setEnvironment();
 
-		getIndexAtFirstLocation(parseString);
-		parseString = setNameInQuotationMarks(parseString);
 
 		setCommand(parseString);
+		getIndexAtFirstLocation(parseString);
+		parseString = setNameInQuotationMarks(parseString);
 		setTime(parseString);
 		setDate(parseString);
 		setIndex(parseString);
@@ -94,6 +94,8 @@ public class CommandParser {
 				}
 			}
 		} catch (NullPointerException e) {
+			return;
+		}catch(ArrayIndexOutOfBoundsException e){
 			return;
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
@@ -120,6 +122,8 @@ public class CommandParser {
 				}
 			}
 		} catch (NullPointerException e) {
+			return;
+		}catch(ArrayIndexOutOfBoundsException e){
 			return;
 		}
 

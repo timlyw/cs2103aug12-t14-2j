@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import mhs.src.logic.Command;
 import mhs.src.logic.CommandExtractor;
 import mhs.src.logic.CommandInfo;
 import mhs.src.logic.CommandParser;

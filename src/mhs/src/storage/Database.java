@@ -523,6 +523,9 @@ public class Database {
 				syncDateTime = new DateTime(gCalEntry.getUpdated().getValue());
 			}
 
+			assert (syncDateTime.isEqual(new DateTime(gCalEntry.getUpdated()
+					.toString())));
+
 			logger.exiting(getClass().getName(), this.getClass().getName());
 			return syncDateTime;
 		}
@@ -657,7 +660,7 @@ public class Database {
 		googleCalendar = new GoogleCalendar(GOOGLE_CALENDAR_APP_NAME,
 				googleUserAccount, googleAuthToken);
 
-		saveGoogleAccountInfo();
+		saveGoogleAccountInfo(googleUserAccount, googleAuthToken);
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
@@ -690,7 +693,7 @@ public class Database {
 				googleAccessToken);
 
 		syncronize.enableRemoteSync();
-		saveGoogleAccountInfo();
+		saveGoogleAccountInfo(userName, googleAccessToken);
 
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
@@ -705,8 +708,8 @@ public class Database {
 
 		syncronize.disableRemoteSync();
 		googleCalendar = null;
-		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN, null);
-		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT, null);
+		configFile.removeConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN);
+		configFile.removeConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT);
 		configFile.save();
 
 		logger.exiting(getClass().getName(), this.getClass().getName());
@@ -727,13 +730,17 @@ public class Database {
 	 * Saves user Google Calendar Service access token and user google account
 	 * email to config file
 	 * 
+	 * @param googleUserAccount
+	 * @param googleAuthToken
+	 * 
 	 * @throws IOException
 	 */
-	private void saveGoogleAccountInfo() throws IOException {
+	private void saveGoogleAccountInfo(String googleUserAccount,
+			String googleAuthToken) throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
 
-		String googleAuthToken = googleCalendar.getUserToken();
-		String googleUserAccount = googleCalendar.getUserEmail();
+		System.out.println(googleUserAccount);
+		System.out.println(googleAuthToken);
 
 		if (googleAuthToken != null) {
 			logger.log(Level.INFO, "Saving Google : "
@@ -1041,7 +1048,7 @@ public class Database {
 
 		taskToDelete.setDeleted(true);
 
-		// set updated time 
+		// set updated time
 		DateTime UpdateTime = new DateTime();
 		UpdateTime = DateTime.now();
 		taskToDelete.setTaskUpdated(UpdateTime);
