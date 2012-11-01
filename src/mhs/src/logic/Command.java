@@ -122,13 +122,13 @@ public abstract class Command {
 							+ ". "
 							+ htmlCreator.makeBold(selectedTask.getTaskName()
 									+ "-" + selectedTask.getTaskCategory()
-									+ "[DONE]") + htmlCreator.NEW_LINE;
+									+ " [DONE]") + htmlCreator.NEW_LINE;
 				} else {
 					outputString += count
 							+ ". "
 							+ htmlCreator.makeBold(selectedTask.getTaskName()
 									+ "-" + selectedTask.getTaskCategory()
-									+ "[PENDING]") + htmlCreator.NEW_LINE;
+									+ " [PENDING]") + htmlCreator.NEW_LINE;
 				}
 			} else {
 				outputString += count + ". " + selectedTask.getTaskName() + "-"

@@ -38,8 +38,8 @@ public class CommandSearch extends Command {
 					+ "Task Name: "
 					+ htmlCreator.makeBold(matchedTasks.get(0).getTaskName())
 					+ htmlCreator.NEW_LINE + "Time: "
-					+ matchedTasks.get(0).getStartDateTime().toString()
-					+ " to " + matchedTasks.get(0).getEndDateTime().toString();
+					+ matchedTasks.get(0).getStartDateTime()
+					+ " to " + matchedTasks.get(0).getEndDateTime();
 			isUndoable = false;
 		}
 		// if multiple matches are found display the list
@@ -59,16 +59,15 @@ public class CommandSearch extends Command {
 	@Override
 	public String executeByIndex(int index) {
 		String outputString = new String();
-		if (indexExpected & index <= matchedTasks.size()) {
+		if (indexExpected & index < matchedTasks.size()) {
 			outputString = "<u>Chosen Task</u>"
 					+ htmlCreator.NEW_LINE
 					+ "Task Name: "
 					+ htmlCreator.makeBold(matchedTasks.get(index)
 							.getTaskName()) + htmlCreator.NEW_LINE + "Time: "
-					+ matchedTasks.get(index).getStartDateTime().toString()
+					+ matchedTasks.get(index).getStartDateTime()
 					+ " to "
-					+ matchedTasks.get(index).getEndDateTime().toString();
-			;
+					+ matchedTasks.get(index).getEndDateTime();
 			indexExpected = false;
 			isUndoable = true;
 		} else {
@@ -86,9 +85,9 @@ public class CommandSearch extends Command {
 					+ "Task Name: "
 					+ htmlCreator.makeBold(matchedTasks.get(index)
 							.getTaskName()) + htmlCreator.NEW_LINE + "Time: "
-					+ matchedTasks.get(index).getStartDateTime().toString()
+					+ matchedTasks.get(index).getStartDateTime()
 					+ " to "
-					+ matchedTasks.get(index).getEndDateTime().toString();
+					+ matchedTasks.get(index).getEndDateTime();
 			isUndoable = true;
 		} else {
 			outputString = "Invalid Command";
