@@ -236,11 +236,11 @@
     "taskName": "lalal",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-01T09:41:02.000+08:00",
-    "taskUpdated": "2012-11-01T09:41:02.000+08:00",
+    "taskUpdated": "2012-11-01T13:05:17.339+08:00",
     "taskLastSync": "2012-11-01T09:41:02.000+08:00",
     "gCalTaskId": "nvm3eo106jan0b1k4o5gkv2ulk@google.com",
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-11-01T16:00:00.000+08:00",
@@ -342,5 +342,40 @@
     "gCalTaskId": null,
     "isDone": false,
     "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-11-01T15:00:00.000+08:00",
+    "endDateTime": "2012-11-01T20:00:00.000+08:00",
+    "taskId": 31,
+    "taskName": "bum",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-01T13:03:08.881+08:00",
+    "taskUpdated": "2012-11-01T13:04:39.352+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 32,
+    "taskName": "task il",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T13:03:14.716+08:00",
+    "taskUpdated": "2012-11-01T13:04:56.325+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 33,
+    "taskName": "dispaly",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-01T13:03:58.458+08:00",
+    "taskUpdated": "2012-11-01T13:05:05.274+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
   }
 ]
