@@ -69,10 +69,10 @@ public class CommandParser {
 		assert (parseString != null);
 		setEnvironment();
 
-		getIndexAtFirstLocation(parseString);
-		parseString = setNameInQuotationMarks(parseString);
 
 		setCommand(parseString);
+		getIndexAtFirstLocation(parseString);
+		parseString = setNameInQuotationMarks(parseString);
 		setTime(parseString);
 		setDate(parseString);
 		setIndex(parseString);

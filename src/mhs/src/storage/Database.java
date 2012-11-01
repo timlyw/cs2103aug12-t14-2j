@@ -522,7 +522,9 @@ public class Database {
 			if (gCalEntry != null) {
 				syncDateTime = new DateTime(gCalEntry.getUpdated().getValue());
 			}
-
+			
+			assert(syncDateTime.isEqual(new DateTime(gCalEntry.getUpdated().toString())));
+			
 			logger.exiting(getClass().getName(), this.getClass().getName());
 			return syncDateTime;
 		}
@@ -705,8 +707,8 @@ public class Database {
 
 		syncronize.disableRemoteSync();
 		googleCalendar = null;
-		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN, null);
-		configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT, null);
+		configFile.removeConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN);
+		configFile.removeConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT);
 		configFile.save();
 
 		logger.exiting(getClass().getName(), this.getClass().getName());
