@@ -13,7 +13,7 @@ public class CommandMark extends Command {
 	public CommandMark(CommandInfo inputCommand) {
 		List<Task> resultList;
 		try {
-			resultList = queryTask(inputCommand);
+			resultList = queryTaskByName(inputCommand);
 			matchedTasks = resultList;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

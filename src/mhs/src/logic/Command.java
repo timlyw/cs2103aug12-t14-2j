@@ -43,28 +43,11 @@ public abstract class Command {
 	abstract public String executeByIndexAndType(int index);
 
 	protected List<Task> queryTask(CommandInfo inputCommand) throws IOException {
-
 		boolean name, startDate, endDate;
-		name = startDate = endDate = false;
-
 		List<Task> queryResultList;
-		System.out.println("check1");
-
-		if (inputCommand.getTaskName() != null) {
-			name = inputCommand.getTaskName().matches("<Default task>") ? false
-					: true;
-			System.out.println("name=(" + inputCommand.getTaskName() + ")"
-					+ name);
-		}
-
-		if (inputCommand.getStartDate() != null) {
-			startDate = inputCommand.getStartDate() == null ? false : true;
-		}
-
-		if (inputCommand.getEndDate() != null) {
-			endDate = inputCommand.getEndDate() == null ? false : true;
-		}
-
+		name = inputCommand.getTaskName() == null ? false : true;
+		startDate = inputCommand.getStartDate() == null ? false : true;
+		endDate = inputCommand.getEndDate() == null ? false : true;
 		if (name && startDate && endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					inputCommand.getStartDate(), inputCommand.getEndDate(),
@@ -78,16 +61,28 @@ public abstract class Command {
 		} else if (name && startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					inputCommand.getStartDate(), inputCommand.getStartDate()
-							.toDateMidnight().toDateTime(), true);
+							.plusDays(1).toDateMidnight().toDateTime(), true);
 		} else if (!name && startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getStartDate(),
-					inputCommand.getStartDate().toDateMidnight().toDateTime(),
-					true);
+					inputCommand.getStartDate().plusDays(1).toDateMidnight()
+							.toDateTime(), true);
 		} else {
-			System.out.println("check2");
 			queryResultList = dataHandler.query(true);
 		}
-		System.out.println("check3");
+		return queryResultList;
+	}
+
+	protected List<Task> queryTaskByName(CommandInfo inputCommand)
+			throws IOException {
+		boolean name, startDate, endDate;
+		List<Task> queryResultList;
+		name = inputCommand.getTaskName() == null ? false : true;
+		if (name) {
+			queryResultList = dataHandler.query(inputCommand.getTaskName(),
+					true);
+		} else {
+			queryResultList = null;
+		}
 		return queryResultList;
 	}
 
@@ -116,7 +111,7 @@ public abstract class Command {
 			if (selectedTask.getTaskCategory() == category) {
 				outputString += count + ". " + selectedTask.getTaskName() + "-"
 						+ selectedTask.getTaskCategory() + "("
-						+ selectedTask.isDone() + ")\n";
+						+ selectedTask.isDone() + ")" + htmlCreator.NEW_LINE;
 			}
 			count++;
 		}
