@@ -3,7 +3,9 @@ package mhs.src.logic;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
+import mhs.src.common.MhsLogger;
 import mhs.src.storage.Database;
 import mhs.src.ui.HtmlCreator;
 import com.google.gdata.util.AuthenticationException;
@@ -33,13 +35,19 @@ public class Processor {
 	private String currentState = null;
 	private boolean isPasswordExpected = false;
 	public int LINE_HEIGHT = 30;
+	private CommandInfo userCommand;
+	private static final Logger logger = MhsLogger.getLogger();
 
+	/**
+	 * Default Processor Constructor
+	 */
 	public Processor() {
 		try {
 			dataHandler = new Database();
 			commandParser = CommandParser.getCommandParser();
 			userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
 			createCommand = new CommandCreator();
+			userCommand = new CommandInfo();
 		} catch (UnknownHostException e) {
 			// no internet
 			e.printStackTrace();
@@ -99,22 +107,27 @@ public class Processor {
 	 * @throws Exception
 	 */
 	private String processCommand(CommandInfo userCommand) throws Exception {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String userOutputString = new String();
-		switch (userCommand.getCommandEnum()) {
-		case sync:
-			userOutputString = syncGcal(userCommand);
-			break;
-		case login:
-			userOutputString = loginUser();
-			break;
-		case logout:
-			userOutputString = logoutUser();
-			break;
-		default:
+		if (userCommand.getCommandEnum() != null) {
+			switch (userCommand.getCommandEnum()) {
+			case sync:
+				userOutputString = syncGcal(userCommand);
+				break;
+			case login:
+				userOutputString = loginUser();
+				break;
+			case logout:
+				userOutputString = logoutUser();
+				break;
+			default:
+				userOutputString = createCommand.createCommand(userCommand);
+				break;
+			}
+		} else {
 			userOutputString = createCommand.createCommand(userCommand);
-			break;
-
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return userOutputString;
 	}
 
@@ -125,6 +138,7 @@ public class Processor {
 	 * @return
 	 */
 	public void executeCommand() {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String screenOutput = null;
 		try {
 			if (usernameIsExpected) {
@@ -143,14 +157,13 @@ public class Processor {
 					// e.printStackTrace();
 				}
 			} else {
-				try{
-				CommandInfo userCommand = commandParser
-						.getParsedCommand(currentCommand);
-				screenOutput = processCommand(userCommand);
-				}
-				catch(NullPointerException e1)
-				{
-					screenOutput = "Parse Error";
+				try {
+					userCommand = commandParser
+							.getParsedCommand(currentCommand);
+					screenOutput = processCommand(userCommand);
+
+				} catch (NullPointerException e1) {
+					screenOutput = "Empty Command - Blank Input";
 				}
 			}
 		} catch (Exception e) {
@@ -159,9 +172,9 @@ public class Processor {
 		}
 		commandFeedback = "Completed";
 		currentState = screenOutput;
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		updateStateListeners();
 	}
-
 
 	public void setCommand(String command) {
 		currentCommand = command;
@@ -181,11 +194,14 @@ public class Processor {
 	 */
 	private String authenticateUser(String userName, String password)
 			throws IOException, ServiceException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		try {
 			dataHandler.loginUserGoogleAccount(userName, password);
 			userIsLoggedIn = true;
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
 		} catch (AuthenticationException e) {
+			logger.exiting(getClass().getName(), this.getClass().getName());
 			return "Login unsuccessful! Please check username and password.";
 		}
 	}
@@ -198,6 +214,7 @@ public class Processor {
 	 * @throws ServiceException
 	 */
 	private String syncGcal(CommandInfo inputCommand) throws ServiceException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String outputString = new String();
 		if (!userIsLoggedIn) {
 			outputString = loginUser();
@@ -211,6 +228,7 @@ public class Processor {
 				outputString = "No internet connection detected !";
 			}
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
 
@@ -220,6 +238,7 @@ public class Processor {
 	 * @return confirmation
 	 */
 	private String loginUser() {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String outputString;
 		if (!userIsLoggedIn) {
 			outputString = "To Sync you need to log in. \nEnter Google username . e.g: tom.sawyer@gmail.com ";
@@ -227,6 +246,7 @@ public class Processor {
 		} else {
 			outputString = "You are already loggen in!";
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
 
@@ -236,6 +256,7 @@ public class Processor {
 	 * @return confirmation
 	 */
 	private String logoutUser() {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String outputString;
 		if (!userIsLoggedIn) {
 			outputString = "You are not logged in! Cannot logout";
@@ -252,14 +273,8 @@ public class Processor {
 				e1.printStackTrace();
 			}
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
-
-	/**
-	 * Undo's the last change to database
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
 
 }

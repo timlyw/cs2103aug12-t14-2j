@@ -2,7 +2,9 @@ package mhs.src.logic;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
+import mhs.src.common.MhsLogger;
 import com.google.gdata.util.ServiceException;
 import mhs.src.ui.HtmlCreator;
 import mhs.src.storage.Database;
@@ -18,7 +20,8 @@ public abstract class Command {
 	protected Database dataHandler;
 	protected boolean indexExpected;
 	private HtmlCreator htmlCreator;
-
+	private static final Logger logger = MhsLogger.getLogger();
+	
 	public Command() {
 		indexExpected = false;
 		isUndoable = false;
@@ -42,7 +45,14 @@ public abstract class Command {
 
 	abstract public String executeByIndexAndType(int index);
 
+	/**
+	 * Queries task based on task name/start time/end time
+	 * @param inputCommand
+	 * @return List of matched tasks
+	 * @throws IOException
+	 */
 	protected List<Task> queryTask(CommandInfo inputCommand) throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		boolean name, startDate, endDate;
 		List<Task> queryResultList;
 		name = inputCommand.getTaskName() == null ? false : true;
@@ -69,12 +79,20 @@ public abstract class Command {
 		} else {
 			queryResultList = dataHandler.query(true);
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return queryResultList;
 	}
 
+	/**
+	 * Queries tasks exclusively by name
+	 * @param inputCommand
+	 * @return matched Tasks
+	 * @throws IOException
+	 */
 	protected List<Task> queryTaskByName(CommandInfo inputCommand)
 			throws IOException {
-		boolean name, startDate, endDate;
+		logger.entering(getClass().getName(), this.getClass().getName());
+		boolean name;
 		List<Task> queryResultList;
 		name = inputCommand.getTaskName() == null ? false : true;
 		if (name) {
@@ -83,38 +101,53 @@ public abstract class Command {
 		} else {
 			queryResultList = null;
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return queryResultList;
 	}
 
+	/*
+	 * 
+	 * Displays list of all kinds of  tasks
+	 */
 	protected String displayListOfTasks(List<Task> resultList) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		int count = 1;
 		String outputString = new String();
 		for (Task selectedTask : resultList) {
 			if (selectedTask.getTaskCategory() == TaskCategory.FLOATING) {
-				outputString += count + ". " + selectedTask.getTaskName() + "-"
+				outputString += count + ". " +htmlCreator.makeBold(selectedTask.getTaskName() + "-"
 						+ selectedTask.getTaskCategory() + "("
-						+ selectedTask.isDone() + ")" + htmlCreator.NEW_LINE;
+						+ selectedTask.isDone() + ")") + htmlCreator.NEW_LINE;
 			} else {
 				outputString += count + ". " + selectedTask.getTaskName() + "-"
 						+ selectedTask.getTaskCategory() + htmlCreator.NEW_LINE;
 			}
 			count++;
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
 
+	/**
+	 * Displays tasks by category
+	 * @param resultList
+	 * @param category
+	 * @return
+	 */
 	protected String displayListOfTasksCategory(List<Task> resultList,
 			TaskCategory category) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		int count = 1;
 		String outputString = new String();
 		for (Task selectedTask : resultList) {
 			if (selectedTask.getTaskCategory() == category) {
-				outputString += count + ". " + selectedTask.getTaskName() + "-"
+				outputString += count + ". " + htmlCreator.makeBold(selectedTask.getTaskName() + "-"
 						+ selectedTask.getTaskCategory() + "("
-						+ selectedTask.isDone() + ")" + htmlCreator.NEW_LINE;
+						+ selectedTask.isDone() + ")") + htmlCreator.NEW_LINE;
 			}
 			count++;
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
 

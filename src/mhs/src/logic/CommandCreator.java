@@ -1,21 +1,33 @@
 package mhs.src.logic;
 
+import java.util.logging.Logger;
+
+import mhs.src.common.MhsLogger;
 import java.util.Stack;
 
+/**
+ * Creates commands based on type
+ * @author Shekhar
+ *
+ */
 public class CommandCreator {
-	private static final String MESSAGE_UNDO_CONFIRM = "Undo Successful";
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command";
 	private Command currentCommand;
 	private Command previousCommand;
 	private Stack<Command> undoListCommands;
-	private boolean indexExpected;
+	private static final Logger logger = MhsLogger.getLogger();
 
 	public CommandCreator() {
 		undoListCommands = new Stack<Command>();
 	}
 
+	/**
+	 * Creates Command by type
+	 * @param userCommand
+	 * @return output String
+	 */
 	public String createCommand(CommandInfo userCommand) {
-		System.out.println(userCommand.toString());
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String userOutputString = new String();
 		if (userCommand.getCommandEnum() != null) {
 			if (userCommand.getIndex() != 0) {
@@ -26,14 +38,21 @@ public class CommandCreator {
 			}
 		} else {
 			userOutputString = previousCommand.executeByIndex(userCommand
-					.getIndex());
+					.getIndex()-1);
 
 		}
 		previousCommand = currentCommand;
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return userOutputString;
 	}
 
+	/**
+	 * Creates an object of respective command based on type enum. Executes command
+	 * @param userCommand
+	 * @return output String
+	 */
 	private String executeCommand(CommandInfo userCommand) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String userOutputString = new String();
 		switch (userCommand.getCommandEnum()) {
 		case add:
@@ -73,10 +92,17 @@ public class CommandCreator {
 		if (currentCommand.isUndoable()) {
 			undoListCommands.push(currentCommand);
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return userOutputString;
 	}
 
+	/**
+	 * Creates an object based on given type. Executes based on index. Uses previous list of tasks
+	 * @param userCommand
+	 * @return output String
+	 */
 	private String executeCommandByIndex(CommandInfo userCommand) {
+		logger.entering(getClass().getName(), this.getClass().getName());
 		String userOutputString = new String();
 		int local_index = userCommand.getIndex();
 		switch (userCommand.getCommandEnum()) {
@@ -89,8 +115,10 @@ public class CommandCreator {
 					.executeByIndexAndType(local_index - 1);
 			break;
 		case edit:
-			currentCommand = new CommandEdit(previousCommand.matchedTasks,userCommand);
-			userOutputString = currentCommand.executeByIndexAndType(local_index - 1);
+			currentCommand = new CommandEdit(previousCommand.matchedTasks,
+					userCommand);
+			userOutputString = currentCommand
+					.executeByIndexAndType(local_index - 1);
 			break;
 		case search:
 			currentCommand = new CommandSearch(previousCommand.matchedTasks);
@@ -118,6 +146,7 @@ public class CommandCreator {
 		if (currentCommand.isUndoable()) {
 			undoListCommands.push(currentCommand);
 		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
 		return userOutputString;
 	}
 
