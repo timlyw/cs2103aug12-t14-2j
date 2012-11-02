@@ -1,5 +1,6 @@
 /**
  * Database 
+ * 
  * - Database interfaces persistent the data storage mechanism, on local disk and remote 
  * (Google Calendar Service). 
  * - Handles task queries and CRUD operations 
@@ -17,8 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -82,6 +86,7 @@ public class Database {
 		private ScheduledThreadPoolExecutor syncronizeBackgroundExecutor;
 		private Runnable syncronizeBackgroundTask;
 		private TimerTask pullSyncTimedBackgroundTask;
+		Future futureSyncronizeBackgroundTask;
 
 		private static final int PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES = 5;
 		private static final int PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES = 5;
@@ -98,6 +103,7 @@ public class Database {
 			logger.entering(getClass().getName(),
 					new Exception().getStackTrace()[0].getMethodName());
 			syncronizeBackgroundExecutor = new ScheduledThreadPoolExecutor(1);
+
 			initializeRunnableTasks();
 			if (initializeGoogleCalendarService()) {
 				enableRemoteSync();
@@ -106,6 +112,14 @@ public class Database {
 			}
 			logger.exiting(getClass().getName(),
 					new Exception().getStackTrace()[0].getMethodName());
+		}
+
+		private void waitForSyncronizeBackgroundTaskToComplete(
+				int maxExecutionTimeInSeconds) throws InterruptedException,
+				ExecutionException, TimeoutException {
+			logger.log(Level.INFO, "Waiting for background task to complete.");
+			futureSyncronizeBackgroundTask.get(maxExecutionTimeInSeconds,
+					TimeUnit.SECONDS);
 		}
 
 		/**
@@ -128,7 +142,8 @@ public class Database {
 			if (googleCalendar == null) {
 				return false;
 			}
-			syncronizeBackgroundExecutor.execute(syncronizeBackgroundTask);
+			futureSyncronizeBackgroundTask = syncronizeBackgroundExecutor
+					.submit(syncronizeBackgroundTask);
 
 			logger.exiting(getClass().getName(),
 					new Exception().getStackTrace()[0].getMethodName());
@@ -524,7 +539,8 @@ public class Database {
 					new Exception().getStackTrace()[0].getMethodName());
 
 			// adds event to google calendar
-			CalendarEventEntry addedGCalEvent = googleCalendar.createEvent(localTask);
+			CalendarEventEntry addedGCalEvent = googleCalendar
+					.createEvent(localTask);
 			updateSyncTask(localTask, addedGCalEvent);
 
 			logger.exiting(getClass().getName(),
@@ -832,8 +848,8 @@ public class Database {
 
 		String googleAccessToken = GoogleCalendarMhs.retrieveUserToken(
 				GOOGLE_CALENDAR_APP_NAME, userName, userPassword);
-		googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME, userName,
-				googleAccessToken);
+		googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
+				userName, googleAccessToken);
 
 		syncronize.enableRemoteSync();
 		saveGoogleAccountInfo(userName, googleAccessToken);
@@ -1427,9 +1443,9 @@ public class Database {
 		logger.entering(getClass().getName(),
 				new Exception().getStackTrace()[0].getMethodName());
 		if (isRemoteSyncEnabled) {
-			try {
-				googleCalendar.deleteEvents(syncStartDateTime.toString(),
-						syncEndDateTime.toString());
+			try {				
+				googleCalendar.deleteEvents(DateTime.now().minusYears(1).toString(),
+						DateTime.now().plusYears(1).toString());
 			} catch (NullPointerException | ServiceException e) {
 				// SilentFailSync Policy
 				logger.log(Level.FINER, e.getMessage());
@@ -1555,5 +1571,10 @@ public class Database {
 		logger.exiting(getClass().getName(),
 				new Exception().getStackTrace()[0].getMethodName());
 		return getNewTaskId;
+	}
+
+	public void waitForSyncronizeBackgroundTaskToComplete(int maxExecutionTimeInSeconds)
+			throws InterruptedException, ExecutionException, TimeoutException {
+		syncronize.waitForSyncronizeBackgroundTaskToComplete(maxExecutionTimeInSeconds);
 	}
 }
