@@ -9,6 +9,11 @@ public class CommandRemove extends Command {
 
 	private Task lastDeletedTask;
 
+	/**
+	 * Constructor for non index based commands
+	 * 
+	 * @param userCommand
+	 */
 	public CommandRemove(CommandInfo userCommand) {
 		List<Task> resultList;
 		try {
@@ -20,11 +25,18 @@ public class CommandRemove extends Command {
 		}
 	}
 
+	/**
+	 * Constructor for index based commands
+	 * 
+	 * @param lastUsedList
+	 */
 	public CommandRemove(List<Task> lastUsedList) {
 		matchedTasks = lastUsedList;
 	}
 
-	@Override
+	/**
+	 * executes delete
+	 */
 	public String executeCommand() {
 		String outputString = new String();
 
@@ -53,7 +65,9 @@ public class CommandRemove extends Command {
 		return outputString;
 	}
 
-	@Override
+	/**
+	 * adds previously deleted task
+	 */
 	public String undo() {
 		if (isUndoable()) {
 			try {
@@ -71,14 +85,16 @@ public class CommandRemove extends Command {
 		}
 	}
 
-	@Override
+	/**
+	 * executes based on index only. Works when delete returned multiple matches
+	 */
 	public String executeByIndex(int index) {
 		String outputString = new String();
 		if (indexExpected & index < matchedTasks.size()) {
 			try {
 				System.out.println("entered");
 				dataHandler.delete(matchedTasks.get(index).getTaskId());
-				outputString = "Deleted "
+				outputString = "Deleted task -"
 						+ matchedTasks.get(index).getTaskName();
 				lastDeletedTask = matchedTasks.get(index);
 				indexExpected = false;
@@ -92,13 +108,16 @@ public class CommandRemove extends Command {
 		return outputString;
 	}
 
-	@Override
+	/**
+	 * executes based on index and type of command. Works when there is a list
+	 * present.
+	 */
 	public String executeByIndexAndType(int index) {
 		String outputString = new String();
 		if (index < matchedTasks.size()) {
 			try {
 				dataHandler.delete(matchedTasks.get(index).getTaskId());
-				outputString = "Deleted "
+				outputString = "Deleted task -"
 						+ matchedTasks.get(index).getTaskName();
 				lastDeletedTask = matchedTasks.get(index);
 				isUndoable = true;
