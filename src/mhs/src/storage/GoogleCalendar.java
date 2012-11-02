@@ -263,12 +263,16 @@ public class GoogleCalendar {
 	 */
 	public void deleteEvents(String startTime, String endTime)
 			throws UnknownHostException, NullPointerException, IOException,
-			ServiceException, ResourceNotFoundException {
+			ServiceException {
 		startLog();
 		List<CalendarEventEntry> eventList = retrieveEvents(startTime, endTime);
 		for (int i = 0; i < eventList.size(); i++) {
 			CalendarEventEntry eventToBeDeleted = eventList.get(i);
-			eventToBeDeleted.delete();
+			try {
+				eventToBeDeleted.delete();
+			} catch(ResourceNotFoundException e) {
+				// nothing to be done, as event is deleted already
+			}
 		}
 		endLog();
 	}

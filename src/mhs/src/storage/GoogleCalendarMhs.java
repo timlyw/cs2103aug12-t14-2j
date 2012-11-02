@@ -87,12 +87,10 @@ public class GoogleCalendarMhs {
 	public CalendarEventEntry retrieveEvent(String eventId) throws IOException,
 			NullPointerException, ResourceNotFoundException {
 		CalendarEventEntry retrievedEvent = null;		
-		try {
-			retrievedEvent = defaultCalendar.retrieveEvent(eventId);
-		} catch(ResourceNotFoundException e) {
-			retrievedEvent = taskCalendar.retrieveEvent(eventId);	
+		retrievedEvent = defaultCalendar.retrieveEvent(eventId);
+		if(retrievedEvent == null) {
+			retrievedEvent = taskCalendar.retrieveEvent(eventId);
 		}
-		
 		return retrievedEvent;
 	}
 	
