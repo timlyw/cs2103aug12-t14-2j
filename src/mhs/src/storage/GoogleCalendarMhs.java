@@ -156,7 +156,7 @@ public class GoogleCalendarMhs {
 		return defaultCalendar.isDeleted(calendarEvent);
 	}
 	
-	public boolean isDone(CalendarEventEntry calendarEvent) throws NullPointerException, IOException, ServiceException {
+	public boolean isEventCompleted(CalendarEventEntry calendarEvent) throws NullPointerException, IOException, ServiceException {
 		try {
 			return taskCalendar.contains(calendarEvent.getIcalUID());
 		} catch(ResourceNotFoundException e) {
