@@ -657,8 +657,13 @@ public class Database {
 		assert (googleUserAccount != null);
 		assert (googleAuthToken != null);
 
-		googleCalendar = new GoogleCalendar(GOOGLE_CALENDAR_APP_NAME,
-				googleUserAccount, googleAuthToken);
+		try {
+			googleCalendar = new GoogleCalendar(GOOGLE_CALENDAR_APP_NAME,
+					googleUserAccount, googleAuthToken);
+		} catch (NullPointerException | ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		saveGoogleAccountInfo(googleUserAccount, googleAuthToken);
 		logger.exiting(getClass().getName(), this.getClass().getName());

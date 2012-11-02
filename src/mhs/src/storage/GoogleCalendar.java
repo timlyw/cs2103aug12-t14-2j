@@ -29,15 +29,21 @@ import com.google.gdata.client.calendar.CalendarQuery;
 import com.google.gdata.client.calendar.CalendarService;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.calendar.CalendarEntry;
 import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.data.calendar.CalendarEventFeed;
+import com.google.gdata.data.calendar.CalendarFeed;
 import com.google.gdata.data.extensions.When;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 public class GoogleCalendar {
+	private static final String TASK_CALENDAR_TITLE = "Completed Tasks (MHS)";
+	private static final String TASK_CALENDAR_SUMMARY = "All completed tasks from My Hot Secretary is moved into this calendar";
+	
 	// URL constants for communicating with Google Calendar
+	private static final String URL_CALENDAR_FEED = "https://www.google.com/calendar/feeds/default/owncalendars/full";
 	private static final String URL_EVENT_FEED = "https://www.google.com/calendar/feeds/default/private/full";
 	private static final String URL_CREATE_EVENT = "http://www.google.com/calendar/feeds/%1$s/private/full";
 	private static final String URL_EVENT = "http://www.google.com/calendar/feeds/%1$s/private/full/%2$s";
@@ -65,6 +71,10 @@ public class GoogleCalendar {
 
 	// access token used to authorize communication with Google Calendar
 	private String userToken = null;
+	
+	// id of calendar used to contain completed tasks
+	String taskCalendarId = null;
+	String defaultCalendarId = null;
 
 	// calendarService used to interface with Google Calendar
 	private CalendarService calendarService;
@@ -105,13 +115,16 @@ public class GoogleCalendar {
 	 *            user's Google account email
 	 * @param accessToken
 	 *            retrieved from retrieveAccessToken or otherwise
+	 * @throws ServiceException 
+	 * @throws IOException 
 	 */
 	public GoogleCalendar(String appName, String email, String accessToken)
-			throws NullPointerException {
+			throws NullPointerException, IOException, ServiceException {
 		startLog();
 		initCalendarService(accessToken, appName);
-		endLog();
 		userEmail = email;
+		initTaskCalendar();
+		endLog();
 	}
 
 	/**
@@ -315,9 +328,28 @@ public class GoogleCalendar {
 		setEventTitle(eventToBeUpdated, title);
 		setEventTime(eventToBeUpdated, startTime, endTime);
 		CalendarEventEntry updatedEvent = sendEditRequest(eventToBeUpdated);
+		
+		boolean inTaskCalendar = eventIsInTaskCalendar(updatedEvent);
+		boolean inDefaultCalendar = eventIsInDefaultCalendar(updatedEvent);
+		
+		System.out.println("in task cal: "+inTaskCalendar);
+		System.out.println("in default cal: "+inDefaultCalendar);
+		System.out.println(updatedEvent.getId());
 		endLog();
 		return updatedEvent;
 	}
+	
+	private boolean eventIsInTaskCalendar(CalendarEventEntry calendarEvent) {
+		String eventId = calendarEvent.getId();
+		return eventId.contains(taskCalendarId);
+	}
+	
+	private boolean eventIsInDefaultCalendar(CalendarEventEntry calendarEvent) {
+		String eventId = calendarEvent.getId();
+		return eventId.contains(userEmail);
+	}
+	
+	
 
 	/**
 	 * sends the request to update event's parameters
@@ -330,7 +362,7 @@ public class GoogleCalendar {
 	 * @throws ServiceException
 	 *             Internet connection unavailable
 	 */
-	public CalendarEventEntry sendEditRequest(
+	private CalendarEventEntry sendEditRequest(
 			CalendarEventEntry eventToBeUpdated) throws IOException,
 			ServiceException, NullPointerException {
 		startLog();
@@ -776,5 +808,37 @@ public class GoogleCalendar {
 	
 	private void endLog() {
 		logger.entering(getClass().getName(), this.getClass().getName());
+	}
+	
+	private void initTaskCalendar() throws IOException, ServiceException {
+		taskCalendarId = getTaskCalendarId();
+		
+		if(taskCalendarId == null) {
+			taskCalendarId = createTaskCalendar();
+		}
+	}
+	
+	private String getTaskCalendarId() throws IOException, ServiceException {
+		URL calendarFeedUrl = new URL(URL_CALENDAR_FEED);
+		CalendarFeed usersCalendars = calendarService.getFeed(calendarFeedUrl, CalendarFeed.class);
+		
+		for(int i = 0; i < usersCalendars.getEntries().size(); i++) {
+			CalendarEntry usersCalendar = usersCalendars.getEntries().get(i);
+			if(usersCalendar.getTitle().getPlainText().equals(TASK_CALENDAR_TITLE)) {
+				return usersCalendar.getId();
+			}
+		}
+		return null;
+	}
+	
+	private String createTaskCalendar() throws IOException, ServiceException {
+		CalendarEntry calendar = new CalendarEntry();
+		calendar.setTitle(new PlainTextConstruct(TASK_CALENDAR_TITLE));
+		calendar.setSummary(new PlainTextConstruct(TASK_CALENDAR_SUMMARY));
+		URL calendarFeedUrl = new URL(URL_CALENDAR_FEED);
+		CalendarEntry returnedCalendar = calendarService.insert(calendarFeedUrl, calendar);
+		String taskCalendarId = returnedCalendar.getId();
+	
+		return taskCalendarId;
 	}
 }

@@ -668,10 +668,12 @@ public class DatabaseTest {
 	 * Initialize google calendar
 	 * 
 	 * @return
-	 * @throws AuthenticationException
+	 * @throws ServiceException 
+	 * @throws IOException 
+	 * @throws NullPointerException 
 	 */
 	private GoogleCalendar initializeGoogleCalendar()
-			throws AuthenticationException {
+			throws NullPointerException, IOException, ServiceException {
 		// we use a separate GoogleCalendar to query events (need to pullEvents
 		// manually)
 		String googleAccessToken = (GoogleCalendar.retrieveUserToken(
