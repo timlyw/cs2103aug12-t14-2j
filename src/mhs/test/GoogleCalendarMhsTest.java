@@ -64,27 +64,31 @@ public class GoogleCalendarMhsTest {
 		accessToken = GoogleCalendarMhs.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
 		GoogleCalendarMhs gCal = new GoogleCalendarMhs(APP_NAME, USER_EMAIL, accessToken);
 
+		
 		String title1 = "mhs test event 1";
 		String startTime1 = "2013-01-16T13:00:00+08:00";
 		String endTime1 = "2013-01-16T15:00:00+08:00";
 		
-		TimedTask newTask1 = createTask(title1, startTime1, endTime1);
-		newTask1.setDone(false);
-		gCal.createEvent(newTask1);
 		
 		String title2 = "mhs test event 2";
 		String startTime2 = "2013-01-18T09:00:00+08:00";
 		String endTime2 = "2013-01-18T20:00:00+08:00";
 		
+
+		List<CalendarEventEntry> initialList = gCal.retrieveEvents(startTime1, endTime2);
+
+		TimedTask newTask1 = createTask(title1, startTime1, endTime1);
+		newTask1.setDone(false);
+		gCal.createEvent(newTask1);
+		
 		TimedTask newTask2 = createTask(title2, startTime2, endTime2);
 		newTask2.setDone(true);
 		gCal.createEvent(newTask2);
 		
-		List<CalendarEventEntry> eventList = gCal.retrieveEvents(startTime1, endTime2);
-		assertTrue(eventList.size() > 0);
+		List<CalendarEventEntry> newList = gCal.retrieveEvents(startTime1, endTime2);
+		assertTrue(newList.size() == initialList.size() + 2);
 		
 		gCal.deleteEvents(startTime1, endTime2);
-		
 	}
 	
 	@Test

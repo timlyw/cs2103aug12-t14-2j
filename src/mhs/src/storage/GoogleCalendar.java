@@ -269,7 +269,9 @@ public class GoogleCalendar {
 		for (int i = 0; i < eventList.size(); i++) {
 			CalendarEventEntry eventToBeDeleted = eventList.get(i);
 			try {
-				eventToBeDeleted.delete();
+				if(!isDeleted(eventToBeDeleted)) {
+					eventToBeDeleted.delete();
+				}
 			} catch(ResourceNotFoundException e) {
 				// nothing to be done, as event is deleted already
 			}
