@@ -196,8 +196,10 @@ public class Database {
 						logger.log(Level.FINER, e.getMessage());
 						disableRemoteSync();
 					} catch (TaskNotFoundException e) {
+						// SilentFailSync Policy
 						logger.log(Level.FINER, e.getMessage());
 					} catch (InvalidTaskFormatException e) {
+						// SilentFailSync Policy
 						logger.log(Level.FINER, e.getMessage());
 					} catch (NullPointerException e) {
 						logger.log(Level.FINER, e.getMessage());
@@ -284,13 +286,11 @@ public class Database {
 						syncEndDateTime.toString());
 				Iterator<CalendarEventEntry> iterator = googleCalendarEvents
 						.iterator();
-
 				// pull sync remote tasks
 				while (iterator.hasNext()) {
 					CalendarEventEntry gCalEntry = iterator.next();
 					pullSyncTask(gCalEntry);
 				}
-
 			} catch (UnknownHostException e) {
 				logger.log(Level.FINER, e.getMessage());
 				throw e;
@@ -316,6 +316,7 @@ public class Database {
 				throws TaskNotFoundException, InvalidTaskFormatException,
 				IOException {
 			logEnterMethod("pullSyncTask");
+			
 			if (taskLists.containsSyncTask(gCalEntry.getIcalUID())) {
 
 				Task localTask = taskLists.getSyncTask(gCalEntry.getIcalUID());
@@ -335,11 +336,6 @@ public class Database {
 
 					logger.log(Level.INFO,
 							"pulling newer event : " + localTask.getTaskName());
-
-					logger.log(Level.FINER, "Local Task last sync : "
-							+ localTask.getTaskLastSync()
-							+ " Google Event Last Updated : "
-							+ gCalEntry.getUpdated().getValue());
 
 					pullSyncExistingTask(gCalEntry, localTask);
 				}
@@ -546,8 +542,8 @@ public class Database {
 			}
 
 			DateTime syncDateTime = setSyncTime(UpdatedCalendarEvent);
-			updateLocalSyncTask(localSyncTaskToUpdate, UpdatedCalendarEvent,
-					syncDateTime);
+			localSyncTaskToUpdate = updateLocalSyncTask(localSyncTaskToUpdate,
+					UpdatedCalendarEvent, syncDateTime);
 			taskLists.updateTaskInTaskLists(localSyncTaskToUpdate);
 			logExitMethod("updateSyncTask");
 			return localSyncTaskToUpdate;
@@ -560,32 +556,22 @@ public class Database {
 		 * @param UpdatedCalendarEvent
 		 * @param syncDateTime
 		 */
-		private void updateLocalSyncTask(Task localSyncTaskToUpdate,
+		private Task updateLocalSyncTask(Task localSyncTaskToUpdate,
 				CalendarEventEntry UpdatedCalendarEvent, DateTime syncDateTime) {
 			logEnterMethod("updateLocalSyncTask");
-			// TODO check task conversion
-			localSyncTaskToUpdate.setgCalTaskId(UpdatedCalendarEvent
-					.getIcalUID());
-			localSyncTaskToUpdate.setTaskName(UpdatedCalendarEvent.getTitle()
-					.getPlainText());
-
 			When eventTimes = UpdatedCalendarEvent.getTimes().get(0);
-
-			// Update Task Category
+			// Update Task Type
 			if (eventTimes.getStartTime().equals(eventTimes.getEndTime())) {
-				localSyncTaskToUpdate.setTaskCategory(TaskCategory.DEADLINE);
+				localSyncTaskToUpdate = new DeadlineTask(
+						localSyncTaskToUpdate.getTaskId(),
+						UpdatedCalendarEvent, syncDateTime);
 			} else {
-				localSyncTaskToUpdate.setTaskCategory(TaskCategory.TIMED);
+				localSyncTaskToUpdate = new TimedTask(
+						localSyncTaskToUpdate.getTaskId(),
+						UpdatedCalendarEvent, syncDateTime);
 			}
-
-			// Update Times
-			localSyncTaskToUpdate.setStartDateTime(new DateTime(eventTimes
-					.getStartTime().getValue()));
-			localSyncTaskToUpdate.setEndDateTime(new DateTime(eventTimes
-					.getEndTime().getValue()));
-			localSyncTaskToUpdate.setTaskLastSync(syncDateTime);
-			localSyncTaskToUpdate.setTaskUpdated(syncDateTime);
 			logExitMethod("updateLocalSyncTask");
+			return localSyncTaskToUpdate;
 		}
 
 		/**
@@ -606,6 +592,7 @@ public class Database {
 			// assert that sync DateTimes between local and remote are equal
 			assert (syncDateTime.isEqual(new DateTime(gCalEntry.getUpdated()
 					.toString())));
+
 			logExitMethod("setSyncTime");
 			return syncDateTime;
 		}
@@ -737,11 +724,9 @@ public class Database {
 			googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
 					googleUserAccount, googleAuthToken);
 		} catch (NullPointerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINER, e.getMessage());
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINER, e.getMessage());
 		}
 
 		saveGoogleAccountInfo(googleUserAccount, googleAuthToken);
