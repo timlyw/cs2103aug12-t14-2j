@@ -42,41 +42,16 @@ public class GoogleCalendarTest {
 	
 	/**
 	 * test if the retrieved access token is not empty when email and password is valid
+	 * @throws NullPointerException 
+	 * @throws AuthenticationException 
 	 */
 	@Test
-	public void testRetrieveAccessToken() {
-		try {
-			String accessToken;
-			accessToken = GoogleCalendar.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
-			assertTrue(accessToken.length() > 0);
-		} catch (AuthenticationException e) {
-			display(ERROR_LOGIN);
-		}
+	public void testRetrieveAccessToken() throws AuthenticationException, NullPointerException {
+		String accessToken;
+		accessToken = GoogleCalendar.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
+		assertTrue(accessToken.length() > 0);
 	}
 	
-	@Test
-	public void testQueryTimeUpdated() {
-		try {
-			String accessToken = GoogleCalendar.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
-			GoogleCalendar gCal = new GoogleCalendar(APP_NAME, USER_EMAIL, accessToken);
-			String startTime = "2013-01-01T01:00:00+08:00";
-			String endTime = "2013-01-29T23:00:00+08:00";
-			String minUpdatedTime = "2012-10-29T23:00:00+08:00";
-			List<CalendarEventEntry> eventList = gCal.retrieveEvents(startTime, endTime, minUpdatedTime);
-			display("update test");
-			display(eventList);
-			display("end update test");
-		} catch (AuthenticationException e) {
-			display(ERROR_LOGIN);
-		} catch (UnknownHostException e) {
-			display(ERROR_CONNECTION);
-		} catch (IOException e) {
-			display(ERROR_ACCESS);
-		} catch (ServiceException e) {
-			display(ERROR_SERVICE);
-		}
-
-	}
 	
 	/**
 	 * prints out the events within the date range to console
@@ -227,7 +202,6 @@ public class GoogleCalendarTest {
 	
 	public void display(List<CalendarEventEntry> eventList) {
 		for(int i = 0; i < eventList.size(); i++) {
-			display(Integer.toString(i) + ". ");
 			display(eventList.get(i));
 		}
 	}
