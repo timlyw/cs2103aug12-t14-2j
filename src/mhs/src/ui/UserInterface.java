@@ -38,24 +38,27 @@ public class UserInterface {
 	// logger used to log function calls
 	private final Logger logger = MhsLogger.getLogger();
 	
+	// class name used for logging
+	private static final String CLASS_NAME = "UserInterface";
+	
 	/**
 	 * sets up the mhsFrame and event listeners
 	 */
 	public UserInterface() {
-		startLog();
+		startLog("constructor");
 		initMhsFrame();
 		initListeners();
-		endLog();
+		endLog("constructor");
 	}
 	
 	/**
 	 * display the mhsFrame to user
 	 */
 	public void openMhsFrame() {
-		startLog();
+		startLog("openMhsFrame");
     	mhsFrame.open();
     	mhsFrame.selectInputBox();
-    	endLog();
+    	endLog("openMhsFrame");
 	}
 	
 	/**
@@ -63,14 +66,14 @@ public class UserInterface {
 	 * height of the display area in mhsFrame
 	 */
 	private void updateLineLimit() {
-		startLog();
+		startLog("updateLineLimit");
 		int initialLineLimit = lineLimit;
 		lineLimit = calculateNewLineLimit();
 		
 		if(lineLimit != initialLineLimit) {
 			processor.setLineLimit(lineLimit);
 		}
-		endLog();
+		endLog("updateLineLimit");
 	}
 	
 	/**
@@ -89,74 +92,66 @@ public class UserInterface {
 	 * create a new instance of mhsFrame
 	 */
 	private void initMhsFrame() {
-		startLog();
+		startLog("initMhsFrame");
     	mhsFrame = MhsFrame.getInstance();
-    	endLog();
+    	endLog("initMhsFrame");
 	}
 	
 	/**
 	 * initialize event listeners
 	 */
 	private void initListeners() {
-		startLog();
+		startLog("initListeners");
 		initProcessorStateListener();
 		initInputTextChangedListener();
 		initInputKeyListener();
 		initFrameListener();
-		endLog();
+		endLog("initListeners");
 	}
 	
 	/**
 	 * initialize listener to observe for changes in frame size
 	 */
 	private void initFrameListener() {
-		startLog();
 		FrameListener frameListener = new FrameListener();
 		mhsFrame.addComponentListener(frameListener);
-		endLog();
 	}
 	
 	/**
 	 * initialize key listener to observe when user presses the enter key
 	 */
 	private void initInputKeyListener() {
-		startLog();
 		InputKeyListener inputKeyListener = new InputKeyListener();
 		mhsFrame.addInputKeyListener(inputKeyListener);
-		endLog();
 	}
 	
 	/**
 	 * initialize text changed listener to observe when input text has changed
 	 */
 	private void initInputTextChangedListener() {
-		startLog();
 		InputTextChangedListener inputListener = new InputTextChangedListener();
 		mhsFrame.addInputChangedListener(inputListener);
-		endLog();
 	}
 	
 	/**
 	 * initialize processor state listener to observe when processor has an updated state
 	 */
 	private void initProcessorStateListener() {
-		startLog();
 		ProcessorStateListener processorStateListener = new ProcessorStateListener();
 		processor.addStateListener(processorStateListener);
-		endLog();
 	}
 	
 	/**
 	 * retrieve the current command from mhsFrame and update the command in processor
 	 */
 	private void updateProcesorCommand() {
-		startLog();
+		startLog("updateProcessorCommand");
 		if(mhsFrame.inputDisabled()) {
 			return;
 		}
 		String command = mhsFrame.getCommand();
 		processor.setCommand(command);
-		endLog();
+		endLog("updateProcessorCommand");
 	}
 	
 	/**
@@ -164,43 +159,47 @@ public class UserInterface {
 	 * is expecting a password or ordinary commands
 	 */
 	private void updateInputType() {
-		startLog();
+		startLog("updatedInputType");
 		if(processor.passwordExpected()) {
 			mhsFrame.setInputToPassword();
 		} else {
 			mhsFrame.setInputToPlainText();
 		}
-		endLog();
+		endLog("updateInputType");
 	}
 
 	/** 
-	 * updates the feedback text in mhsFrame to the current commad feedback in the processor
+	 * updates the feedback text in mhsFrame to the current command feedback in the processor
 	 */
 	private void updateFeedbackText() {
+		startLog("updateFeedbackText");
 		String feedbackText = processor.getCommandFeedback();
 		if(feedbackText != null) {
 			mhsFrame.setFeedbackText(feedbackText);
 		}
+		endLog("updateFeedbackText");
 	}
 	
 	/**
 	 * updates the display screen to show the current state of the processor
 	 */
 	private void updateDisplayScreen() {
+		startLog("updateDisplayScreen");
 		String displayText = processor.getState();
 		if(displayText != null) {
 			mhsFrame.setDisplayText(displayText);
 		}
+		endLog("updateDisplayScreen");
 	}
 	
 	/**
 	 * calls processor to execute the current command
 	 */
 	private void executeCommandInProcessor() {
-		startLog();
+		startLog("executeCommandInProcessor");
 		processor.executeCommand();
 		mhsFrame.clearInput();
-		endLog();
+		endLog("executeCommandInProcessor");
 	}
 	
 	/**
@@ -273,11 +272,11 @@ public class UserInterface {
 		
 	}
 	
-	private void startLog() {
-		logger.entering(getClass().getName(), this.getClass().getName());
+	private void startLog(String methodName) {
+		logger.entering(CLASS_NAME, methodName);
 	}
 	
-	private void endLog() {
-		logger.entering(getClass().getName(), this.getClass().getName());
+	private void endLog(String methodName) {
+		logger.entering(CLASS_NAME, methodName);
 	}
 }
