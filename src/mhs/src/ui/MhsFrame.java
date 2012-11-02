@@ -1,7 +1,7 @@
 package mhs.src.ui;
 
 /**
- * This class provides the interface to display program output to the user and
+ * This class provides the interface to display program output to user and
  * to read user input, this is provided by:
  * 		1) Display Screen: Show program output to user
  * 		2) Feedback Screen: Show command feedback to user
@@ -18,6 +18,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyListener;
+import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -28,6 +29,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentListener;
+
+import mhs.src.common.MhsLogger;
 
 public class MhsFrame extends JFrame {
 
@@ -42,6 +45,7 @@ public class MhsFrame extends JFrame {
 	private static final int FRAME_HEIGHT = 450;
 	private static final String FRAME_TITLE = "My Hot Secretary";
 	private static final Color FRAME_BACKGROUND_COLOR = new Color(0, 0, 0);
+	private static final String ICON_FILE_NAME = "mhsIconSmall.png";
 
 	// default margin, position and font parameters
 	private static final int DEFAULT_CONSTRAINT_POSITION_X = 0;
@@ -99,8 +103,21 @@ public class MhsFrame extends JFrame {
 	// used to keep track if input is enabled
 	private boolean isInputDisabled = false;
 	
+	// singleton instance
 	private static MhsFrame mhsFrameInstance = null;
 	
+	// logger used to log function calls
+	private final Logger logger = MhsLogger.getLogger();
+	
+	// class name used for logging
+	private static final String CLASS_NAME = "MhsFrame";
+	
+	/**
+	 * MhsFrame's constructor is private, this function returns the 
+	 * only instance of MhsFrame 
+	 * 
+	 * @return single instance of MhsFrame
+	 */
 	public static MhsFrame getInstance() {
 		if(mhsFrameInstance == null) {
 			mhsFrameInstance = new MhsFrame();
@@ -108,19 +125,35 @@ public class MhsFrame extends JFrame {
 		return mhsFrameInstance;
 	}
 	
+	/**
+	 * makes the frame visible to user
+	 */
 	public void open() {
+		startLog("open");
 		this.setVisible(true);
+		endLog("open");
 	}
 	
+	/**
+	 * @return whether input is currently disabled
+	 */
 	public boolean inputDisabled() {
 		return isInputDisabled;
 	}
 	
+	/**
+	 * @return height of the displayScreen
+	 */
 	public int getDisplayScreenHeight() {
 		int displayScreenHeight = displayScreen.getHeight();
 		return displayScreenHeight;
 	}
 
+	/**
+	 * get the current command based on whether current input type
+	 * 
+	 * @return current user command
+	 */
 	public String getCommand() {
 		String command;
 		if(inputType == INPUT_TYPE.PLAIN_TEXT) {
@@ -132,16 +165,29 @@ public class MhsFrame extends JFrame {
 		return command;
 	}
 	
+	/**
+	 * add inputListener to listen for changes in input text
+	 * 
+	 * @param inputListener
+	 */
 	public void addInputChangedListener(DocumentListener inputListener) {
 		plainTextBox.getDocument().addDocumentListener(inputListener);
 		passwordBox.getDocument().addDocumentListener(inputListener);
 	}
 	
+	/**
+	 * add keyListener to listen for when and which keys are pressed in input box
+	 * 
+	 * @param keyListener
+	 */
 	public void addInputKeyListener(KeyListener keyListener) {
 		plainTextBox.addKeyListener(keyListener);
 		passwordBox.addKeyListener(keyListener);
 	}
 	
+	/**
+	 * clear input from plainTextBox and passwordBox
+	 */
 	public void clearInput() {
 		isInputDisabled = true;
 		plainTextBox.setText(BLANK);
@@ -149,28 +195,47 @@ public class MhsFrame extends JFrame {
 		isInputDisabled = false;
 	}
 	
+	/**
+	 * Show output to user in displayScreen
+	 * 
+	 * @param displayText
+	 */
 	public void setDisplayText(String displayText) {
 		String htmlText = htmlCreator.createDisplayScreenHtml(displayText);
 		displayScreen.setText(htmlText);
 	}
 
+	/**
+	 * Show output to user in feedbackScreen
+	 * 
+	 * @param feedbackText
+	 */
 	public void setFeedbackText(String feedbackText) {
 		String htmlText = htmlCreator.createFeedbackScreenHtml(feedbackText);
 		feedbackScreen.setText(htmlText);
 	}
 	
+	/**
+	 * set input format type to plain text
+	 */
 	public void setInputToPlainText() {
 		plainTextBox.setVisible(true);
 		inputType = INPUT_TYPE.PLAIN_TEXT;
 		selectInputBox();
 	}
 	
+	/**
+	 * set input format type to password (user input will be replaced with dots)
+	 */
 	public void setInputToPassword() {
 		plainTextBox.setVisible(false);
 		inputType = INPUT_TYPE.PASSWORD;
 		selectInputBox();
 	}
 	
+	/**
+	 * select input box based on current input format
+	 */
 	public void selectInputBox() {
 		if(inputType == INPUT_TYPE.PLAIN_TEXT) {
 			selectPlainTextBox();
@@ -179,19 +244,41 @@ public class MhsFrame extends JFrame {
 		}
 	}
 	
+	/**
+	 * private constructor to initialize an instance of MhsFrame
+	 */
+	private MhsFrame() {
+		super(FRAME_TITLE);
+		initFrame();
+	}
+	
+	/**
+	 * select plain text box for typing
+	 */
 	private void selectPlainTextBox() {
 		plainTextBox.requestFocus();	
 	}
 	
+	/**
+	 * select password box for typing
+	 */
 	private void selectPasswordBox() {
 		passwordBox.requestFocus();
 	}
 	
+	/**
+	 * initialize frame properties and components
+	 */
 	private void initFrame() {
+		startLog("initFrame");
 		initFrameProperties();
 		initFrameComponents();
+		endLog("initFrame");
 	}
 
+	/**
+	 * initialize frame size, background color, location, exit action and icon
+	 */
 	private void initFrameProperties() {
 		setFrameSize(FRAME_WIDTH, FRAME_HEIGHT);
 		setFrameBackground(FRAME_BACKGROUND_COLOR);
@@ -200,28 +287,47 @@ public class MhsFrame extends JFrame {
 		setFrameIcon();
 	}
 
+	/**
+	 * set frame to exit application when user closes frame
+	 */
 	private void setFrameToExitOnClose() {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
+	/**
+	 * @param width width of frame
+	 * @param height height of frame
+	 */
 	private void setFrameSize(int width, int height) {
 		this.setSize(width, height);
 	}
 
+	/**
+	 * set location of frame to center of screen
+	 */
 	private void setFrameLocationToCenter() {
 		this.setLocationRelativeTo(null);
 	}
 
+	/**
+	 * @param backgroundColor
+	 */
 	private void setFrameBackground(Color backgroundColor) {
 		this.setBackground(backgroundColor);
 	}
 
+	/**
+	 * sets the frame's icon (appears on task bar as well)
+	 */
 	private void setFrameIcon() {
 		ImageIcon icon = new ImageIcon(
-				MhsFrame.class.getResource("mhsIconSmall.png"));
+				MhsFrame.class.getResource(ICON_FILE_NAME));
 		this.setIconImage(icon.getImage());
 	}
 
+	/**
+	 * initialize the frame's components
+	 */
 	private void initFrameComponents() {
 		initFramePanel();
 		initDisplayScreen();
@@ -229,24 +335,36 @@ public class MhsFrame extends JFrame {
 		initInputBox();
 	}
 
+	/**
+	 * add and format the frame panel
+	 */
 	private void initFramePanel() {
 		addFramePanelToFrame();
 		setFramePanelLayout();
 		setFramePanelBackground(FRAME_BACKGROUND_COLOR);
 	}
 
+	/**
+	 * add and format the display screen
+	 */
 	private void initDisplayScreen() {
 		addDisplayScreenToFramePanel();
 		displayScreen.setEditable(false);
 		displayScreen.setContentType(CONTENT_TYPE_HTML);
 	}
 
+	/**
+	 * add and format the feedback screen
+	 */
 	private void initFeedbackScreen() {
 		addFeedbackScreenToPanel();
 		feedbackScreen.setEditable(false);
 		feedbackScreen.setContentType(CONTENT_TYPE_HTML);
 	}
 
+	/**
+	 * add the feedback screen to panel based on parameters defined at top of class
+	 */
 	private void addFeedbackScreenToPanel() {
 		GridBagConstraints constraints = getDefaultConstraints(
 				FEEDBACK_SCREEN_POSITION_Y, FEEDBACK_SCREEN_WEIGHT_Y,
@@ -258,6 +376,9 @@ public class MhsFrame extends JFrame {
 		framePanel.add(feedbackScreenContainer, constraints);
 	}
 
+	/**
+	 * add and format the password and plain text box to frame panel
+	 */
 	private void initInputBox() {
 		addPlainTextBoxToFramePanel();
 		formatPlainTextBox();
@@ -266,6 +387,9 @@ public class MhsFrame extends JFrame {
 		setInputToPlainText();
 	}
 
+	/**
+	 * add the passwordBox to framePanel
+	 */
 	private void addPasswordBoxToFramePanel() {
 		GridBagConstraints constraints = getDefaultConstraints(
 				INPUT_BOX_POSITION_Y, INPUT_BOX_WEIGHT_Y, INPUT_BOX_HEIGHT);
@@ -276,6 +400,9 @@ public class MhsFrame extends JFrame {
 		framePanel.add(inputBoxContainer, constraints);
 	}
 	
+	/**
+	 * add the plain text box to framePanel
+	 */
 	private void formatPlainTextBox() {
 		plainTextBox.setFont(INPUT_BOX_FONT);
 		EmptyBorder paddingBorder = createPaddingBorder(DEFAULT_PADDING_WIDTH,
@@ -283,6 +410,9 @@ public class MhsFrame extends JFrame {
 		plainTextBox.setBorder(paddingBorder);
 	}
 	
+	/**
+	 * format font and margins of passwordBox
+	 */
 	private void formatPasswordBox() {
 		passwordBox.setFont(INPUT_BOX_FONT);
 		EmptyBorder paddingBorder = createPaddingBorder(DEFAULT_PADDING_WIDTH,
@@ -290,6 +420,9 @@ public class MhsFrame extends JFrame {
 		passwordBox.setBorder(paddingBorder);
 	}
 
+	/**
+	 * add plain text box to the frame panel
+	 */
 	private void addPlainTextBoxToFramePanel() {
 		GridBagConstraints constraints = getDefaultConstraints(
 				INPUT_BOX_POSITION_Y, INPUT_BOX_WEIGHT_Y, INPUT_BOX_HEIGHT);
@@ -300,6 +433,9 @@ public class MhsFrame extends JFrame {
 		framePanel.add(inputBoxContainer, constraints);
 	}
 
+	/**
+	 * add displayScreen to the framePanel
+	 */
 	private void addDisplayScreenToFramePanel() {
 		GridBagConstraints constraints = getDefaultConstraints(
 				DISPLAY_SCREEN_POSITION_Y, DISPLAY_SCREEN_WEIGHT_Y,
@@ -311,19 +447,37 @@ public class MhsFrame extends JFrame {
 		framePanel.add(displayScreenContainer, constraints);
 	}
 
+	/**
+	 * add framePanel to the frame
+	 */
 	private void addFramePanelToFrame() {
 		this.getContentPane().add(framePanel);
 	}
 
+	/**
+	 * set framePanel layout to GridBagLayout as it allows good control over positioning
+	 */
 	private void setFramePanelLayout() {
 		GridBagLayout gbLayout = new GridBagLayout();
 		framePanel.setLayout(gbLayout);
 	}
 
+	/**
+	 * @param backgroundColor
+	 */
 	private void setFramePanelBackground(Color backgroundColor) {
 		framePanel.setBackground(FRAME_BACKGROUND_COLOR);
 	}
 
+	/**
+	 * create a GridBagConstraints object to specify the position and size 
+	 * of a component within a GridBagLayout
+	 * 
+	 * @param positionY
+	 * @param weightY
+	 * @param height
+	 * @return created GridBagConstraint
+	 */
 	protected static GridBagConstraints getDefaultConstraints(int positionY,
 			int weightY, int height) {
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -334,28 +488,63 @@ public class MhsFrame extends JFrame {
 		return gbc;
 	}
 
+	/**
+	 * set position of a GridBagConstraint
+	 * 
+	 * @param gbc
+	 * @param positionX
+	 * @param positionY
+	 */
 	private static void setConstraintsPosition(GridBagConstraints gbc, int positionX,
 			int positionY) {
 		gbc.gridx = positionX;
 		gbc.gridy = positionY;
 	}
 
+	/**
+	 * set weight parameters of a GridBagConstraint
+	 * 
+	 * @param gbc
+	 * @param weightX
+	 * @param weightY
+	 */
 	private static void setConstraintsWeight(GridBagConstraints gbc, int weightX,
 			int weightY) {
 		gbc.weightx = weightX;
 		gbc.weighty = weightY;
 	}
 
+	/**
+	 * set size of a GridBagConstraint
+	 * 
+	 * @param gbc
+	 * @param width
+	 * @param height
+	 */
 	private static void setConstraintsSize(GridBagConstraints gbc, int width,
 			int height) {
 		gbc.gridwidth = width;
 		gbc.gridheight = height;
 	}
 
+	/**
+	 * set the GridBagConstraint to fill all available space
+	 * 
+	 * @param gbc
+	 */
 	private static void setConstraintsToFillAvailableSpace(GridBagConstraints gbc) {
 		gbc.fill = GridBagConstraints.BOTH;
 	}
 
+	/**
+	 * create a container box around the component to create external margins
+	 * 
+	 * @param component
+	 * @param padding
+	 * @param topPadding
+	 * @param bottomPadding
+	 * @return
+	 */
 	private Box createContainer(Component component, int padding,
 			int topPadding, int bottomPadding) {
 		Box containerBox = Box.createHorizontalBox();
@@ -366,16 +555,26 @@ public class MhsFrame extends JFrame {
 		return containerBox;
 	}
 
+	/**
+	 * generate a padding border used to specify margins
+	 * 
+	 * @param padding
+	 * @param topPadding
+	 * @param bottomPadding
+	 * @return
+	 */
 	private EmptyBorder createPaddingBorder(int padding, int topPadding,
 			int bottomPadding) {
 		EmptyBorder paddingBorder = new EmptyBorder(topPadding, padding,
 				bottomPadding, padding);
 		return paddingBorder;
 	}
-
-	private MhsFrame() {
-		super(FRAME_TITLE);
-		initFrame();
+	
+	private void startLog(String methodName) {
+		logger.entering(CLASS_NAME, methodName);
 	}
-
+	
+	private void endLog(String methodName) {
+		logger.entering(CLASS_NAME, methodName);
+	}
 }
