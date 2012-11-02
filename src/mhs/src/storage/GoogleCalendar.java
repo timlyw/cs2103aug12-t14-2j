@@ -84,15 +84,11 @@ public class GoogleCalendar {
 	 * Retrieves the Google Calendar access token using user's email and
 	 * password
 	 * 
-	 * @param appName
-	 *            name of application
-	 * @param email
-	 *            user's Google account email
-	 * @param userPassword
-	 *            user's Google account password
+	 * @param appName name of application
+	 * @param email user's Google account email
+	 * @param userPassword user's Google account password
 	 * @return Google Calendar access token
-	 * @throws AuthenticationException
-	 *             invalid login parameters or Internet connection unavailable
+	 * @throws AuthenticationException invalid login parameters or Internet connection unavailable
 	 */
 	public static String retrieveUserToken(String appName, String email,
 			String password) throws AuthenticationException,
@@ -109,12 +105,9 @@ public class GoogleCalendar {
 	 * Creates an instance of GoogleCalendar using the user's access token and
 	 * email
 	 * 
-	 * @param appName
-	 *            name of application
-	 * @param email
-	 *            user's Google account email
-	 * @param accessToken
-	 *            retrieved from retrieveAccessToken or otherwise
+	 * @param appName name of application
+	 * @param email user's Google account email
+	 * @param accessToken retrieved from retrieveAccessToken or otherwise
 	 * @throws ServiceException 
 	 * @throws IOException 
 	 */
@@ -137,7 +130,7 @@ public class GoogleCalendar {
 	}
 
 	/**
-	 * @return the email used to initalize an instance of GoogleCalendar
+	 * @return the email used to initialize an instance of GoogleCalendar
 	 */
 	public String getUserEmail() {
 		startLog();
@@ -150,10 +143,8 @@ public class GoogleCalendar {
 	 * and email
 	 * 
 	 * 
-	 * @param accessToken
-	 *            retrieved from retrieveAccessToken or otherwise
-	 * @param appName
-	 *            name of application
+	 * @param accessToken retrieved from retrieveAccessToken or otherwise
+	 * @param appName name of application
 	 */
 	public void initCalendarService(String accessToken, String appName)
 			throws NullPointerException {
@@ -168,17 +159,12 @@ public class GoogleCalendar {
 	 * format: YYYY-MM-DDTHH:MM:SS+HH:MM example: 29 October 2012 3pm +0800 GMT,
 	 * "2012-10-29T15:00:00+08:00"
 	 * 
-	 * @param title
-	 *            name of event
-	 * @param startTime
-	 *            start date and time of event
-	 * @param endTime
-	 *            end date and time of event
+	 * @param title name of event
+	 * @param startTime start date and time of event
+	 * @param endTime end date and time of event
 	 * @return created event entry
-	 * @throws IOException
-	 *             unable to write to Google Calendar
-	 * @throws ServiceException
-	 *             Internet connection unavailable
+	 * @throws IOException unable to write to Google Calendar
+	 * @throws ServiceException Internet connection unavailable
 	 */
 	public CalendarEventEntry createEvent(String title, String startTime,
 			String endTime) throws IOException, ServiceException,
@@ -195,16 +181,12 @@ public class GoogleCalendar {
 	/**
 	 * create an event based on a Task object
 	 * 
-	 * @param newTask
-	 *            Task object to reference
+	 * @param newTask Task object to reference
 	 * @return created event entry
 	 * 
-	 * @throws IOException
-	 *             unable to write to Google Calendar
-	 * @throws ServiceException
-	 *             Internet connection unavailable
-	 * @throws UnknownHostException
-	 *             Internet connection unavailable
+	 * @throws IOException unable to write to Google Calendar
+	 * @throws ServiceException Internet connection unavailable
+	 * @throws UnknownHostException Internet connection unavailable
 	 */
 	public CalendarEventEntry createEvent(Task newTask) throws IOException,
 			ServiceException, UnknownHostException, NullPointerException {
@@ -224,11 +206,9 @@ public class GoogleCalendar {
 	/**
 	 * retrieve an event from Google Calendar based on the event's ID
 	 * 
-	 * @param eventId
-	 *            Google Calendar Event ID
+	 * @param eventId Google Calendar Event ID
 	 * @return retrieved event entry, null if not found
-	 * @throws IOException
-	 *             unable to read from Google Calendar
+	 * @throws IOException unable to read from Google Calendar
 	 */
 	public CalendarEventEntry retrieveEvent(String eventId) throws IOException,
 			NullPointerException {
@@ -246,17 +226,12 @@ public class GoogleCalendar {
 	/**
 	 * get a list of events within the range specified
 	 * 
-	 * @param startTime
-	 *            start date and time of range
-	 * @param endTime
-	 *            end date and time of range
+	 * @param startTime start date and time of range
+	 * @param endTime end date and time of range
 	 * @return list of events within range
-	 * @throws UnknownHostException
-	 *             Internet connection unavailable
-	 * @throws IOException
-	 *             Unable to read from GoogleCalendar
-	 * @throws ServiceException
-	 *             Internet connection unavailable
+	 * @throws UnknownHostException Internet connection unavailable
+	 * @throws IOException Unable to read from GoogleCalendar
+	 * @throws ServiceException Internet connection unavailable
 	 */
 	public List<CalendarEventEntry> retrieveEvents(String startTime,
 			String endTime) throws UnknownHostException, IOException,
@@ -267,28 +242,14 @@ public class GoogleCalendar {
 		endLog();
 		return retrieveEvents(start, end);
 	}
-	
-	public List<CalendarEventEntry> retrieveEvents(String startTime,
-			String endTime, String minUpdatedTime) throws UnknownHostException, IOException,
-			ServiceException, NullPointerException {
-		startLog();
-		DateTime start = DateTime.parseDateTime(startTime);
-		DateTime end = DateTime.parseDateTime(endTime);
-		DateTime minUpdated = DateTime.parseDateTime(minUpdatedTime);
-		endLog();
-		return retrieveEvents(start, end, minUpdated);
-	}
 
 	/**
 	 * update an event's parameters based on the specified event ID
 	 * 
-	 * @param updatedTask
-	 *            task with updated parameters
+	 * @param updatedTask task with updated parameters
 	 * @return updated event entry
-	 * @throws IOException
-	 *             unable to write to Google Calendar
-	 * @throws ServiceException
-	 *             Internet connection unavailable
+	 * @throws IOException unable to write to Google Calendar
+	 * @throws ServiceException Internet connection unavailable
 	 */
 	public CalendarEventEntry updateEvent(Task updatedTask) throws IOException,
 			ServiceException, NullPointerException {
@@ -306,19 +267,13 @@ public class GoogleCalendar {
 	/**
 	 * update an event's parameters based on the specified event ID
 	 * 
-	 * @param eventId
-	 *            Google Calendar event ID
-	 * @param title
-	 *            new name of event
-	 * @param startTime
-	 *            new start date and time of event
-	 * @param endTime
-	 *            new end date and time of event
+	 * @param eventId Google Calendar event ID
+	 * @param title new name of event
+	 * @param startTime new start date and time of event
+	 * @param endTime new end date and time of event
 	 * @return updated event entry
-	 * @throws IOException
-	 *             unable to write to Google Calendar
-	 * @throws ServiceException
-	 *             Internet connection unavailable
+	 * @throws IOException unable to write to Google Calendar
+	 * @throws ServiceException Internet connection unavailable
 	 */
 	public CalendarEventEntry updateEvent(String eventId, String title,
 			String startTime, String endTime) throws IOException,
@@ -354,13 +309,10 @@ public class GoogleCalendar {
 	/**
 	 * sends the request to update event's parameters
 	 * 
-	 * @param eventToBeUpdated
-	 *            previously created event with updated parameters
+	 * @param eventToBeUpdated previously created event with updated parameters
 	 * @return updated event entry
-	 * @throws IOException
-	 *             unable to write to Google Calendar
-	 * @throws ServiceException
-	 *             Internet connection unavailable
+	 * @throws IOException unable to write to Google Calendar
+	 * @throws ServiceException Internet connection unavailable
 	 */
 	private CalendarEventEntry sendEditRequest(
 			CalendarEventEntry eventToBeUpdated) throws IOException,
@@ -376,12 +328,9 @@ public class GoogleCalendar {
 	/**
 	 * delete an event from Google Calendar
 	 * 
-	 * @param eventId
-	 *            Google Calendar event ID
-	 * @throws IOException
-	 *             unable to write to Google Calendar
-	 * @throws ServiceException
-	 *             Internet connection unavailable
+	 * @param eventId Google Calendar event ID
+	 * @throws IOException unable to write to Google Calendar
+	 * @throws ServiceException Internet connection unavailable
 	 */
 	public void deleteEvent(String eventId) throws IOException,
 			ServiceException, NullPointerException, ResourceNotFoundException {
@@ -394,18 +343,12 @@ public class GoogleCalendar {
 	/**
 	 * delete all events within the specified date range
 	 * 
-	 * @param startTime
-	 *            start date of range
-	 * @param endTime
-	 *            end date of range
-	 * @throws UnknownHostException
-	 *             Internet connection unavailable
-	 * @throws NullPointerException
-	 *             one or more input parameters are null
-	 * @throws IOException
-	 *             unable to write to Google Calendar
-	 * @throws ServiceException
-	 *             Internet connection unavailable
+	 * @param startTime start date of range
+	 * @param endTime end date of range
+	 * @throws UnknownHostException Internet connection unavailable
+	 * @throws NullPointerException one or more input parameters are null
+	 * @throws IOException unable to write to Google Calendar
+	 * @throws ServiceException Internet connection unavailable
 	 */
 	public void deleteEvents(String startTime, String endTime)
 			throws UnknownHostException, NullPointerException, IOException,
@@ -462,17 +405,12 @@ public class GoogleCalendar {
 	/**
 	 * get a list of events within the range specified
 	 * 
-	 * @param start
-	 *            start date and time of range
-	 * @param end
-	 *            end date and time of range
+	 * @param start start date and time of range
+	 * @param end end date and time of range
 	 * @return list of events within range
-	 * @throws IOException
-	 *             Unable to read from GoogleCalendar
-	 * @throws ServiceException
-	 *             Internet connection unavailable
-	 * @throws UnknownHostException
-	 *             Internet connection unavailable
+	 * @throws IOException Unable to read from GoogleCalendar
+	 * @throws ServiceException Internet connection unavailable
+	 * @throws UnknownHostException Internet connection unavailable
 	 */
 	public List<CalendarEventEntry> retrieveEvents(DateTime start, DateTime end)
 			throws IOException, ServiceException, UnknownHostException,
@@ -483,23 +421,11 @@ public class GoogleCalendar {
 		List<CalendarEventEntry> eventList = eventFeed.getEntries();
 		return eventList;
 	}
-	
-	public List<CalendarEventEntry> retrieveEvents(DateTime start, DateTime end, DateTime minUpdated)
-			throws IOException, ServiceException, UnknownHostException,
-			NullPointerException {
-		CalendarQuery calendarQuery = createCalendarQuery();
-		setQueryParametersForRetrieval(calendarQuery, start, end);
-		calendarQuery.setUpdatedMin(minUpdated);
-		CalendarEventFeed eventFeed = getEventFeed(calendarQuery);
-		List<CalendarEventEntry> eventList = eventFeed.getEntries();
-		return eventList;
-	}
 
 	/**
 	 * check if an event has been deleted from user's Google Calendar
 	 * 
-	 * @param calendarEvent
-	 *            event entry to be checked
+	 * @param calendarEvent event entry to be checked
 	 * @return if event has been deleted
 	 */
 	public boolean isDeleted(CalendarEventEntry calendarEvent) {
@@ -511,8 +437,7 @@ public class GoogleCalendar {
 
 	/**
 	 * @return a CalendarQuery instance
-	 * @throws MalformedURLException
-	 *             URL specified is invalid
+	 * @throws MalformedURLException URL specified is invalid
 	 */
 	private CalendarQuery createCalendarQuery() throws MalformedURLException {
 		URL feedUrl = new URL(URL_EVENT_FEED);
@@ -534,12 +459,9 @@ public class GoogleCalendar {
 	 * calendarQuery maximum result limit set the calendarQuery to retrieve
 	 * deleted events
 	 * 
-	 * @param calendarQuery
-	 *            query to be set
-	 * @param start
-	 *            start date and time of query
-	 * @param end
-	 *            end date and time of query
+	 * @param calendarQuery query to be set
+	 * @param start start date and time of query
+	 * @param end end date and time of query
 	 */
 	private static void setQueryParametersForRetrieval(
 			CalendarQuery calendarQuery, DateTime start, DateTime end)
@@ -552,12 +474,9 @@ public class GoogleCalendar {
 	/**
 	 * set the calendarQuery range to specified start and end date
 	 * 
-	 * @param calendarQuery
-	 *            query to be set
-	 * @param start
-	 *            start date of query range
-	 * @param end
-	 *            end date of query range
+	 * @param calendarQuery query to be set
+	 * @param start start date of query range
+	 * @param end end date of query range
 	 */
 	private static void setDateRangeOfQuery(CalendarQuery calendarQuery,
 			DateTime start, DateTime end) throws NullPointerException {
@@ -568,10 +487,8 @@ public class GoogleCalendar {
 	/**
 	 * set the calendarQuery maximum result limit
 	 * 
-	 * @param calendarQuery
-	 *            query to be set
-	 * @param maxResults
-	 *            max result limit
+	 * @param calendarQuery query to be set
+	 * @param maxResults max result limit
 	 */
 	private static void setMaxResults(CalendarQuery calendarQuery,
 			int maxResults) throws NullPointerException {
@@ -581,8 +498,7 @@ public class GoogleCalendar {
 	/**
 	 * set the calendarQuery to retrieve deleted events
 	 * 
-	 * @param calendarQuery
-	 *            query to be set
+	 * @param calendarQuery query to be set
 	 */
 	private static void setQueryToShowDeletedEvents(CalendarQuery calendarQuery)
 			throws NullPointerException {
@@ -592,13 +508,10 @@ public class GoogleCalendar {
 	/**
 	 * gets the event feed based on the specified calendar query
 	 * 
-	 * @param calendarQuery
-	 *            specifies query parameters
+	 * @param calendarQuery specifies query parameters
 	 * @return event feed of query
-	 * @throws IOException
-	 *             unable to read from Google Calendar
-	 * @throws ServiceException
-	 *             Internet connection unavailable
+	 * @throws IOException unable to read from Google Calendar
+	 * @throws ServiceException Internet connection unavailable
 	 */
 	private CalendarEventFeed getEventFeed(CalendarQuery calendarQuery)
 			throws IOException, ServiceException, NullPointerException {
@@ -608,11 +521,9 @@ public class GoogleCalendar {
 	/**
 	 * create a URL that can be used to edit specified event
 	 * 
-	 * @param calendarEvent
-	 *            event to get edit URL of
+	 * @param calendarEvent event to get edit URL of
 	 * @return Google Calendar edit URL
-	 * @throws MalformedURLException
-	 *             invalid URL format
+	 * @throws MalformedURLException invalid URL format
 	 */
 	private URL createEditUrl(CalendarEventEntry calendarEvent)
 			throws MalformedURLException, NullPointerException {
@@ -626,10 +537,8 @@ public class GoogleCalendar {
 	 * 
 	 * @param eventId
 	 * @return constructed event
-	 * @throws IOException
-	 *             unable to read from Google Calendar
-	 * @throws ServiceException
-	 *             Internet connection unavailable
+	 * @throws IOException unable to read from Google Calendar
+	 * @throws ServiceException Internet connection unavailable
 	 */
 	private CalendarEventEntry constructEvent(String eventId)
 			throws IOException, ServiceException, NullPointerException {
@@ -645,8 +554,7 @@ public class GoogleCalendar {
 	 * 
 	 * @param eventId
 	 * @return event's URL
-	 * @throws MalformedURLException
-	 *             invalid URL format
+	 * @throws MalformedURLException invalid URL format
 	 */
 	private URL createEventUrl(String eventId) throws MalformedURLException,
 			NullPointerException {
@@ -659,8 +567,7 @@ public class GoogleCalendar {
 	 * create a URL that can be used to post an event
 	 * 
 	 * @return Google Calendar post URL
-	 * @throws MalformedURLException
-	 *             invalid URL format
+	 * @throws MalformedURLException invalid URL format
 	 */
 	private URL createPostUrl() throws MalformedURLException {
 		String urlString = String.format(URL_CREATE_EVENT, userEmail);
@@ -671,12 +578,9 @@ public class GoogleCalendar {
 	/**
 	 * creates a CalendarEventEntry object based on specified parameters
 	 * 
-	 * @param title
-	 *            name of event
-	 * @param startTime
-	 *            start date and time of event
-	 * @param endTime
-	 *            end date and time of event
+	 * @param title name of event
+	 * @param startTime start date and time of event
+	 * @param endTime end date and time of event
 	 * @return constructed event
 	 */
 	private CalendarEventEntry constructEvent(String title, String startTime,
@@ -689,12 +593,9 @@ public class GoogleCalendar {
 	/**
 	 * creates a CalendarEventEntry object based on specified parameters
 	 * 
-	 * @param title
-	 *            name of event
-	 * @param start
-	 *            start date and time of event
-	 * @param end
-	 *            end date and time of event
+	 * @param title name of event
+	 * @param start start date and time of event
+	 * @param end end date and time of event
 	 * @return constructed event
 	 */
 	private CalendarEventEntry constructEvent(String title, DateTime start,
@@ -709,12 +610,9 @@ public class GoogleCalendar {
 	/**
 	 * set the event entry's start and end dateTime
 	 * 
-	 * @param calendarEvent
-	 *            event to be set
-	 * @param startTime
-	 *            start date and time of event
-	 * @param endTime
-	 *            end date and time of event
+	 * @param calendarEvent event to be set
+	 * @param startTime start date and time of event
+	 * @param endTime end date and time of event
 	 */
 	private void setEventTime(CalendarEventEntry calendarEvent,
 			String startTime, String endTime) throws NullPointerException {
@@ -727,12 +625,9 @@ public class GoogleCalendar {
 	/**
 	 * set the event entry's start and end dateTime
 	 * 
-	 * @param calendarEvent
-	 *            event to be set
-	 * @param start
-	 *            start date and time of event
-	 * @param end
-	 *            end date and time of event
+	 * @param calendarEvent event to be set
+	 * @param start start date and time of event
+	 * @param end end date and time of event
 	 */
 	private void setEventTime(CalendarEventEntry calendarEvent, DateTime start,
 			DateTime end) throws NullPointerException {
@@ -744,10 +639,8 @@ public class GoogleCalendar {
 	/**
 	 * set the event entry's title
 	 * 
-	 * @param calendarEvent
-	 *            event to be set
-	 * @param title
-	 *            name of event
+	 * @param calendarEvent event to be set
+	 * @param title name of event
 	 */
 	private void setEventTitle(CalendarEventEntry calendarEvent, String title)
 			throws NullPointerException {
@@ -758,10 +651,8 @@ public class GoogleCalendar {
 	/**
 	 * create a When object based on specified parameters
 	 * 
-	 * @param start
-	 *            start date and time of event
-	 * @param end
-	 *            end date and time of event
+	 * @param start start date and time of event
+	 * @param end end date and time of event
 	 * @return constructed When object
 	 */
 	private When createEventTime(DateTime start, DateTime end)
@@ -775,8 +666,7 @@ public class GoogleCalendar {
 	/**
 	 * get the user token of specified calendar service
 	 * 
-	 * @param calService
-	 *            service to get token from
+	 * @param calService service to get token from
 	 * @return token of service
 	 */
 	private static UserToken getTokenFromService(CalendarService calService)
@@ -789,8 +679,7 @@ public class GoogleCalendar {
 	/**
 	 * if format of id is id@google.com, retrieves the id
 	 * 
-	 * @param eventId
-	 *            unrefined event id
+	 * @param eventId unrefined event id
 	 * @return refined event id
 	 */
 	private String refineEventId(String eventId) throws NullPointerException {
