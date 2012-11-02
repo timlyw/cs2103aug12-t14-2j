@@ -53,13 +53,13 @@ public class ConfigFile {
 	 * @throws IOException
 	 */
 	public ConfigFile() throws IOException {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 
 		CONFIG_FILENAME = DEFAULT_CONFIG_FILENAME;
 		initializeConfigParameters();
 		initializeConfigFile();
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class ConfigFile {
 	 */
 	public ConfigFile(String configFileName) throws IOException,
 			IllegalArgumentException {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		if (configFileName == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, "taskRecordFileName"));
@@ -78,7 +78,7 @@ public class ConfigFile {
 		CONFIG_FILENAME = configFileName;
 		initializeConfigParameters();
 		initializeConfigFile();
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -87,22 +87,22 @@ public class ConfigFile {
 	 * @throws IOException
 	 */
 	private void initializeConfigFile() throws IOException {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		configFile = new File(CONFIG_FILENAME);
 		if (!configFile.exists()) {
 			createNewJsonFile();
 		}
 		loadConfigFile();
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
 	 * Initialize config parameters
 	 */
 	private void initializeConfigParameters() {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		configParameters = new HashMap<String, String>();
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class ConfigFile {
 	 * @throws IOException
 	 */
 	private void createNewJsonFile() throws IOException {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		assert (configFile != null && configParameters != null);
 
 		configFile.createNewFile();
@@ -119,7 +119,7 @@ public class ConfigFile {
 		fileWriter.write(gson.toJson(configParameters));
 		fileWriter.close();
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -128,14 +128,14 @@ public class ConfigFile {
 	 * @throws IOException
 	 */
 	private void loadConfigFile() throws IOException {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		assert (configFile != null);
 
 		openJsonInputStream();
 		loadConfigParametersFromJobject();
 		closeJsonInputStream();
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class ConfigFile {
 	 */
 	@SuppressWarnings("unchecked")
 	private void loadConfigParametersFromJobject() {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		assert (gson != null);
 
 		JsonParser parser = new JsonParser();
@@ -162,7 +162,7 @@ public class ConfigFile {
 			}
 		}
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -173,14 +173,14 @@ public class ConfigFile {
 	 */
 	private void openJsonInputStream() throws FileNotFoundException,
 			UnsupportedEncodingException {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		assert (configFile != null);
 
 		inputStream = new FileInputStream(configFile);
 		jsonReader = new JsonReader(new InputStreamReader(inputStream,
 				CHAR_ENCODING_UTF8));
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -189,12 +189,12 @@ public class ConfigFile {
 	 * @throws IOException
 	 */
 	private void closeJsonInputStream() throws IOException {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		assert (jsonReader != null && inputStream != null);
 
 		jsonReader.close();
 		inputStream.close();
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -203,13 +203,13 @@ public class ConfigFile {
 	 * @throws IOException
 	 */
 	public void save() throws IOException {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 
 		FileWriter fileWriter = new FileWriter(configFile);
 		fileWriter.write(gson.toJson(configParameters));
 		fileWriter.close();
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -219,18 +219,18 @@ public class ConfigFile {
 	 * @return boolean
 	 */
 	public boolean hasConfigParameter(String parameter) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 
 		if (parameter == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_PARAMETER));
 		}
 		if (configParameters.get(parameter) == null) {
-			logger.exiting(getClass().getName(), this.getClass().getName());
+			logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 			return false;
 		}
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		return true;
 	}
 
@@ -241,7 +241,7 @@ public class ConfigFile {
 	 * @return boolean
 	 */
 	public boolean hasNonEmptyConfigParameter(String parameter) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 
 		if (parameter == null) {
 			throw new IllegalArgumentException(String.format(
@@ -258,7 +258,7 @@ public class ConfigFile {
 			}
 		}
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		return hasNonEmptyConfigParameter;
 	}
 
@@ -269,14 +269,14 @@ public class ConfigFile {
 	 * @return parameter value
 	 */
 	public String getConfigParameter(String parameter) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 
 		if (parameter == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_PARAMETER));
 		}
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		return configParameters.get(parameter);
 	}
 
@@ -289,7 +289,7 @@ public class ConfigFile {
 	 */
 	public void setConfigParameter(String parameter, String value)
 			throws IOException {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 
 		if (parameter == null) {
 			throw new IllegalArgumentException(String.format(
@@ -302,7 +302,7 @@ public class ConfigFile {
 
 		configParameters.put(parameter, value);
 		save();
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -313,7 +313,7 @@ public class ConfigFile {
 	 * @throws IOException
 	 */
 	public void removeConfigParameter(String parameter) throws IOException {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 
 		if (parameter == null) {
 			throw new IllegalArgumentException(String.format(
@@ -322,6 +322,6 @@ public class ConfigFile {
 
 		configParameters.remove(parameter);
 		save();
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 }
