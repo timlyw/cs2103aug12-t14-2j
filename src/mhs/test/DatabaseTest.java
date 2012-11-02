@@ -19,7 +19,7 @@ import java.util.Map;
 import mhs.src.storage.Database;
 import mhs.src.storage.DeadlineTask;
 import mhs.src.storage.FloatingTask;
-import mhs.src.storage.GoogleCalendar;
+import mhs.src.storage.GoogleCalendarMhs;
 import mhs.src.storage.InvalidTaskFormatException;
 import mhs.src.storage.Task;
 import mhs.src.storage.TaskCategory;
@@ -35,6 +35,7 @@ import org.junit.rules.ExpectedException;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 public class DatabaseTest {
@@ -550,7 +551,7 @@ public class DatabaseTest {
 	public void testSyncDatabase() throws Exception {
 
 		initializeCleanDatabaseWithSync();
-		GoogleCalendar gCal = initializeGoogleCalendar();
+		GoogleCalendarMhs gCal = initializeGoogleCalendar();
 
 		assertTrue(database.isUserGoogleCalendarAuthenticated());
 
@@ -573,7 +574,7 @@ public class DatabaseTest {
 	 * @throws ServiceException
 	 * @throws UnknownHostException
 	 */
-	private void testPullSyncNewerTask(GoogleCalendar gCal,
+	private void testPullSyncNewerTask(GoogleCalendarMhs gCal,
 			CalendarEventEntry createdEvent) throws IOException,
 			ServiceException, UnknownHostException {
 
@@ -611,7 +612,7 @@ public class DatabaseTest {
 	 * @throws ServiceException
 	 * @throws UnknownHostException
 	 */
-	private CalendarEventEntry testPullSyncNewTask(GoogleCalendar gCal)
+	private CalendarEventEntry testPullSyncNewTask(GoogleCalendarMhs gCal)
 			throws IOException, ServiceException, UnknownHostException {
 		// Test pull new task sync
 		CalendarEventEntry createdEvent = gCal.createEvent(task3);
@@ -630,7 +631,7 @@ public class DatabaseTest {
 	 * @param gCal
 	 * @throws IOException
 	 */
-	private void testPushSyncExistingTask(GoogleCalendar gCal)
+	private void testPushSyncExistingTask(GoogleCalendarMhs gCal)
 			throws Exception, IOException {
 		
 		// Test push updated task sync
@@ -651,9 +652,11 @@ public class DatabaseTest {
 	 * @param gCal
 	 * @throws IOException
 	 * @throws InvalidTaskFormatException
+	 * @throws ResourceNotFoundException 
+	 * @throws NullPointerException 
 	 */
-	private void testPushSyncNewTask(GoogleCalendar gCal) throws IOException,
-			InvalidTaskFormatException {
+	private void testPushSyncNewTask(GoogleCalendarMhs gCal) throws IOException,
+			InvalidTaskFormatException, NullPointerException, ResourceNotFoundException {
 		database.add(task);
 		database.add(task2);
 
@@ -672,15 +675,15 @@ public class DatabaseTest {
 	 * @throws IOException 
 	 * @throws NullPointerException 
 	 */
-	private GoogleCalendar initializeGoogleCalendar()
+	private GoogleCalendarMhs initializeGoogleCalendar()
 			throws NullPointerException, IOException, ServiceException {
 		// we use a separate GoogleCalendar to query events (need to pullEvents
 		// manually)
-		String googleAccessToken = (GoogleCalendar.retrieveUserToken(
+		String googleAccessToken = (GoogleCalendarMhs.retrieveUserToken(
 				GOOGLE_APP_NAME, GOOGLE_TEST_ACCOUNT_NAME,
 				GOOGLE_TEST_ACCOUNT_PASSWORD));
 
-		GoogleCalendar gCal = new GoogleCalendar(GOOGLE_APP_NAME,
+		GoogleCalendarMhs gCal = new GoogleCalendarMhs(GOOGLE_APP_NAME,
 				GOOGLE_TEST_ACCOUNT_NAME, googleAccessToken);
 		return gCal;
 	}
