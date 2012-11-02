@@ -105,7 +105,6 @@ public class GoogleCalendarMhs {
 		
 		return eventList;
 	}
-
 	
 	public CalendarEventEntry updateEvent(Task updatedTask) throws IOException,
 			ServiceException, NullPointerException {
@@ -155,6 +154,14 @@ public class GoogleCalendarMhs {
 	
 	public boolean isDeleted(CalendarEventEntry calendarEvent) {
 		return defaultCalendar.isDeleted(calendarEvent);
+	}
+	
+	public boolean isDone(CalendarEventEntry calendarEvent) throws NullPointerException, IOException, ServiceException {
+		try {
+			return taskCalendar.contains(calendarEvent.getIcalUID());
+		} catch(ResourceNotFoundException e) {
+			return false;
+		}
 	}
 	
 	private static boolean isTaskFloating(Task task)
