@@ -6,7 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ DatabaseTest.class, ConfigFileTest.class,
-		GoogleCalendarTest.class, TaskRecordFileTest.class,
+		GoogleCalendarMhsTest.class, TaskRecordFileTest.class,
 		CommandParserTest.class, TaskListsTest.class,ProcessorTest.class})
 public class AllTests {
 

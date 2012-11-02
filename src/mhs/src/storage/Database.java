@@ -33,7 +33,7 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
-	private static GoogleCalendar googleCalendar;
+	private static GoogleCalendarMhs googleCalendar;
 	private static TaskRecordFile taskRecordFile;
 	private static ConfigFile configFile;
 	private static TaskLists taskLists;
@@ -524,9 +524,7 @@ public class Database {
 					new Exception().getStackTrace()[0].getMethodName());
 
 			// adds event to google calendar
-			CalendarEventEntry addedGCalEvent = googleCalendar.createEvent(
-					localTask.getTaskName(), localTask.getStartDateTime()
-							.toString(), localTask.getEndDateTime().toString());
+			CalendarEventEntry addedGCalEvent = googleCalendar.createEvent(localTask);
 			updateSyncTask(localTask, addedGCalEvent);
 
 			logger.exiting(getClass().getName(),
@@ -792,8 +790,16 @@ public class Database {
 		assert (googleUserAccount != null);
 		assert (googleAuthToken != null);
 
-		googleCalendar = new GoogleCalendar(GOOGLE_CALENDAR_APP_NAME,
-				googleUserAccount, googleAuthToken);
+		try {
+			googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
+					googleUserAccount, googleAuthToken);
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		saveGoogleAccountInfo(googleUserAccount, googleAuthToken);
 		logger.exiting(getClass().getName(),
@@ -824,9 +830,9 @@ public class Database {
 
 		syncronize.disableRemoteSync();
 
-		String googleAccessToken = GoogleCalendar.retrieveUserToken(
+		String googleAccessToken = GoogleCalendarMhs.retrieveUserToken(
 				GOOGLE_CALENDAR_APP_NAME, userName, userPassword);
-		googleCalendar = new GoogleCalendar(GOOGLE_CALENDAR_APP_NAME, userName,
+		googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME, userName,
 				googleAccessToken);
 
 		syncronize.enableRemoteSync();
