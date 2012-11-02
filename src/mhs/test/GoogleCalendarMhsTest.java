@@ -12,6 +12,7 @@ import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
+import mhs.src.storage.GoogleCalendar;
 import mhs.src.storage.GoogleCalendarMhs;
 import mhs.src.storage.TaskCategory;
 import mhs.src.storage.TimedTask;
@@ -71,7 +72,7 @@ public class GoogleCalendarMhsTest {
 	}
 	
 	@Test
-	public void testCrudTaskCalendar() throws NullPointerException, IOException, ServiceException {
+	public void testCrudDefaultCalendar() throws NullPointerException, IOException, ServiceException {
 		// test createEvent
 		String accessToken;
 		accessToken = GoogleCalendarMhs.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
@@ -81,16 +82,29 @@ public class GoogleCalendarMhsTest {
 		String startTime = "2013-01-16T13:00:00+08:00";
 		String endTime = "2013-01-16T15:00:00+08:00";
 		
+		TimedTask newTask = createTask(title, startTime, endTime);
+		newTask.setDone(false);
+		CalendarEventEntry createdTask = gCal.createEvent(newTask);
+		String createdTaskId = createdTask.getIcalUID();
+		
+		// test retrieveEvent
+		CalendarEventEntry retrievedTask = gCal.retrieveEvent(createdTaskId);
+		String retrievedTitle = GoogleCalendar.getEventTitle(retrievedTask);
+		String retrievedStartTime = GoogleCalendar.getEventStartTime(retrievedTask);
+		String retrievedEndTime = GoogleCalendar.getEventEndTime(retrievedTask);
+		assertEquals(title, retrievedTitle);
+		assertTrue(GoogleCalendar.isTimeEqual(startTime, retrievedStartTime));
+		assertTrue(GoogleCalendar.isTimeEqual(endTime, retrievedEndTime));
+		
+	}
+	
+	private TimedTask createTask(String title, String startTime, String endTime) {
 		DateTime start = DateTime.parse(startTime);
 		DateTime end = DateTime.parse(endTime);
 
-		TimedTask newTask = new TimedTask(1, title, TaskCategory.TIMED, start, end,
+		TimedTask task = new TimedTask(1, title, TaskCategory.TIMED, start, end,
 				null, null, null, null, false, false);
-		
-		newTask.setDone(false);
-		gCal.createEvent(newTask);
-		
-		
+		return task;
 	}
 	
 	
