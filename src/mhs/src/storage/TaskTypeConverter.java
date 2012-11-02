@@ -198,8 +198,13 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	private DateTime convertJsonElementToDateTime(String jsonKey,
 			JsonObject jObject) {
 		logger.entering(getClass().getName(), this.getClass().getName());
+		
+		if(jsonKey == null || jObject == null){
+			return null;
+		}
+		
 		DateTime convertedDateTime;
-		if (jObject.get(jsonKey).isJsonNull()) {
+		if (jObject.get(jsonKey) == null || jObject.get(jsonKey).isJsonNull()) {
 			convertedDateTime = null;
 		} else {
 			convertedDateTime = new DateTime(jObject.get(jsonKey).getAsString());

@@ -616,6 +616,13 @@ public class DatabaseTest {
 		// Test pull new task sync
 		CalendarEventEntry createdEvent = gCal.createEvent(task3);
 		database.syncronizeDatabases();
+		
+		queryList = database.query(false);
+		Iterator<Task> iterator = queryList.iterator();
+		while (iterator.hasNext()) {
+			Task matchedTask = iterator.next();
+			System.out.println(matchedTask.toString());
+		}
 
 		queryList = database.query(task3.getTaskName(), false);
 		assertEquals(1, queryList.size());
@@ -659,7 +666,8 @@ public class DatabaseTest {
 
 		// Test push new task sync
 		queryList = database.query(false);
-
+		
+		assertEquals(2, queryList.size());
 		assertTrue(gCal.retrieveEvent(queryList.get(0).getgCalTaskId()) != null);
 		assertTrue(gCal.retrieveEvent(queryList.get(1).getgCalTaskId()) != null);
 	}
