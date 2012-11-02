@@ -23,9 +23,9 @@ public class MhsGson {
 	private static GsonBuilder gsonBuilder;
 
 	private MhsGson() {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("MhsGson");
 		initializeGson();
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("MhsGson");
 	}
 
 	/**
@@ -34,26 +34,36 @@ public class MhsGson {
 	 * @return gson instance
 	 */
 	public static Gson getInstance() {
+		logEnterMethod("getInstance");
 		if (instance == null) {
 			instance = new MhsGson();
 		}
+		logExitMethod("getInstance");
 		return gson;
 	}
 
 	private void initializeGson() {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("initializeGson");
 		gsonBuilder = new GsonBuilder();
 		registerMhsGsonAdapters();
 		gson = gsonBuilder.serializeNulls().create();
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("initializeGson");
 	}
 
 	private void registerMhsGsonAdapters() {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("registerMhsGsonAdapters");
 		gsonBuilder.registerTypeAdapter(DateTime.class,
 				new DateTimeTypeConverter());
 		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("initializeGson");
+	}
+
+	private static void logEnterMethod(String methodName) {
+		logger.entering("mhs.src.storage.MhsGson", methodName);
+	}
+
+	private static void logExitMethod(String methodName) {
+		logger.exiting("mhs.src.storage.MhsGson", methodName);
 	}
 
 }
