@@ -660,7 +660,10 @@ public class Database {
 		try {
 			googleCalendar = new GoogleCalendar(GOOGLE_CALENDAR_APP_NAME,
 					googleUserAccount, googleAuthToken);
-		} catch (NullPointerException | ServiceException e) {
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1053,9 +1056,9 @@ public class Database {
 
 		taskToDelete.setDeleted(true);
 
-		// set updated time
+		// set updated time to force push
 		DateTime UpdateTime = new DateTime();
-		UpdateTime = DateTime.now();
+		UpdateTime = DateTime.now().plusMinutes(1);
 		taskToDelete.setTaskUpdated(UpdateTime);
 
 		taskLists.updateTaskInTaskLists(taskToDelete);
@@ -1123,9 +1126,9 @@ public class Database {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		assert (updatedTaskToSave != null);
 
-		// set updated time
+		// set updated time ahead to force push
 		DateTime UpdateTime = new DateTime();
-		UpdateTime = DateTime.now();
+		UpdateTime = DateTime.now().plusMinutes(1);
 		updatedTaskToSave.setTaskUpdated(UpdateTime);
 
 		taskLists.updateTaskInTaskLists(updatedTaskToSave);
