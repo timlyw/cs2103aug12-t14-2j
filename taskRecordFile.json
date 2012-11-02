@@ -176,9 +176,9 @@
     "taskName": "Team meeting",
     "taskCategory": "TIMED",
     "taskCreated": "2012-11-01T11:35:42.587+08:00",
-    "taskUpdated": "2012-11-01T11:35:42.587+08:00",
-    "taskLastSync": null,
-    "gCalTaskId": null,
+    "taskUpdated": "2012-11-02T23:02:28.000+08:00",
+    "taskLastSync": "2012-11-02T23:02:28.000+08:00",
+    "gCalTaskId": "8t4sb4ihv3ghogfv9kesc7bcc0@google.com",
     "isDone": false,
     "isDeleted": false
   },
@@ -189,9 +189,9 @@
     "taskName": "CS2013 tutorial",
     "taskCategory": "TIMED",
     "taskCreated": "2012-11-01T11:36:18.578+08:00",
-    "taskUpdated": "2012-11-01T11:36:18.578+08:00",
-    "taskLastSync": null,
-    "gCalTaskId": null,
+    "taskUpdated": "2012-11-02T23:02:29.000+08:00",
+    "taskLastSync": "2012-11-02T23:02:29.000+08:00",
+    "gCalTaskId": "lqdmpco33o461ih6q660jqrr00@google.com",
     "isDone": false,
     "isDeleted": false
   },
@@ -201,9 +201,9 @@
     "taskName": "watch skyfall",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-01T11:36:34.060+08:00",
-    "taskUpdated": "2012-11-01T14:18:15.279+08:00",
-    "taskLastSync": null,
-    "gCalTaskId": null,
+    "taskUpdated": "2012-11-02T23:02:29.000+08:00",
+    "taskLastSync": "2012-11-02T23:02:29.000+08:00",
+    "gCalTaskId": "nl46bftepmji5mt8dgoce2t8tk@google.com",
     "isDone": false,
     "isDeleted": false
   },
@@ -213,9 +213,9 @@
     "taskName": "play soccer",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-01T11:37:41.628+08:00",
-    "taskUpdated": "2012-11-01T12:59:54.063+08:00",
-    "taskLastSync": null,
-    "gCalTaskId": null,
+    "taskUpdated": "2012-11-02T23:02:30.000+08:00",
+    "taskLastSync": "2012-11-02T23:02:30.000+08:00",
+    "gCalTaskId": "h6nmb59kvsad5pers12374n2eg@google.com",
     "isDone": false,
     "isDeleted": false
   },
@@ -261,8 +261,8 @@
     "taskName": "Meeting",
     "taskCategory": "TIMED",
     "taskCreated": "2012-11-01T08:05:07.000+08:00",
-    "taskUpdated": "2012-11-01T13:33:17.180+08:00",
-    "taskLastSync": "2012-11-01T08:05:07.000+08:00",
+    "taskUpdated": "2012-11-01T21:36:38.000+08:00",
+    "taskLastSync": "2012-11-01T21:36:38.000+08:00",
     "gCalTaskId": "7pkue648npuhs3ske6tadq4nhc@google.com",
     "isDone": false,
     "isDeleted": false
@@ -434,5 +434,40 @@
     "gCalTaskId": null,
     "isDone": false,
     "isDeleted": true
+  },
+  {
+    "endDateTime": "2012-11-02T18:00:00.000+08:00",
+    "taskId": 39,
+    "taskName": "complete test",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-01T23:14:15.000+08:00",
+    "taskUpdated": "2012-11-01T23:14:15.000+08:00",
+    "taskLastSync": "2012-11-01T23:14:15.000+08:00",
+    "gCalTaskId": "2oniie1e2t8lidce0515uclni4@google.com",
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "endDateTime": "2012-11-02T15:00:00.000+08:00",
+    "taskId": 40,
+    "taskName": "new task",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-01T21:36:55.000+08:00",
+    "taskUpdated": "2012-11-01T21:36:55.000+08:00",
+    "taskLastSync": "2012-11-01T21:36:55.000+08:00",
+    "gCalTaskId": "kuj4qve8gts6i3quk3vutdbpko@google.com",
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 41,
+    "taskName": "a",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-02T23:03:29.508+08:00",
+    "taskUpdated": "2012-11-02T23:03:29.508+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
   }
 ]

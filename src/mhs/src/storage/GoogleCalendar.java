@@ -1,13 +1,28 @@
 package mhs.src.storage;
 
+/**
+ * This class provides services to connect with a user's Google Calendar
+ * Supported functionality: 
+ * 		1) Create event entry 
+ * 		2) Retrieve event entry(s) 
+ * 		3) Update event entry 
+ * 		4) delete event entry(s)
+ * 		5) create a new calendar
+ * 	
+ * Miscellaneous tasks:
+ * 		a) check if event is deleted
+ * 		b) get title of an event
+ * 		c) get start or end date of an event
+ * 		d) check if calendar contains task with specified task ID
+ * 
+ * @author John Wong
+ */
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.logging.Logger;
-
-import mhs.src.common.MhsLogger;
 
 import com.google.gdata.client.calendar.CalendarQuery;
 import com.google.gdata.client.calendar.CalendarService;
@@ -59,9 +74,6 @@ public class GoogleCalendar {
 	// calendarService used to interface with Google Calendar
 	private CalendarService calendarService;
 
-	// used to log function calls
-	private final Logger logger = MhsLogger.getLogger();
-
 	/**
 	 * Creates an instance of GoogleCalendar using the user's access token and
 	 * email
@@ -74,12 +86,13 @@ public class GoogleCalendar {
 	 */
 	public GoogleCalendar(String appName, String email, String accessToken)
 			throws NullPointerException, IOException, ServiceException {
-		startLog();
 		initCalendarService(accessToken, appName);
 		userEmail = email;
-		endLog();
 	}
 	
+	/**
+	 * @param calId
+	 */
 	public void setCalendarId(String calId) {
 		calendarId = calId;
 	}
@@ -88,8 +101,6 @@ public class GoogleCalendar {
 	 * @return the token used to initialize an instance of GoogleCalendar
 	 */
 	public String getUserToken() {
-		startLog();
-		endLog();
 		return userToken;
 	}
 
@@ -97,8 +108,6 @@ public class GoogleCalendar {
 	 * @return the email used to initialize an instance of GoogleCalendar
 	 */
 	public String getUserEmail() {
-		startLog();
-		endLog();
 		return userEmail;
 	}
 
@@ -112,10 +121,8 @@ public class GoogleCalendar {
 	 */
 	public void initCalendarService(String accessToken, String appName)
 			throws NullPointerException {
-		startLog();
 		calendarService = new CalendarService(appName);
 		calendarService.setUserToken(accessToken);
-		endLog();
 	}
 	
 	/**
@@ -133,12 +140,10 @@ public class GoogleCalendar {
 	public CalendarEventEntry createEvent(String title, String startTime,
 			String endTime) throws IOException, ServiceException,
 			NullPointerException {
-		startLog();
 		URL postURL = createPostUrl();
 		CalendarEventEntry newEvent = constructEvent(title, startTime, endTime);
 		CalendarEventEntry createdEvent = calendarService.insert(postURL,
 				newEvent);
-		endLog();
 		return createdEvent;
 	}
 
@@ -152,13 +157,10 @@ public class GoogleCalendar {
 	 */
 	public CalendarEventEntry retrieveEvent(String eventId) throws IOException,
 			NullPointerException, ResourceNotFoundException {
-		startLog();
 		try {
 			CalendarEventEntry retrievedEvent = constructEvent(eventId);
-			endLog();
 			return retrievedEvent;
 		} catch (ServiceException e) {
-			endLog();
 			return null;
 		}
 	}
@@ -176,10 +178,8 @@ public class GoogleCalendar {
 	public List<CalendarEventEntry> retrieveEvents(String startTime,
 			String endTime) throws UnknownHostException, IOException,
 			ServiceException, NullPointerException {
-		startLog();
 		DateTime start = DateTime.parseDateTime(startTime);
 		DateTime end = DateTime.parseDateTime(endTime);
-		endLog();
 		return retrieveEvents(start, end);
 	}
 
@@ -197,15 +197,22 @@ public class GoogleCalendar {
 	public CalendarEventEntry updateEvent(String eventId, String title,
 			String startTime, String endTime) throws IOException,
 			ServiceException, NullPointerException {
-		startLog();
 		CalendarEventEntry eventToBeUpdated = constructEvent(eventId);
 		setEventTitle(eventToBeUpdated, title);
 		setEventTime(eventToBeUpdated, startTime, endTime);
 		CalendarEventEntry updatedEvent = sendEditRequest(eventToBeUpdated);
-		endLog();
 		return updatedEvent;
 	}
 	
+	/**
+	 * check if the current Google Calendar contains the event with specified eventId
+	 * 
+	 * @param eventId
+	 * @return
+	 * @throws NullPointerException
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	public boolean contains(String eventId) throws NullPointerException, IOException, ServiceException {
 		String refinedId = refineEventId(eventId);
 		URL eventUrl = createEventUrl(refinedId);
@@ -228,11 +235,9 @@ public class GoogleCalendar {
 	private CalendarEventEntry sendEditRequest(
 			CalendarEventEntry eventToBeUpdated) throws IOException,
 			ServiceException, NullPointerException {
-		startLog();
 		URL editUrl = createEditUrl(eventToBeUpdated);
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
 				.update(editUrl, eventToBeUpdated);
-		endLog();
 		return updatedEntry;
 	}
 
@@ -245,10 +250,8 @@ public class GoogleCalendar {
 	 */
 	public void deleteEvent(String eventId) throws IOException,
 			ServiceException, NullPointerException, ResourceNotFoundException {
-		startLog();
 		CalendarEventEntry eventToBeDeleted = constructEvent(eventId);
 		eventToBeDeleted.delete();
-		endLog();
 	}
 
 	/**
@@ -263,14 +266,18 @@ public class GoogleCalendar {
 	 */
 	public void deleteEvents(String startTime, String endTime)
 			throws UnknownHostException, NullPointerException, IOException,
-			ServiceException, ResourceNotFoundException {
-		startLog();
+			ServiceException {
 		List<CalendarEventEntry> eventList = retrieveEvents(startTime, endTime);
 		for (int i = 0; i < eventList.size(); i++) {
 			CalendarEventEntry eventToBeDeleted = eventList.get(i);
-			eventToBeDeleted.delete();
+			try {
+				if(!isDeleted(eventToBeDeleted)) {
+					eventToBeDeleted.delete();
+				}
+			} catch(ResourceNotFoundException e) {
+				// nothing to be done, as event is deleted already
+			}
 		}
-		endLog();
 	}
 
 	/**
@@ -582,20 +589,27 @@ public class GoogleCalendar {
 		return refinedId;
 	}
 	
-	private void startLog() {
-		logger.entering(getClass().getName(), this.getClass().getName());
-	}
-	
-	private void endLog() {
-		logger.entering(getClass().getName(), this.getClass().getName());
-	}
-
+	/**
+	 * return the default calendar id of the user with specified userEmail
+	 * 
+	 * @param userEmail
+	 * @return default Google Calendar ID
+	 */
 	public String getDefaultCalendarId(String userEmail) {
 		String defaultCalendarId =  userEmail.replace(ID_SEPARATOR, ID_SEPARATOR_ALTERNATE);
 		return defaultCalendarId;
 	}
 
-	
+	/**
+	 * check if calendar with specified title exists, if it does return 
+	 * that calendar's ID, else create a calendar with specified title 
+	 * and return the new calendar's ID
+	 * 
+	 * @param calendarTitle
+	 * @return calendar's ID
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	public String createCalendar(String calendarTitle) throws IOException, ServiceException {
 		String existingCalendarId = getCalendarId(calendarTitle);
 		
@@ -609,6 +623,12 @@ public class GoogleCalendar {
 		return existingCalendarId;
 	}
 	
+	/**
+	 * @param calendarTitle
+	 * @return calendarId returns null if no calendar with specified title found
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	private String getCalendarId(String calendarTitle) throws IOException, ServiceException {
 		URL calendarFeedUrl = new URL(URL_CALENDAR_FEED);
 		CalendarFeed usersCalendars = calendarService.getFeed(calendarFeedUrl, CalendarFeed.class);
@@ -622,6 +642,12 @@ public class GoogleCalendar {
 		return null;
 	}
 	
+	/**
+	 * @param calendarTitle
+	 * @return created calendar's ID
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	private String createNewCalendar(String calendarTitle) throws IOException, ServiceException {
 		CalendarEntry calendar = new CalendarEntry();
 		calendar.setTitle(new PlainTextConstruct(calendarTitle));
@@ -632,6 +658,12 @@ public class GoogleCalendar {
 		return newCalendarId;
 	}
 	
+	/**
+	 * calendar ID may be of the form http://www.../ID, removes http://www...
+	 * 
+	 * @param unrefinedId
+	 * @return refined calendar ID
+	 */
 	private String refineCalendarId(String unrefinedId) {
 		int startIndex = unrefinedId.lastIndexOf(URL_SEPARATOR) + 1;
 		String refinedId = unrefinedId.substring(startIndex);
