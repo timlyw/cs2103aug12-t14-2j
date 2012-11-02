@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import mhs.src.storage.Database;
 import mhs.src.storage.DeadlineTask;
@@ -40,11 +42,12 @@ import com.google.gdata.util.ServiceException;
 
 public class DatabaseTest {
 
-	private static final String TEST_TASK_5_NAME = "task 5 - play more games";
-	private static final String TEST_TASK_4_NAME = "task 4 - project due";
-	private static final String TEST_TASK_3_NAME = "task 3 - assignment due";
+	private static final int MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS = 60;
 	private static final String TEST_TASK_2_NAME = "task 2 - a project meeting";
 	private static final String TEST_TASK_1_NAME = "task 1 - a meeting";
+	private static final String TEST_TASK_3_NAME = "task 3 - assignment due";
+	private static final String TEST_TASK_4_NAME = "task 4 - project due";
+	private static final String TEST_TASK_5_NAME = "task 5 - play more games";
 	private static final String GOOGLE_APP_NAME = "My Hot Secretary";
 	private static final String GOOGLE_TEST_ACCOUNT_NAME = "cs2103mhs@gmail.com";
 	private static final String GOOGLE_TEST_ACCOUNT_PASSWORD = "myhotsec2103";
@@ -573,10 +576,14 @@ public class DatabaseTest {
 	 * @throws IOException
 	 * @throws ServiceException
 	 * @throws UnknownHostException
+	 * @throws TimeoutException
+	 * @throws ExecutionException
+	 * @throws InterruptedException
 	 */
 	private void testPullSyncNewerTask(GoogleCalendarMhs gCal,
 			CalendarEventEntry createdEvent) throws IOException,
-			ServiceException, UnknownHostException {
+			ServiceException, UnknownHostException, InterruptedException,
+			ExecutionException, TimeoutException {
 
 		queryList = database.query(createdEvent.getTitle().getPlainText()
 				.toString(), false);
@@ -592,6 +599,8 @@ public class DatabaseTest {
 				new DateTime(updatedCreatedEvent.getUpdated().getValue())));
 
 		database.syncronizeDatabases();
+		database.waitForSyncronizeBackgroundTaskToComplete(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
+
 		queryList = database.query(updatedEventName, false);
 
 		// Check that task is updated and not created
@@ -611,13 +620,19 @@ public class DatabaseTest {
 	 * @throws IOException
 	 * @throws ServiceException
 	 * @throws UnknownHostException
+	 * @throws TimeoutException
+	 * @throws ExecutionException
+	 * @throws InterruptedException
 	 */
 	private CalendarEventEntry testPullSyncNewTask(GoogleCalendarMhs gCal)
-			throws IOException, ServiceException, UnknownHostException {
+			throws IOException, ServiceException, UnknownHostException,
+			InterruptedException, ExecutionException, TimeoutException {
 		// Test pull new task sync
 		CalendarEventEntry createdEvent = gCal.createEvent(task3);
+
 		database.syncronizeDatabases();
-		
+		database.waitForSyncronizeBackgroundTaskToComplete(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
+
 		queryList = database.query(false);
 		Iterator<Task> iterator = queryList.iterator();
 		while (iterator.hasNext()) {
@@ -640,7 +655,7 @@ public class DatabaseTest {
 	 */
 	private void testPushSyncExistingTask(GoogleCalendarMhs gCal)
 			throws Exception, IOException {
-		
+
 		// Test push updated task sync
 		Task updatedTask = queryList.get(0);
 		updatedTask.setTaskName("Updated Task");
@@ -659,29 +674,30 @@ public class DatabaseTest {
 	 * @param gCal
 	 * @throws IOException
 	 * @throws InvalidTaskFormatException
-	 * @throws ResourceNotFoundException 
-	 * @throws NullPointerException 
+	 * @throws ResourceNotFoundException
+	 * @throws NullPointerException
 	 */
-	private void testPushSyncNewTask(GoogleCalendarMhs gCal) throws IOException,
-			InvalidTaskFormatException, NullPointerException, ResourceNotFoundException {
+	private void testPushSyncNewTask(GoogleCalendarMhs gCal)
+			throws IOException, InvalidTaskFormatException,
+			NullPointerException, ResourceNotFoundException {
 		database.add(task);
 		database.add(task2);
 
 		// Test push new task sync
 		queryList = database.query(false);
-		
+
 		assertEquals(2, queryList.size());
 		assertTrue(gCal.retrieveEvent(queryList.get(0).getgCalTaskId()) != null);
 		assertTrue(gCal.retrieveEvent(queryList.get(1).getgCalTaskId()) != null);
 	}
 
 	/**
-	 * Initialize google calendar
+	 * Initialize google calendar for testing purposes
 	 * 
 	 * @return
-	 * @throws ServiceException 
-	 * @throws IOException 
-	 * @throws NullPointerException 
+	 * @throws ServiceException
+	 * @throws IOException
+	 * @throws NullPointerException
 	 */
 	private GoogleCalendarMhs initializeGoogleCalendar()
 			throws NullPointerException, IOException, ServiceException {
@@ -690,7 +706,6 @@ public class DatabaseTest {
 		String googleAccessToken = (GoogleCalendarMhs.retrieveUserToken(
 				GOOGLE_APP_NAME, GOOGLE_TEST_ACCOUNT_NAME,
 				GOOGLE_TEST_ACCOUNT_PASSWORD));
-
 		GoogleCalendarMhs gCal = new GoogleCalendarMhs(GOOGLE_APP_NAME,
 				GOOGLE_TEST_ACCOUNT_NAME, googleAccessToken);
 		return gCal;
@@ -701,18 +716,26 @@ public class DatabaseTest {
 	 * 
 	 * @throws IOException
 	 * @throws ServiceException
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
 	 */
 	private void initializeCleanDatabaseWithSync() throws IOException,
-			ServiceException {
+			ServiceException, InterruptedException, ExecutionException,
+			TimeoutException {
 		// Clear database (local and remote)
 		database = new Database(TEST_TASK_RECORD_FILENAME, false);
 		database.loginUserGoogleAccount(GOOGLE_TEST_ACCOUNT_NAME,
 				GOOGLE_TEST_ACCOUNT_PASSWORD);
-		database.clearDatabase();
 
 		// Test whether isUserGoogleCalendarAuthenticated reflects correct
 		// status
 		assertTrue(database.isUserGoogleCalendarAuthenticated());
+
+		database.waitForSyncronizeBackgroundTaskToComplete(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
+
+		database.clearDatabase();
+		assertEquals(0, database.query(false).size());
 	}
 
 	@After

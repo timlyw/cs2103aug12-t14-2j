@@ -23,9 +23,9 @@ public class MhsGson {
 	private static GsonBuilder gsonBuilder;
 
 	private MhsGson() {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		initializeGson();
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -41,19 +41,19 @@ public class MhsGson {
 	}
 
 	private void initializeGson() {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		gsonBuilder = new GsonBuilder();
 		registerMhsGsonAdapters();
 		gson = gsonBuilder.serializeNulls().create();
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	private void registerMhsGsonAdapters() {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 		gsonBuilder.registerTypeAdapter(DateTime.class,
 				new DateTimeTypeConverter());
 		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
 	}
 
 }
