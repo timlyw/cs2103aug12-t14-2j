@@ -21,7 +21,7 @@ import mhs.src.common.MhsLogger;
 import mhs.src.logic.Processor;
 import mhs.src.logic.StateListener;
 
-public class UserInterface {
+public class UiController {
 	
 	// mhsFrame used to handle user input and display output to user
 	private MhsFrame mhsFrame;
@@ -39,12 +39,12 @@ public class UserInterface {
 	private final Logger logger = MhsLogger.getLogger();
 	
 	// class name used for logging
-	private static final String CLASS_NAME = "UserInterface";
+	private static final String CLASS_NAME = "UiController";
 	
 	/**
 	 * sets up the mhsFrame and event listeners
 	 */
-	public UserInterface() {
+	public UiController() {
 		startLog("constructor");
 		initMhsFrame();
 		initListeners();

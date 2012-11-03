@@ -436,13 +436,13 @@
     "isDeleted": true
   },
   {
-    "endDateTime": "2012-11-02T18:00:00.000+08:00",
+    "endDateTime": "2012-11-03T07:00:00.000+08:00",
     "taskId": 39,
     "taskName": "complete test",
-    "taskCategory": "DEADLINE",
+    "taskCategory": "TIMED",
     "taskCreated": "2012-11-01T23:14:15.000+08:00",
-    "taskUpdated": "2012-11-01T23:14:15.000+08:00",
-    "taskLastSync": "2012-11-01T23:14:15.000+08:00",
+    "taskUpdated": "2012-11-02T23:05:44.000+08:00",
+    "taskLastSync": "2012-11-02T23:05:44.000+08:00",
     "gCalTaskId": "2oniie1e2t8lidce0515uclni4@google.com",
     "isDone": false,
     "isDeleted": false
@@ -467,6 +467,69 @@
     "taskUpdated": "2012-11-02T23:03:29.508+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-11-03T01:00:00.000+08:00",
+    "endDateTime": "2012-11-03T12:00:00.000+08:00",
+    "taskId": 42,
+    "taskName": "AP meet",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-03T00:15:32.000+08:00",
+    "taskUpdated": "2012-11-03T00:15:32.000+08:00",
+    "taskLastSync": "2012-11-03T00:15:32.000+08:00",
+    "gCalTaskId": "52aqbhmaqt6a3uplur35431jo4@google.com",
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "endDateTime": "2012-11-03T06:00:00.000+08:00",
+    "taskId": 43,
+    "taskName": "meet him over squash",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-03T00:12:27.000+08:00",
+    "taskUpdated": "2012-11-03T00:12:27.000+08:00",
+    "taskLastSync": "2012-11-03T00:12:27.000+08:00",
+    "gCalTaskId": "5bs9b9ss0ka4gntcu396e5qir0@google.com",
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "endDateTime": "2013-01-05T13:00:00.000+08:00",
+    "taskId": 44,
+    "taskName": "hello",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-03T00:09:00.000+08:00",
+    "taskUpdated": "2012-11-03T00:09:00.000+08:00",
+    "taskLastSync": "2012-11-03T00:09:00.000+08:00",
+    "gCalTaskId": "4lvsnjgrbsshec3lcq8vjdakj8@google.com",
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-11-03T08:00:00.000+08:00",
+    "endDateTime": "2012-11-03T09:00:00.000+08:00",
+    "taskId": 45,
+    "taskName": "Squash training",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-02T23:07:07.000+08:00",
+    "taskUpdated": "2012-11-02T23:07:07.000+08:00",
+    "taskLastSync": "2012-11-02T23:07:07.000+08:00",
+    "gCalTaskId": "gq6pi21a2jnmecmol5b980dj2s@google.com",
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-11-03T08:00:00.000+08:00",
+    "endDateTime": "2012-11-03T09:00:00.000+08:00",
+    "taskId": 46,
+    "taskName": "Squash training",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-02T23:07:05.000+08:00",
+    "taskUpdated": "2012-11-02T23:07:05.000+08:00",
+    "taskLastSync": "2012-11-02T23:07:05.000+08:00",
+    "gCalTaskId": "26gjuvikne3b7rk54bco82dsu0@google.com",
     "isDone": false,
     "isDeleted": false
   }
