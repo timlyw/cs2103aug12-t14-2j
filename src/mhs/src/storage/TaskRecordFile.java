@@ -32,7 +32,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.google.gson.stream.MalformedJsonException;
 
 public class TaskRecordFile {
 
@@ -60,13 +59,15 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	public TaskRecordFile() throws IOException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logger.entering(getClass().getName(),
+				new Exception().getStackTrace()[0].getMethodName());
 
 		RECORD_FILE_NAME = DEFAULT_TASK_RECORD_FILENAME;
 		initializeTaskList();
 		initalizeRecordFile();
 
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logger.exiting(getClass().getName(),
+				new Exception().getStackTrace()[0].getMethodName());
 	}
 
 	/**
@@ -76,7 +77,7 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	public TaskRecordFile(String taskRecordFileName) throws IOException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("TaskRecordFile");
 
 		if (taskRecordFileName == null) {
 			throw new IllegalArgumentException(String.format(
@@ -87,16 +88,16 @@ public class TaskRecordFile {
 		initializeTaskList();
 		initalizeRecordFile();
 
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("TaskRecordFile");
 	}
 
 	/**
 	 * Initialize task list
 	 */
 	private void initializeTaskList() {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("initializeTaskList");
 		taskList = new LinkedHashMap<Integer, Task>();
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("initializeTaskList");
 	}
 
 	/**
@@ -105,7 +106,7 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	private void initalizeRecordFile() throws IOException {
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("initalizeRecordFile");
 		assert (RECORD_FILE_NAME != null);
 
 		taskRecordFile = new File(RECORD_FILE_NAME);
@@ -116,7 +117,7 @@ public class TaskRecordFile {
 		} else {
 			loadTaskListFromFile();
 		}
-
+		logExitMethod("initalizeRecordFile");
 	}
 
 	/**
@@ -125,15 +126,13 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	private void createNewJsonFile() throws IOException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("createNewJsonFile");
 		assert (taskRecordFile != null);
-
 		taskRecordFile.createNewFile();
 		openJsonOutputStream();
 		writeEmptyJsonArray();
 		closeJsonOutputStream();
-
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("createNewJsonFile");
 	}
 
 	/**
@@ -144,14 +143,14 @@ public class TaskRecordFile {
 	 */
 	private void openJsonOutputStream() throws FileNotFoundException,
 			UnsupportedEncodingException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("openJsonOutputStream");
 		assert (RECORD_FILE_NAME != null);
 
 		outputStream = new FileOutputStream(RECORD_FILE_NAME);
 		jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream,
 				CHAR_ENCODING_UTF8));
 
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("openJsonOutputStream");
 	}
 
 	/**
@@ -160,10 +159,10 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	private void closeJsonOutputStream() throws IOException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("closeJsonOutputStream");
 		jsonWriter.close();
 		outputStream.close();
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("closeJsonOutputStream");
 	}
 
 	/**
@@ -172,11 +171,11 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	private void writeEmptyJsonArray() throws IOException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("writeEmptyJsonArray");
 		jsonWriter.setIndent(JSON_INDENT);
 		jsonWriter.beginArray();
 		jsonWriter.endArray();
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("writeEmptyJsonArray");
 	}
 
 	/**
@@ -185,20 +184,18 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	public void loadTaskListFromFile() throws IOException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
-
+		logEnterMethod("loadTaskListFromFile");
 		openJsonInputStream();
 		loadTaskListFromJarray();
 		closeJsonInputStream();
-
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("loadTaskListFromFile");
 	}
 
 	/**
 	 * Loads Jarray from json reader
 	 */
 	private void loadTaskListFromJarray() {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("loadTaskListFromJarray");
 		assert (gson != null);
 		assert (jsonReader != null);
 		assert (taskList != null);
@@ -220,7 +217,7 @@ public class TaskRecordFile {
 				}
 			}
 		}
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("loadTaskListFromJarray");
 	}
 
 	/**
@@ -231,13 +228,13 @@ public class TaskRecordFile {
 	 */
 	private void openJsonInputStream() throws FileNotFoundException,
 			UnsupportedEncodingException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("openJsonInputStream");
 		assert (RECORD_FILE_NAME != null);
 
 		inputStream = new FileInputStream(RECORD_FILE_NAME);
 		jsonReader = new JsonReader(new InputStreamReader(inputStream,
 				CHAR_ENCODING_UTF8));
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("openJsonInputStream");
 	}
 
 	/**
@@ -246,10 +243,10 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	private void closeJsonInputStream() throws IOException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("closeJsonInputStream");
 		jsonReader.close();
 		inputStream.close();
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("closeJsonInputStream");
 	}
 
 	/**
@@ -259,13 +256,13 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	public void saveTaskList(Map<Integer, Task> taskList) throws IOException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("saveTaskList");
 
 		openJsonOutputStream();
 		writeJsonArray(taskList);
 		closeJsonOutputStream();
 
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("saveTaskList");
 	}
 
 	/**
@@ -275,7 +272,7 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	private void writeJsonArray(Map<Integer, Task> taskList) throws IOException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("writeJsonArray");
 		assert (jsonWriter != null);
 
 		jsonWriter.setIndent(JSON_INDENT);
@@ -287,8 +284,7 @@ public class TaskRecordFile {
 		}
 
 		jsonWriter.endArray();
-
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("writeJsonArray");
 	}
 
 	/**
@@ -297,8 +293,17 @@ public class TaskRecordFile {
 	 * @return Task List with taskId as key
 	 */
 	public Map<Integer, Task> getTaskList() {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("getTaskList");
+		logExitMethod("getTaskList");
 		return taskList;
 	}
+
+	private void logEnterMethod(String methodName) {
+		logger.entering(getClass().getName(), methodName);
+	}
+
+	private void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
+	}
+
 }

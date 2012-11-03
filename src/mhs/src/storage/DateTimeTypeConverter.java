@@ -32,16 +32,25 @@ public class DateTimeTypeConverter implements JsonSerializer<DateTime>,
 	@Override
 	public JsonElement serialize(DateTime src, Type srcType,
 			JsonSerializationContext context) {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("serialize");
+		logExitMethod("serialize");
 		return new JsonPrimitive(src.toString());
 	}
 
 	@Override
 	public DateTime deserialize(JsonElement json, Type type,
 			JsonDeserializationContext context) throws JsonParseException {
-		logger.entering(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
-		logger.exiting(getClass().getName(), new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("deserialize");
+		logExitMethod("deserialize");
 		return new DateTime(json.getAsString());
 	}
+	
+	private void logEnterMethod(String methodName) {
+		logger.entering(getClass().getName(), methodName);
+	}
+
+	private void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
+	}
+	
 }
