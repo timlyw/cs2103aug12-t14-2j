@@ -29,6 +29,16 @@ public class DatabaseFactory {
 
 	private static final Logger logger = MhsLogger.getLogger();
 
+	/**
+	 * Initialize DatabaseFactory parameters for initializing database singleton
+	 * 
+	 * @param taskRecordFileName
+	 * @param disableSync
+	 * @return DatabaseFactory Instance
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws DatabaseAlreadyInstantiatedException
+	 */
 	public synchronized static DatabaseFactory getDatabaseFactory(
 			String taskRecordFileName, boolean disableSync) throws IOException,
 			ServiceException, DatabaseAlreadyInstantiatedException {
@@ -44,6 +54,15 @@ public class DatabaseFactory {
 		return instance;
 	}
 
+	/**
+	 * Returns single Database instance
+	 * 
+	 * @return Database instance
+	 * @throws IllegalArgumentException
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws DatabaseFactoryNotInstantiatedException
+	 */
 	public synchronized static Database getDatabaseInstance()
 			throws IllegalArgumentException, IOException, ServiceException,
 			DatabaseFactoryNotInstantiatedException {
@@ -57,6 +76,9 @@ public class DatabaseFactory {
 		return databaseInstance;
 	}
 
+	/**
+	 * Destroy Database and DatabaseFactory Instance
+	 */
 	public synchronized static void destroy() {
 		logEnterMethod("destroy");
 		instance = null;
@@ -64,6 +86,12 @@ public class DatabaseFactory {
 		logExitMethod("destroy");
 	}
 
+	/**
+	 * Constructor for Database Factory
+	 * 
+	 * @param taskRecordFileName
+	 * @param disableSync
+	 */
 	private DatabaseFactory(String taskRecordFileName, boolean disableSync) {
 		logEnterMethod("DatabaseFactory");
 		if (taskRecordFileName == null) {
