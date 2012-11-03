@@ -40,6 +40,9 @@ public class Processor {
 	public int LINE_HEIGHT = 30;
 	private CommandInfo userCommand;
 	private static final Logger logger = MhsLogger.getLogger();
+	
+
+	public String headerText = "My Hot Secretary ";
 
 	/**
 	 * Default Processor Constructor
@@ -78,6 +81,12 @@ public class Processor {
 			e.printStackTrace();
 		}
 	}
+	
+	public String getHeaderText() {
+		String boldTitle = htmlCreator.makeBold(headerText);
+		return boldTitle;
+	}
+	
 
 	private void showHome() {
 		setCommand("display today");

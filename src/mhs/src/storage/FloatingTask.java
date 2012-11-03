@@ -6,6 +6,8 @@
 
 package mhs.src.storage;
 
+import mhs.src.ui.HtmlCreator;
+
 import org.joda.time.DateTime;
 
 public class FloatingTask extends Task {
@@ -46,5 +48,18 @@ public class FloatingTask extends Task {
 			boolean isDone, boolean isDeleted) {
 		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
 				null, isDone, isDeleted);
+	}
+	
+	public String toHtmlString() {
+		HtmlCreator htmlCreator = new HtmlCreator();
+
+		String boldTaskName = htmlCreator.makeBold(taskName);
+		String htmlString = boldTaskName;
+		
+		if(isDone()) {
+			htmlString = htmlCreator.color(taskName + " [completed]", HtmlCreator.LIGHT_GRAY);
+		}
+		
+		return htmlString;
 	}
 }

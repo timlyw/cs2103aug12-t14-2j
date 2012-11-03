@@ -177,7 +177,7 @@ public class UiController {
 	
 	private void updateTitleScreen() {
 		startLog("updateTitleScreen");
-		String titleText = "My Hot Secretary";//processor.getHeaderText();
+		String titleText = processor.getHeaderText();
 		if(titleText != null) {
 			mhsFrame.setTitleText(titleText);
 		}

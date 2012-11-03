@@ -7,6 +7,8 @@
 
 package mhs.src.storage;
 
+import mhs.src.ui.HtmlCreator;
+
 import org.joda.time.DateTime;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
@@ -128,4 +130,32 @@ public class DeadlineTask extends Task {
 		}
 		return taskToString;
 	}
+	
+	public String toHtmlString() {
+		String dateString = "";
+		HtmlCreator htmlCreator = new HtmlCreator();
+
+		dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
+		String timeString = getTimeString(endDateTime);
+		
+		String boldTaskName = htmlCreator.makeBold(taskName);
+		String htmlString = boldTaskName + " (Due: " + timeString + ")";
+		
+		return htmlString;
+	}
+	
+	private String getTimeString(DateTime date) {
+		String timeString = "";
+		
+		if(date.getMinuteOfHour() == 0) {
+			timeString = date.toString("h aa");
+		} else {
+			timeString = date.toString("h.mm aa");
+		}
+		
+		timeString = timeString.toLowerCase();
+		
+		return timeString;
+	}
+	
 }

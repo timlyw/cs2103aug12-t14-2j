@@ -1,9 +1,13 @@
 package mhs.src.logic;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.DateTime;
 
+import mhs.src.storage.DeadlineTask;
+import mhs.src.storage.FloatingTask;
+import mhs.src.storage.Task;
 import mhs.src.storage.TaskCategory;
 import mhs.src.storage.TimedTask;
 import mhs.src.ui.HtmlCreator;
@@ -98,23 +102,67 @@ public class ProcessorStub {
 			return;
 		}
 		
+		List<Task> taskList = new ArrayList<Task>();
+		
 		currentState = "";
+		
+		String title0 = "floating task";
+		FloatingTask fTask = createFloatingTask(title0);
+		
+		String title0a = "floating task";
+		FloatingTask fTask2 = createFloatingTask(title0a);
+		fTask2.setDone(true);
+		
 		String title1 = "do laundry";
 		String startTime1 = "2012-11-17T08:00:00+08:00";
 		String endTime1 = "2012-11-17T09:00:00+08:00";
-		TimedTask task1 = createTask(title1, startTime1, endTime1);
+		TimedTask task1 = createTimedTask(title1, startTime1, endTime1);
 		
-		currentState += task1.toHtmlString();
+		String title2 = "watch tv";
+		String startTime2 = "2012-11-17T12:00:00+08:00";
+		String endTime2 = "2012-11-17T13:00:00+08:00";
+		TimedTask task2 = createTimedTask(title2, startTime2, endTime2);
+		
+		String title2b = "deadline task";
+		String endTime2b = "2012-11-17T11:30:00+08:00";
+		DeadlineTask task2b = createDeadlineTask(title2b, endTime2b);
+		
+		String title3 = "homework";
+		String startTime3 = "2012-11-19T17:00:00+08:00";
+		String endTime3 = "2012-11-19T18:00:00+08:00";
+		TimedTask task3 = createTimedTask(title3, startTime3, endTime3);
+
+		taskList.add((Task) fTask);
+		taskList.add((Task) fTask2);
+		taskList.add((Task) task1);
+		taskList.add((Task) task2b);
+		taskList.add((Task) task2);
+		taskList.add((Task) task3);
+		
+		currentState = htmlCreator.createTaskListHtml(taskList, lineLimit);
 		
 	}
 	
 	
-	private TimedTask createTask(String title, String startTime, String endTime) {
+	private TimedTask createTimedTask(String title, String startTime, String endTime) {
 		DateTime start = DateTime.parse(startTime);
 		DateTime end = DateTime.parse(endTime);
 
 		TimedTask task = new TimedTask(1, title, TaskCategory.TIMED, start, end,
 				null, null, null, null, false, false);
+		return task;
+	}
+	
+	private FloatingTask createFloatingTask(String title) {
+		FloatingTask task = new FloatingTask(5, title, TaskCategory.FLOATING,
+				null, null, null, false, false);
+		return task;
+	}
+	
+	private DeadlineTask createDeadlineTask(String title, String endTime) {
+		DateTime end = DateTime.parse(endTime);
+		DeadlineTask task = new DeadlineTask(3, title, TaskCategory.DEADLINE,
+				end, null, null, null, null, false, false);
 		return task;
 	}
 }

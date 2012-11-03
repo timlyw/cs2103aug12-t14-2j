@@ -152,9 +152,8 @@ public class TimedTask extends Task {
 		dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
 		String timeString = getTimeString(startDateTime) + " - " + getTimeString(endDateTime);
 		
-		timeString = htmlCreator.color(timeString, HtmlCreator.BLUE);
 		String boldTaskName = htmlCreator.makeBold(taskName);
-		String htmlString = dateString + htmlCreator.NEW_LINE + boldTaskName + " " + timeString;
+		String htmlString = boldTaskName + " (" + timeString + ")";
 		
 		return htmlString;
 	}
