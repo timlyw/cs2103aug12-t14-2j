@@ -16,10 +16,12 @@ import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -84,10 +86,9 @@ public class Database {
 	private class Syncronize {
 
 		private ScheduledThreadPoolExecutor syncronizeBackgroundExecutor;
-		private Runnable syncronizeBackgroundTask;
+		private Runnable syncronizeDatabasesBackgroundTask;
 		private TimerTask pullSyncTimedBackgroundTask;
 		private Future<?> futureSyncronizeBackgroundTask;
-
 		private static final int PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES = 5;
 		private static final int PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES = 5;
 
@@ -141,7 +142,7 @@ public class Database {
 				return false;
 			}
 			futureSyncronizeBackgroundTask = syncronizeBackgroundExecutor
-					.submit(syncronizeBackgroundTask);
+					.submit(syncronizeDatabasesBackgroundTask);
 			logExitMethod("syncronizeDatabases");
 			return true;
 		}
@@ -183,7 +184,7 @@ public class Database {
 		 */
 		private void initializeSyncronizeRunnableTask() {
 			logEnterMethod("initializeSyncronizeRunnableTask");
-			syncronizeBackgroundTask = new Runnable() {
+			syncronizeDatabasesBackgroundTask = new Runnable() {
 				@Override
 				public void run() {
 					try {
@@ -597,7 +598,7 @@ public class Database {
 			return syncDateTime;
 		}
 	}
-
+	
 	/**
 	 * Database default constructor
 	 * 
