@@ -28,6 +28,7 @@ public abstract class Command {
 		indexExpected = false;
 		isUndoable = false;
 		htmlCreator = new HtmlCreator();
+		
 		try {
 			dataHandler = DatabaseFactory.getDatabaseInstance();
 		} catch (IOException | ServiceException e1) {
