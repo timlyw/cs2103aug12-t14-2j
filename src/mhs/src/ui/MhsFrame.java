@@ -41,10 +41,11 @@ public class MhsFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	// frame parameters
-	private static final int FRAME_WIDTH = 550;
+	private static final int FRAME_WIDTH = 600;
 	private static final int FRAME_HEIGHT = 450;
 	private static final String FRAME_TITLE = "My Hot Secretary";
 	private static final Color FRAME_BACKGROUND_COLOR = new Color(0, 0, 0);
+	private static final Color TITLE_BACKGROUND_COLOR = new Color(255, 255, 255);
 	private static final String ICON_FILE_NAME = "mhsIconSmall.png";
 
 	// default margin, position and font parameters
@@ -56,20 +57,28 @@ public class MhsFrame extends JFrame {
 	private static final String DEFAULT_FONT_TYPE = "calibri";
 
 	// display screen sizing and position parameters
-	private static final int DISPLAY_SCREEN_POSITION_Y = 0;
+	private static final int TITLE_SCREEN_POSITION_Y = 0;
+	private static final int TITLE_SCREEN_WEIGHT_Y = 0;
+	private static final int TITLE_SCREEN_HEIGHT = 1;
+	private static final int TITLE_SCREEN_TOP_PADDING = 0;
+	private static final int TITLE_SCREEN_BOTTOM_PADDING = 1;
+	
+	// display screen sizing and position parameters
+	private static final int DISPLAY_SCREEN_POSITION_Y = 1;
 	private static final int DISPLAY_SCREEN_WEIGHT_Y = 1;
 	private static final int DISPLAY_SCREEN_HEIGHT = 1;
+	private static final int DISPLAY_SCREEN_TOP_PADDING = 0;
 	private static final int DISPLAY_SCREEN_BOTTOM_PADDING = 0;
 
 	// feedback screen sizing and position parameters
-	private static final int FEEDBACK_SCREEN_POSITION_Y = 1;
+	private static final int FEEDBACK_SCREEN_POSITION_Y = 2;
 	private static final int FEEDBACK_SCREEN_WEIGHT_Y = 0;
 	private static final int FEEDBACK_SCREEN_HEIGHT = 1;
 	private static final int FEEDBACK_SCREEN_TOP_PADDING = 0;
 	private static final String CONTENT_TYPE_HTML = "text/html";
 
 	// input box sizing and position parameters
-	private static final int INPUT_BOX_POSITION_Y = 2;
+	private static final int INPUT_BOX_POSITION_Y = 3;
 	private static final int INPUT_BOX_WEIGHT_Y = 0;
 	private static final int INPUT_BOX_HEIGHT = 1;
 	private static final int INPUT_BOX_TOP_PADDING = 0;
@@ -81,6 +90,9 @@ public class MhsFrame extends JFrame {
 	
 	// panel used to contain all frame components
 	private final JPanel framePanel = new JPanel();
+
+	// display area for program title
+	private final JEditorPane titleScreen = new JEditorPane();
 	
 	// display area for program output
 	private final JEditorPane displayScreen = new JEditorPane();
@@ -193,6 +205,11 @@ public class MhsFrame extends JFrame {
 		plainTextBox.setText(BLANK);
 		passwordBox.setText(BLANK);
 		isInputDisabled = false;
+	}
+	
+	public void setTitleText(String titleText) {
+		String htmlText = htmlCreator.createTitleScreenHtml(titleText);
+		titleScreen.setText(htmlText);
 	}
 	
 	/**
@@ -330,9 +347,31 @@ public class MhsFrame extends JFrame {
 	 */
 	private void initFrameComponents() {
 		initFramePanel();
+		initTitleScreen();
 		initDisplayScreen();
 		initFeedbackScreen();
 		initInputBox();
+	}
+	
+	private void initTitleScreen() {
+		addTitleScreenToFramePanel();
+		formatEditorPane(titleScreen);
+		setTitleBackground(TITLE_BACKGROUND_COLOR);
+	}
+	
+	private void setTitleBackground(Color backgroundColor) {
+		titleScreen.setBackground(TITLE_BACKGROUND_COLOR);
+	}
+	
+	private void addTitleScreenToFramePanel() {
+		GridBagConstraints constraints = getDefaultConstraints(
+				TITLE_SCREEN_POSITION_Y, TITLE_SCREEN_WEIGHT_Y,
+				TITLE_SCREEN_HEIGHT);
+
+		Box titleScreenContainer = createContainer(titleScreen,
+				DEFAULT_PADDING_WIDTH, TITLE_SCREEN_TOP_PADDING,
+				TITLE_SCREEN_BOTTOM_PADDING);
+		framePanel.add(titleScreenContainer, constraints);
 	}
 
 	/**
@@ -349,8 +388,7 @@ public class MhsFrame extends JFrame {
 	 */
 	private void initDisplayScreen() {
 		addDisplayScreenToFramePanel();
-		displayScreen.setEditable(false);
-		displayScreen.setContentType(CONTENT_TYPE_HTML);
+		formatEditorPane(displayScreen);
 	}
 
 	/**
@@ -358,8 +396,7 @@ public class MhsFrame extends JFrame {
 	 */
 	private void initFeedbackScreen() {
 		addFeedbackScreenToPanel();
-		feedbackScreen.setEditable(false);
-		feedbackScreen.setContentType(CONTENT_TYPE_HTML);
+		formatEditorPane(feedbackScreen);
 	}
 
 	/**
@@ -442,11 +479,16 @@ public class MhsFrame extends JFrame {
 				DISPLAY_SCREEN_HEIGHT);
 
 		Box displayScreenContainer = createContainer(displayScreen,
-				DEFAULT_PADDING_WIDTH, DEFAULT_PADDING_WIDTH,
+				DEFAULT_PADDING_WIDTH, DISPLAY_SCREEN_TOP_PADDING,
 				DISPLAY_SCREEN_BOTTOM_PADDING);
 		framePanel.add(displayScreenContainer, constraints);
 	}
 
+	private void formatEditorPane(JEditorPane editorPane) {
+		editorPane.setEditable(false);
+		editorPane.setContentType(CONTENT_TYPE_HTML);
+	}
+	
 	/**
 	 * add framePanel to the frame
 	 */

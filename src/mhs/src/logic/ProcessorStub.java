@@ -2,6 +2,10 @@ package mhs.src.logic;
 
 import java.util.ArrayList;
 
+import org.joda.time.DateTime;
+
+import mhs.src.storage.TaskCategory;
+import mhs.src.storage.TimedTask;
 import mhs.src.ui.HtmlCreator;
 
 public class ProcessorStub {
@@ -14,6 +18,13 @@ public class ProcessorStub {
 	private boolean isPasswordExpected = false;
 	private int lineLimit = 0;
 	public int LINE_HEIGHT = 30;
+
+	public String headerText = "My Hot Secretary ";
+	
+	public String getHeaderText() {
+		String boldTitle = htmlCreator.makeBold(headerText);
+		return boldTitle;
+	}
 	
 	public void addStateListener(StateListener stateListener) {
 		stateListeners.add(stateListener);
@@ -51,6 +62,7 @@ public class ProcessorStub {
 		return commandFeedback;
 	}
 	
+	
 	public boolean passwordExpected() {
 		return isPasswordExpected;
 	}
@@ -67,6 +79,7 @@ public class ProcessorStub {
 	}
 	
 	private void populateEvents() {
+		/*
 		String boldEventTitle = htmlCreator.makeBold("Event Title [COMPLETED]");
 		String startDate = "12 Oct 2012 3pm";
 		String endDate = "15 Oct 2012 7pm";
@@ -79,5 +92,29 @@ public class ProcessorStub {
 		}
 		
 		currentState += "end";
+		*/
+
+		if(lineLimit < 0 ) {
+			return;
+		}
+		
+		currentState = "";
+		String title1 = "do laundry";
+		String startTime1 = "2012-11-17T08:00:00+08:00";
+		String endTime1 = "2012-11-17T09:00:00+08:00";
+		TimedTask task1 = createTask(title1, startTime1, endTime1);
+		
+		currentState += task1.toHtmlString();
+		
+	}
+	
+	
+	private TimedTask createTask(String title, String startTime, String endTime) {
+		DateTime start = DateTime.parse(startTime);
+		DateTime end = DateTime.parse(endTime);
+
+		TimedTask task = new TimedTask(1, title, TaskCategory.TIMED, start, end,
+				null, null, null, null, false, false);
+		return task;
 	}
 }

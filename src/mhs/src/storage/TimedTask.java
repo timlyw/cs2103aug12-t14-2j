@@ -6,6 +6,8 @@
 
 package mhs.src.storage;
 
+import mhs.src.ui.HtmlCreator;
+
 import org.joda.time.DateTime;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
@@ -139,4 +141,48 @@ public class TimedTask extends Task {
 		return taskToString;
 	}
 
+	public String toHtmlString() {
+		String dateString = "";
+		if(dateIsEqual(startDateTime, endDateTime)) {
+			dateString = getDateString(startDateTime);
+		}
+		
+		HtmlCreator htmlCreator = new HtmlCreator();
+
+		dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
+		String timeString = getTimeString(startDateTime) + " - " + getTimeString(endDateTime);
+		
+		timeString = htmlCreator.color(timeString, HtmlCreator.BLUE);
+		String boldTaskName = htmlCreator.makeBold(taskName);
+		String htmlString = dateString + htmlCreator.NEW_LINE + boldTaskName + " " + timeString;
+		
+		return htmlString;
+	}
+	
+	private boolean dateIsEqual(DateTime date1, DateTime date2) {
+		if(date1.getDayOfYear() == date2.getDayOfYear() && date1.getYear() == date2.getYear()) {
+			return true;
+		}
+		return false;
+	}
+	
+	private String getDateString(DateTime date) {
+		return date.toString("dd MMM yy");
+	}
+	
+	private String getTimeString(DateTime date) {
+		String timeString = "";
+		
+		if(date.getMinuteOfHour() == 0) {
+			timeString = date.toString("h aa");
+		} else {
+			timeString = date.toString("h.mm aa");
+		}
+		
+		timeString = timeString.toLowerCase();
+		
+		return timeString;
+	}
+	
+	
 }

@@ -1,6 +1,7 @@
 package mhs.test;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -44,9 +45,10 @@ public class GoogleCalendarMhsTest {
 	 * test if the retrieved access token is not empty when email and password is valid
 	 * @throws NullPointerException 
 	 * @throws AuthenticationException 
+	 * @throws UnknownHostException 
 	 */
 	@Test
-	public void testRetrieveAccessToken() throws AuthenticationException, NullPointerException {
+	public void testRetrieveAccessToken() throws AuthenticationException, NullPointerException, UnknownHostException {
 		String accessToken;
 		accessToken = GoogleCalendarMhs.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
 		assertTrue(accessToken.length() > 0);
@@ -98,9 +100,9 @@ public class GoogleCalendarMhsTest {
 		accessToken = GoogleCalendarMhs.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
 		GoogleCalendarMhs gCal = new GoogleCalendarMhs(APP_NAME, USER_EMAIL, accessToken);
 		
-		String title = "mhs test default calendar";
-		String startTime = "2013-01-16T13:00:00+08:00";
-		String endTime = "2013-01-16T15:00:00+08:00";
+		String title = "mhs test time calendar";
+		String startTime = "2013-01-12T23:00:00+08:00";
+		String endTime = "2013-01-13T01:00:00+08:00";
 		
 		TimedTask newTask = createTask(title, startTime, endTime);
 		newTask.setDone(false);
@@ -116,6 +118,7 @@ public class GoogleCalendarMhsTest {
 		assertTrue(GoogleCalendar.isTimeEqual(startTime, retrievedStartTime));
 		assertTrue(GoogleCalendar.isTimeEqual(endTime, retrievedEndTime));	
 		assertFalse(gCal.isEventCompleted(retrievedTask));
+		
 		
 		// test updateEvent
 		String updatedTitle = "mhs test default calendar update";
@@ -137,6 +140,7 @@ public class GoogleCalendarMhsTest {
 		assertTrue(GoogleCalendar.isTimeEqual(updatedStartTime, retrievedUpdatedStartTime));
 		assertTrue(GoogleCalendar.isTimeEqual(updatedEndTime, retrievedUpdatedEndTime));
 		assertTrue(gCal.isEventCompleted(retrievedUpdatedTask));
+		
 		
 		// test delete event
 		gCal.deleteEvent(updatedEventId);

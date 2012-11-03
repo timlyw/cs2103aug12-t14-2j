@@ -249,4 +249,8 @@ public class Task {
 	public void setStartDateTime(DateTime dateTime) {
 	}
 
+	public String toHtmlString() {
+		return null;
+	}
+	
 }

@@ -85,7 +85,8 @@ public class GoogleCalendar {
 	 * @throws IOException 
 	 */
 	public GoogleCalendar(String appName, String email, String accessToken)
-			throws NullPointerException, IOException, ServiceException {
+			throws NullPointerException, IOException, ServiceException,
+			UnknownHostException {
 		initCalendarService(accessToken, appName);
 		userEmail = email;
 	}
@@ -120,7 +121,7 @@ public class GoogleCalendar {
 	 * @param appName name of application
 	 */
 	public void initCalendarService(String accessToken, String appName)
-			throws NullPointerException {
+			throws NullPointerException, UnknownHostException {
 		calendarService = new CalendarService(appName);
 		calendarService.setUserToken(accessToken);
 	}
@@ -139,7 +140,7 @@ public class GoogleCalendar {
 	 */
 	public CalendarEventEntry createEvent(String title, String startTime,
 			String endTime) throws IOException, ServiceException,
-			NullPointerException {
+			NullPointerException, UnknownHostException {
 		URL postURL = createPostUrl();
 		CalendarEventEntry newEvent = constructEvent(title, startTime, endTime);
 		CalendarEventEntry createdEvent = calendarService.insert(postURL,
@@ -156,7 +157,7 @@ public class GoogleCalendar {
 	 * @throws IOException unable to read from Google Calendar
 	 */
 	public CalendarEventEntry retrieveEvent(String eventId) throws IOException,
-			NullPointerException, ResourceNotFoundException {
+			NullPointerException, ResourceNotFoundException, UnknownHostException {
 		try {
 			CalendarEventEntry retrievedEvent = constructEvent(eventId);
 			return retrievedEvent;
@@ -196,7 +197,7 @@ public class GoogleCalendar {
 	 */
 	public CalendarEventEntry updateEvent(String eventId, String title,
 			String startTime, String endTime) throws IOException,
-			ServiceException, NullPointerException {
+			ServiceException, NullPointerException, UnknownHostException {
 		CalendarEventEntry eventToBeUpdated = constructEvent(eventId);
 		setEventTitle(eventToBeUpdated, title);
 		setEventTime(eventToBeUpdated, startTime, endTime);
@@ -213,8 +214,9 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public boolean contains(String eventId) throws NullPointerException, IOException, ServiceException {
-		String refinedId = refineEventId(eventId);
+	public boolean contains(String eventId) throws NullPointerException,
+			IOException, ServiceException, UnknownHostException {
+	String refinedId = refineEventId(eventId);
 		URL eventUrl = createEventUrl(refinedId);
 		try {
 			calendarService.getEntry(eventUrl, CalendarEventEntry.class);
@@ -234,7 +236,7 @@ public class GoogleCalendar {
 	 */
 	private CalendarEventEntry sendEditRequest(
 			CalendarEventEntry eventToBeUpdated) throws IOException,
-			ServiceException, NullPointerException {
+			ServiceException, NullPointerException, UnknownHostException {
 		URL editUrl = createEditUrl(eventToBeUpdated);
 		CalendarEventEntry updatedEntry = (CalendarEventEntry) calendarService
 				.update(editUrl, eventToBeUpdated);
@@ -249,8 +251,9 @@ public class GoogleCalendar {
 	 * @throws ServiceException Internet connection unavailable
 	 */
 	public void deleteEvent(String eventId) throws IOException,
-			ServiceException, NullPointerException, ResourceNotFoundException {
-		CalendarEventEntry eventToBeDeleted = constructEvent(eventId);
+			ServiceException, NullPointerException, ResourceNotFoundException,
+			UnknownHostException {
+	CalendarEventEntry eventToBeDeleted = constructEvent(eventId);
 		eventToBeDeleted.delete();
 	}
 
@@ -451,8 +454,9 @@ public class GoogleCalendar {
 	 * @throws ServiceException Internet connection unavailable
 	 */
 	private CalendarEventEntry constructEvent(String eventId)
-			throws IOException, ServiceException, NullPointerException, ResourceNotFoundException {
-		String refinedId = refineEventId(eventId);
+			throws IOException, ServiceException, NullPointerException,
+			ResourceNotFoundException, UnknownHostException {
+	String refinedId = refineEventId(eventId);
 		URL eventUrl = createEventUrl(refinedId);
 		CalendarEventEntry constructedEvent = calendarService.getEntry(
 				eventUrl, CalendarEventEntry.class);
@@ -610,7 +614,8 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public String createCalendar(String calendarTitle) throws IOException, ServiceException {
+	public String createCalendar(String calendarTitle) throws IOException,
+			ServiceException, UnknownHostException {
 		String existingCalendarId = getCalendarId(calendarTitle);
 		
 		if(existingCalendarId == null) {
@@ -629,8 +634,9 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	private String getCalendarId(String calendarTitle) throws IOException, ServiceException {
-		URL calendarFeedUrl = new URL(URL_CALENDAR_FEED);
+	private String getCalendarId(String calendarTitle) throws IOException,
+			ServiceException, UnknownHostException {
+	URL calendarFeedUrl = new URL(URL_CALENDAR_FEED);
 		CalendarFeed usersCalendars = calendarService.getFeed(calendarFeedUrl, CalendarFeed.class);
 		
 		for(int i = 0; i < usersCalendars.getEntries().size(); i++) {
@@ -648,8 +654,9 @@ public class GoogleCalendar {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	private String createNewCalendar(String calendarTitle) throws IOException, ServiceException {
-		CalendarEntry calendar = new CalendarEntry();
+	private String createNewCalendar(String calendarTitle) throws IOException,
+			ServiceException, UnknownHostException {
+	CalendarEntry calendar = new CalendarEntry();
 		calendar.setTitle(new PlainTextConstruct(calendarTitle));
 		URL calendarFeedUrl = new URL(URL_CALENDAR_FEED);
 		CalendarEntry returnedCalendar = calendarService.insert(calendarFeedUrl, calendar);

@@ -18,7 +18,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import mhs.src.common.MhsLogger;
-import mhs.src.logic.Processor;
+import mhs.src.logic.ProcessorStub;
 import mhs.src.logic.StateListener;
 
 public class UiController {
@@ -27,7 +27,7 @@ public class UiController {
 	private MhsFrame mhsFrame;
 	
 	// processor used to process user commands
-	private Processor processor = new Processor();
+	private ProcessorStub processor = new ProcessorStub();
 	
 	// enter key constant used to check when user hits enter key
 	private static final int ENTER_KEY = KeyEvent.VK_ENTER;
@@ -167,6 +167,22 @@ public class UiController {
 		}
 		endLog("updateInputType");
 	}
+	
+	private void updateMhsFrame() {
+		updateTitleScreen();
+		updateDisplayScreen();
+		updateFeedbackText();
+		updateInputType();
+	}
+	
+	private void updateTitleScreen() {
+		startLog("updateTitleScreen");
+		String titleText = processor.getHeaderText();
+		if(titleText != null) {
+			mhsFrame.setTitleText(titleText);
+		}
+		endLog("updateTitleScreen");
+	}
 
 	/** 
 	 * updates the feedback text in mhsFrame to the current command feedback in the processor
@@ -210,9 +226,7 @@ public class UiController {
 		 * updates display text, feedback text and input format 
 		 */
 		public void stateChanged() {
-			updateDisplayScreen();
-			updateFeedbackText();
-			updateInputType();
+			updateMhsFrame();
 		}
 	}
 	

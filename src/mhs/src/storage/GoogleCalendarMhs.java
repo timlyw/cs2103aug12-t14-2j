@@ -65,7 +65,7 @@ public class GoogleCalendarMhs {
 	 */
 	public static String retrieveUserToken(String appName, String email,
 			String password) throws AuthenticationException,
-			NullPointerException {
+			NullPointerException, UnknownHostException {
 
 		CalendarService calService = new CalendarService(appName);
 		calService.setUserCredentials(email, password);
@@ -84,7 +84,7 @@ public class GoogleCalendarMhs {
 	 * @throws ServiceException
 	 */
 	public GoogleCalendarMhs(String appName, String email, String accessToken)
-			throws NullPointerException, IOException, ServiceException {
+			throws NullPointerException, IOException, ServiceException, UnknownHostException {
 		startLog("constructor");
 		defaultCalendar = new GoogleCalendar(appName, email, accessToken);
 		String defaultCalendarId = defaultCalendar.getDefaultCalendarId(email);
@@ -139,7 +139,7 @@ public class GoogleCalendarMhs {
 	 * @throws ResourceNotFoundException
 	 */
 	public CalendarEventEntry retrieveEvent(String eventId) throws IOException,
-			NullPointerException, ResourceNotFoundException {
+			NullPointerException, ResourceNotFoundException, UnknownHostException {
 		startLog("retrieveEvent");
 		CalendarEventEntry retrievedEvent = null;		
 		retrievedEvent = defaultCalendar.retrieveEvent(eventId);
@@ -185,7 +185,7 @@ public class GoogleCalendarMhs {
 	 * @throws NullPointerException
 	 */
 	public CalendarEventEntry updateEvent(Task updatedTask) throws IOException,
-			ServiceException, NullPointerException {
+			ServiceException, NullPointerException, UnknownHostException {
 		startLog("updateEvent");
 		CalendarEventEntry updatedEvent = null;
 		String eventId = updatedTask.getgCalTaskId();
@@ -210,8 +210,9 @@ public class GoogleCalendarMhs {
 	 * @throws ResourceNotFoundException
 	 */
 	public void deleteEvent(String eventId) throws IOException,
-	ServiceException, NullPointerException, ResourceNotFoundException {
-		startLog("deleteEvent");
+			ServiceException, NullPointerException, ResourceNotFoundException,
+			UnknownHostException {
+	startLog("deleteEvent");
 		try {
 			defaultCalendar.deleteEvent(eventId);
 		} catch(ResourceNotFoundException e) {
@@ -259,8 +260,10 @@ public class GoogleCalendarMhs {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public boolean isEventCompleted(CalendarEventEntry calendarEvent) throws NullPointerException, IOException, ServiceException {
-		try {
+	public boolean isEventCompleted(CalendarEventEntry calendarEvent)
+			throws NullPointerException, IOException, ServiceException,
+			UnknownHostException {
+	try {
 			return taskCalendar.contains(calendarEvent.getIcalUID());
 		} catch(ResourceNotFoundException e) {
 			return false;
@@ -303,7 +306,7 @@ public class GoogleCalendarMhs {
 	 */
 	private CalendarEventEntry updateTaskInDefaultCalendar(Task updatedTask)
 			throws NullPointerException, ResourceNotFoundException,
-			IOException, ServiceException {
+			IOException, ServiceException, UnknownHostException {
 	boolean taskIsDone = updatedTask.isDone();
 		
 		String eventId = updatedTask.getgCalTaskId();
@@ -332,8 +335,10 @@ public class GoogleCalendarMhs {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	private CalendarEventEntry updateTaskInTaskCalendar(Task updatedTask) throws NullPointerException, ResourceNotFoundException, IOException, ServiceException {
-		boolean taskIsDone = updatedTask.isDone();
+	private CalendarEventEntry updateTaskInTaskCalendar(Task updatedTask)
+			throws NullPointerException, ResourceNotFoundException,
+			IOException, ServiceException, UnknownHostException {
+	boolean taskIsDone = updatedTask.isDone();
 		
 		String eventId = updatedTask.getgCalTaskId();
 		String title = updatedTask.getTaskName();
