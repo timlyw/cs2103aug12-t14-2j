@@ -8,6 +8,7 @@ import mhs.src.storage.DatabaseFactory;
 import mhs.src.storage.DatabaseFactoryNotInstantiatedException;
 import mhs.src.storage.TaskNotFoundException;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -25,15 +26,9 @@ public class DatabaseFactoryTest {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	@Test
-	public void testDatabaseFactoryIllegalArugmentsExceptions()
-			throws IllegalArgumentException, IOException, ServiceException,
-			TaskNotFoundException, DatabaseAlreadyInstantiatedException {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage(String.format(EXCEPTION_MESSAGE_NULL_PARAMETER,
-				PARAMETER_TASK_RECORD_FILE_NAME));
-		DatabaseFactory databaseFactory = DatabaseFactory.getDatabaseFactory(
-				null, true);
+	@Before
+	public void databaseFactoryCleanup() {
+		DatabaseFactory.destroy();
 	}
 
 	@Test
@@ -47,13 +42,22 @@ public class DatabaseFactoryTest {
 	}
 
 	@Test
+	public void testDatabaseFactoryIllegalArugmentsExceptions()
+			throws IllegalArgumentException, IOException, ServiceException,
+			TaskNotFoundException, DatabaseAlreadyInstantiatedException {
+		thrown.expect(IllegalArgumentException.class);
+		thrown.expectMessage(String.format(EXCEPTION_MESSAGE_NULL_PARAMETER,
+				PARAMETER_TASK_RECORD_FILE_NAME));
+		DatabaseFactory.getDatabaseFactory(null, true);
+	}
+
+	@Test
 	public void testDatabaseFactory() throws IllegalArgumentException,
 			IOException, ServiceException,
 			DatabaseAlreadyInstantiatedException,
 			DatabaseFactoryNotInstantiatedException {
-		DatabaseFactory databaseFactory = DatabaseFactory.getDatabaseFactory(
-				TEST_TASK_RECORD_FILENAME, true);
+		DatabaseFactory.getDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
 		Database testDatabase = DatabaseFactory.getDatabaseInstance();
-		testDatabase.query(false);
+		assert (testDatabase != null);
 	}
 }

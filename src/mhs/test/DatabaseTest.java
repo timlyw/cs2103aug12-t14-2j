@@ -710,12 +710,9 @@ public class DatabaseTest {
 	private void initializeDatabase() throws IOException, ServiceException,
 			DatabaseAlreadyInstantiatedException,
 			DatabaseFactoryNotInstantiatedException {
-		if (database == null) {
-			DatabaseFactory databaseFactory = DatabaseFactory
-					.getDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
-		}
+		DatabaseFactory.destroy();
+		DatabaseFactory.getDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
 		database = DatabaseFactory.getDatabaseInstance();
-
 	}
 
 	/**

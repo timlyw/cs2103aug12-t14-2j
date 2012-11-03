@@ -5,9 +5,10 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ DatabaseTest.class, ConfigFileTest.class,
+
+@SuiteClasses({ DatabaseFactoryTest.class, DatabaseTest.class, ConfigFileTest.class,
 		GoogleCalendarMhsTest.class, TaskRecordFileTest.class,
-		CommandParserTest.class, TaskListsTest.class,ProcessorTest.class})
+		CommandParserTest.class, TaskListsTest.class, ProcessorTest.class })
 public class AllTests {
 
 }

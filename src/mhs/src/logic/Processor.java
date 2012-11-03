@@ -47,8 +47,7 @@ public class Processor {
 	public Processor() {
 		try {
 
-			DatabaseFactory databaseFactory = DatabaseFactory
-					.getDatabaseFactory("taskRecordFile.json", true);
+			DatabaseFactory.getDatabaseFactory("taskRecordFile.json", true);
 			dataHandler = DatabaseFactory.getDatabaseInstance();
 
 			commandParser = CommandParser.getCommandParser();
