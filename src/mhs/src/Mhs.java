@@ -1,10 +1,10 @@
 package mhs.src;
 
-import mhs.src.ui.UserInterface;
+import mhs.src.ui.UiController;
 
 public class Mhs {
 	public static void main(String[] args) {
-		UserInterface ui = new UserInterface();
-		ui.openMhsFrame();
+		UiController uiController = new UiController();
+		uiController.openMhsFrame();
 	}
 }
