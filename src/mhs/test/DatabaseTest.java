@@ -19,6 +19,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import mhs.src.storage.Database;
+import mhs.src.storage.DatabaseAlreadyInstantiatedException;
+import mhs.src.storage.DatabaseFactory;
+import mhs.src.storage.DatabaseFactoryNotInstantiatedException;
 import mhs.src.storage.DeadlineTask;
 import mhs.src.storage.FloatingTask;
 import mhs.src.storage.GoogleCalendarMhs;
@@ -143,7 +146,7 @@ public class DatabaseTest {
 	 * 
 	 */
 	public void testQueryDatabase() throws InvalidTaskFormatException,
-			IOException, ServiceException, TaskNotFoundException {
+			IOException, ServiceException, TaskNotFoundException, IllegalArgumentException, DatabaseAlreadyInstantiatedException, DatabaseFactoryNotInstantiatedException {
 
 		initializeCleanDatabaseWithoutSync();
 
@@ -295,7 +298,7 @@ public class DatabaseTest {
 	 * @throws TaskNotFoundException
 	 */
 	public void testQueryTaskIllegalArgumentException() throws IOException,
-			ServiceException, TaskNotFoundException {
+			ServiceException, TaskNotFoundException, IllegalArgumentException, DatabaseAlreadyInstantiatedException, DatabaseFactoryNotInstantiatedException {
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage(String.format(EXCEPTION_MESSAGE_NULL_PARAMETER,
 				PARAMETER_TASK_NAME));
@@ -312,7 +315,7 @@ public class DatabaseTest {
 	 * @throws TaskNotFoundException
 	 */
 	public void testQueryTaskNotFoundException() throws IOException,
-			ServiceException, TaskNotFoundException {
+			ServiceException, TaskNotFoundException, IllegalArgumentException, DatabaseAlreadyInstantiatedException, DatabaseFactoryNotInstantiatedException {
 		thrown.expect(TaskNotFoundException.class);
 		thrown.expectMessage(EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		initializeCleanDatabaseWithoutSync();
@@ -325,7 +328,7 @@ public class DatabaseTest {
 	 * @throws IOException
 	 */
 	public void testAddDatabase() throws IOException, ServiceException,
-			InvalidTaskFormatException, TaskNotFoundException {
+			InvalidTaskFormatException, TaskNotFoundException, IllegalArgumentException, DatabaseAlreadyInstantiatedException, DatabaseFactoryNotInstantiatedException {
 
 		initializeCleanDatabaseWithoutSync();
 
@@ -379,7 +382,7 @@ public class DatabaseTest {
 	 * @throws TaskNotFoundException
 	 */
 	public void testInvalidTaskFormatAdd() throws IOException,
-			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
+			ServiceException, TaskNotFoundException, InvalidTaskFormatException, IllegalArgumentException, DatabaseAlreadyInstantiatedException, DatabaseFactoryNotInstantiatedException {
 		thrown.expect(InvalidTaskFormatException.class);
 		thrown.expectMessage(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		initializeCleanDatabaseWithoutSync();
@@ -391,7 +394,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testInvalidTaskFormatAddInvalidTimed() throws IOException,
-			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
+			ServiceException, TaskNotFoundException, InvalidTaskFormatException, IllegalArgumentException, DatabaseAlreadyInstantiatedException, DatabaseFactoryNotInstantiatedException {
 		thrown.expect(InvalidTaskFormatException.class);
 		thrown.expectMessage(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		initializeCleanDatabaseWithoutSync();
@@ -403,7 +406,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testInvalidTaskFormatAddInvalidDeadline() throws IOException,
-			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
+			ServiceException, TaskNotFoundException, InvalidTaskFormatException, IllegalArgumentException, DatabaseAlreadyInstantiatedException, DatabaseFactoryNotInstantiatedException {
 		thrown.expect(InvalidTaskFormatException.class);
 		thrown.expectMessage(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		initializeCleanDatabaseWithoutSync();
@@ -422,7 +425,7 @@ public class DatabaseTest {
 	 * @throws TaskNotFoundException
 	 */
 	public void testInvalidTaskFormatAddFloating() throws IOException,
-			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
+			ServiceException, TaskNotFoundException, InvalidTaskFormatException, IllegalArgumentException, DatabaseAlreadyInstantiatedException, DatabaseFactoryNotInstantiatedException {
 		thrown.expect(InvalidTaskFormatException.class);
 		thrown.expectMessage(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		initializeCleanDatabaseWithoutSync();
@@ -438,7 +441,7 @@ public class DatabaseTest {
 	 */
 	public void testUpdateDatabase() throws IOException, ServiceException,
 			NullPointerException, TaskNotFoundException,
-			InvalidTaskFormatException {
+			InvalidTaskFormatException, IllegalArgumentException, DatabaseAlreadyInstantiatedException, DatabaseFactoryNotInstantiatedException {
 
 		initializeCleanDatabaseWithoutSync();
 
@@ -494,11 +497,18 @@ public class DatabaseTest {
 	 * 
 	 * @throws IOException
 	 * @throws ServiceException
+	 * @throws DatabaseAlreadyInstantiatedException 
+	 * @throws DatabaseFactoryNotInstantiatedException 
+	 * @throws IllegalArgumentException 
 	 */
 	private void initializeCleanDatabaseWithoutSync() throws IOException,
-			ServiceException {
+			ServiceException, DatabaseAlreadyInstantiatedException, IllegalArgumentException, DatabaseFactoryNotInstantiatedException {
 		// initialize database without sync for testing
-		database = new Database(TEST_TASK_RECORD_FILENAME, true);
+		DatabaseFactory databaseFactory = DatabaseFactory.getDatabaseFactory(
+				TEST_TASK_RECORD_FILENAME, true);
+		database = DatabaseFactory.getDatabaseInstance();
+
+		//database = new Database(TEST_TASK_RECORD_FILENAME, true);
 		database.clearDatabase();
 
 		// Test whether isUserGoogleCalendarAuthenticated reflects correct
@@ -511,7 +521,7 @@ public class DatabaseTest {
 	 * Test delete under local environment
 	 */
 	public void testDeleteDatabase() throws IOException, ServiceException,
-			InvalidTaskFormatException, TaskNotFoundException {
+			InvalidTaskFormatException, TaskNotFoundException, IllegalArgumentException, DatabaseAlreadyInstantiatedException, DatabaseFactoryNotInstantiatedException {
 
 		initializeCleanDatabaseWithoutSync();
 
@@ -719,12 +729,20 @@ public class DatabaseTest {
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 * @throws TimeoutException
+	 * @throws DatabaseFactoryNotInstantiatedException 
+	 * @throws IllegalArgumentException 
+	 * @throws DatabaseAlreadyInstantiatedException 
 	 */
 	private void initializeCleanDatabaseWithSync() throws IOException,
 			ServiceException, InterruptedException, ExecutionException,
-			TimeoutException {
+			TimeoutException, IllegalArgumentException, DatabaseFactoryNotInstantiatedException, DatabaseAlreadyInstantiatedException {
 		// Clear database (local and remote)
-		database = new Database(TEST_TASK_RECORD_FILENAME, false);
+		DatabaseFactory databaseFactory = DatabaseFactory.getDatabaseFactory(
+				TEST_TASK_RECORD_FILENAME, true);
+		database = DatabaseFactory.getDatabaseInstance();
+
+		//database = new Database(TEST_TASK_RECORD_FILENAME, false);
+		
 		database.loginUserGoogleAccount(GOOGLE_TEST_ACCOUNT_NAME,
 				GOOGLE_TEST_ACCOUNT_PASSWORD);
 
