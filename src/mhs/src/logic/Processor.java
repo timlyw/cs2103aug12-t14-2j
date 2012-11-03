@@ -46,10 +46,11 @@ public class Processor {
 	 */
 	public Processor() {
 		try {
-			DatabaseFactory databaseFactory = DatabaseFactory.getDatabaseFactory(
-					"taskRecordFile.json", true);
-				dataHandler = DatabaseFactory.getDatabaseInstance();
-			//dataHandler = new Database();
+
+			DatabaseFactory databaseFactory = DatabaseFactory
+					.getDatabaseFactory("taskRecordFile.json", true);
+			dataHandler = DatabaseFactory.getDatabaseInstance();
+
 			commandParser = CommandParser.getCommandParser();
 			userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
 			createCommand = new CommandCreator();
