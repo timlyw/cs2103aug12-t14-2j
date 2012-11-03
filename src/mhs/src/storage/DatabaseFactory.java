@@ -47,6 +47,10 @@ public class DatabaseFactory {
 		}
 		return databaseInstance;
 	}
+	public synchronized static void destroy(){
+		instance = null;
+		databaseInstance = null;
+	}
 
 	private DatabaseFactory(String taskRecordFileName, boolean disableSync) {
 		if (taskRecordFileName == null) {
