@@ -113,11 +113,14 @@ public class Database {
 			logExitMethod("Syncronize");
 		}
 
-		private void waitForSyncronizeBackgroundTaskToComplete(
+		private synchronized void waitForSyncronizeBackgroundTaskToComplete(
 				int maxExecutionTimeInSeconds) throws InterruptedException,
 				ExecutionException, TimeoutException {
 			logEnterMethod("waitForSyncronizeBackgroundTaskToComplete");
 			logger.log(Level.INFO, "Waiting for background task to complete.");
+			if (futureSyncronizeBackgroundTask == null) {
+				return;
+			}
 			futureSyncronizeBackgroundTask.get(maxExecutionTimeInSeconds,
 					TimeUnit.SECONDS);
 			logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
@@ -317,7 +320,7 @@ public class Database {
 				throws TaskNotFoundException, InvalidTaskFormatException,
 				IOException {
 			logEnterMethod("pullSyncTask");
-			
+
 			if (taskLists.containsSyncTask(gCalEntry.getIcalUID())) {
 
 				Task localTask = taskLists.getSyncTask(gCalEntry.getIcalUID());
@@ -598,14 +601,14 @@ public class Database {
 			return syncDateTime;
 		}
 	}
-	
+
 	/**
 	 * Database default constructor
 	 * 
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public Database() throws IOException, ServiceException {
+	protected Database() throws IOException, ServiceException {
 		logEnterMethod("Database");
 		initializeSyncDateTimes();
 		initalizeDatabase();
@@ -620,7 +623,7 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public Database(String taskRecordFileName, boolean disableSyncronize)
+	protected Database(String taskRecordFileName, boolean disableSyncronize)
 			throws IllegalArgumentException, IOException, ServiceException {
 		logEnterMethod("Database");
 		if (taskRecordFileName == null) {

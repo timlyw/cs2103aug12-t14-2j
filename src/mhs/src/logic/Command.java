@@ -8,6 +8,8 @@ import mhs.src.common.MhsLogger;
 import com.google.gdata.util.ServiceException;
 import mhs.src.ui.HtmlCreator;
 import mhs.src.storage.Database;
+import mhs.src.storage.DatabaseFactory;
+import mhs.src.storage.DatabaseFactoryNotInstantiatedException;
 import mhs.src.storage.Task;
 import mhs.src.storage.TaskCategory;
 
@@ -27,9 +29,15 @@ public abstract class Command {
 		isUndoable = false;
 		htmlCreator = new HtmlCreator();
 		try {
-			dataHandler = new Database();
+			dataHandler = DatabaseFactory.getDatabaseInstance();
 		} catch (IOException | ServiceException e1) {
 
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DatabaseFactoryNotInstantiatedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
