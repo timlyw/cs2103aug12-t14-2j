@@ -7,6 +7,9 @@ import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
 import mhs.src.storage.Database;
+import mhs.src.storage.DatabaseAlreadyInstantiatedException;
+import mhs.src.storage.DatabaseFactory;
+import mhs.src.storage.DatabaseFactoryNotInstantiatedException;
 import mhs.src.ui.HtmlCreator;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
@@ -43,12 +46,21 @@ public class Processor {
 	 */
 	public Processor() {
 		try {
-			dataHandler = new Database();
+
+			DatabaseFactory.getDatabaseFactory("taskRecordFile.json", true);
+			dataHandler = DatabaseFactory.getDatabaseInstance();
+
 			commandParser = CommandParser.getCommandParser();
 			userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
 			createCommand = new CommandCreator();
 			userCommand = new CommandInfo();
 			showHome();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DatabaseFactoryNotInstantiatedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (UnknownHostException e) {
 			// no internet
 			e.printStackTrace();
@@ -60,6 +72,9 @@ public class Processor {
 			e.printStackTrace();
 		} catch (IOException e) {
 			//
+			e.printStackTrace();
+		} catch (DatabaseAlreadyInstantiatedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
