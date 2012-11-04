@@ -21,8 +21,8 @@ import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 /**
- * Handles Syncronization operations between local storage and Google
- * Calendar Service as background task in a separate thread
+ * Handles Syncronization operations between local storage and Google Calendar
+ * Service as background task in a separate thread
  * 
  * Functions:
  * 
@@ -38,9 +38,6 @@ import com.google.gdata.util.ServiceException;
  */
 class Syncronize {
 
-	/**
-	 * 
-	 */
 	private final Database database;
 	private ScheduledThreadPoolExecutor syncronizeBackgroundExecutor;
 	private Runnable syncronizeDatabasesBackgroundTask;
@@ -54,7 +51,9 @@ class Syncronize {
 	 * 
 	 * Sets up thread for background sync and initializes runnable tasks and
 	 * Google Calendar Service.
-	 * @param database TODO
+	 * 
+	 * @param database
+	 *            TODO
 	 * 
 	 * @throws IOException
 	 */
@@ -75,14 +74,17 @@ class Syncronize {
 	synchronized void waitForSyncronizeBackgroundTaskToComplete(
 			int maxExecutionTimeInSeconds) throws InterruptedException,
 			ExecutionException, TimeoutException {
-		this.database.logEnterMethod("waitForSyncronizeBackgroundTaskToComplete");
-		Database.logger.log(Level.INFO, "Waiting for background task to complete.");
+		this.database
+				.logEnterMethod("waitForSyncronizeBackgroundTaskToComplete");
+		Database.logger.log(Level.INFO,
+				"Waiting for background task to complete.");
 		if (futureSyncronizeBackgroundTask == null) {
 			return;
 		}
 		futureSyncronizeBackgroundTask.get(maxExecutionTimeInSeconds,
 				TimeUnit.SECONDS);
-		this.database.logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
+		this.database
+				.logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
 	}
 
 	/**
@@ -182,11 +184,10 @@ class Syncronize {
 	 */
 	private void scheduleTimedPullSync() {
 		this.database.logEnterMethod("scheduleTimedPullSync");
-		syncronizeBackgroundExecutor
-				.scheduleAtFixedRate(pullSyncTimedBackgroundTask,
-						PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES,
-						PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES,
-						TimeUnit.MINUTES);
+		syncronizeBackgroundExecutor.scheduleAtFixedRate(
+				pullSyncTimedBackgroundTask,
+				PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES,
+				PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES, TimeUnit.MINUTES);
 		this.database.logExitMethod("scheduleTimedPullSync");
 	}
 
@@ -198,7 +199,8 @@ class Syncronize {
 		pullSyncTimedBackgroundTask = new TimerTask() {
 			@Override
 			public void run() {
-				Database.logger.log(Level.INFO, "Executing timed pull sync task");
+				Database.logger.log(Level.INFO,
+						"Executing timed pull sync task");
 				try {
 					Database.syncronize.pullSync();
 					Syncronize.this.database.saveTaskRecordFile();
@@ -238,8 +240,8 @@ class Syncronize {
 	 * @throws TaskNotFoundException
 	 * @throws ServiceException
 	 */
-	private void pullSync() throws UnknownHostException,
-			TaskNotFoundException, InvalidTaskFormatException {
+	private void pullSync() throws UnknownHostException, TaskNotFoundException,
+			InvalidTaskFormatException {
 		this.database.logEnterMethod("pullSync");
 		List<CalendarEventEntry> googleCalendarEvents;
 
@@ -282,7 +284,8 @@ class Syncronize {
 
 		if (Database.taskLists.containsSyncTask(gCalEntry.getIcalUID())) {
 
-			Task localTask = Database.taskLists.getSyncTask(gCalEntry.getIcalUID());
+			Task localTask = Database.taskLists.getSyncTask(gCalEntry
+					.getIcalUID());
 
 			// pull sync deleted event
 			if (Database.googleCalendar.isDeleted(gCalEntry)) {
@@ -297,8 +300,8 @@ class Syncronize {
 			if (localTask.getTaskLastSync().isBefore(
 					new DateTime(gCalEntry.getUpdated().getValue()))) {
 
-				Database.logger.log(Level.INFO,
-						"pulling newer event : " + localTask.getTaskName());
+				Database.logger.log(Level.INFO, "pulling newer event : "
+						+ localTask.getTaskName());
 
 				pullSyncExistingTask(gCalEntry, localTask);
 			}
@@ -330,22 +333,22 @@ class Syncronize {
 		if (gCalEntry.getTimes().get(0).getStartTime()
 				.equals(gCalEntry.getTimes().get(0).getEndTime())) {
 			// create new deadline task
-			Task newTask = new DeadlineTask(this.database.getNewTaskId(), gCalEntry,
-					syncDateTime);
+			Task newTask = new DeadlineTask(this.database.getNewTaskId(),
+					gCalEntry, syncDateTime);
 			Database.taskLists.updateTaskInTaskLists(newTask);
 
 		} else {
 			// create new timed task
-			Task newTask = new TimedTask(this.database.getNewTaskId(), gCalEntry,
-					syncDateTime);
+			Task newTask = new TimedTask(this.database.getNewTaskId(),
+					gCalEntry, syncDateTime);
 			Database.taskLists.updateTaskInTaskLists(newTask);
 		}
 		this.database.logExitMethod("pullSyncNewTask");
 	}
 
 	/**
-	 * Syncs existing local task with updated remote task Call pullSyncTask
-	 * as it contains sync validation logic.
+	 * Syncs existing local task with updated remote task Call pullSyncTask as
+	 * it contains sync validation logic.
 	 * 
 	 * @param gCalEntry
 	 * @param localTaskEntry
@@ -393,9 +396,8 @@ class Syncronize {
 	 * @throws InvalidTaskFormatException
 	 * @throws ServiceException
 	 */
-	void pushSyncTask(Task localTask) throws NullPointerException,
-			IOException, TaskNotFoundException, InvalidTaskFormatException,
-			ServiceException {
+	void pushSyncTask(Task localTask) throws NullPointerException, IOException,
+			TaskNotFoundException, InvalidTaskFormatException, ServiceException {
 		this.database.logEnterMethod("pushSyncTask");
 		// skip floating tasks
 		if (localTask.getTaskCategory().equals(TaskCategory.FLOATING)) {
@@ -419,14 +421,13 @@ class Syncronize {
 		}
 
 		// add unsynced tasks
-		if (this.database.isUnsyncedTask(localTask)) {
-			Database.logger.log(Level.INFO,
-					"Pushing new sync task : " + localTask.getTaskName());
+		if (TaskValidator.isUnsyncedTask(localTask)) {
+			Database.logger.log(Level.INFO, "Pushing new sync task : "
+					+ localTask.getTaskName());
 			pushSyncNewTask(localTask);
 		} else {
 			// add updated tasks
-			if (localTask.getTaskUpdated().isAfter(
-					localTask.getTaskLastSync())) {
+			if (localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync())) {
 				Database.logger.log(Level.INFO, "Pushing updated task : "
 						+ localTask.getTaskName());
 				pushSyncExistingTask(localTask);
@@ -438,8 +439,8 @@ class Syncronize {
 	}
 
 	/**
-	 * Push task that is currently not synced. Call pushSyncTask to sync
-	 * tasks instead as it contains sync validation logic.
+	 * Push task that is currently not synced. Call pushSyncTask to sync tasks
+	 * instead as it contains sync validation logic.
 	 * 
 	 * @param localTask
 	 * @throws ServiceException
@@ -449,9 +450,9 @@ class Syncronize {
 	 * @throws TaskNotFoundException
 	 * @throws Exception
 	 */
-	private void pushSyncNewTask(Task localTask)
-			throws NullPointerException, IOException, ServiceException,
-			TaskNotFoundException, InvalidTaskFormatException {
+	private void pushSyncNewTask(Task localTask) throws NullPointerException,
+			IOException, ServiceException, TaskNotFoundException,
+			InvalidTaskFormatException {
 		this.database.logEnterMethod("pushSyncNewTask");
 		// adds event to google calendar
 		CalendarEventEntry addedGCalEvent = Database.googleCalendar
@@ -461,8 +462,8 @@ class Syncronize {
 	}
 
 	/**
-	 * Push existing synced task. Call pushSyncTask to sync tasks instead as
-	 * it contains sync validation logic.
+	 * Push existing synced task. Call pushSyncTask to sync tasks instead as it
+	 * contains sync validation logic.
 	 * 
 	 * @param localTask
 	 * @throws ServiceException
@@ -499,7 +500,7 @@ class Syncronize {
 					Database.EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
 
-		if (!this.database.isTaskValid(localSyncTaskToUpdate)) {
+		if (!TaskValidator.isTaskValid(localSyncTaskToUpdate)) {
 			throw new InvalidTaskFormatException(
 					Database.EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		}
@@ -526,12 +527,12 @@ class Syncronize {
 		// Update Task Type
 		if (eventTimes.getStartTime().equals(eventTimes.getEndTime())) {
 			localSyncTaskToUpdate = new DeadlineTask(
-					localSyncTaskToUpdate.getTaskId(),
-					UpdatedCalendarEvent, syncDateTime);
+					localSyncTaskToUpdate.getTaskId(), UpdatedCalendarEvent,
+					syncDateTime);
 		} else {
 			localSyncTaskToUpdate = new TimedTask(
-					localSyncTaskToUpdate.getTaskId(),
-					UpdatedCalendarEvent, syncDateTime);
+					localSyncTaskToUpdate.getTaskId(), UpdatedCalendarEvent,
+					syncDateTime);
 		}
 		this.database.logExitMethod("updateLocalSyncTask");
 		return localSyncTaskToUpdate;

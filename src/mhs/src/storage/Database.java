@@ -33,10 +33,11 @@ import com.google.gdata.util.ServiceException;
 public class Database {
 
 	static GoogleCalendarMhs googleCalendar;
-	private static TaskRecordFile taskRecordFile;
-	private static ConfigFile configFile;
 	static TaskLists taskLists;
 	static Syncronize syncronize;
+	static TaskValidator taskValidator;
+	private static TaskRecordFile taskRecordFile;
+	private static ConfigFile configFile;
 
 	static DateTime syncStartDateTime;
 	static DateTime syncEndDateTime;
@@ -464,7 +465,7 @@ public class Database {
 					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_TASK));
 		}
 
-		if (!isTaskValid(task)) {
+		if (!TaskValidator.isTaskValid(task)) {
 			throw new InvalidTaskFormatException(
 					EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		}
@@ -586,7 +587,7 @@ public class Database {
 					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
 
-		if (!isTaskValid(updatedTask)) {
+		if (!TaskValidator.isTaskValid(updatedTask)) {
 			throw new InvalidTaskFormatException(
 					EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		}
@@ -764,92 +765,6 @@ public class Database {
 			}
 		}
 		logExitMethod("clearRemoteDatabase");
-	}
-	
-	/**
-	 * Checks if Task format is valid for given type
-	 * 
-	 * @param task
-	 * @return boolean
-	 */
-	boolean isTaskValid(Task task) {
-		logEnterMethod("isTaskValid");
-		assert (task != null);
-
-		if (task.getTaskCategory() == null || task.getTaskName() == null) {
-			logger.exiting(getClass().getName(),
-					new Exception().getStackTrace()[0].getMethodName());
-			return false;
-		}
-
-		boolean taskIsValid = true;
-
-		switch (task.getTaskCategory()) {
-		case FLOATING:
-			break;
-		case TIMED:
-			taskIsValid = isTimedTaskValid(task, taskIsValid);
-			break;
-		case DEADLINE:
-			taskIsValid = isDeadlineTaskValid(task, taskIsValid);
-			break;
-		default:
-			taskIsValid = false;
-			break;
-		}
-
-		logExitMethod("isTaskValid");
-		return taskIsValid;
-	}
-
-	/**
-	 * Checks if deadline task format is valid
-	 * 
-	 * @param task
-	 * @param taskIsValid
-	 * @return true if deadline task format is valid
-	 */
-	private boolean isDeadlineTaskValid(Task task, boolean taskIsValid) {
-		logEnterMethod("isDeadlineTaskValid");
-		assert (task != null);
-
-		if (task.getEndDateTime() == null) {
-			taskIsValid = false;
-		}
-		logExitMethod("isDeadlineTaskValid");
-		return taskIsValid;
-	}
-
-	/**
-	 * Checks if timed task is valid
-	 * 
-	 * @param task
-	 * @param taskIsValid
-	 * @return
-	 */
-	private boolean isTimedTaskValid(Task task, boolean taskIsValid) {
-		logEnterMethod("isTimedTaskValid");
-		assert (task != null);
-
-		if (task.getStartDateTime() == null || task.getEndDateTime() == null) {
-			taskIsValid = false;
-		}
-		logExitMethod("isTimedTaskValid");
-		return taskIsValid;
-	}
-
-	/**
-	 * Checks whether task is unsynced
-	 * 
-	 * @param localTask
-	 * @return true if task is unsynced
-	 */
-	boolean isUnsyncedTask(Task localTask) {
-		logEnterMethod("isUnsyncedTask");
-		assert (localTask != null);
-		logExitMethod("isUnsyncedTask");
-		return localTask.getgCalTaskId() == null
-				|| localTask.getTaskLastSync() == null;
 	}
 
 	/**
