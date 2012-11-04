@@ -1,7 +1,4 @@
-/**
- * Unit test for Task Record File
- * @author timlyw
- */
+//@author A0087048X
 package mhs.test;
 
 import static org.junit.Assert.assertEquals;
@@ -21,6 +18,14 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * TaskRecordFileTest
+ * 
+ * jUnit test for TaskRecordFileTest
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ * 
+ */
 public class TaskRecordFileTest {
 
 	TaskRecordFile taskRecordFile;

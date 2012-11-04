@@ -1,3 +1,4 @@
+//@author A0087048X
 package mhs.test;
 
 import static org.junit.Assert.assertEquals;
@@ -19,6 +20,14 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * TaskListsTest
+ * 
+ * jUnit test for TaskListsTest
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ *
+ */
 public class TaskListsTest {
 
 	TaskLists taskLists;

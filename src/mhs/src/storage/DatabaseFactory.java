@@ -1,3 +1,5 @@
+//@author A0087048X
+
 package mhs.src.storage;
 
 import java.io.IOException;
@@ -18,6 +20,7 @@ import com.google.gdata.util.ServiceException;
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
+
 public class DatabaseFactory {
 
 	private static final String PARAMETER_TASK_RECORD_FILE_NAME = "taskRecordFileName";

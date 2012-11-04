@@ -1,3 +1,5 @@
+//@author A0087048X
+
 package mhs.src.storage;
 
 import java.io.File;
@@ -32,6 +34,7 @@ import com.google.gson.stream.JsonReader;
  * @author Timothy Lim Yi Wen A0087048X
  * 
  */
+
 public class ConfigFile {
 
 	private JsonReader jsonReader;
