@@ -10,7 +10,7 @@ import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseAlreadyInstantiatedException;
 import mhs.src.storage.DatabaseFactory;
 import mhs.src.storage.DatabaseFactoryNotInstantiatedException;
-import mhs.src.ui.HtmlCreator;
+import mhs.src.common.HtmlCreator;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
