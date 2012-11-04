@@ -1,11 +1,14 @@
+//@author A0087048X
 /**
- * Exception for invalid task format
+ * InvalidTaskFormatException
+ * 
+ * Custom Exception thrown when task format is invalid.
  * 
  * Usage
  * - when task is defined incorrectly for that instance 
  * ( missing required parameters for task type )
  * 
- * @author timlyw 
+ * @author Timothy Lim Yi Wen A0087048X
  */
 package mhs.src.storage;
 

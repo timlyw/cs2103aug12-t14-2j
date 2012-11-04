@@ -1,9 +1,4 @@
-/**
- * Timed Task - inherits from base class Task
- * - Task with startDateTime and endDateTime
- * @author timlyw
- */
-
+//@author A0087048X
 package mhs.src.storage;
 
 import mhs.src.common.HtmlCreator;
@@ -12,6 +7,18 @@ import org.joda.time.DateTime;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
 
+/**
+ * TimedTask
+ * 
+ * Timed Task object
+ *  
+ * - inherits from base class Task 
+ * - Task with startDateTime and endDateTime
+ * - syncs with google calendar
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ * 
+ */
 public class TimedTask extends Task {
 
 	private DateTime startDateTime;
@@ -141,6 +148,9 @@ public class TimedTask extends Task {
 		return taskToString;
 	}
 
+	/**
+	 * @author John Wong
+	 */
 	public String toHtmlString() {
 		String dateString = "";
 		if(dateIsEqual(startDateTime, endDateTime)) {

@@ -1,9 +1,4 @@
-/**
- * Deadline Task - inherits from base class Task
- * - Task with an endDateTime
- * 
- * @author timlyw
- */
+//@author A0087048X
 
 package mhs.src.storage;
 
@@ -12,6 +7,17 @@ import mhs.src.common.HtmlCreator;
 import org.joda.time.DateTime;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
+
+/**
+ * DeadlineTask
+ * 
+ * Deadline Task Object
+ * 
+ * - Inherits from base class Task - Task with an endDateTime - Syncs with
+ * google calendar
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 
 public class DeadlineTask extends Task {
 
@@ -130,32 +136,35 @@ public class DeadlineTask extends Task {
 		}
 		return taskToString;
 	}
-	
+
+	/**
+	 * @author John Wong
+	 */
 	public String toHtmlString() {
 		String dateString = "";
 		HtmlCreator htmlCreator = new HtmlCreator();
 
 		dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
 		String timeString = getTimeString(endDateTime);
-		
+
 		String boldTaskName = htmlCreator.makeBold(taskName);
 		String htmlString = timeString + ": " + boldTaskName;
-		
+
 		return htmlString;
 	}
-	
+
 	private String getTimeString(DateTime date) {
 		String timeString = "";
-		
-		if(date.getMinuteOfHour() == 0) {
+
+		if (date.getMinuteOfHour() == 0) {
 			timeString = date.toString("h aa");
 		} else {
 			timeString = date.toString("h.mm aa");
 		}
-		
+
 		timeString = timeString.toLowerCase();
-		
+
 		return timeString;
 	}
-	
+
 }

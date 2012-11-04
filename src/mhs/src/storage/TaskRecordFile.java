@@ -1,11 +1,4 @@
-/**
- * Task Record File 
- * 
- * - Handles File I/O operations for tasks in json file
- *  
- * @author timlyw
- */
-
+//@author A0087048X
 package mhs.src.storage;
 
 import java.io.File;
@@ -32,6 +25,13 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+/**
+ * TaskRecordFile 
+ * 
+ * Handles File I/O operations for tasks in json file
+ *  
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 
 public class TaskRecordFile {
 

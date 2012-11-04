@@ -1,10 +1,6 @@
-/**
- * Component Test for Database
- * @author timlyw
- */
+//@author A0087048X
 package mhs.test;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -39,10 +35,16 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
-import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
+/**
+ * DatabaseTest
+ * 
+ * Component Test for Database
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 public class DatabaseTest {
 
 	Database database;
@@ -56,8 +58,8 @@ public class DatabaseTest {
 	Task task5;
 
 	private static final int MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS = 60;
-	private static final String TEST_TASK_2_NAME = "task 2 - a project meeting";
 	private static final String TEST_TASK_1_NAME = "task 1 - a meeting";
+	private static final String TEST_TASK_2_NAME = "task 2 - a project meeting";
 	private static final String TEST_TASK_3_NAME = "task 3 - assignment due";
 	private static final String TEST_TASK_4_NAME = "task 4 - project due";
 	private static final String TEST_TASK_5_NAME = "task 5 - play more games";
@@ -115,10 +117,10 @@ public class DatabaseTest {
 		DateTime dt = DateTime.now();
 		DateTime dt2 = DateTime.now();
 
-		task = new TimedTask(1, TEST_TASK_1_NAME, TaskCategory.TIMED, dt, dt2,
-				null, null, null, null, false, false);
-		task2 = new TimedTask(2, TEST_TASK_2_NAME, TaskCategory.TIMED, dt, dt2,
-				null, null, null, null, false, false);
+		task = new TimedTask(1, TEST_TASK_1_NAME, TaskCategory.TIMED, dt,
+				dt2.plusHours(5), null, null, null, null, false, false);
+		task2 = new TimedTask(2, TEST_TASK_2_NAME, TaskCategory.TIMED, dt,
+				dt2.plusHours(1), null, null, null, null, false, false);
 		task3 = new DeadlineTask(3, TEST_TASK_3_NAME, TaskCategory.DEADLINE,
 				dt, null, null, null, null, false, false);
 		task4 = new DeadlineTask(4, TEST_TASK_4_NAME, TaskCategory.DEADLINE,
