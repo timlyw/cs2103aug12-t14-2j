@@ -11,9 +11,9 @@ import com.google.gdata.util.ServiceException;
 import mhs.src.common.HtmlCreator;
 import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseFactory;
-import mhs.src.storage.DatabaseFactoryNotInstantiatedException;
-import mhs.src.storage.Task;
-import mhs.src.storage.TaskCategory;
+import mhs.src.storage.persistence.task.Task;
+import mhs.src.storage.persistence.task.TaskCategory;
+import mhs.src.util.DatabaseFactoryNotInstantiatedException;
 
 public abstract class Command {
 

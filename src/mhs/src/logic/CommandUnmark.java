@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.google.gdata.util.ServiceException;
-
 import mhs.src.common.MhsLogger;
-import mhs.src.storage.InvalidTaskFormatException;
-import mhs.src.storage.Task;
-import mhs.src.storage.TaskCategory;
-import mhs.src.storage.TaskNotFoundException;
+import mhs.src.storage.persistence.task.Task;
+import mhs.src.storage.persistence.task.TaskCategory;
+import mhs.src.util.InvalidTaskFormatException;
+import mhs.src.util.TaskNotFoundException;
+
+import com.google.gdata.util.ServiceException;
 
 /**
  * Executes Unmark command

@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
-import mhs.src.storage.Task;
-import mhs.src.storage.TaskNotFoundException;
+import mhs.src.storage.persistence.task.Task;
+import mhs.src.util.TaskNotFoundException;
 
 /**
  * Executes Delete Command
