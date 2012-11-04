@@ -54,8 +54,9 @@ class Syncronize {
 	private Runnable syncronizeDatabasesBackgroundTask;
 	private TimerTask pullSyncTimedBackgroundTask;
 	private Future<?> futureSyncronizeBackgroundTask;
-	private static final int PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES = 5;
-	private static final int PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES = 5;
+
+	private static final int PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES = 2;
+	private static final int PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES = 1;
 
 	/**
 	 * Default Constructor for Syncronize.
