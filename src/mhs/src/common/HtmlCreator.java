@@ -1,4 +1,4 @@
-package mhs.src.ui;
+package mhs.src.common;
 
 import java.util.List;
 

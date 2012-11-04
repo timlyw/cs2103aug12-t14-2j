@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
+import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 import com.google.gdata.util.ServiceException;
-import mhs.src.ui.HtmlCreator;
 import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseFactory;
 import mhs.src.storage.DatabaseFactoryNotInstantiatedException;

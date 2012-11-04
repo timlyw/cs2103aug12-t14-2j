@@ -30,6 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentListener;
 
+import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 
 public class MhsFrame extends JFrame {
