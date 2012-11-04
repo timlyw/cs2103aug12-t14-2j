@@ -7,7 +7,7 @@
 
 package mhs.src.storage;
 
-import mhs.src.ui.HtmlCreator;
+import mhs.src.common.HtmlCreator;
 
 import org.joda.time.DateTime;
 
@@ -139,7 +139,7 @@ public class DeadlineTask extends Task {
 		String timeString = getTimeString(endDateTime);
 		
 		String boldTaskName = htmlCreator.makeBold(taskName);
-		String htmlString = boldTaskName + " (Due: " + timeString + ")";
+		String htmlString = timeString + ": " + boldTaskName;
 		
 		return htmlString;
 	}
