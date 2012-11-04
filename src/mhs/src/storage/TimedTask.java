@@ -147,6 +147,9 @@ public class TimedTask extends Task {
 		return taskToString;
 	}
 
+	/**
+	 * @author John Wong
+	 */
 	public String toHtmlString() {
 		String dateString = "";
 		if(dateIsEqual(startDateTime, endDateTime)) {
