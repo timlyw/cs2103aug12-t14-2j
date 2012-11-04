@@ -52,7 +52,7 @@ public class HtmlCreator {
 		return boldString;
 	}
 	
-	public Task getLastTaskPrinted() {
+	public Task getLastTaskDisplayed() {
 		return lastTask;
 	}
 	
