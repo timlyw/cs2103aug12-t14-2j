@@ -91,7 +91,8 @@ public class CommandCreator {
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		case rename:
-			userOutputString = MESSAGE_INVALID_COMMAND;
+			currentCommand = new CommandRename(userCommand);
+			userOutputString = currentCommand.executeCommand();
 			break;
 		default:
 			userOutputString = MESSAGE_INVALID_COMMAND;
@@ -150,7 +151,10 @@ public class CommandCreator {
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		case rename:
-			userOutputString = MESSAGE_INVALID_COMMAND;
+			currentCommand = new CommandRename(previousCommand.matchedTasks,
+					userCommand);
+			userOutputString = currentCommand
+					.executeByIndexAndType(local_index - 1);
 			break;
 		default:
 			userOutputString = MESSAGE_INVALID_COMMAND;
