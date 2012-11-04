@@ -1,12 +1,3 @@
-/**
- * Json converter for Task
- * 
- * - Serializes task to jObject
- * - Deserializes jObject to Task
- * - Support for floating, timed and deadline tasks
- * 
- * @author timlyw
- */
 
 package mhs.src.storage;
 
@@ -24,6 +15,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
+/**
+ * TaskTypeConverter
+ * 
+ * Json converter for Task objects
+ * 
+ * - Serializes task to jObject
+ * - Deserializes jObject to Task
+ * - Support for floating, timed and deadline tasks
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 
 public class TaskTypeConverter implements JsonSerializer<Task>,
 		JsonDeserializer<Task> {

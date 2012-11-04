@@ -21,6 +21,8 @@ import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 /**
+ * Syncronize
+ * 
  * Handles Syncronization operations between local storage and Google Calendar
  * Service as background task in a separate thread
  * 
@@ -34,7 +36,7 @@ import com.google.gdata.util.ServiceException;
  * 
  * - Push Sync for single CRUD operation
  * 
- * @author timlyw
+ * @author Timothy Lim Yi Wen A0087048X
  */
 class Syncronize {
 
