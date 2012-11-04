@@ -1,7 +1,4 @@
-/**
- * Unit test for ConfigFile
- * @author timlyw
- */
+//@author A0087048X
 package mhs.test;
 
 import static org.junit.Assert.assertEquals;
@@ -15,6 +12,13 @@ import mhs.src.storage.ConfigFile;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * ConfigFileTest
+ * 
+ * jUnit test for ConfigFile
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 public class ConfigFileTest {
 
 	private static final String TEST_PARAM_VALUE = "testParamValue";

@@ -1,4 +1,4 @@
-
+//@author A0087048X
 
 package mhs.src.storage;
 
@@ -7,10 +7,8 @@ import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +30,7 @@ import com.google.gdata.util.ServiceException;
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
+
 public class Database {
 
 	static GoogleCalendarMhs googleCalendar;

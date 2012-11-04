@@ -1,10 +1,6 @@
-/**
- * Component Test for Database
- * @author timlyw
- */
+//@author A0087048X
 package mhs.test;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -32,8 +28,6 @@ import mhs.src.storage.TaskNotFoundException;
 import mhs.src.storage.TimedTask;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,10 +35,16 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
-import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
+/**
+ * DatabaseTest
+ * 
+ * Component Test for Database
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 public class DatabaseTest {
 
 	Database database;
