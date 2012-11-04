@@ -40,7 +40,6 @@ public class Processor {
 	public int LINE_HEIGHT = 30;
 	private CommandInfo userCommand;
 	private static final Logger logger = MhsLogger.getLogger();
-	
 
 	public String headerText = "My Hot Secretary ";
 
@@ -81,12 +80,11 @@ public class Processor {
 		userCommand = new CommandInfo();
 		showHome();
 	}
-	
+
 	public String getHeaderText() {
 		String boldTitle = htmlCreator.makeBold(headerText);
 		return boldTitle;
 	}
-	
 
 	private void showHome() {
 		setCommand("display today");
@@ -194,7 +192,7 @@ public class Processor {
 					screenOutput = processCommand(userCommand);
 
 				} catch (NullPointerException e1) {
-					screenOutput = "Empty Command - Blank Input";
+					screenOutput = "No Params specified";
 				}
 			}
 		} catch (Exception e) {
@@ -210,8 +208,10 @@ public class Processor {
 	public void setCommand(String command) {
 		currentCommand = command;
 		if (!isPasswordExpected) {
-			String boldCommand = htmlCreator.makeBold(currentCommand);
-			commandFeedback = "feedback for " + boldCommand;
+			CommandInfo tempCommand = commandParser.getParsedCommand(command);
+			String boldCommand = htmlCreator.makeBold(tempCommand.toString());
+			commandFeedback = "feedback:" + boldCommand;
+
 		} else {
 			commandFeedback = "Please ensure that CAPS lock is not on..";
 		}
