@@ -8,14 +8,21 @@ import mhs.src.common.MhsLogger;
 import mhs.src.storage.Task;
 import mhs.src.storage.TaskNotFoundException;
 
+/**
+ * Executes Delete Command
+ * 
+ * @author A0088669A
+ * 
+ */
 public class CommandRemove extends Command {
 
-	private static final String TASK_NOT_DELETED = "Error occured. Task not Deleted.";
-	private static final String TASK_DELETED = "Deleted task - '%1$s' sucessfully.";
-			
+	private static final String MESSAGE_TASK_NOT_DELETED = "Error occured. Task not Deleted.";
+	private static final String CONFIRM_TASK_DELETED = "Deleted task - '%1$s' sucessfully.";
+
 	private Task lastDeletedTask;
 
 	private static final Logger logger = MhsLogger.getLogger();
+
 	/**
 	 * Constructor for non index based commands
 	 * 
@@ -34,15 +41,15 @@ public class CommandRemove extends Command {
 	}
 
 	/**
-	 * Constructor for index based commands
-	 * Restores the previous list.
+	 * Constructor for index based commands Restores the previous list.
+	 * 
 	 * @param lastUsedList
 	 */
 	public CommandRemove(List<Task> lastUsedList) {
 		logEnterMethod("CommandRemove-Undo");
 		matchedTasks = lastUsedList;
-		//Matched task must not be null
-		assert(matchedTasks!=null);
+		// Matched task must not be null
+		assert (matchedTasks != null);
 		logExitMethod("CommandRemove-undo");
 	}
 
@@ -52,18 +59,19 @@ public class CommandRemove extends Command {
 	public String executeCommand() {
 		logEnterMethod("executeCommand");
 		String outputString = new String();
-		assert(matchedTasks!=null);
+		assert (matchedTasks != null);
 		if (matchedTasks.isEmpty()) {
 			outputString = MESSAGE_NO_MATCH;
 		}
 		// if only 1 match is found then delete it
 		else if (matchedTasks.size() == 1) {
 			try {
-				storeLastTask();
-				deleteTask();
-				outputString = String.format(TASK_DELETED, lastDeletedTask.getTaskName());
+				storeLastTask(matchedTasks.get(0));
+				deleteTask(matchedTasks.get(0));
+				outputString = String.format(CONFIRM_TASK_DELETED,
+						lastDeletedTask.getTaskName());
 			} catch (Exception e) {
-				outputString = TASK_NOT_DELETED;
+				outputString = MESSAGE_TASK_NOT_DELETED;
 			}
 		}
 		// if multiple matches are found display the list
@@ -76,13 +84,15 @@ public class CommandRemove extends Command {
 	}
 
 	/**
-	 * Deletes task 
+	 * Deletes task
+	 * 
 	 * @throws TaskNotFoundException
 	 * @throws IOException
 	 */
-	private void deleteTask() throws TaskNotFoundException, IOException {
+	private void deleteTask(Task taskToDelete) throws TaskNotFoundException,
+			IOException {
 		logEnterMethod("deleteTask");
-		dataHandler.delete(matchedTasks.get(0).getTaskId());
+		dataHandler.delete(taskToDelete.getTaskId());
 		isUndoable = true;
 		logExitMethod("deleteTask");
 	}
@@ -90,11 +100,11 @@ public class CommandRemove extends Command {
 	/**
 	 * Stores last task for undo
 	 */
-	private void storeLastTask() {
+	private void storeLastTask(Task taskToStore) {
 		logEnterMethod("storeLastTask");
 		lastDeletedTask = new Task();
-		lastDeletedTask = matchedTasks.get(0);
-		assert(lastDeletedTask!=null);
+		lastDeletedTask = taskToStore;
+		assert (lastDeletedTask != null);
 		logExitMethod("storeLastTask");
 	}
 
@@ -102,42 +112,47 @@ public class CommandRemove extends Command {
 	 * adds previously deleted task
 	 */
 	public String undo() {
+		logEnterMethod("undo");
+		String outputString = new String();
 		if (isUndoable()) {
 			try {
+				assert (lastDeletedTask != null);
 				dataHandler.add(lastDeletedTask);
 				isUndoable = false;
-				return MESSAGE_UNDO_CONFIRM;
+				outputString = MESSAGE_UNDO_CONFIRM;
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return MESSAGE_UNDO_FAIL;
+				outputString = MESSAGE_UNDO_FAIL;
 			}
 
 		} else {
-			return MESSAGE_UNDO_FAIL;
+			outputString = MESSAGE_CANNOT_UNDO;
 		}
+		logExitMethod("undo");
+		return outputString;
 	}
 
 	/**
 	 * executes based on index only. Works when delete returned multiple matches
 	 */
 	public String executeByIndex(int index) {
+		logEnterMethod("executeByIndex");
 		String outputString = new String();
-		if (indexExpected & index < matchedTasks.size()) {
+		if (indexExpected && index < matchedTasks.size() && index >= 0) {
+			assert (index >= 0 && index < matchedTasks.size());
 			try {
-				System.out.println("entered");
-				dataHandler.delete(matchedTasks.get(index).getTaskId());
-				outputString = "Deleted task -"
-						+ matchedTasks.get(index).getTaskName();
-				lastDeletedTask = matchedTasks.get(index);
+				assert (matchedTasks.get(index) != null);
+				storeLastTask(matchedTasks.get(index));
+				deleteTask(matchedTasks.get(index));
 				indexExpected = false;
-				isUndoable = true;
+				outputString = String.format(CONFIRM_TASK_DELETED, matchedTasks
+						.get(index).getTaskName());
 			} catch (Exception e) {
-
+				outputString = MESSAGE_TASK_NOT_DELETED;
 			}
 		} else {
-			outputString = "Invalid Command";
+			outputString = MESSAGE_INVALID_INDEX;
 		}
+		logExitMethod("executeByIndex");
 		return outputString;
 	}
 
@@ -146,23 +161,26 @@ public class CommandRemove extends Command {
 	 * present.
 	 */
 	public String executeByIndexAndType(int index) {
+		logEnterMethod("executeByIndexAndType");
 		String outputString = new String();
-		if (index < matchedTasks.size()) {
+		if (index < matchedTasks.size() && index >= 0) {
+			assert (index >= 0 && index < matchedTasks.size());
 			try {
-				dataHandler.delete(matchedTasks.get(index).getTaskId());
-				outputString = "Deleted task -"
-						+ matchedTasks.get(index).getTaskName();
-				lastDeletedTask = matchedTasks.get(index);
-				isUndoable = true;
+				assert (matchedTasks.get(index) != null);
+				storeLastTask(matchedTasks.get(index));
+				deleteTask(matchedTasks.get(index));
+				outputString = String.format(CONFIRM_TASK_DELETED, matchedTasks
+						.get(index).getTaskName());
 			} catch (Exception e) {
-
+				outputString = MESSAGE_TASK_NOT_DELETED;
 			}
 		} else {
-			outputString = "Invalid Command";
+			outputString = MESSAGE_INVALID_INDEX;
 		}
+		logExitMethod("executeByIndexAndType");
 		return outputString;
 	}
-	
+
 	/**
 	 * Logger enter method
 	 * 

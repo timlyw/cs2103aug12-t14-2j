@@ -19,6 +19,7 @@ public abstract class Command {
 	protected static final String MESSAGE_UNDO_CONFIRM = "Undo Successful";
 	protected static final String MESSAGE_CANNOT_UNDO = "Sorry Cannot Undo last command";
 	protected static final String MESSAGE_NO_MATCH = "No matching results found";
+	protected static final String MESSAGE_INVALID_INDEX = "Invalid Index.";
 	protected boolean isUndoable;
 	protected List<Task> matchedTasks;
 	protected Database dataHandler;

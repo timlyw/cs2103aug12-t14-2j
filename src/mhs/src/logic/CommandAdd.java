@@ -20,11 +20,11 @@ import org.joda.time.DateTime;
  */
 public class CommandAdd extends Command {
 
-	private static final String INVALID_TASK = "Error occured. Empty Task. Task not Added";
-	private static final String TASK_NOT_ADDED = "Error occured. Task not Added.";
-	private static final String ADD_INDEX_CANNOT = "Add does not support index commands.";
+	private static final String MESSAGE_INVALID_TASK = "Error occured. Empty Task. Task not Added";
+	private static final String MESSAGE_TASK_NOT_ADDED = "Error occured. Task not Added.";
+	private static final String MESSAGE_ADD_INDEX_CANNOT = "Add does not support index commands.";
 
-	private static final String TASK_ADDED = "A %1$s task - '%2$s' was successfully added.";
+	private static final String CONFIRM_TASK_ADDED = "A %1$s task - '%2$s' was successfully added.";
 
 	private static final int FLOATING = 0;
 	private static final int DEADLINE = 1;
@@ -138,20 +138,20 @@ public class CommandAdd extends Command {
 		String outputString = new String();
 		assert (taskToAddTask != null);
 		if (taskToAddTask.getTaskName() == null) {
-			return INVALID_TASK;
+			return MESSAGE_INVALID_TASK;
 		} else {
 			try {
 				// Store last added task for undo
 				addedTask = new Task();
 				addedTask = dataHandler.add(taskToAddTask);
 				isUndoable = true;
-				outputString = String.format(TASK_ADDED,
+				outputString = String.format(CONFIRM_TASK_ADDED,
 						taskToAddTask.getTaskCategory(),
 						taskToAddTask.getTaskName());
 			} catch (IOException e) {
-				outputString = TASK_NOT_ADDED;
+				outputString = MESSAGE_TASK_NOT_ADDED;
 			} catch (Exception e) {
-				outputString = TASK_NOT_ADDED;
+				outputString = MESSAGE_TASK_NOT_ADDED;
 			}
 		}
 		logExitMethod("executeCommand");
@@ -186,7 +186,7 @@ public class CommandAdd extends Command {
 	public String executeByIndex(int index) {
 		logEnterMethod("executeByIndex");
 		logExitMethod("executeByIndex");
-		return ADD_INDEX_CANNOT;
+		return MESSAGE_ADD_INDEX_CANNOT;
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class CommandAdd extends Command {
 	public String executeByIndexAndType(int index) {
 		logEnterMethod("executeByIndexAndType");
 		logExitMethod("executeByIndexAndType");
-		return ADD_INDEX_CANNOT;
+		return MESSAGE_ADD_INDEX_CANNOT;
 	}
 
 	/**
