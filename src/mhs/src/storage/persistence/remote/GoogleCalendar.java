@@ -1,4 +1,4 @@
-package mhs.src.storage;
+package mhs.src.storage.persistence.remote;
 
 /**
  * This class provides services to connect with a user's Google Calendar

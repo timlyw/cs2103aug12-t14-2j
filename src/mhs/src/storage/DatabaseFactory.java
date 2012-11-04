@@ -6,13 +6,15 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
+import mhs.src.common.exceptions.DatabaseAlreadyInstantiatedException;
+import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
 
 import com.google.gdata.util.ServiceException;
 
 /**
  * DatabaseFactory
  * 
- * Singleton DatabaseFactory that controls creation of single database object
+ * Singleton DatabaseFactory that controls creation of hot-single database object
  * with set parameters
  * 
  * Usage - Call getDatabaseFactory to setup factory settings with Database
