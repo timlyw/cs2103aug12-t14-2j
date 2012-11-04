@@ -1,12 +1,3 @@
-/**
- * Json converter for JodaTime DateTime object
- *  
- *  - Serializes JodaTime DateTime to jObject
- *  - Deerializes jObject to JodaTime DateTime
- *  
- * @author timlyw
- */
-
 package mhs.src.storage;
 
 import java.lang.reflect.Type;
@@ -23,6 +14,19 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
+/**
+ * DateTimeTypeConverter
+ * 
+ * Json converter for JodaTime DateTime object
+ * 
+ * - Serializes JodaTime DateTime to jObject 
+ * 
+ * - Deerializes jObject to JodaTime
+ * DateTime
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 
 public class DateTimeTypeConverter implements JsonSerializer<DateTime>,
 		JsonDeserializer<DateTime> {
@@ -44,7 +48,7 @@ public class DateTimeTypeConverter implements JsonSerializer<DateTime>,
 		logExitMethod("deserialize");
 		return new DateTime(json.getAsString());
 	}
-	
+
 	private void logEnterMethod(String methodName) {
 		logger.entering(getClass().getName(), methodName);
 	}
@@ -52,5 +56,5 @@ public class DateTimeTypeConverter implements JsonSerializer<DateTime>,
 	private void logExitMethod(String methodName) {
 		logger.exiting(getClass().getName(), methodName);
 	}
-	
+
 }

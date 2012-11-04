@@ -1,13 +1,3 @@
-/**
- * DatabaseFactory 
- * 
- * Singleton DatabaseFactory that controls creation of single database object with set parameters
- * 
- *  Usage
- *  - Call getDatabaseFactory to setup factory settings with Database parameters
- *  - Use getDatabaseInstance to get DatabaseInstance
- * 
- */
 package mhs.src.storage;
 
 import java.io.IOException;
@@ -17,6 +7,17 @@ import mhs.src.common.MhsLogger;
 
 import com.google.gdata.util.ServiceException;
 
+/**
+ * DatabaseFactory
+ * 
+ * Singleton DatabaseFactory that controls creation of single database object
+ * with set parameters
+ * 
+ * Usage - Call getDatabaseFactory to setup factory settings with Database
+ * parameters - Use getDatabaseInstance to get DatabaseInstance
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 public class DatabaseFactory {
 
 	private static final String PARAMETER_TASK_RECORD_FILE_NAME = "taskRecordFileName";

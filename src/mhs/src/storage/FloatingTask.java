@@ -1,15 +1,19 @@
-/**
- * Floating Task - inherits from base class Task
- * 
- * @author timlyw
- */
-
 package mhs.src.storage;
 
 import mhs.src.common.HtmlCreator;
 
 import org.joda.time.DateTime;
 
+/**
+ * FloatingTask
+ * 
+ * Floating Task Object
+ * 
+ * - Inherits from base class Task
+ * - Not synced with google calendar
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 public class FloatingTask extends Task {
 
 	/**
