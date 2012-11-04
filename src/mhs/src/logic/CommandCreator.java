@@ -13,6 +13,7 @@ import java.util.Stack;
  */
 public class CommandCreator {
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command";
+	private static final String MESSAGE_NOTHING_TO_UNDO = "Nothing to undo";
 	private Command currentCommand;
 	private Command previousCommand;
 	private Stack<Command> undoListCommands;
@@ -76,8 +77,12 @@ public class CommandCreator {
 			userOutputString = currentCommand.executeCommand();
 			break;
 		case undo:
-			Command undoCommand = undoListCommands.pop();
-			userOutputString = undoCommand.undo();
+			if (undoListCommands.isEmpty()) {
+				userOutputString = MESSAGE_NOTHING_TO_UNDO;
+			} else {
+				Command undoCommand = undoListCommands.pop();
+				userOutputString = undoCommand.undo();
+			}
 			break;
 		case mark:
 			currentCommand = new CommandMark(userCommand);
@@ -88,10 +93,12 @@ public class CommandCreator {
 		 * userOutputString = currentCommand.executeCommand(); break;
 		 */
 		case help:
-			userOutputString = MESSAGE_INVALID_COMMAND;
+			currentCommand = new CommandHelp();
+			userOutputString = currentCommand.executeCommand();
 			break;
 		case rename:
-			userOutputString = MESSAGE_INVALID_COMMAND;
+			currentCommand = new CommandRename(userCommand);
+			userOutputString = currentCommand.executeCommand();
 			break;
 		default:
 			userOutputString = MESSAGE_INVALID_COMMAND;
@@ -150,7 +157,10 @@ public class CommandCreator {
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		case rename:
-			userOutputString = MESSAGE_INVALID_COMMAND;
+			currentCommand = new CommandRename(previousCommand.matchedTasks,
+					userCommand);
+			userOutputString = currentCommand
+					.executeByIndexAndType(local_index - 1);
 			break;
 		default:
 			userOutputString = MESSAGE_INVALID_COMMAND;

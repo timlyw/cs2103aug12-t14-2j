@@ -139,7 +139,6 @@ public class ProcessorStub {
 		taskList.add((Task) task2);
 		taskList.add((Task) task3);
 		
-		currentState = htmlCreator.createTaskListHtml(taskList, lineLimit);
 		
 	}
 	

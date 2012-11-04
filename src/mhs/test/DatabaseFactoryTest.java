@@ -1,3 +1,4 @@
+//@author A0087048X
 package mhs.test;
 
 import java.io.IOException;
@@ -14,6 +15,14 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.google.gdata.util.ServiceException;
+
+/**
+ * DatabaseFactoryTest
+ * 
+ * jUnit test for DatabaseFactoryTest
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 
 public class DatabaseFactoryTest {
 	private final static String TEST_TASK_RECORD_FILENAME = "testTaskRecordFile.json";

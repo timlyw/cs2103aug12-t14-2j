@@ -1,14 +1,5 @@
-/**
- * TaskLists
- * 
- * Abstracts operations on the taskLists containing different views of tasks:
- * - taskList - by taskId
- * - gCalTaskList - by gCalTaskId
- * 
- * Functionality
- * - logic for CRUD on tasks in all task lists
- * - getters for taskLists
- */
+//@author A0087048X
+
 package mhs.src.storage;
 
 import java.util.Collections;
@@ -23,6 +14,19 @@ import mhs.src.common.MhsLogger;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
+/**
+ * TaskLists
+ * 
+ * Abstracts operations on the taskLists containing different views of tasks:
+ * 1. taskList - by taskId
+ * 2. gCalTaskList - by gCalTaskId
+ * 
+ * Functionality
+ * - logic for CRUD on tasks in all task lists
+ * - getters for taskLists
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 public class TaskLists {
 
 	private Map<Integer, Task> taskList; // primary task list with index as key

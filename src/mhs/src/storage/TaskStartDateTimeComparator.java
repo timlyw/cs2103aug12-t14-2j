@@ -1,17 +1,19 @@
-/**
- * Comparator class for Task startDateTime 
- * - Orders task by startDateTime
- * 
- * Comparator Logic
- * - floating task first, followed by timed/deadline tasks 
- * - timed/deadline tasks are sorted by earliest startDateTime first
- * 
- * @author timlyw
- */
+//@author A0087048X
 package mhs.src.storage;
 
 import java.util.Comparator;
 
+/**
+ * TaskStartDateTimeComparator
+ * 
+ * Comparator class for Task startDateTime which compares task by startDateTime
+ * 
+ * Comparator Logic 
+ * - floating task first, followed by timed/deadline tasks 
+ * - timed/deadline tasks are sorted by earliest startDateTime first
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 class TaskStartDateTimeComparator implements Comparator<Task> {
 	@Override
 	public int compare(Task o1, Task o2) {
