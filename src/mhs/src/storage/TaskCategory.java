@@ -1,10 +1,17 @@
+package mhs.src.storage;
+
 /**
+ * TaskCategory
+ * 
  * Task Category enumerated type
  * 
- * @author timlyw 
+ * Task Categories:
+ * 1. Floating
+ * 2. Timed
+ * 3. Deadline
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
  */
-
-package mhs.src.storage;
 
 public enum TaskCategory {
 	FLOATING("FLOATING"), TIMED("TIMED"), DEADLINE("DEADLINE");

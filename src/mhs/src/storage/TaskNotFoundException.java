@@ -1,13 +1,12 @@
-/**
- * Exception for Task not found
- * 
- * Usage
- * - when task specifically requested by taskId is not found
- * 
- * @author timlyw
- */
 package mhs.src.storage;
 
+/**
+ * TaskNotFoundException
+ * 
+ * Custom Exception thrown when task specified by taskId is not found
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 @SuppressWarnings("serial")
 public class TaskNotFoundException extends Exception {
 

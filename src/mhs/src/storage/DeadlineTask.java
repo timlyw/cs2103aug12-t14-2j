@@ -1,10 +1,3 @@
-/**
- * Deadline Task - inherits from base class Task
- * - Task with an endDateTime
- * 
- * @author timlyw
- */
-
 package mhs.src.storage;
 
 import mhs.src.common.HtmlCreator;
@@ -12,6 +5,18 @@ import mhs.src.common.HtmlCreator;
 import org.joda.time.DateTime;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
+
+/**
+ * DeadlineTask
+ * 
+ * Deadline Task Object
+ * 
+ * - Inherits from base class Task 
+ * - Task with an endDateTime
+ * - Syncs with google calendar
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 
 public class DeadlineTask extends Task {
 
