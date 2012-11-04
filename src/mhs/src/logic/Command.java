@@ -9,11 +9,11 @@ import org.joda.time.DateTime;
 import mhs.src.common.MhsLogger;
 import com.google.gdata.util.ServiceException;
 import mhs.src.common.HtmlCreator;
+import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
 import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseFactory;
 import mhs.src.storage.persistence.task.Task;
 import mhs.src.storage.persistence.task.TaskCategory;
-import mhs.src.util.DatabaseFactoryNotInstantiatedException;
 
 public abstract class Command {
 

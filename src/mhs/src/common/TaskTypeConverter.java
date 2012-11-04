@@ -1,10 +1,9 @@
 //@author A0087048X
-package mhs.src.storage.persistence;
+package mhs.src.common;
 
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
-import mhs.src.common.MhsLogger;
 import mhs.src.storage.persistence.task.DeadlineTask;
 import mhs.src.storage.persistence.task.FloatingTask;
 import mhs.src.storage.persistence.task.Task;

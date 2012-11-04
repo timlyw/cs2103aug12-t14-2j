@@ -10,7 +10,7 @@
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
-package mhs.src.util;
+package mhs.src.common.exceptions;
 
 @SuppressWarnings("serial")
 public class InvalidTaskFormatException extends Exception {

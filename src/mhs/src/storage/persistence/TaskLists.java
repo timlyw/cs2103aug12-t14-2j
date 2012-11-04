@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
+import mhs.src.common.exceptions.TaskNotFoundException;
 import mhs.src.storage.persistence.task.Task;
 import mhs.src.storage.persistence.task.TaskCategory;
-import mhs.src.util.TaskNotFoundException;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;

@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import mhs.src.common.MhsGson;
 import mhs.src.common.MhsLogger;
 import mhs.src.storage.persistence.task.Task;
-import mhs.src.util.MhsGson;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
