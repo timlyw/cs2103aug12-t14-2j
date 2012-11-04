@@ -5,12 +5,12 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseAlreadyInstantiatedException;
 import mhs.src.storage.DatabaseFactory;
 import mhs.src.storage.DatabaseFactoryNotInstantiatedException;
-import mhs.src.ui.HtmlCreator;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
