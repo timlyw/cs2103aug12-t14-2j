@@ -15,8 +15,10 @@ import mhs.src.storage.TaskCategory;
 
 public abstract class Command {
 
-	protected static final String MESSAGE_UNDO_FAIL = "Cannot Undo";
+	protected static final String MESSAGE_UNDO_FAIL = "Undo Failed";
 	protected static final String MESSAGE_UNDO_CONFIRM = "Undo Successful";
+	protected static final String MESSAGE_CANNOT_UNDO = "Sorry Cannot Undo last command";
+	protected static final String MESSAGE_NO_MATCH = "No matching results found";
 	protected boolean isUndoable;
 	protected List<Task> matchedTasks;
 	protected Database dataHandler;
@@ -145,6 +147,7 @@ public abstract class Command {
 			}
 			count++;
 		}
+		//outputString = htmlCreator.createTaskListHtml(resultList, resultList.si)
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}

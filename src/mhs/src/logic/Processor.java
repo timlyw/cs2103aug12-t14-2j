@@ -52,12 +52,7 @@ public class Processor {
 
 			DatabaseFactory.getDatabaseFactory("taskRecordFile.json", true);
 			dataHandler = DatabaseFactory.getDatabaseInstance();
-
-			commandParser = CommandParser.getCommandParser();
 			userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
-			createCommand = new CommandCreator();
-			userCommand = new CommandInfo();
-			showHome();
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -65,6 +60,7 @@ public class Processor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
+			userIsLoggedIn = false;
 			// no internet
 			e.printStackTrace();
 		} catch (AuthenticationException e) {
@@ -80,6 +76,10 @@ public class Processor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		commandParser = CommandParser.getCommandParser();
+		createCommand = new CommandCreator();
+		userCommand = new CommandInfo();
+		showHome();
 	}
 	
 	public String getHeaderText() {

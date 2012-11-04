@@ -21,5 +21,100 @@
     "gCalTaskId": null,
     "isDone": false,
     "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-11-04T07:00:00.000+08:00",
+    "endDateTime": "2012-11-04T08:00:00.000+08:00",
+    "taskId": 3,
+    "taskName": "breakfast",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-04T02:59:04.733+08:00",
+    "taskUpdated": "2012-11-04T02:59:04.733+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-11-04T20:00:00.000+08:00",
+    "endDateTime": "2012-11-04T21:00:00.000+08:00",
+    "taskId": 4,
+    "taskName": "squash physicals",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-04T02:59:32.797+08:00",
+    "taskUpdated": "2012-11-04T02:59:32.797+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 5,
+    "taskName": "CS2103 project",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-04T02:59:49.427+08:00",
+    "taskUpdated": "2012-11-04T02:59:49.427+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 6,
+    "taskName": "buy batteries",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-04T03:00:19.367+08:00",
+    "taskUpdated": "2012-11-04T03:00:19.367+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-11-04T14:00:00.000+08:00",
+    "endDateTime": "2012-11-04T16:00:00.000+08:00",
+    "taskId": 7,
+    "taskName": "AP meet",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-04T03:18:03.814+08:00",
+    "taskUpdated": "2012-11-04T03:18:03.814+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "endDateTime": "2012-11-05T16:00:00.000+08:00",
+    "taskId": 8,
+    "taskName": "submission",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-04T03:18:50.998+08:00",
+    "taskUpdated": "2012-11-04T03:22:52.055+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 9,
+    "taskName": "hello",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-04T04:26:27.166+08:00",
+    "taskUpdated": "2012-11-04T04:27:34.915+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 10,
+    "taskName": "Default task",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-04T04:27:48.556+08:00",
+    "taskUpdated": "2012-11-04T04:29:10.311+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
   }
 ]
