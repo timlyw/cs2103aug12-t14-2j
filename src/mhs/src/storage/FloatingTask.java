@@ -54,6 +54,9 @@ public class FloatingTask extends Task {
 				null, isDone, isDeleted);
 	}
 	
+	/**
+	 * @author John Wong
+	 */	
 	public String toHtmlString() {
 		HtmlCreator htmlCreator = new HtmlCreator();
 
