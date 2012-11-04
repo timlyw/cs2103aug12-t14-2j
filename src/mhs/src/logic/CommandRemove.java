@@ -34,6 +34,7 @@ public class CommandRemove extends Command {
 		try {
 			resultList = queryTaskByName(userCommand);
 			matchedTasks = resultList;
+			assert(matchedTasks!=null);
 		} catch (IOException e) {
 			matchedTasks = null;
 		}

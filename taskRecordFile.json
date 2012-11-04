@@ -52,10 +52,10 @@
     "taskName": "CS2103 project",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-04T02:59:49.427+08:00",
-    "taskUpdated": "2012-11-04T02:59:49.427+08:00",
+    "taskUpdated": "2012-11-04T17:34:52.172+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": false,
+    "isDone": true,
     "isDeleted": false
   },
   {
@@ -63,10 +63,10 @@
     "taskName": "buy batteries",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-04T03:00:19.367+08:00",
-    "taskUpdated": "2012-11-04T03:00:19.367+08:00",
+    "taskUpdated": "2012-11-04T17:34:58.856+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": false,
+    "isDone": true,
     "isDeleted": false
   },
   {
@@ -183,11 +183,11 @@
     "taskName": "task gh",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-04T16:37:07.091+08:00",
-    "taskUpdated": "2012-11-04T16:38:16.927+08:00",
+    "taskUpdated": "2012-11-04T17:58:39.440+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-11-04T18:00:00.000+08:00",
@@ -196,6 +196,39 @@
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-04T16:37:10.038+08:00",
     "taskUpdated": "2012-11-04T16:57:58.337+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 18,
+    "taskName": "task",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-04T17:34:06.654+08:00",
+    "taskUpdated": "2012-11-04T17:34:06.654+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 19,
+    "taskName": "task we",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-04T17:34:13.087+08:00",
+    "taskUpdated": "2012-11-04T17:35:24.718+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": true,
+    "isDeleted": false
+  },
+  {
+    "taskId": 20,
+    "taskName": "task ui",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-04T17:34:17.383+08:00",
+    "taskUpdated": "2012-11-04T17:34:17.383+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,

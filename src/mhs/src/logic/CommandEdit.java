@@ -51,6 +51,7 @@ public class CommandEdit extends Command {
 		try {
 			resultList = queryTaskByName(userCommand);
 			matchedTasks = resultList;
+			assert (matchedTasks != null);
 			tempCommandInfo = userCommand;
 		} catch (IOException e) {
 			matchedTasks = null;
