@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
+import mhs.src.common.HtmlCreator;
 import mhs.src.storage.DeadlineTask;
 import mhs.src.storage.FloatingTask;
 import mhs.src.storage.Task;
 import mhs.src.storage.TaskCategory;
 import mhs.src.storage.TimedTask;
-import mhs.src.ui.HtmlCreator;
 
 public class ProcessorStub {
 	
@@ -21,7 +21,7 @@ public class ProcessorStub {
 	private String currentState = null;
 	private boolean isPasswordExpected = false;
 	private int lineLimit = 0;
-	public int LINE_HEIGHT = 30;
+	public int LINE_HEIGHT = 20;
 
 	public String headerText = "My Hot Secretary ";
 	

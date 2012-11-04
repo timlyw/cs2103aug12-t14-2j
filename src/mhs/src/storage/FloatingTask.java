@@ -6,7 +6,7 @@
 
 package mhs.src.storage;
 
-import mhs.src.ui.HtmlCreator;
+import mhs.src.common.HtmlCreator;
 
 import org.joda.time.DateTime;
 
