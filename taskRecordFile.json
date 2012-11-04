@@ -77,11 +77,11 @@
     "taskName": "AP meet",
     "taskCategory": "TIMED",
     "taskCreated": "2012-11-04T03:18:03.814+08:00",
-    "taskUpdated": "2012-11-04T03:18:03.814+08:00",
+    "taskUpdated": "2012-11-04T13:19:06.487+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-11-05T16:00:00.000+08:00",
@@ -116,5 +116,66 @@
     "gCalTaskId": null,
     "isDone": false,
     "isDeleted": true
+  },
+  {
+    "startDateTime": "2012-11-04T14:00:00.000+08:00",
+    "endDateTime": "2012-11-04T16:00:00.000+08:00",
+    "taskId": 11,
+    "taskName": "AP meet",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-04T13:18:08.535+08:00",
+    "taskUpdated": "2012-11-04T13:19:21.778+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "startDateTime": "2012-11-04T14:00:00.000+08:00",
+    "endDateTime": "2012-11-04T16:00:00.000+08:00",
+    "taskId": 12,
+    "taskName": "AP meet",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-04T13:18:27.135+08:00",
+    "taskUpdated": "2012-11-04T13:20:11.031+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 13,
+    "taskName": "task fs",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-04T13:18:38.186+08:00",
+    "taskUpdated": "2012-11-04T13:19:56.809+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 14,
+    "taskName": "task sd",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-04T13:18:42.222+08:00",
+    "taskUpdated": "2012-11-04T13:20:01.839+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "startDateTime": "2012-11-04T14:00:00.000+08:00",
+    "endDateTime": "2012-11-04T16:00:00.000+08:00",
+    "taskId": 15,
+    "taskName": "AP meet",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-04T13:19:14.784+08:00",
+    "taskUpdated": "2012-11-04T13:19:14.784+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
   }
 ]
