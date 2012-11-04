@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import mhs.src.storage.DeadlineTask;
-import mhs.src.storage.FloatingTask;
-import mhs.src.storage.Task;
-import mhs.src.storage.TaskCategory;
-import mhs.src.storage.TaskRecordFile;
-import mhs.src.storage.TimedTask;
+import mhs.src.storage.persistence.local.TaskRecordFile;
+import mhs.src.storage.persistence.task.DeadlineTask;
+import mhs.src.storage.persistence.task.FloatingTask;
+import mhs.src.storage.persistence.task.Task;
+import mhs.src.storage.persistence.task.TaskCategory;
+import mhs.src.storage.persistence.task.TimedTask;
 
 import org.joda.time.DateTime;
 import org.junit.Before;

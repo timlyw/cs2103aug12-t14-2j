@@ -4,10 +4,10 @@ package mhs.test;
 import java.io.IOException;
 
 import mhs.src.storage.Database;
-import mhs.src.storage.DatabaseAlreadyInstantiatedException;
 import mhs.src.storage.DatabaseFactory;
-import mhs.src.storage.DatabaseFactoryNotInstantiatedException;
-import mhs.src.storage.TaskNotFoundException;
+import mhs.src.util.DatabaseAlreadyInstantiatedException;
+import mhs.src.util.DatabaseFactoryNotInstantiatedException;
+import mhs.src.util.TaskNotFoundException;
 
 import org.junit.Before;
 import org.junit.Rule;

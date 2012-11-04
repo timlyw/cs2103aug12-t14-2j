@@ -1,6 +1,6 @@
 //@author A0087048X
 
-package mhs.src.storage;
+package mhs.src.storage.persistence;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
+import mhs.src.storage.persistence.task.Task;
+import mhs.src.storage.persistence.task.TaskCategory;
+import mhs.src.util.TaskNotFoundException;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -80,7 +83,9 @@ public class TaskLists {
 	}
 
 	/**
-	 * Create task lists - taskList - gCalTaskList
+	 * Create task lists 
+	 * - taskList 
+	 * - gCalTaskList
 	 */
 	private void createTaskLists() {
 		logExitMethod("createTaskLists");

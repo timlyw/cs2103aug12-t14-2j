@@ -1,7 +1,10 @@
 //@author A0087048X
-package mhs.src.storage;
+package mhs.src.storage.persistence;
 
 import java.util.Comparator;
+
+import mhs.src.storage.persistence.task.Task;
+import mhs.src.storage.persistence.task.TaskCategory;
 
 /**
  * TaskStartDateTimeComparator
