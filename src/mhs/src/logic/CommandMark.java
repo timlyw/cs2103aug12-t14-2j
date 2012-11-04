@@ -2,13 +2,30 @@ package mhs.src.logic;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
+import com.google.gdata.util.ServiceException;
+
+import mhs.src.common.MhsLogger;
+import mhs.src.storage.InvalidTaskFormatException;
 import mhs.src.storage.Task;
 import mhs.src.storage.TaskCategory;
+import mhs.src.storage.TaskNotFoundException;
 
+/**
+ * Executes Mark command
+ * 
+ * @author shekhar
+ * 
+ */
 public class CommandMark extends Command {
 
+	private static final String MESSAGE_TASK_NOT_MARKED = "Error occured. Task not marked.";
+	private static final String CONFIRM_TASK_MARKED = "Marked Task - '%1$s' as DONE";
+
 	Task lastTask;
+
+	private static final Logger logger = MhsLogger.getLogger();
 
 	/**
 	 * Default constructor for non index based commands
@@ -16,14 +33,17 @@ public class CommandMark extends Command {
 	 * @param inputCommand
 	 */
 	public CommandMark(CommandInfo inputCommand) {
+		logEnterMethod("CommandMark");
 		List<Task> resultList;
+		lastTask = new Task();
 		try {
 			resultList = queryTaskByName(inputCommand);
 			matchedTasks = resultList;
+			assert (matchedTasks != null);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			matchedTasks = null;
 		}
+		logExitMethod("CommandMark");
 	}
 
 	/**
@@ -32,33 +52,33 @@ public class CommandMark extends Command {
 	 * @param lastUsedList
 	 */
 	public CommandMark(List<Task> lastUsedList) {
+		logEnterMethod("CommandMark-index");
 		matchedTasks = lastUsedList;
+		assert (matchedTasks != null);
+		logExitMethod("CommandMark-index");
 	}
 
 	/**
-	 * Executes non index based commands
+	 * Executes mark non index based
 	 */
 	public String executeCommand() {
+		logEnterMethod("executeCommand");
 		String outputString = new String();
-		lastTask = new Task();
+		assert (matchedTasks != null);
 		if (matchedTasks.isEmpty()) {
-			outputString = "No matching results found";
+			outputString = MESSAGE_NO_MATCH;
 		}
 		// if only 1 match is found then display it
 		else if (matchedTasks.size() == 1) {
-			// create task
-			Task editedTask = matchedTasks.get(0);
-			editedTask.setDone(true);
+			lastTask = matchedTasks.get(0);
+			Task editedTask = markDone(lastTask);
 			try {
-				lastTask = editedTask;
-				dataHandler.update(editedTask);
-				outputString = "Marked Task - '"
-						+ matchedTasks.get(0).getTaskName() + "' as DONE";
-				isUndoable = true;
+				updateTask(editedTask);
+				outputString = String.format(CONFIRM_TASK_MARKED,
+						editedTask.getTaskName());
 			} catch (Exception e) {
-				outputString = "Could not mark given task !";
+				outputString = MESSAGE_TASK_NOT_MARKED;
 			}
-			isUndoable = true;
 		}
 		// if multiple matches are found display the list
 		else {
@@ -66,26 +86,48 @@ public class CommandMark extends Command {
 					TaskCategory.FLOATING);
 			indexExpected = true;
 		}
+		logExitMethod("executeCommand");
 		return outputString;
+	}
+
+	private void updateTask(Task editedTask) throws IOException,
+			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
+		dataHandler.update(editedTask);
+		isUndoable = true;
+	}
+
+	/**
+	 * Mark task as done
+	 * 
+	 * @return
+	 */
+	private Task markDone(Task unmarkedTask) {
+		logEnterMethod("markDone");
+		assert (unmarkedTask.isDone() == false);
+		Task editedTask = unmarkedTask;
+		editedTask.setDone(true);
+		logExitMethod("markDone");
+		return editedTask;
 	}
 
 	/**
 	 * Unmarks a task
 	 */
 	public String undo() {
+		logEnterMethod("undo");
+		String outputString = new String();
 		if (isUndoable()) {
-			lastTask.setDone(false);
 			try {
 				dataHandler.update(lastTask);
-				return MESSAGE_UNDO_CONFIRM;
+				outputString = MESSAGE_UNDO_CONFIRM;
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return MESSAGE_UNDO_FAIL;
+				outputString = MESSAGE_UNDO_FAIL;
 			}
 		} else {
-			return MESSAGE_UNDO_FAIL;
+			outputString = MESSAGE_UNDO_FAIL;
 		}
+		logExitMethod("undo");
+		return outputString;
 	}
 
 	/**
@@ -93,23 +135,24 @@ public class CommandMark extends Command {
 	 * mark command
 	 */
 	public String executeByIndex(int index) {
+		logEnterMethod("executeByIndex");
 		String outputString = new String();
-		if (indexExpected & index < matchedTasks.size()) {
-			Task tempTask = matchedTasks.get(index);
-			tempTask.setDone(true);
+		if (indexExpected && index < matchedTasks.size() && index >= 0) {
+			assert (index >= 0 && index < matchedTasks.size());
+			Task tempTask = markDone(matchedTasks.get(index));
 			lastTask = tempTask;
 			try {
-				dataHandler.update(tempTask);
-				outputString = "Marked Task - '"
-						+ matchedTasks.get(index).getTaskName() + "' as DONE";
+				updateTask(tempTask);
+				outputString = String.format(CONFIRM_TASK_MARKED, matchedTasks
+						.get(index).getTaskName());
 				indexExpected = false;
-				isUndoable = true;
 			} catch (Exception e) {
-
+				outputString = MESSAGE_TASK_NOT_MARKED;
 			}
 		} else {
-			outputString = "Invalid Command";
+			outputString = MESSAGE_INVALID_INDEX;
 		}
+		logExitMethod("executeByIndex");
 		return outputString;
 	}
 
@@ -117,23 +160,43 @@ public class CommandMark extends Command {
 	 * Executes based on index and type. Uses last list generated.
 	 */
 	public String executeByIndexAndType(int index) {
+		logEnterMethod("executeByIndexAndType");
 		String outputString = new String();
-		if (index < matchedTasks.size()) {
-			Task tempTask = matchedTasks.get(index);
-			tempTask.setDone(true);
+		if (index < matchedTasks.size() && index >= 0) {
+			assert (index >= 0 && index < matchedTasks.size());
+			Task tempTask = markDone(matchedTasks.get(index));
 			lastTask = tempTask;
 			try {
-				dataHandler.update(tempTask);
-				outputString = "Marked Task - '"
-						+ matchedTasks.get(index).getTaskName() + "' as DONE";
-				isUndoable = true;
+				updateTask(tempTask);
+				outputString = String.format(CONFIRM_TASK_MARKED, matchedTasks
+						.get(index).getTaskName());
+				indexExpected = false;
 			} catch (Exception e) {
-
+				outputString = MESSAGE_TASK_NOT_MARKED;
 			}
 		} else {
-			outputString = "Invalid Command";
+			outputString = MESSAGE_INVALID_INDEX;
 		}
+		logExitMethod("executeByIndexAndType");
 		return outputString;
+	}
+
+	/**
+	 * Logger enter method
+	 * 
+	 * @param methodName
+	 */
+	private void logEnterMethod(String methodName) {
+		logger.entering(getClass().getName(), methodName);
+	}
+
+	/**
+	 * Logger exit method
+	 * 
+	 * @param methodName
+	 */
+	private void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
 	}
 
 }

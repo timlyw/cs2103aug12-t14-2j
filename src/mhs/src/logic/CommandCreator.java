@@ -7,8 +7,9 @@ import java.util.Stack;
 
 /**
  * Creates commands based on type
+ * 
  * @author Shekhar
- *
+ * 
  */
 public class CommandCreator {
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command";
@@ -23,6 +24,7 @@ public class CommandCreator {
 
 	/**
 	 * Creates Command by type
+	 * 
 	 * @param userCommand
 	 * @return output String
 	 */
@@ -38,7 +40,7 @@ public class CommandCreator {
 			}
 		} else {
 			userOutputString = previousCommand.executeByIndex(userCommand
-					.getIndex()-1);
+					.getIndex() - 1);
 
 		}
 		previousCommand = currentCommand;
@@ -47,7 +49,9 @@ public class CommandCreator {
 	}
 
 	/**
-	 * Creates an object of respective command based on type enum. Executes command
+	 * Creates an object of respective command based on type enum. Executes
+	 * command
+	 * 
 	 * @param userCommand
 	 * @return output String
 	 */
@@ -97,7 +101,9 @@ public class CommandCreator {
 	}
 
 	/**
-	 * Creates an object based on given type. Executes based on index. Uses previous list of tasks
+	 * Creates an object based on given type. Executes based on index. Uses
+	 * previous list of tasks
+	 * 
 	 * @param userCommand
 	 * @return output String
 	 */
@@ -121,9 +127,7 @@ public class CommandCreator {
 					.executeByIndexAndType(local_index - 1);
 			break;
 		case search:
-			currentCommand = new CommandSearch(previousCommand.matchedTasks);
-			userOutputString = currentCommand
-					.executeByIndexAndType(local_index - 1);
+			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		case undo:
 			userOutputString = MESSAGE_INVALID_COMMAND;
