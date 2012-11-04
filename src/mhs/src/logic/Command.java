@@ -31,7 +31,7 @@ public abstract class Command {
 		indexExpected = false;
 		isUndoable = false;
 		htmlCreator = new HtmlCreator();
-		
+
 		try {
 			dataHandler = DatabaseFactory.getDatabaseInstance();
 		} catch (IOException | ServiceException e1) {
@@ -127,6 +127,7 @@ public abstract class Command {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		int count = 1;
 		String outputString = new String();
+
 		for (Task selectedTask : resultList) {
 			if (selectedTask.getTaskCategory() == TaskCategory.FLOATING) {
 				if (selectedTask.isDone()) {
@@ -148,7 +149,9 @@ public abstract class Command {
 			}
 			count++;
 		}
-		//outputString = htmlCreator.createTaskListHtml(resultList, resultList.si)
+
+		// outputString =
+		// htmlCreator.createTaskListHtml(resultList,resultList.size());
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}

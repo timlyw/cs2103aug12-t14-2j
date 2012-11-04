@@ -83,6 +83,10 @@ public class CommandCreator {
 			currentCommand = new CommandMark(userCommand);
 			userOutputString = currentCommand.executeCommand();
 			break;
+		/*
+		 * case unmark: currentCommand = new CommandUnmark(userCommand);
+		 * userOutputString = currentCommand.executeCommand(); break;
+		 */
 		case help:
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
@@ -137,6 +141,11 @@ public class CommandCreator {
 			userOutputString = currentCommand
 					.executeByIndexAndType(local_index - 1);
 			break;
+		/*
+		 * case unmark: currentCommand = new
+		 * CommandUnmark(previousCommand.matchedTasks); userOutputString =
+		 * currentCommand .executeByIndexAndType(local_index - 1); break;
+		 */
 		case help:
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
