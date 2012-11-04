@@ -16,6 +16,7 @@ public class HtmlCreator {
 	public static final String PURPLE = "#660066";
 	public static final String ORANGE = "#FF6600";
 	public static final String LIGHT_BLUE = "#3333FF";
+	public static final String GRAY = "#7A7A59";
 	public static final String LIGHT_GRAY = "#B8B8B8";
 	
 	
@@ -55,14 +56,14 @@ public class HtmlCreator {
 		return lastTask;
 	}
 	
-	public String createTaskListHtml(List<Task> taskList, int lineLimit) {
+	public String createTaskListHtml(List<Task> taskList, int limit) {
 		String taskListHtml = "";
 		
 		DateTime prevTaskDateTime = null;
 		
 		int lineCount = 0;
 		
-		for(int i = 0; i < taskList.size() && lineCount < lineLimit; i++) {
+		for(int i = 0; i < taskList.size() && lineCount < limit; i++) {
 			Task task = taskList.get(i);
 			DateTime currTaskDateTime = null;
 			
@@ -92,7 +93,8 @@ public class HtmlCreator {
 			}
 			
 			prevTaskDateTime = currTaskDateTime;
-			taskListHtml += Integer.toString(i + 1) + ". " + task.toHtmlString() + NEW_LINE;
+			String indexString = color(Integer.toString(i + 1) + ". ", GRAY);
+			taskListHtml += indexString + task.toHtmlString() + NEW_LINE;
 			lineCount += 2;
 			lastTask = task;
 		}

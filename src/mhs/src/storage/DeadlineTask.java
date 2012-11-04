@@ -139,7 +139,7 @@ public class DeadlineTask extends Task {
 		String timeString = getTimeString(endDateTime);
 		
 		String boldTaskName = htmlCreator.makeBold(taskName);
-		String htmlString = boldTaskName + " (Due: " + timeString + ")";
+		String htmlString = timeString + ": " + boldTaskName;
 		
 		return htmlString;
 	}
