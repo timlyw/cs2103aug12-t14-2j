@@ -2,8 +2,8 @@ package mhs.src.common;
 
 import java.util.List;
 
-import mhs.src.storage.Task;
-import mhs.src.storage.TaskCategory;
+import mhs.src.storage.persistence.task.Task;
+import mhs.src.storage.persistence.task.TaskCategory;
 
 import org.joda.time.DateTime;
 

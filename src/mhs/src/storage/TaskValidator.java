@@ -1,6 +1,8 @@
 //@author A0087048X
 package mhs.src.storage;
 
+import mhs.src.storage.persistence.task.Task;
+
 /**
  * TaskValidator
  * 

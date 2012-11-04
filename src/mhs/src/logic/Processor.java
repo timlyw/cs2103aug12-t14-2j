@@ -7,9 +7,9 @@ import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
 import mhs.src.storage.Database;
-import mhs.src.storage.DatabaseAlreadyInstantiatedException;
 import mhs.src.storage.DatabaseFactory;
-import mhs.src.storage.DatabaseFactoryNotInstantiatedException;
+import mhs.src.util.DatabaseAlreadyInstantiatedException;
+import mhs.src.util.DatabaseFactoryNotInstantiatedException;
 import mhs.src.common.HtmlCreator;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
