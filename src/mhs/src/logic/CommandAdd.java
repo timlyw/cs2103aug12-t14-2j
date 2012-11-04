@@ -47,16 +47,13 @@ public class CommandAdd extends Command {
 		assert (taskType < 3 && taskType >= 0);
 		switch (taskType) {
 		case FLOATING:
-			Task floatingTaskToAdd = createFloatingTask(inputCommand);
-			taskToAddTask = floatingTaskToAdd;
+			taskToAddTask = createFloatingTask(inputCommand);
 			break;
 		case DEADLINE:
-			Task deadlineTaskToAdd = createDeadlineTask(inputCommand);
-			taskToAddTask = deadlineTaskToAdd;
+			taskToAddTask = createDeadlineTask(inputCommand);
 			break;
 		case TIMED:
-			Task timedTaskToAdd = createTimedTask(inputCommand);
-			taskToAddTask = timedTaskToAdd;
+			taskToAddTask = createTimedTask(inputCommand);
 			break;
 		}
 		logExitMethod("CommandAdd");
