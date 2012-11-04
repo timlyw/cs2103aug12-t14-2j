@@ -1,11 +1,10 @@
 //@author A0087048X
 
-package mhs.src.util;
+package mhs.src.common;
 
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
-import mhs.src.common.MhsLogger;
 
 import org.joda.time.DateTime;
 

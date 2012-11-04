@@ -14,6 +14,10 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import mhs.src.common.exceptions.DatabaseAlreadyInstantiatedException;
+import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
+import mhs.src.common.exceptions.InvalidTaskFormatException;
+import mhs.src.common.exceptions.TaskNotFoundException;
 import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseFactory;
 import mhs.src.storage.persistence.remote.GoogleCalendarMhs;
@@ -22,10 +26,6 @@ import mhs.src.storage.persistence.task.FloatingTask;
 import mhs.src.storage.persistence.task.Task;
 import mhs.src.storage.persistence.task.TaskCategory;
 import mhs.src.storage.persistence.task.TimedTask;
-import mhs.src.util.DatabaseAlreadyInstantiatedException;
-import mhs.src.util.DatabaseFactoryNotInstantiatedException;
-import mhs.src.util.InvalidTaskFormatException;
-import mhs.src.util.TaskNotFoundException;
 
 import org.joda.time.DateTime;
 import org.junit.After;

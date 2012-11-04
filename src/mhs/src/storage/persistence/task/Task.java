@@ -2,7 +2,7 @@
 
 package mhs.src.storage.persistence.task;
 
-import mhs.src.util.MhsGson;
+import mhs.src.common.MhsGson;
 
 import org.joda.time.DateTime;
 

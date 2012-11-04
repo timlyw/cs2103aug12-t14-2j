@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
+import mhs.src.common.exceptions.InvalidTaskFormatException;
+import mhs.src.common.exceptions.TaskNotFoundException;
 import mhs.src.storage.persistence.task.Task;
 import mhs.src.storage.persistence.task.TaskCategory;
-import mhs.src.util.InvalidTaskFormatException;
-import mhs.src.util.TaskNotFoundException;
 
 import com.google.gdata.util.ServiceException;
 

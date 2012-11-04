@@ -1,6 +1,6 @@
 //@author A0087048X
 
-package mhs.src.util;
+package mhs.src.common.exceptions;
 
 /**
  * DatabaseFactoryNotInstantiatedException
