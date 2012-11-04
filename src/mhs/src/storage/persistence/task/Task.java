@@ -1,6 +1,8 @@
 //@author A0087048X
 
-package mhs.src.storage;
+package mhs.src.storage.persistence.task;
+
+import mhs.src.util.MhsGson;
 
 import org.joda.time.DateTime;
 

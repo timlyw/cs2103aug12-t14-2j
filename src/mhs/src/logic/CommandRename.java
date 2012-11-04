@@ -4,17 +4,18 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
+import mhs.src.common.MhsLogger;
+import mhs.src.storage.persistence.task.DeadlineTask;
+import mhs.src.storage.persistence.task.FloatingTask;
+import mhs.src.storage.persistence.task.Task;
+import mhs.src.storage.persistence.task.TaskCategory;
+import mhs.src.storage.persistence.task.TimedTask;
+import mhs.src.util.InvalidTaskFormatException;
+import mhs.src.util.TaskNotFoundException;
+
 import org.joda.time.DateTime;
 
 import com.google.gdata.util.ServiceException;
-import mhs.src.common.MhsLogger;
-import mhs.src.storage.DeadlineTask;
-import mhs.src.storage.FloatingTask;
-import mhs.src.storage.InvalidTaskFormatException;
-import mhs.src.storage.Task;
-import mhs.src.storage.TaskCategory;
-import mhs.src.storage.TaskNotFoundException;
-import mhs.src.storage.TimedTask;
 
 /**
  * Executes the Rename command

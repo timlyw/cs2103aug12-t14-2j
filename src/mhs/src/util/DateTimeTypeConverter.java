@@ -1,6 +1,6 @@
 //@author A0087048X
 
-package mhs.src.storage;
+package mhs.src.util;
 
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
@@ -22,10 +22,9 @@ import com.google.gson.JsonSerializer;
  * 
  * Json converter for JodaTime DateTime object
  * 
- * - Serializes JodaTime DateTime to jObject 
+ * - Serializes JodaTime DateTime to jObject
  * 
- * - Deerializes jObject to JodaTime
- * DateTime
+ * - Deerializes jObject to JodaTime DateTime
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */

@@ -1,10 +1,12 @@
 //@author A0087048X
 
-package mhs.src.storage;
+package mhs.src.util;
 
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
+import mhs.src.storage.persistence.TaskTypeConverter;
+import mhs.src.storage.persistence.task.Task;
 
 import org.joda.time.DateTime;
 
