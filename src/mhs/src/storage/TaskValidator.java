@@ -1,5 +1,20 @@
 package mhs.src.storage;
 
+/**
+ * TaskValidator
+ * 
+ * Helper class to validate task format and type
+ * 
+ * Validate Task Formats:
+ * 1. Timed Task
+ * 2. Deadline Task
+ * 3. Floating Task
+ * 
+ * Check Task Sync Status
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
+
 class TaskValidator {
 
 	/**

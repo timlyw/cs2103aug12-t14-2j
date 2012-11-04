@@ -1,20 +1,21 @@
-/**
- * Task Base Class
- * 
- * Inherited classes
- * - FloatingTask
- * - TimedTask
- * - DeadlineTask
- * 
- * @author timlyw
- */
-
 package mhs.src.storage;
 
 import org.joda.time.DateTime;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+/**
+ * Task 
+ * 
+ * Base Class for Task object
+ * Inherited classes 
+ * 1. FloatingTask 
+ * 2. TimedTask 
+ * 3. DeadlineTask
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 
 public class Task {
 

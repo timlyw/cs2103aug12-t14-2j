@@ -1,15 +1,21 @@
-/**
- * Timed Task - inherits from base class Task
- * - Task with startDateTime and endDateTime
- * @author timlyw
- */
-
 package mhs.src.storage;
 
 import org.joda.time.DateTime;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
 
+/**
+ * TimedTask
+ * 
+ * Timed Task object
+ *  
+ * - inherits from base class Task 
+ * - Task with startDateTime and endDateTime
+ * - syncs with google calendar
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ * 
+ */
 public class TimedTask extends Task {
 
 	private DateTime startDateTime;

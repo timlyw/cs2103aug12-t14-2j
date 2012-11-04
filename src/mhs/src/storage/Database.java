@@ -1,13 +1,4 @@
-/**
- * Database 
- * 
- * - Database interfaces persistent the data storage mechanism, on local disk and remote 
- * (Google Calendar Service). 
- * - Handles task queries and CRUD operations 
- * - Handles user configuration setting operations
- * 
- * @author timlyw
- */
+
 
 package mhs.src.storage;
 
@@ -30,6 +21,17 @@ import org.joda.time.DateTime;
 
 import com.google.gdata.util.ServiceException;
 
+/**
+ * Database 
+ * 
+ * Database interfaces persistent the data storage mechanism, on local disk and remote 
+ * (Google Calendar Service).
+ *  
+ * - Handles task queries and CRUD operations 
+ * - Handles user configuration setting operations
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 public class Database {
 
 	static GoogleCalendarMhs googleCalendar;
