@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="11.5.1">
+  <zoom_level>8</zoom_level>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>208</x>
+      <y>120</y>
+      <w>224</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>Command Parser
+--
++getParsedCommand(String) : Command
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>408</x>
+      <y>112</y>
+      <w>160</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+Returns</panel_attributes>
+    <additional_attributes>24;40;144;40</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>552</x>
+      <y>128</y>
+      <w>456</w>
+      <h>152</h>
+    </coordinates>
+    <panel_attributes>Command
+--
+-command
+-commandEnum : command
+-edittedName : String
+-endDate : DateTime
+-startDate : DateTime
+-taskName : String
+--
++Command()
++Command(String, String, String, LocalDate, LocalTime, LocalDate, LocalTime)
+bg=yellow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>552</x>
+      <y>296</y>
+      <w>456</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Enumeration&gt;&gt;
+Commands
+--
+add, edit, remove, search, sync, undo
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>56</x>
+      <y>152</y>
+      <w>176</w>
+      <h>184</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+has 1</panel_attributes>
+    <additional_attributes>24;168;24;72;160;72;160;24</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>200</x>
+      <y>152</y>
+      <w>72</w>
+      <h>288</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+has 1</panel_attributes>
+    <additional_attributes>40;272;40;24</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>288</x>
+      <y>152</y>
+      <w>72</w>
+      <h>176</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+has 1</panel_attributes>
+    <additional_attributes>40;160;40;24</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>376</x>
+      <y>152</y>
+      <w>136</w>
+      <h>264</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+has 1</panel_attributes>
+    <additional_attributes>120;248;120;88;24;88;24;24</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>0</x>
+      <y>320</y>
+      <w>208</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>CommandExtractor
+--
++isCommand(String) : boolean 
++setCommand(String) : String
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>136</x>
+      <y>424</y>
+      <w>240</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>DateExtractor
+--
++checkDateFormat(String) : boolean
++processDate(Queue&lt;String&gt;) : LocalDate
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>256</x>
+      <y>312</y>
+      <w>232</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>TimeExtractor
+--
++checkTimeFormat(String) : boolean
++processTime(String) : LocalTime
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>392</x>
+      <y>400</y>
+      <w>328</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>NameExtractor
+--
++checkNameFormat(String) : boolean
++hasQuotations(String) : boolean
++processName(Queue&lt;String&gt;) : String
++processNameWithinQuotationMarks(String) : String
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
