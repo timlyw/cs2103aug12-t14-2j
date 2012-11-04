@@ -1,9 +1,5 @@
-/**
- * MhsGson
- * - Singleton Gson for use in MHS
- * 
- * @author timlyw
- */
+//@author A0087048X
+
 package mhs.src.storage;
 
 import java.util.logging.Logger;
@@ -14,6 +10,16 @@ import org.joda.time.DateTime;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+
+/**
+ * MhsGson 
+ * 
+ * Creates singleton Gson built with MHS specific settings for use in
+ * MHS
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 
 public class MhsGson {
 

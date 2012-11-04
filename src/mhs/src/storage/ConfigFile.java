@@ -1,14 +1,9 @@
-/**
- * Configuration File 
- * - Handles File I/O operation for persistent user configuration in json file.
- * - Supports Query/Set configuration parameters
- * 
- * @author timlyw
- */
+//@author A0087048X
 
 package mhs.src.storage;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -28,6 +23,17 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
+
+/**
+ * ConfigFile
+ * 
+ * Handles File I/O operations for persistent user configuration in json file.
+ * 
+ * - Supports Query, Set configuration parameters
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ * 
+ */
 
 public class ConfigFile {
 

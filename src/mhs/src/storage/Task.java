@@ -1,20 +1,19 @@
-/**
- * Task Base Class
- * 
- * Inherited classes
- * - FloatingTask
- * - TimedTask
- * - DeadlineTask
- * 
- * @author timlyw
- */
+//@author A0087048X
 
 package mhs.src.storage;
 
 import org.joda.time.DateTime;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+
+/**
+ * Task
+ * 
+ * Base Class for Task object Inherited classes 1. FloatingTask 2. TimedTask 3.
+ * DeadlineTask
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ */
 
 public class Task {
 
@@ -132,12 +131,6 @@ public class Task {
 	}
 
 	public String toJson() {
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeAdapter(DateTime.class,
-				new DateTimeTypeConverter());
-		gsonBuilder.registerTypeAdapter(Task.class, new TaskTypeConverter());
-		Gson gson = gsonBuilder.create();
-
 		return gson.toJson(this);
 	}
 
@@ -249,8 +242,32 @@ public class Task {
 	public void setStartDateTime(DateTime dateTime) {
 	}
 
+	/**
+	 * @author John Wong
+	 */
 	public String toHtmlString() {
 		return null;
 	}
-	
+
+	public static boolean isTimed(Task task) {
+		if (task.getTaskCategory() == TaskCategory.TIMED) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isDeadline(Task task) {
+		if (task.getTaskCategory() == TaskCategory.DEADLINE) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isFloating(Task task) {
+		if (task.getTaskCategory() == TaskCategory.FLOATING) {
+			return true;
+		}
+		return false;
+	}
+
 }
