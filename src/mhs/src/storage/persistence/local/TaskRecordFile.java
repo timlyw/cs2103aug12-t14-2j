@@ -1,5 +1,5 @@
 //@author A0087048X
-package mhs.src.storage;
+package mhs.src.storage.persistence.local;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +16,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import mhs.src.common.MhsGson;
 import mhs.src.common.MhsLogger;
+import mhs.src.storage.persistence.task.Task;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

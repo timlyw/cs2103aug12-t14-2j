@@ -13,10 +13,10 @@ import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
-import mhs.src.storage.GoogleCalendar;
-import mhs.src.storage.GoogleCalendarMhs;
-import mhs.src.storage.TaskCategory;
-import mhs.src.storage.TimedTask;
+import mhs.src.storage.persistence.remote.GoogleCalendar;
+import mhs.src.storage.persistence.remote.GoogleCalendarMhs;
+import mhs.src.storage.persistence.task.TaskCategory;
+import mhs.src.storage.persistence.task.TimedTask;
 import static org.junit.Assert.*;
 
 /**

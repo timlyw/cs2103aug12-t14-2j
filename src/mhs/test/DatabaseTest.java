@@ -14,18 +14,18 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import mhs.src.common.exceptions.DatabaseAlreadyInstantiatedException;
+import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
+import mhs.src.common.exceptions.InvalidTaskFormatException;
+import mhs.src.common.exceptions.TaskNotFoundException;
 import mhs.src.storage.Database;
-import mhs.src.storage.DatabaseAlreadyInstantiatedException;
 import mhs.src.storage.DatabaseFactory;
-import mhs.src.storage.DatabaseFactoryNotInstantiatedException;
-import mhs.src.storage.DeadlineTask;
-import mhs.src.storage.FloatingTask;
-import mhs.src.storage.GoogleCalendarMhs;
-import mhs.src.storage.InvalidTaskFormatException;
-import mhs.src.storage.Task;
-import mhs.src.storage.TaskCategory;
-import mhs.src.storage.TaskNotFoundException;
-import mhs.src.storage.TimedTask;
+import mhs.src.storage.persistence.remote.GoogleCalendarMhs;
+import mhs.src.storage.persistence.task.DeadlineTask;
+import mhs.src.storage.persistence.task.FloatingTask;
+import mhs.src.storage.persistence.task.Task;
+import mhs.src.storage.persistence.task.TaskCategory;
+import mhs.src.storage.persistence.task.TimedTask;
 
 import org.joda.time.DateTime;
 import org.junit.After;

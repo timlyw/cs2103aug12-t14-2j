@@ -1,4 +1,4 @@
-package mhs.src.storage;
+package mhs.src.storage.persistence.remote;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
+import mhs.src.storage.persistence.task.Task;
+import mhs.src.storage.persistence.task.TaskCategory;
 
 import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
 import com.google.gdata.client.calendar.CalendarService;

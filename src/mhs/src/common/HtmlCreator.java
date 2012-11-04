@@ -1,5 +1,6 @@
 package mhs.src.common;
 
+
 public class HtmlCreator {
 	private static final String HTML_FEEDBACK = "<html><font color='#383838' size='5' face='calibri'>%1$s</font></html>";
 	private static final String HTML_DISPLAY = "<html><font size='5' face='calibri'>%1$s</font></html>";

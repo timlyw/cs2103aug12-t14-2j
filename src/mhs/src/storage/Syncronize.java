@@ -15,6 +15,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
+import mhs.src.common.exceptions.InvalidTaskFormatException;
+import mhs.src.common.exceptions.TaskNotFoundException;
+import mhs.src.storage.persistence.task.DeadlineTask;
+import mhs.src.storage.persistence.task.Task;
+import mhs.src.storage.persistence.task.TaskCategory;
+import mhs.src.storage.persistence.task.TimedTask;
+
 import org.joda.time.DateTime;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
@@ -47,8 +54,9 @@ class Syncronize {
 	private Runnable syncronizeDatabasesBackgroundTask;
 	private TimerTask pullSyncTimedBackgroundTask;
 	private Future<?> futureSyncronizeBackgroundTask;
-	private static final int PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES = 5;
-	private static final int PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES = 5;
+
+	private static final int PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES = 2;
+	private static final int PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES = 1;
 
 	/**
 	 * Default Constructor for Syncronize.

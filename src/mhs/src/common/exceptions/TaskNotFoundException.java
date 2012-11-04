@@ -1,5 +1,5 @@
 //@author A0087048X
-package mhs.src.storage;
+package mhs.src.common.exceptions;
 
 /**
  * TaskNotFoundException
