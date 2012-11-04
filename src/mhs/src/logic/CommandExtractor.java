@@ -26,7 +26,7 @@ public class CommandExtractor {
 				"edit"), postpone("edit"), search("search"), find("search"), display(
 				"search"), sync("sync"), undo("undo"), redo("redo"), rename(
 				"rename"), login("login"), signin("login"), logout("logout"), signout(
-				"logout"), help("help"), mark("mark"), check("mark");
+				"logout"), help("help"), mark("mark"), check("mark"), unmark("unmark");
 
 		private final String command;
 
