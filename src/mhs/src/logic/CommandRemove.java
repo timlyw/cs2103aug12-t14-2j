@@ -46,11 +46,11 @@ public class CommandRemove extends Command {
 	 * @param lastUsedList
 	 */
 	public CommandRemove(List<Task> lastUsedList) {
-		logEnterMethod("CommandRemove-Undo");
+		logEnterMethod("CommandRemove-index");
 		matchedTasks = lastUsedList;
 		// Matched task must not be null
 		assert (matchedTasks != null);
-		logExitMethod("CommandRemove-undo");
+		logExitMethod("CommandRemove-index");
 	}
 
 	/**
