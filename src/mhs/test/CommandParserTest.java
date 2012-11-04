@@ -111,7 +111,13 @@ public class CommandParserTest {
 		
 		testList = dateExtractor.processDate("17 oct to 21 10");
 		testStartDate = new LocalDate(year, 10, 17);
+		if(testStartDate.isBefore(now)){
+			testStartDate = testStartDate.plusYears(1);
+		}
 		testEndDate = new LocalDate(year, 10, 21);
+		if(testEndDate.isBefore(now)){
+			testEndDate = testEndDate.plusYears(1);
+		}
 		expectedList = new LinkedList<LocalDate>();
 		expectedList.add(testStartDate);
 		expectedList.add(testEndDate);

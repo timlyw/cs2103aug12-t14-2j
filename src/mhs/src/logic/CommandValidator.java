@@ -77,8 +77,7 @@ public class CommandValidator {
 			if (endDate.isBefore(now)) {
 				endDate = endDate.plusDays(1);
 			}
-		}
-		
+		}	
 
 		// ensure start date is before end date.
 		if (startDate != null && endDate != null) {
@@ -100,9 +99,13 @@ public class CommandValidator {
 	private void checkParameters() {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		if (commandEnum == CommandInfo.CommandKeyWords.add) {
-			if(taskName == null){
+			if(taskName == null && startDate != null){
+				commandEnum = CommandInfo.CommandKeyWords.search;
+			}
+			else if(taskName == null){
 				enforceTaskName();
 			}
+
 		}
 		if (commandEnum == CommandInfo.CommandKeyWords.edit) {
 
@@ -117,6 +120,13 @@ public class CommandValidator {
 			clearAllParameters();
 		}
 		if (commandEnum == CommandInfo.CommandKeyWords.mark) {
+
+			edittedName = null;
+			startDate = null;
+			endDate = null;		
+
+		}
+		if (commandEnum == CommandInfo.CommandKeyWords.unmark) {
 
 			edittedName = null;
 			startDate = null;

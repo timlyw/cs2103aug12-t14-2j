@@ -40,7 +40,7 @@ public class DateExtractor {
 	private static final String ERROR_MESSAGE_NOT_NUMERICAL_DATE = "error not numerical date!";
 
 	// These are regex to check the dateformat and for clearing.
-	private static final String REGEX_FULL_DATE_FORMAT = "(0?[1-9]|[12][0-9]|3[01])(/|-)(0?[1-9]|1[012])(/|-)(((20)\\d\\d)?)";
+	private static final String REGEX_FULL_DATE_FORMAT = "(0?[1-9]|[12][0-9]|3[01])(/|-)(0?[1-9]|1[012])((/|-)(((20)\\d\\d)))?";
 	private static final String REGEX_NON_WORD_CHAR = "\\W";
 	private static final String REGEX_WHITE_SPACE = "\\s+";
 	private static final String REGEX_SPACE = " ";
@@ -204,7 +204,7 @@ public class DateExtractor {
 	private void addDateToDateList() {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		if (!uniqueDateFlag) {
-			if (!isAllFlagsSet()) {
+			if (!dayFlag && monthFlag ) {
 				setDateRange();
 			}
 
@@ -213,8 +213,14 @@ public class DateExtractor {
 					rectifyDate();
 				}
 				try {
+					System.out.println("added");
 					setDate = new LocalDate(year, month, day);
 					startDateFlag = true;
+					if(!yearFlag){
+						if(setDate.isBefore(now)){
+							setDate = setDate.plusYears(1);
+						}
+					}
 					dateList.add(setDate);
 				} catch (InvalidParameterException e) {
 					logger.log(Level.FINER, e.getMessage());
@@ -377,7 +383,7 @@ public class DateExtractor {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
-	private boolean isAllFlagsSet() {
+	/*private boolean isAllFlagsSet() {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		if ((dayFlag && monthFlag && yearFlag) || (dateFlag)
 				|| (dayFlag && monthFlag)) {
@@ -386,7 +392,7 @@ public class DateExtractor {
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return false;
-	}
+	}*/
 
 	private Queue<String> setUpDateQueue(String[] processArray) {
 		logger.entering(getClass().getName(), this.getClass().getName());

@@ -21,7 +21,7 @@ public class CommandInfo {
 	 * This is the enum of the different type of commands. 
 	 */
 	public static enum CommandKeyWords{
-		add, remove,edit, search, sync, undo, login, logout, rename, redo, mark, help;
+		add, remove,edit, search, sync, undo, login, logout, rename, redo, mark, help, unmark;
 	}
 	
 	private String taskName;
