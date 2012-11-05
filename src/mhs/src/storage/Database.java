@@ -28,13 +28,13 @@ import org.joda.time.DateTime;
 import com.google.gdata.util.ServiceException;
 
 /**
- * Database 
+ * Database
  * 
- * Database interfaces persistent the data storage mechanism, on local disk and remote 
- * (Google Calendar Service).
- *  
- * - Handles task queries and CRUD operations 
- * - Handles user configuration setting operations
+ * Database interfaces persistent the data storage mechanism, on local disk and
+ * remote (Google Calendar Service).
+ * 
+ * - Handles task queries and CRUD operations - Handles user configuration
+ * setting operations
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
@@ -645,6 +645,23 @@ public class Database {
 	}
 
 	/**
+	 * Waits for syncronize background task to complete
+	 * 
+	 * @param maxExecutionTimeInSeconds
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 */
+	public void waitForSyncronizeBackgroundTaskToComplete(
+			int maxExecutionTimeInSeconds) throws InterruptedException,
+			ExecutionException, TimeoutException {
+		logEnterMethod("waitForSyncronizeBackgroundTaskToComplete");
+		syncronize
+				.waitForSyncronizeBackgroundTaskToComplete(maxExecutionTimeInSeconds);
+		logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
+	}
+
+	/**
 	 * Save Tasks to local file - Syncronized to prevent multiple File I/O
 	 * 
 	 * @throws IOException
@@ -795,15 +812,6 @@ public class Database {
 
 		logExitMethod("getNewTaskId");
 		return getNewTaskId;
-	}
-
-	public void waitForSyncronizeBackgroundTaskToComplete(
-			int maxExecutionTimeInSeconds) throws InterruptedException,
-			ExecutionException, TimeoutException {
-		logEnterMethod("waitForSyncronizeBackgroundTaskToComplete");
-		syncronize
-				.waitForSyncronizeBackgroundTaskToComplete(maxExecutionTimeInSeconds);
-		logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
 	}
 
 	void logExitMethod(String methodName) {
