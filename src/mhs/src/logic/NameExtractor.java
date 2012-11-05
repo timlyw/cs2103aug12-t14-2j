@@ -1,3 +1,4 @@
+//@author A0086805X
 package mhs.src.logic;
 
 import java.util.LinkedList;
@@ -7,12 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import mhs.src.common.MhsLogger;
-
-/**
- * 
- * @author Cheong Kahou
- *A0086805X
- */
 
 /**
  * This is the class to extract out the name.
