@@ -654,8 +654,11 @@ public class DateExtractor {
 
 		day = dateParameters[0];
 		month = dateParameters[1];
+		dayFlag = true;
+		monthFlag = true;
 		if (dateParameters[2] != 0) {
 			year = dateParameters[2];
+			yearFlag = true;
 		}
 		dateFlag = true;
 		logger.exiting(getClass().getName(), this.getClass().getName());
