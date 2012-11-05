@@ -34,7 +34,7 @@ public class CommandRemove extends Command {
 		try {
 			resultList = queryTaskByName(userCommand);
 			matchedTasks = resultList;
-			assert(matchedTasks!=null);
+			assert (matchedTasks != null);
 		} catch (IOException e) {
 			matchedTasks = null;
 		}
@@ -63,6 +63,7 @@ public class CommandRemove extends Command {
 		assert (matchedTasks != null);
 		if (matchedTasks.isEmpty()) {
 			outputString = MESSAGE_NO_MATCH;
+			commandFeedback = outputString;
 		}
 		// if only 1 match is found then delete it
 		else if (matchedTasks.size() == 1) {
@@ -71,17 +72,19 @@ public class CommandRemove extends Command {
 				deleteTask(matchedTasks.get(0));
 				outputString = String.format(CONFIRM_TASK_DELETED,
 						lastDeletedTask.getTaskName());
+				commandFeedback = outputString;
 			} catch (Exception e) {
-				outputString = MESSAGE_TASK_NOT_DELETED;
+				commandFeedback = MESSAGE_TASK_NOT_DELETED;
 			}
 		}
 		// if multiple matches are found display the list
 		else {
 			outputString = displayListOfTasks(matchedTasks);
 			indexExpected = true;
+			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}
 		logExitMethod("executeCommand");
-		return outputString;
+		return null;
 	}
 
 	/**
@@ -153,6 +156,7 @@ public class CommandRemove extends Command {
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
+		commandFeedback = outputString;
 		logExitMethod("executeByIndex");
 		return outputString;
 	}
@@ -178,6 +182,7 @@ public class CommandRemove extends Command {
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
+		commandFeedback = outputString;
 		logExitMethod("executeByIndexAndType");
 		return outputString;
 	}

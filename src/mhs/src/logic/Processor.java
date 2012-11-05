@@ -69,7 +69,6 @@ public class Processor {
 		commandParser = CommandParser.getCommandParser();
 		createCommand = new CommandCreator();
 		userCommand = new CommandInfo();
-		showHome();
 	}
 
 	public String getHeaderText() {
@@ -77,7 +76,7 @@ public class Processor {
 		return boldTitle;
 	}
 
-	private void showHome() {
+	public void showHome() {
 		setCommand("display today");
 		executeCommand();
 	}
@@ -144,6 +143,7 @@ public class Processor {
 				break;
 			default:
 				userOutputString = createCommand.createCommand(userCommand);
+				System.out.println(userOutputString);
 				break;
 			}
 
@@ -160,7 +160,7 @@ public class Processor {
 	 */
 	public void executeCommand() {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		String screenOutput = null;
+		String screenOutput = new String();
 		try {
 			if (usernameIsExpected) {
 				username = currentCommand;
@@ -174,8 +174,6 @@ public class Processor {
 					screenOutput = authenticateUser(username, password);
 				} catch (AuthenticationException e) {
 					screenOutput = "Login failed! Check username and password.";
-					// login failed scenario goes here
-					// e.printStackTrace();
 				}
 			} else {
 				try {
@@ -191,8 +189,8 @@ public class Processor {
 			screenOutput = "Exceptional Situation";
 			e.printStackTrace();
 		}
-		commandFeedback = "Completed";
-		currentState = screenOutput;
+		commandFeedback = createCommand.getFeedback();
+		currentState = createCommand.getState();
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		updateStateListeners();
 	}
@@ -226,13 +224,13 @@ public class Processor {
 			userIsLoggedIn = true;
 			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
 		} catch (AuthenticationException e) {
-			//TODO
+			// TODO
 			return "Login unsuccessful! Please check username and password.";
 		} catch (UnknownHostException e) {
-			//TODO
+			// TODO
 			return "No internet connection available.";
 		} catch (ServiceException e) {
-			//TODO
+			// TODO
 			return "Login unsuccessful! Please check username and password.";
 		}
 	}
