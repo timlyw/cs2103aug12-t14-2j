@@ -49,33 +49,23 @@ public class Processor {
 	 */
 	public Processor() {
 		try {
-
 			DatabaseFactory.getDatabaseFactory("taskRecordFile.json", true);
 			dataHandler = DatabaseFactory.getDatabaseInstance();
-			userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (DatabaseAlreadyInstantiatedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (DatabaseFactoryNotInstantiatedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			userIsLoggedIn = false;
-			// no internet
-			e.printStackTrace();
-		} catch (AuthenticationException e) {
-			e.printStackTrace();
-			// auth excep
-		} catch (ServiceException e) {
-			// service exception(wrong with google API)
-			e.printStackTrace();
-		} catch (IOException e) {
-			//
-			e.printStackTrace();
-		} catch (DatabaseAlreadyInstantiatedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
+		System.out.println(userIsLoggedIn);
 		commandParser = CommandParser.getCommandParser();
 		createCommand = new CommandCreator();
 		userCommand = new CommandInfo();
@@ -235,6 +225,13 @@ public class Processor {
 			userIsLoggedIn = true;
 			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
 		} catch (AuthenticationException e) {
+			//TODO
+			return "Login unsuccessful! Please check username and password.";
+		} catch (UnknownHostException e) {
+			//TODO
+			return "No internet connection available.";
+		} catch (ServiceException e) {
+			//TODO
 			return "Login unsuccessful! Please check username and password.";
 		}
 	}

@@ -84,6 +84,7 @@ public class DatabaseTest {
 	@Before
 	/**
 	 * Setup database environment for test
+	 * 
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
