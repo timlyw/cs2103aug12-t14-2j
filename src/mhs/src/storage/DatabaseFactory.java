@@ -14,8 +14,8 @@ import com.google.gdata.util.ServiceException;
 /**
  * DatabaseFactory
  * 
- * Singleton DatabaseFactory that controls creation of hot-single database object
- * with set parameters
+ * Singleton DatabaseFactory that controls creation of hot-single database
+ * object with set parameters
  * 
  * Usage - Call getDatabaseFactory to setup factory settings with Database
  * parameters - Use getDatabaseInstance to get DatabaseInstance
@@ -26,6 +26,7 @@ import com.google.gdata.util.ServiceException;
 public class DatabaseFactory {
 
 	private static final String PARAMETER_TASK_RECORD_FILE_NAME = "taskRecordFileName";
+	private static final String EXCEPTION_MESSAGE_DATABASE_FACTORY_ALREADY_INSTANTIATED = "DatabaseFactory already instantiated. Destory DatabaseFactory first.";
 	private static final String EXCEPTION_MESSAGE_DATABASE_FACTORY_NOT_INSTANTIATED = "DatabaseFactory not instantiated. Call getDatabaseFactory first.";
 	private static final String EXCEPTION_MESSAGE_NULL_PARAMETER = "%1$s cannot be null!";
 	private static DatabaseFactory instance;
@@ -49,9 +50,16 @@ public class DatabaseFactory {
 			String taskRecordFileName, boolean disableSync) throws IOException,
 			ServiceException, DatabaseAlreadyInstantiatedException {
 		logEnterMethod("DatabaseFactory");
+
 		if (instance == null) {
 			instance = new DatabaseFactory(taskRecordFileName, disableSync);
+		} else {
+			throw new DatabaseAlreadyInstantiatedException(
+					EXCEPTION_MESSAGE_DATABASE_FACTORY_ALREADY_INSTANTIATED);
 		}
+		
+		assert(databaseInstance == null);
+		
 		if (databaseInstance == null) {
 			databaseInstance = new Database(DatabaseFactory.taskRecordFileName,
 					DatabaseFactory.disableSync);
