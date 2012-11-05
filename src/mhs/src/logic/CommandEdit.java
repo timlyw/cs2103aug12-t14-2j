@@ -333,6 +333,7 @@ public class CommandEdit extends Command {
 			outputString = MESSAGE_CANNOT_UNDO;
 		}
 		logExitMethod("undo");
+		commandFeedback = outputString;
 		return outputString;
 	}
 
@@ -340,57 +341,49 @@ public class CommandEdit extends Command {
 	 * executes based on index only. Works when edit query returns multiple
 	 * matches.
 	 */
-	public String executeByIndex(int index) {
+	public void executeByIndex(int index) {
 		logEnterMethod("executeByIndex");
 		String outputString = new String();
 		if (indexExpected && index < matchedTasks.size() && index >= 0) {
-			Task givenTask = matchedTasks.get(index);
-			assert (givenTask != null);
-			storeLastTask(givenTask);
-			Task newTask = createEditedTask(tempCommandInfo, oldTask);
-			try {
-				editTask(newTask);
-				outputString = String.format(CONFIRM_TASK_EDITED,
-						givenTask.getTaskName(), newTask.getTaskName(),
-						newTask.getTaskCategory());
-				indexExpected = false;
-			} catch (Exception e) {
-				outputString = MESSAGE_TASK_NOT_EDITED;
-			}
+			outputString = editByIndex(index);
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
 		commandFeedback = outputString;
 		logExitMethod("executeByIndex");
+	}
+
+	private String editByIndex(int index) {
+		String outputString;
+		Task givenTask = matchedTasks.get(index);
+		assert (givenTask != null);
+		storeLastTask(givenTask);
+		Task newTask = createEditedTask(tempCommandInfo, oldTask);
+		try {
+			editTask(newTask);
+			outputString = String.format(CONFIRM_TASK_EDITED,
+					givenTask.getTaskName(), newTask.getTaskName(),
+					newTask.getTaskCategory());
+			indexExpected = false;
+		} catch (Exception e) {
+			outputString = MESSAGE_TASK_NOT_EDITED;
+		}
 		return outputString;
 	}
 
 	/**
 	 * execute task by index and type of command
 	 */
-	public String executeByIndexAndType(int index) {
+	public void executeByIndexAndType(int index) {
 		logEnterMethod("executeByIndexAndType");
 		String outputString = new String();
 		if (index < matchedTasks.size() && index >= 0) {
-			Task givenTask = matchedTasks.get(index);
-			assert (givenTask != null);
-			storeLastTask(givenTask);
-			Task newTask = createEditedTask(tempCommandInfo, oldTask);
-			try {
-				editTask(newTask);
-				outputString = String.format(CONFIRM_TASK_EDITED,
-						givenTask.getTaskName(), newTask.getTaskName(),
-						newTask.getTaskCategory());
-				indexExpected = false;
-			} catch (Exception e) {
-				outputString = MESSAGE_TASK_NOT_EDITED;
-			}
+			outputString = editByIndex(index);
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
 		commandFeedback = outputString;
 		logExitMethod("executeByIndexAndType");
-		return outputString;
 	}
 
 	/**

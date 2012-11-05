@@ -76,15 +76,15 @@ public class CommandSearch extends Command {
 	/**
 	 * Never called
 	 */
-	public String executeByIndex(int index) {
-		return MESSAGE_SEARCH_INDEX_CANNOT;
+	public void executeByIndex(int index) {
+		commandFeedback = MESSAGE_SEARCH_INDEX_CANNOT;
 	}
 
 	/**
 	 * Never Called
 	 */
-	public String executeByIndexAndType(int index) {
-		return MESSAGE_SEARCH_INDEX_CANNOT;
+	public void executeByIndexAndType(int index) {
+		commandFeedback = MESSAGE_SEARCH_INDEX_CANNOT;
 	}
 
 	/**

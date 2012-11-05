@@ -47,8 +47,7 @@ public class CommandCreator {
 				// Add to undo stack if undoable
 			}
 		} else {
-			userOutputString = previousCommand.executeByIndex(userCommand
-					.getIndex() - 1);
+			previousCommand.executeByIndex(userCommand.getIndex() - 1);
 			currentState = previousCommand.getCurrentState();
 			commandFeedback = userOutputString;
 
@@ -115,7 +114,8 @@ public class CommandCreator {
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		}
-		if(!(userCommand.getCommandEnum() == CommandKeyWords.p || userCommand.getCommandEnum() == CommandKeyWords.n)) {
+		if (!(userCommand.getCommandEnum() == CommandKeyWords.p || userCommand
+				.getCommandEnum() == CommandKeyWords.n)) {
 			Command.resetDisplayIndex();
 		}
 		if (currentCommand.isUndoable()) {
@@ -143,40 +143,34 @@ public class CommandCreator {
 			currentCommand = new CommandAdd();
 			break;
 		case remove:
-			currentCommand = new CommandRemove(previousCommand.matchedTasks);
-			userOutputString = currentCommand
-					.executeByIndexAndType(local_index - 1);
+			currentCommand = new CommandRemove(Command.matchedTasks);
+			currentCommand.executeByIndexAndType(local_index - 1);
 			break;
 		case edit:
-			currentCommand = new CommandEdit(previousCommand.matchedTasks,
-					userCommand);
-			userOutputString = currentCommand
-					.executeByIndexAndType(local_index - 1);
+			currentCommand = new CommandEdit(Command.matchedTasks, userCommand);
+			currentCommand.executeByIndexAndType(local_index - 1);
 			break;
 		case search:
-			userOutputString = MESSAGE_INVALID_COMMAND;
+			commandFeedback = MESSAGE_INVALID_COMMAND;
 			break;
 		case undo:
-			userOutputString = MESSAGE_INVALID_COMMAND;
+			commandFeedback = MESSAGE_INVALID_COMMAND;
 			break;
 		case mark:
-			currentCommand = new CommandMark(previousCommand.matchedTasks);
-			userOutputString = currentCommand
-					.executeByIndexAndType(local_index - 1);
+			currentCommand = new CommandMark(Command.matchedTasks);
+			currentCommand.executeByIndexAndType(local_index - 1);
 			break;
 		case unmark:
-			currentCommand = new CommandUnmark(previousCommand.matchedTasks);
-			userOutputString = currentCommand
-					.executeByIndexAndType(local_index - 1);
+			currentCommand = new CommandUnmark(Command.matchedTasks);
+			currentCommand.executeByIndexAndType(local_index - 1);
 			break;
 		case rename:
-			currentCommand = new CommandRename(previousCommand.matchedTasks,
+			currentCommand = new CommandRename(Command.matchedTasks,
 					userCommand);
-			userOutputString = currentCommand
-					.executeByIndexAndType(local_index - 1);
+			currentCommand.executeByIndexAndType(local_index - 1);
 			break;
 		default:
-			userOutputString = MESSAGE_INVALID_COMMAND;
+			commandFeedback = MESSAGE_INVALID_COMMAND;
 			break;
 		}
 		if (currentCommand.isUndoable()) {
