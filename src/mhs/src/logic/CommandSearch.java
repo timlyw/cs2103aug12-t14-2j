@@ -27,7 +27,9 @@ public class CommandSearch extends Command {
 		logEnterMethod("CommandSearch");
 		List<Task> resultList;
 		try {
+			minTaskQuery = 0;
 			resultList = queryTask(inputCommand);
+			minTaskQuery = 1;
 			matchedTasks = resultList;
 			assert (matchedTasks != null);
 		} catch (IOException e) {
@@ -35,7 +37,7 @@ public class CommandSearch extends Command {
 		}
 		logExitMethod("CommandSearch");
 	}
-	
+
 	/**
 	 * Constructor for index commands
 	 */
