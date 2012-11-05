@@ -201,11 +201,11 @@ public abstract class Command {
 			Task task = taskList.get(i);
 			DateTime currTaskDateTime = null;
 			
-			if(isTimed(task)) {
+			if(task.isTimed()) {
 				currTaskDateTime = task.getStartDateTime();
-			} else if(isDeadline(task)) {
+			} else if(task.isDeadline()) {
 				currTaskDateTime = task.getEndDateTime();
-			} else if(isFloating(task)) {
+			} else if(task.isFloating()) {
 				if(i == 0) {
 					taskListHtml += htmlCreator.color("Floating Tasks:", HtmlCreator.LIGHT_BLUE) + htmlCreator.NEW_LINE;
 					lineCount += 2;
@@ -234,27 +234,6 @@ public abstract class Command {
 		}
 		
 		return taskListHtml;
-	}
-	
-	public boolean isTimed(Task task) {
-		if(task.getTaskCategory() == TaskCategory.TIMED) {
-			return true;
-		} 
-		return false;
-	}
-	
-	public boolean isDeadline(Task task) {
-		if(task.getTaskCategory() == TaskCategory.DEADLINE) {
-			return true;
-		} 
-		return false;
-	}
-	
-	public boolean isFloating(Task task) {
-		if(task.getTaskCategory() == TaskCategory.FLOATING) {
-			return true;
-		} 
-		return false;
 	}
 	
 	private boolean dateIsEqual(DateTime date1, DateTime date2) {
