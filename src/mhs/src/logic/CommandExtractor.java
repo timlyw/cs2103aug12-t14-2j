@@ -26,7 +26,9 @@ public class CommandExtractor {
 				"edit"), postpone("edit"), search("search"), find("search"), display(
 				"search"), sync("sync"), undo("undo"), redo("redo"), rename(
 				"rename"), login("login"), signin("login"), logout("logout"), signout(
-				"logout"), help("help"), mark("mark"), check("mark"), unmark("unmark");
+				"logout"), help("help"), mark("mark"), check("mark"), unmark(
+				"unmark"), p("p"), n("n"), displayfloating("displayfloating"), 
+				displaydeadline("displaydeadline"), displaytimed("displaytimed");
 
 		private final String command;
 
@@ -99,7 +101,7 @@ public class CommandExtractor {
 			}
 		} catch (NullPointerException e) {
 			return null;
-		}catch(ArrayIndexOutOfBoundsException e){
+		} catch (ArrayIndexOutOfBoundsException e) {
 			return null;
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());

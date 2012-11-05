@@ -15,6 +15,9 @@ import org.joda.time.LocalTime;
  */
 public class CommandParser {
 
+	private static final String COMMAND_UNMARK = "unmark";
+	private static final String REGEX_LEFT_BRACER = "\\<";
+	private static final String REGEX_RIGHT_BRACER = "\\>";
 	private static final String COMMAND_RENAME = "rename";
 	private static final String COMMAND_MARK = "mark";
 	private static final String COMMAND_EDIT = "edit";
@@ -67,8 +70,7 @@ public class CommandParser {
 	public CommandInfo getParsedCommand(String parseString) {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		assert (parseString != null);
-		setEnvironment();
-
+		parseString = setEnvironment(parseString);
 
 		setCommand(parseString);
 		getIndexAtFirstLocation(parseString);
@@ -111,7 +113,8 @@ public class CommandParser {
 				if (command.equals(COMMAND_REMOVE)
 						|| command.equals(COMMAND_EDIT)
 						|| command.equals(COMMAND_MARK)
-						|| command.equals(COMMAND_RENAME)) {
+						|| command.equals(COMMAND_RENAME)
+						|| command.equals(COMMAND_UNMARK)) {
 					if (taskName == null) {
 						if (isInteger(processArray[1])) {
 							index = Integer.parseInt(processArray[1]);
@@ -155,6 +158,18 @@ public class CommandParser {
 	/**
 	 * This is a function to set up the environment and set values to null.
 	 */
+	private String setEnvironment(String parseString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		
+		setEnvironment();
+		parseString = parseString.replaceAll(REGEX_LEFT_BRACER,"");
+		parseString = parseString.replaceAll(REGEX_RIGHT_BRACER,"");
+		
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		return parseString;
+		
+	}
+
 	private void setEnvironment() {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		dateParser = DateExtractor.getDateExtractor();
@@ -175,7 +190,9 @@ public class CommandParser {
 		startTime = null;
 		endTime = null;
 		index = 0;
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
+
 	}
 
 	/**

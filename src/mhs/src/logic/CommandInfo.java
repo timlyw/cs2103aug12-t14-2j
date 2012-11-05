@@ -21,7 +21,7 @@ public class CommandInfo {
 	 * This is the enum of the different type of commands. 
 	 */
 	public static enum CommandKeyWords{
-		add, remove,edit, search, sync, undo, login, logout, rename, redo, mark, help, unmark;
+		add, remove,edit, search, sync, undo, login, logout, rename, redo, mark, help, unmark, p, n, displayfloating, displaydeadline, displaytimed;
 	}
 	
 	private String taskName;
@@ -30,9 +30,11 @@ public class CommandInfo {
 	
 	private DateTime startDate;
 	private DateTime endDate;
+	private int index;
+	
 	private static final Logger logger = MhsLogger.getLogger();
 	
-	private int index;
+	
 
 	/**
 	 * This is the constructor to set up the command object. 
@@ -143,9 +145,37 @@ public class CommandInfo {
 		if(endDate!= null)
 			outString += (" End Date : " + endDate.toString());
 		outString += (" Index is : " + index);
-		System.out.println(" was sent");
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outString;
+	}
+	
+	public boolean isEqual(CommandInfo commandInfo1, CommandInfo commandInfo2){
+		if(commandInfo1.commandEnum != commandInfo2.commandEnum){
+			System.out.println("CommanEnum Error! " + commandInfo1.commandEnum.name() + " " + commandInfo2.commandEnum.name());
+			return false;
+		}
+		if(commandInfo1.taskName != commandInfo1.taskName){
+			System.out.println("Task Name Error! " + commandInfo1.taskName + " " + commandInfo2.taskName);
+			return false;
+		}
+		if(commandInfo1.edittedName != commandInfo1.edittedName){
+			System.out.println("Editted Name Error! " + commandInfo1.edittedName + " " + commandInfo2.edittedName);
+			return false;
+		}
+		if(commandInfo1.startDate != commandInfo1.startDate){
+			System.out.println("Start Date Error! " + commandInfo1.startDate.toString() + " " + commandInfo2.startDate.toString());
+			return false;
+		}
+		if(commandInfo1.endDate != commandInfo1.endDate){
+			System.out.println("End Date Error! " + commandInfo1.endDate.toString() + " " + commandInfo2.endDate.toString());
+			return false;
+		}
+		if(commandInfo1.index != commandInfo1.index){
+			System.out.println("Index Error! " + commandInfo1.index + " " + commandInfo2.index);
+			return false;
+		}
+	
+		return true;
 	}
 	
 }

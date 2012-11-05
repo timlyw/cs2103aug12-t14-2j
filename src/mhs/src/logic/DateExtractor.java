@@ -213,7 +213,6 @@ public class DateExtractor {
 					rectifyDate();
 				}
 				try {
-					System.out.println("added");
 					setDate = new LocalDate(year, month, day);
 					startDateFlag = true;
 					if(!yearFlag){
