@@ -251,25 +251,15 @@ public class Task {
 		return null;
 	}
 
-	public static boolean isTimed(Task task) {
-		if (task.getTaskCategory() == TaskCategory.TIMED) {
-			return true;
-		}
-		return false;
+	public boolean isTimed() {
+		return this.getTaskCategory() == TaskCategory.TIMED;
 	}
 
-	public static boolean isDeadline(Task task) {
-		if (task.getTaskCategory() == TaskCategory.DEADLINE) {
-			return true;
-		}
-		return false;
+	public boolean isDeadline() {
+		return this.getTaskCategory() == TaskCategory.DEADLINE;
 	}
 
-	public static boolean isFloating(Task task) {
-		if (task.getTaskCategory() == TaskCategory.FLOATING) {
-			return true;
-		}
-		return false;
+	public boolean isFloating() {
+		return this.getTaskCategory() == TaskCategory.FLOATING;
 	}
-
 }

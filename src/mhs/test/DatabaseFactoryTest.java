@@ -21,6 +21,16 @@ import com.google.gdata.util.ServiceException;
  * 
  * jUnit test for DatabaseFactoryTest
  * 
+ * jUnit Tests
+ * 
+ * Exceptions
+ * 1. testDatabaseFactoryAlreadyInstantiatedExceptionExceptions
+ * 2. testDatabaseFactoryNotInstantiatedExceptionExceptions
+ * 3. testDatabaseFactoryIllegalArugmentsExceptions
+ * 
+ * Functionality
+ * 4. testDatabaseFactory
+ * 
  * @author Timothy Lim Yi Wen A0087048X
  */
 
