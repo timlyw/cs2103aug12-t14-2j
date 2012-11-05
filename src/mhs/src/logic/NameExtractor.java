@@ -42,6 +42,7 @@ public class NameExtractor {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		nameList = new LinkedList<String>();
 		counter = 0;
+
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
@@ -197,6 +198,8 @@ public class NameExtractor {
 	private Queue<String> setUpNameQueue(String[] processArray) {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		int j;
+		DateExtractor dateExtractor = DateExtractor.getDateExtractor();
+		
 		Queue<String> commandQueue = new LinkedList<String>();
 		for (j = counter; j < processArray.length; j++) {
 
@@ -206,12 +209,24 @@ public class NameExtractor {
 					try {
 						if (checkNameFormat(processArray[j + 1])) {
 							commandQueue.add(processArray[j]);
-							System.out.println(processArray[j]);
 							j++;
 						}
 					} catch (ArrayIndexOutOfBoundsException e) {
-						System.out.println("oob");
 					}
+				}
+			}
+			
+			if (isInteger(processArray[j])) {
+				try {
+					if (!(dateExtractor.checkDateFormat(processArray[j + 1]))) {
+						commandQueue.add(processArray[j]);
+						j++;
+					}
+					else {
+						break;
+					}
+				} catch (ArrayIndexOutOfBoundsException e) {
+					commandQueue.add(processArray[j]);
 				}
 			}
 
@@ -224,6 +239,26 @@ public class NameExtractor {
 		counter = j - 1;
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return commandQueue;
+	}
+
+	/**
+	 * This is the function to check if the string is an integer.
+	 * 
+	 * @param printString
+	 *            This is the string to be checked.
+	 * 
+	 * @return Returns true if the string is an int.
+	 */
+	private boolean isInteger(String printString) {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		try {
+			Integer.parseInt(printString);
+			logger.exiting(getClass().getName(), this.getClass().getName());
+			return true;
+		} catch (NumberFormatException e) {
+			logger.exiting(getClass().getName(), this.getClass().getName());
+			return false;
+		}
 	}
 
 	/**
