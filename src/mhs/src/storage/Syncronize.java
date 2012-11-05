@@ -17,6 +17,7 @@ import java.util.logging.Level;
 
 import mhs.src.common.exceptions.InvalidTaskFormatException;
 import mhs.src.common.exceptions.TaskNotFoundException;
+import mhs.src.storage.persistence.remote.GoogleCalendarMhs;
 import mhs.src.storage.persistence.task.DeadlineTask;
 import mhs.src.storage.persistence.task.Task;
 import mhs.src.storage.persistence.task.TaskCategory;
@@ -58,6 +59,11 @@ class Syncronize {
 	private static final int PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES = 2;
 	private static final int PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES = 1;
 
+	// Config parameters
+	private static final String CONFIG_PARAM_GOOGLE_USER_ACCOUNT = "GOOGLE_USER_ACCOUNT";
+	private static final String CONFIG_PARAM_GOOGLE_AUTH_TOKEN = "GOOGLE_AUTH_TOKEN";
+	private static final String GOOGLE_CALENDAR_APP_NAME = "My Hot Secretary";
+
 	/**
 	 * Default Constructor for Syncronize.
 	 * 
@@ -65,21 +71,22 @@ class Syncronize {
 	 * Google Calendar Service.
 	 * 
 	 * @param database
-	 *            TODO
-	 * 
+	 * @param disableSyncronize
 	 * @throws IOException
+	 * @throws ServiceException
 	 */
-	Syncronize(Database database) throws IOException {
+	Syncronize(Database database, boolean disableSyncronize) throws IOException {
 		this.database = database;
 		this.database.logEnterMethod("Syncronize");
-		syncronizeBackgroundExecutor = new ScheduledThreadPoolExecutor(1);
 
+		syncronizeBackgroundExecutor = new ScheduledThreadPoolExecutor(1);
 		initializeRunnableTasks();
-		if (this.database.initializeGoogleCalendarService()) {
+		if (initializeGoogleCalendarService() && !disableSyncronize) {
 			enableRemoteSync();
 		} else {
 			disableRemoteSync();
 		}
+
 		this.database.logExitMethod("Syncronize");
 	}
 
@@ -572,4 +579,71 @@ class Syncronize {
 		this.database.logExitMethod("setSyncTime");
 		return syncDateTime;
 	}
+
+	/**
+	 * Initializes Google Calendar Service with saved access token
+	 * 
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	boolean initializeGoogleCalendarService() {
+		this.database.logEnterMethod("initializeGoogleCalendarService");
+		if (!Database.configFile
+				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)) {
+			this.database.logExitMethod("initializeGoogleCalendarService");
+			return false;
+		}
+		if (!Database.configFile
+				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
+			this.database.logExitMethod("initializeGoogleCalendarService");
+			return false;
+		}
+
+		try {
+			authenticateGoogleAccount(
+					Database.configFile
+							.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT),
+					Database.configFile
+							.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN));
+		} catch (UnknownHostException e) {
+		} catch (IOException e) {
+		} catch (ServiceException e) {
+		}
+
+		this.database.logExitMethod("initializeGoogleCalendarService");
+		return true;
+	}
+
+	/**
+	 * Authenticates user google account with account email and access token
+	 * 
+	 * @param googleUserAccount
+	 * @param googleAuthToken
+	 * @throws IOException
+	 */
+	private void authenticateGoogleAccount(String googleUserAccount,
+			String googleAuthToken) throws IOException, ServiceException,
+			UnknownHostException {
+		this.database.logEnterMethod("authenticateGoogleAccount");
+		assert (googleUserAccount != null);
+		assert (googleAuthToken != null);
+
+		try {
+			Database.googleCalendar = new GoogleCalendarMhs(
+					GOOGLE_CALENDAR_APP_NAME, googleUserAccount,
+					googleAuthToken);
+		} catch (NullPointerException e) {
+			Database.logger.log(Level.FINER, e.getMessage());
+		} catch (UnknownHostException e) {
+			Database.logger.log(Level.FINER, e.getMessage());
+			throw e;
+		} catch (ServiceException e) {
+			Database.logger.log(Level.FINER, e.getMessage());
+			throw e;
+		}
+
+		this.database.saveGoogleAccountInfo(googleUserAccount, googleAuthToken);
+		this.database.logExitMethod("authenticateGoogleAccount");
+	}
+
 }
