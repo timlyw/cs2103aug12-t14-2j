@@ -181,25 +181,26 @@ public class CommandAdd extends Command {
 			outputString = MESSAGE_CANNOT_UNDO;
 		}
 		logExitMethod("undo");
+		commandFeedback = outputString;
 		return outputString;
 	}
 
 	/**
 	 * Add does not support index commands
 	 */
-	public String executeByIndex(int index) {
+	public void executeByIndex(int index) {
 		logEnterMethod("executeByIndex");
 		logExitMethod("executeByIndex");
-		return MESSAGE_ADD_INDEX_CANNOT;
+		commandFeedback = MESSAGE_ADD_INDEX_CANNOT;
 	}
 
 	/**
 	 * Add does not support index commands
 	 */
-	public String executeByIndexAndType(int index) {
+	public void executeByIndexAndType(int index) {
 		logEnterMethod("executeByIndexAndType");
 		logExitMethod("executeByIndexAndType");
-		return MESSAGE_ADD_INDEX_CANNOT;
+		commandFeedback = MESSAGE_ADD_INDEX_CANNOT;
 	}
 
 	/**

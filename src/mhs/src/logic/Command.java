@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import org.joda.time.DateTime;
 
 import mhs.src.common.MhsLogger;
-import com.google.gdata.util.ServiceException;
 import mhs.src.common.HtmlCreator;
 import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
 import mhs.src.storage.Database;
@@ -62,9 +61,9 @@ public abstract class Command {
 		return isUndoable;
 	}
 
-	abstract public String executeByIndex(int index);
+	abstract public void executeByIndex(int index);
 
-	abstract public String executeByIndexAndType(int index);
+	abstract public void executeByIndexAndType(int index);
 
 	/**
 	 * Queries task based on task name/start time/end time
@@ -171,37 +170,37 @@ public abstract class Command {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
-	
+
 	public static void displayNext() {
 		firstIndexDisplayed = lastIndexDisplayed;
 	}
-	
+
 	public static void displayPrev() {
 		firstIndexDisplayed = firstIndexDisplayed - lineLimit;
-		if(firstIndexDisplayed < 0) {
+		if (firstIndexDisplayed < 0) {
 			firstIndexDisplayed = 0;
 		}
 	}
-	
+
 	public static void resetDisplayIndex() {
 		firstIndexDisplayed = 0;
 	}
 
-
 	public static String createTaskListHtml(List<Task> taskList, int limit) {
 		String taskListHtml = "";
-		
-		if(taskList.size() == 0) {
+
+		if (taskList.size() == 0) {
 			return "No tasks to display";
 		}
 
 		DateTime prevTaskDateTime = null;
 
 		int lineCount = 0;
-		
+
 		System.out.println("index " + firstIndexDisplayed);
 
-		for (int i = firstIndexDisplayed; i < taskList.size() && lineCount < limit; i++) {
+		for (int i = firstIndexDisplayed; i < taskList.size()
+				&& lineCount < limit; i++) {
 			Task task = taskList.get(i);
 			DateTime currTaskDateTime = null;
 
@@ -240,7 +239,7 @@ public abstract class Command {
 			lineCount += 2;
 			lastIndexDisplayed = i;
 		}
-		
+
 		return taskListHtml;
 	}
 
