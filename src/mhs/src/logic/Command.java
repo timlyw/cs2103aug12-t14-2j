@@ -29,6 +29,7 @@ public abstract class Command {
 	protected HtmlCreator htmlCreator;
 	private static final Logger logger = MhsLogger.getLogger();
 	private Task lastTask = null;
+	private static int lineLimit = 0;
 
 	public Command() {
 		indexExpected = false;
@@ -126,33 +127,9 @@ public abstract class Command {
 	 */
 	protected String displayListOfTasks(List<Task> resultList) {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		int count = 1;
 		String outputString = new String();
 
-		for (Task selectedTask : resultList) {
-			if (selectedTask.getTaskCategory() == TaskCategory.FLOATING) {
-				if (selectedTask.isDone()) {
-					outputString += count
-							+ ". "
-							+ htmlCreator.makeBold(selectedTask.getTaskName()
-									+ "-" + selectedTask.getTaskCategory()
-									+ " [DONE]") + htmlCreator.NEW_LINE;
-				} else {
-					outputString += count
-							+ ". "
-							+ htmlCreator.makeBold(selectedTask.getTaskName()
-									+ "-" + selectedTask.getTaskCategory()
-									+ " [PENDING]") + htmlCreator.NEW_LINE;
-				}
-			} else {
-				outputString += count + ". " + selectedTask.getTaskName() + "-"
-						+ selectedTask.getTaskCategory() + htmlCreator.NEW_LINE;
-			}
-			count++;
-		}
-
-		// outputString =
-		// htmlCreator.createTaskListHtml(resultList,resultList.size());
+		outputString = createTaskListHtml(resultList, lineLimit);
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
@@ -183,70 +160,80 @@ public abstract class Command {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
-	
+
 	public Task getLastTaskDisplayed() {
 		return lastTask;
 	}
-	
+
 	public String createTaskListHtml(List<Task> taskList, int limit) {
 		String taskListHtml = "";
-		
+
 		DateTime prevTaskDateTime = null;
-		
+
 		int lineCount = 0;
-		
-		for(int i = 0; i < taskList.size() && lineCount < limit; i++) {
+
+		for (int i = 0; i < taskList.size() && lineCount < limit; i++) {
 			Task task = taskList.get(i);
 			DateTime currTaskDateTime = null;
-			
-			if(task.isTimed()) {
+
+			if (task.isTimed()) {
 				currTaskDateTime = task.getStartDateTime();
-			} else if(task.isDeadline()) {
+			} else if (task.isDeadline()) {
 				currTaskDateTime = task.getEndDateTime();
-			} else if(task.isFloating()) {
-				if(i == 0) {
-					taskListHtml += htmlCreator.color("Floating Tasks:", HtmlCreator.LIGHT_BLUE) + htmlCreator.NEW_LINE;
+			} else if (task.isFloating()) {
+				if (i == 0) {
+					taskListHtml += htmlCreator.color("Floating Tasks:",
+							HtmlCreator.LIGHT_BLUE) + htmlCreator.NEW_LINE;
 					lineCount += 2;
 				}
-				
+
 				currTaskDateTime = null;
 			} else {
 				continue;
 			}
-			
-			if(!dateIsEqual(prevTaskDateTime, currTaskDateTime) && currTaskDateTime != null) {
-				if(i > 0) {
+
+			if (!dateIsEqual(prevTaskDateTime, currTaskDateTime)
+					&& currTaskDateTime != null) {
+				if (i > 0) {
 					taskListHtml += htmlCreator.NEW_LINE;
 					lineCount++;
 				}
 				String dateString = getDateString(currTaskDateTime);
 				dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
-				taskListHtml +=  dateString + htmlCreator.NEW_LINE;
+				taskListHtml += dateString + htmlCreator.NEW_LINE;
 			}
-			
+
 			prevTaskDateTime = currTaskDateTime;
-			String indexString = htmlCreator.color(Integer.toString(i + 1) + ". ", HtmlCreator.GRAY);
-			taskListHtml += indexString + task.toHtmlString() + htmlCreator.NEW_LINE;
+			String indexString = htmlCreator.color(Integer.toString(i + 1)
+					+ ". ", HtmlCreator.GRAY);
+			taskListHtml += indexString + task.toHtmlString()
+					+ htmlCreator.NEW_LINE;
 			lineCount += 2;
 			lastTask = task;
 		}
-		
+
 		return taskListHtml;
 	}
-	
+
 	private boolean dateIsEqual(DateTime date1, DateTime date2) {
-		if(date1 == null || date2 == null) {
+		if (date1 == null || date2 == null) {
 			return false;
 		}
-		
-		if(date1.getDayOfYear() == date2.getDayOfYear() && date1.getYear() == date2.getYear()) {
+
+		if (date1.getDayOfYear() == date2.getDayOfYear()
+				&& date1.getYear() == date2.getYear()) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	private String getDateString(DateTime date) {
 		return date.toString("dd MMM yy");
+	}
+
+	public static void setLineLimit(int limit) {
+		lineLimit = limit;
+
 	}
 
 }

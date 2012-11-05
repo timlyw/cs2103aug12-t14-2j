@@ -38,7 +38,7 @@ public class Processor {
 	private String currentCommand = null;
 	private String currentState = null;
 	private boolean isPasswordExpected = false;
-	public int LINE_HEIGHT = 30;
+	public int LINE_HEIGHT = 20;
 	private CommandInfo userCommand;
 	private static final Logger logger = MhsLogger.getLogger();
 
@@ -87,6 +87,7 @@ public class Processor {
 	}
 
 	public void setLineLimit(int limit) {
+		Command.setLineLimit(limit);
 		updateStateListeners();
 	}
 
