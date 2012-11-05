@@ -29,6 +29,7 @@ public class DatabaseFactoryTest {
 	private final static String TEST_2_TASK_RECORD_FILENAME = "test2TaskRecordFile.json";
 	private static final String PARAMETER_TASK_RECORD_FILE_NAME = "taskRecordFileName";
 	private static final String EXCEPTION_MESSAGE_DATABASE_FACTORY_NOT_INSTANTIATED = "DatabaseFactory not instantiated. Call getDatabaseFactory first.";
+	private static final String EXCEPTION_MESSAGE_DATABASE_FACTORY_ALREADY_INSTANTIATED = "DatabaseFactory already instantiated. Destory DatabaseFactory first.";
 	private static final String EXCEPTION_MESSAGE_DATABASE_WITH_PARAMETERS_ALREADY_INSTANTIATED = "Database with parameters %1$s already instantiated";
 	private static final String EXCEPTION_MESSAGE_NULL_PARAMETER = "%1$s cannot be null!";
 
@@ -38,6 +39,17 @@ public class DatabaseFactoryTest {
 	@Before
 	public void databaseFactoryCleanup() {
 		DatabaseFactory.destroy();
+	}
+
+	@Test
+	public void testDatabaseFactoryAlreadyInstantiatedExceptionExceptions()
+			throws IllegalArgumentException, IOException, ServiceException,
+			TaskNotFoundException, DatabaseAlreadyInstantiatedException,
+			DatabaseFactoryNotInstantiatedException {
+		thrown.expect(DatabaseAlreadyInstantiatedException.class);
+		thrown.expectMessage(EXCEPTION_MESSAGE_DATABASE_FACTORY_ALREADY_INSTANTIATED);
+		DatabaseFactory.getDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
+		DatabaseFactory.getDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
 	}
 
 	@Test
