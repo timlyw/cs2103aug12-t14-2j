@@ -3,6 +3,7 @@
 package mhs.src.storage;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
@@ -48,7 +49,7 @@ public class DatabaseFactory {
 	 */
 	public synchronized static DatabaseFactory getDatabaseFactory(
 			String taskRecordFileName, boolean disableSync) throws IOException,
-			ServiceException, DatabaseAlreadyInstantiatedException {
+			DatabaseAlreadyInstantiatedException {
 		logEnterMethod("DatabaseFactory");
 
 		if (instance == null) {
@@ -57,9 +58,9 @@ public class DatabaseFactory {
 			throw new DatabaseAlreadyInstantiatedException(
 					EXCEPTION_MESSAGE_DATABASE_FACTORY_ALREADY_INSTANTIATED);
 		}
-		
-		assert(databaseInstance == null);
-		
+
+		assert (databaseInstance == null);
+
 		if (databaseInstance == null) {
 			databaseInstance = new Database(DatabaseFactory.taskRecordFileName,
 					DatabaseFactory.disableSync);
@@ -78,8 +79,7 @@ public class DatabaseFactory {
 	 * @throws DatabaseFactoryNotInstantiatedException
 	 */
 	public synchronized static Database getDatabaseInstance()
-			throws IllegalArgumentException, IOException, ServiceException,
-			DatabaseFactoryNotInstantiatedException {
+			throws IllegalArgumentException, DatabaseFactoryNotInstantiatedException {
 		logEnterMethod("getDatabaseInstance");
 		if (databaseInstance == null) {
 			throw new DatabaseFactoryNotInstantiatedException(

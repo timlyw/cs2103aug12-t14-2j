@@ -25,6 +25,7 @@ import mhs.src.storage.persistence.task.TaskCategory;
 
 import org.joda.time.DateTime;
 
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 /**
@@ -46,11 +47,11 @@ public class Database {
 	static Syncronize syncronize;
 	static TaskValidator taskValidator;
 	private static TaskRecordFile taskRecordFile;
-	private static ConfigFile configFile;
+	static ConfigFile configFile;
 
 	static DateTime syncStartDateTime;
 	static DateTime syncEndDateTime;
-	static boolean isRemoteSyncEnabled = true;
+	static boolean isRemoteSyncEnabled = false;
 
 	static final Logger logger = MhsLogger.getLogger();
 
@@ -67,22 +68,7 @@ public class Database {
 	// Config parameters
 	private static final String CONFIG_PARAM_GOOGLE_USER_ACCOUNT = "GOOGLE_USER_ACCOUNT";
 	private static final String CONFIG_PARAM_GOOGLE_AUTH_TOKEN = "GOOGLE_AUTH_TOKEN";
-
 	private static final String GOOGLE_CALENDAR_APP_NAME = "My Hot Secretary";
-
-	/**
-	 * Database default constructor
-	 * 
-	 * @throws IOException
-	 * @throws ServiceException
-	 */
-	protected Database() throws IOException, ServiceException {
-		logEnterMethod("Database");
-		initializeSyncDateTimes();
-		initalizeDatabase();
-		syncronizeDatabases();
-		logExitMethod("Database");
-	}
 
 	/**
 	 * Database constructor
@@ -92,30 +78,20 @@ public class Database {
 	 * @throws ServiceException
 	 */
 	protected Database(String taskRecordFileName, boolean disableSyncronize)
-			throws IllegalArgumentException, IOException, ServiceException {
+			throws IllegalArgumentException, IOException {
 		logEnterMethod("Database");
+
 		if (taskRecordFileName == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER,
 					PARAMETER_TASK_RECORD_FILE_NAME));
 		}
+
 		initializeSyncDateTimes();
 		initalizeDatabase(taskRecordFileName);
-		// syncronize local and remote databases
-		if (disableSyncronize) {
-			syncronize.disableRemoteSync();
-		} else {
-			syncronizeDatabases();
-		}
+		initializeSyncronize(disableSyncronize);
+		
 		logExitMethod("Database");
-	}
-
-	private void initializeSyncDateTimes() {
-		logEnterMethod("initializeSyncDateTimes");
-		syncStartDateTime = DateTime.now().toDateMidnight().toDateTime();
-		syncEndDateTime = DateTime.now().plusMonths(12).toDateMidnight()
-				.toDateTime();
-		logExitMethod("initializeSyncDateTimes");
 	}
 
 	/**
@@ -131,91 +107,68 @@ public class Database {
 		configFile = new ConfigFile();
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
 		taskLists = new TaskLists(taskRecordFile.getTaskList());
-		syncronize = new Syncronize(this);
 		logExitMethod("initalizeDatabase");
 
 	}
 
 	/**
-	 * Initialize database
+	 * Initialize Syncronize to start sync between local and remote storage
+	 * 
+	 * Updates remoteSyncEnabled to true if successful
+	 * 
+	 * @param disableSyncronize 
 	 * 
 	 * @throws IOException
+	 */
+	private void initializeSyncronize(boolean disableSyncronize) throws IOException {
+		logEnterMethod("initializeSyncronize");
+		syncronize = new Syncronize(this, disableSyncronize);
+		logExitMethod("initializeSyncronize");
+	}
+
+	/**
+	 * Initialize Sync Date Times Range
+	 */
+	private void initializeSyncDateTimes() {
+		logEnterMethod("initializeSyncDateTimes");
+		syncStartDateTime = DateTime.now().toDateMidnight().toDateTime();
+		syncEndDateTime = DateTime.now().plusMonths(12).toDateMidnight()
+				.toDateTime();
+		logExitMethod("initializeSyncDateTimes");
+	}
+
+	/**
+	 * Syncronizes Databases
+	 * 
 	 * @throws ServiceException
-	 */
-	private void initalizeDatabase() throws IOException {
-		logEnterMethod("initalizeDatabase");
-		configFile = new ConfigFile();
-		taskRecordFile = new TaskRecordFile();
-		taskLists = new TaskLists(taskRecordFile.getTaskList());
-		syncronize = new Syncronize(this);
-		logExitMethod("initalizeDatabase");
-	}
-
-	/**
-	 * Initializes Google Calendar Service with saved access token
+	 * @throws UnknownHostException
 	 * 
 	 * @throws IOException
-	 * @throws ServiceException
 	 */
-	boolean initializeGoogleCalendarService() throws IOException {
-		logEnterMethod("initializeGoogleCalendarService");
-		if (!configFile
-				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)) {
-			logger.exiting(getClass().getName(),
-					new Exception().getStackTrace()[0].getMethodName());
-			return false;
-		}
-		if (!configFile
-				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
-			logger.exiting(getClass().getName(),
-					new Exception().getStackTrace()[0].getMethodName());
-			return false;
-		}
-		authenticateGoogleAccount(
-				configFile.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT),
-				configFile.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN));
-
-		logExitMethod("initializeGoogleCalendarService");
-		return true;
+	public void syncronizeDatabases() throws UnknownHostException,
+			ServiceException {
+		logEnterMethod("syncronizeDatabases");
+		syncronize.syncronizeDatabases();
+		logExitMethod("syncronizeDatabases");
 	}
 
 	/**
-	 * Authenticates user google account with account email and access token
-	 * 
-	 * @param googleUserAccount
-	 * @param googleAuthToken
-	 * @throws IOException
-	 */
-	private void authenticateGoogleAccount(String googleUserAccount,
-			String googleAuthToken) throws IOException {
-		logEnterMethod("authenticateGoogleAccount");
-		assert (googleUserAccount != null);
-		assert (googleAuthToken != null);
-
-		try {
-			googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
-					googleUserAccount, googleAuthToken);
-		} catch (NullPointerException e) {
-			logger.log(Level.FINER, e.getMessage());
-		} catch (ServiceException e) {
-			logger.log(Level.FINER, e.getMessage());
-		}
-
-		saveGoogleAccountInfo(googleUserAccount, googleAuthToken);
-		logExitMethod("authenticateGoogleAccount");
-	}
-
-	/**
-	 * Logs in user google account with user details
+	 * Logs in user google account with user details and starts Syncronize
 	 * 
 	 * @param userName
+	 *            user google account
 	 * @param userPassword
+	 *            user google account password
 	 * @throws IOException
+	 * @throws UnknownHostException
+	 *             when no internet connection is available
 	 * @throws ServiceException
+	 *             when Google Calendar Service Exception occurs
 	 */
 	public void loginUserGoogleAccount(String userName, String userPassword)
-			throws IOException, ServiceException {
+			throws IOException, AuthenticationException, UnknownHostException, ServiceException {
 		logEnterMethod("loginUserGoogleAccount");
+
 		if (userName == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, "userName"));
@@ -224,16 +177,15 @@ public class Database {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, "userPassword"));
 		}
+		assert (syncronize != null);
 
 		syncronize.disableRemoteSync();
-
 		String googleAccessToken = GoogleCalendarMhs.retrieveUserToken(
 				GOOGLE_CALENDAR_APP_NAME, userName, userPassword);
 		googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
 				userName, googleAccessToken);
-
-		syncronize.enableRemoteSync();
 		saveGoogleAccountInfo(userName, googleAccessToken);
+		syncronize.enableRemoteSync();
 
 		logExitMethod("loginUserGoogleAccount");
 	}
@@ -245,6 +197,8 @@ public class Database {
 	 */
 	public void logOutUserGoogleAccount() throws IOException {
 		logEnterMethod("logOutUserGoogleAccount");
+		assert (syncronize != null);
+		
 		syncronize.disableRemoteSync();
 		googleCalendar = null;
 		configFile.removeConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN);
@@ -273,41 +227,19 @@ public class Database {
 	 * 
 	 * @throws IOException
 	 */
-	private synchronized void saveGoogleAccountInfo(String googleUserAccount,
+	synchronized void saveGoogleAccountInfo(String googleUserAccount,
 			String googleAuthToken) throws IOException {
 		logEnterMethod("saveGoogleAccountInfo");
 		if (googleAuthToken != null) {
-			logger.log(Level.INFO, "Saving Google : "
-					+ CONFIG_PARAM_GOOGLE_AUTH_TOKEN + " " + googleAuthToken);
 			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN,
 					googleAuthToken);
 		}
-
 		if (googleUserAccount != null) {
-			logger.log(Level.INFO, "Saving Google : "
-					+ CONFIG_PARAM_GOOGLE_USER_ACCOUNT + " "
-					+ googleUserAccount);
 			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT,
 					googleUserAccount);
 		}
-
 		configFile.save();
 		logExitMethod("saveGoogleAccountInfo");
-	}
-
-	/**
-	 * Syncronizes Databases
-	 * 
-	 * @throws ServiceException
-	 * @throws UnknownHostException
-	 * 
-	 * @throws IOException
-	 */
-	public void syncronizeDatabases() throws UnknownHostException,
-			ServiceException {
-		logEnterMethod("syncronizeDatabases");
-		syncronize.syncronizeDatabases();
-		logExitMethod("syncronizeDatabases");
 	}
 
 	/**
