@@ -37,8 +37,6 @@ public abstract class Command {
 
 		try {
 			dataHandler = DatabaseFactory.getDatabaseInstance();
-		} catch (IOException | ServiceException e1) {
-
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
