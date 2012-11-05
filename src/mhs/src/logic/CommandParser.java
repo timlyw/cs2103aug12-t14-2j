@@ -1,3 +1,4 @@
+//@author A0086805X
 package mhs.src.logic;
 
 import java.util.Queue;
@@ -5,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
+import mhs.src.storage.Database;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -15,13 +17,18 @@ import org.joda.time.LocalTime;
  */
 public class CommandParser {
 
-	private static final String COMMAND_UNMARK = "unmark";
+	//These are the regex strings
+	private static final String REGEX_WHITE_SPACES = "\\s+";
 	private static final String REGEX_LEFT_BRACER = "\\<";
 	private static final String REGEX_RIGHT_BRACER = "\\>";
+	
+	//These are the commands that allow indexing
+	private static final String COMMAND_UNMARK = "unmark";
 	private static final String COMMAND_RENAME = "rename";
 	private static final String COMMAND_MARK = "mark";
 	private static final String COMMAND_EDIT = "edit";
 	private static final String COMMAND_REMOVE = "remove";
+	
 	private DateExtractor dateParser;
 	private TimeExtractor timeParser;
 	private CommandExtractor commandExtractor;
@@ -45,10 +52,20 @@ public class CommandParser {
 	private int index;
 	private static CommandParser commandParser;
 
+	/**
+	 * This is the private constructor for commandParser
+	 */
 	private CommandParser() {
+		logEnterMethod("CommandParser");
 		setEnvironment();
+		logExitMethod("CommandParser");
 	}
 
+	/**
+	 * This is the method to get a single instance of commandParser.
+	 * 
+	 * @return Returns a single instance of commandParser.
+	 */
 	public static CommandParser getCommandParser() {
 
 		if (commandParser == null) {
@@ -68,10 +85,11 @@ public class CommandParser {
 	 * @return Returns a commandObject that has all the arguments set
 	 */
 	public CommandInfo getParsedCommand(String parseString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("getParsedCommand");
+		
 		assert (parseString != null);
 		parseString = setEnvironment(parseString);
-
+		
 		setCommand(parseString);
 		getIndexAtFirstLocation(parseString);
 		parseString = setNameInQuotationMarks(parseString);
@@ -79,16 +97,23 @@ public class CommandParser {
 		setDate(parseString);
 		setIndex(parseString);
 		setName(parseString);
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		
+		logExitMethod("getParsedCommand");
 		return setUpCommandObject(command, taskName, edittedName, startDate,
 				startTime, endDate, endTime, index);
 
 	}
 
+	/**
+	 * Method to get a single index at the first location of the string.
+	 * 
+	 * @param parseString
+	 * 			The string that needs to be parsed.
+	 */
 	private void getIndexAtFirstLocation(String parseString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("getIndexAtFirstLocation");
 		try {
-			String[] processArray = parseString.split("\\s+");
+			String[] processArray = parseString.split(REGEX_WHITE_SPACES);
 			if (processArray.length > 0) {
 				if (isInteger(processArray[0])) {
 					index = Integer.parseInt(processArray[0]);
@@ -96,17 +121,25 @@ public class CommandParser {
 				}
 			}
 		} catch (NullPointerException e) {
+			logger.log(Level.FINER, e.getMessage());
 			return;
 		}catch(ArrayIndexOutOfBoundsException e){
+			logger.log(Level.FINER, e.getMessage());
 			return;
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("getIndexAtFirstLocation");
 	}
 
+	/**
+	 * Method to get an index at the second position of the string.
+	 * 
+	 * @param parseString
+	 * 			The String that needs to be parsed.
+	 */
 	private void setIndex(String parseString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("setIndex");
 		try {
-			String[] processArray = parseString.split("\\s+");
+			String[] processArray = parseString.split(REGEX_WHITE_SPACES);
 
 			if (processArray.length > 1) {
 
@@ -125,12 +158,14 @@ public class CommandParser {
 				}
 			}
 		} catch (NullPointerException e) {
+			logger.log(Level.FINER, e.getMessage());
 			return;
 		}catch(ArrayIndexOutOfBoundsException e){
+			logger.log(Level.FINER, e.getMessage());
 			return;
 		}
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("setIndex");
 	}
 
 	/**
@@ -142,36 +177,49 @@ public class CommandParser {
 	 * @return Returns true if the string is an int.
 	 */
 	private boolean isInteger(String printString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("isInteger");
 		try {
 			Integer.parseInt(printString);
-			logger.exiting(getClass().getName(), this.getClass().getName());
+			logExitMethod("isInteger");
 			return true;
 		} catch (NumberFormatException e) {
 			logger.log(Level.FINER, e.getMessage());
-			logger.exiting(getClass().getName(), this.getClass().getName());
+			logExitMethod("isInteger");
 			return false;
 		}
 
 	}
 
 	/**
-	 * This is a function to set up the environment and set values to null.
+	 * This is a function to set up the environment and regex away html tags.
 	 */
 	private String setEnvironment(String parseString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("setEnvironment");
 		
 		setEnvironment();
-		parseString = parseString.replaceAll(REGEX_LEFT_BRACER,"");
-		parseString = parseString.replaceAll(REGEX_RIGHT_BRACER,"");
+		parseString = removeHtmlBrackets(parseString);
 		
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("setEnvironment");
 		return parseString;
 		
 	}
 
+	/**
+	 * This is a function to regex away html tags.
+	 */
+	private String removeHtmlBrackets(String parseString) {
+		logEnterMethod("removeHtmlBrackets");
+		parseString = parseString.replaceAll(REGEX_LEFT_BRACER,"");
+		parseString = parseString.replaceAll(REGEX_RIGHT_BRACER,"");
+		logExitMethod("removeHtmlBrackets");
+		return parseString;
+	}
+
+	/**
+	 * This is a function to set up the environment clearing all parameters and resetting flags.
+	 */
 	private void setEnvironment() {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("setEnvironment");
 		dateParser = DateExtractor.getDateExtractor();
 		timeParser = TimeExtractor.getTimeExtractor();
 		commandExtractor = CommandExtractor.getCommandExtractor();
@@ -191,7 +239,7 @@ public class CommandParser {
 		endTime = null;
 		index = 0;
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("setEnvironment");
 
 	}
 
@@ -202,11 +250,12 @@ public class CommandParser {
 	 *            Takes in a stringArray.
 	 */
 	private void setDate(String parseString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("setDate");
 		Queue<LocalDate> dateList;
 		dateList = dateParser.processDate(parseString);
 		try {
 			if (dateList.isEmpty()) {
+				logExitMethod("setDate");
 				return;
 			}
 			while (!dateList.isEmpty()) {
@@ -219,10 +268,10 @@ public class CommandParser {
 				}
 			}
 		} catch (NullPointerException e) {
-			logger.exiting(getClass().getName(), this.getClass().getName());
+			logger.log(Level.FINER, e.getMessage());
 			return;
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("setDate");
 	}
 
 	/**
@@ -232,10 +281,11 @@ public class CommandParser {
 	 *            Takes in a string array.
 	 */
 	private void setTime(String parseString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("setTime");
 		Queue<LocalTime> timeList;
 		timeList = timeParser.processTime(parseString);
 		if (timeList.isEmpty()) {
+			logExitMethod("setTime");
 			return;
 		}
 		while (!timeList.isEmpty()) {
@@ -246,7 +296,7 @@ public class CommandParser {
 				endTime = timeList.poll();
 			}
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("setTime");
 	}
 
 	/**
@@ -256,11 +306,12 @@ public class CommandParser {
 	 *            Takes in a string array.
 	 */
 	private void setName(String parseString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("setName");
 		Queue<String> nameList;
 		nameList = nameParser.processName(parseString);
 		try {
 			if (nameList.isEmpty()) {
+				logExitMethod("setName");
 				return;
 			}
 			for (int i = 0; i < 2; i++) {
@@ -272,10 +323,10 @@ public class CommandParser {
 				}
 			}
 		} catch (NullPointerException e) {
-			logger.exiting(getClass().getName(), this.getClass().getName());
+			logger.log(Level.FINER, e.getMessage());
 			return;
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("setName");
 	}
 
 	/**
@@ -285,9 +336,9 @@ public class CommandParser {
 	 *            Takes in a string array.
 	 */
 	private void setCommand(String parseString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("setCommand");
 		command = commandExtractor.setCommand(parseString);
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("setCommand");
 
 	}
 
@@ -301,9 +352,9 @@ public class CommandParser {
 	 * @return Returns the string with the quotation marks removed.
 	 */
 	private String setNameInQuotationMarks(String process) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("setNameInQuotationMarks");
 		process = nameParser.processQuotationMarks(process);
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("setNameInQuotationMarks");
 		return process;
 
 	}
@@ -338,12 +389,31 @@ public class CommandParser {
 	private CommandInfo setUpCommandObject(String command, String taskName,
 			String edittedName, LocalDate startDate, LocalTime startTime,
 			LocalDate endDate, LocalTime endTime, int index) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		
+		logEnterMethod("setUpCommandObject");
 		CommandValidator commandValidator = new CommandValidator();
 		CommandInfo object = commandValidator.validateCommand(command,
 				taskName, edittedName, startDate, startTime, endDate, endTime,
 				index);
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("setUpCommandObject");
 		return object;
+	}
+	
+	/**
+	 * Logger enter method
+	 * 
+	 * @param methodName
+	 */
+	void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
+	}
+
+	/**
+	 * Logger enter method
+	 * 
+	 * @param methodName
+	 */
+	void logEnterMethod(String methodName) {
+		logger.entering(getClass().getName(), methodName);
 	}
 }

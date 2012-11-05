@@ -1,3 +1,4 @@
+//@author A0086805X
 package mhs.src.logic;
 
 import java.security.InvalidParameterException;
@@ -12,12 +13,6 @@ import java.util.logging.Logger;
 import mhs.src.common.MhsLogger;
 
 import org.joda.time.LocalDate;
-
-/**
- * 
- * @author Cheong Kahou
- *A0086805X
- */
 
 /**
  * This is a class to check for date formats and set the date.
@@ -659,8 +654,11 @@ public class DateExtractor {
 
 		day = dateParameters[0];
 		month = dateParameters[1];
+		dayFlag = true;
+		monthFlag = true;
 		if (dateParameters[2] != 0) {
 			year = dateParameters[2];
+			yearFlag = true;
 		}
 		dateFlag = true;
 		logger.exiting(getClass().getName(), this.getClass().getName());
