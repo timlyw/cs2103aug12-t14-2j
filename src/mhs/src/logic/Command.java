@@ -22,6 +22,8 @@ public abstract class Command {
 	protected static final String MESSAGE_CANNOT_UNDO = "Sorry Cannot Undo last command";
 	protected static final String MESSAGE_NO_MATCH = "No matching results found";
 	protected static final String MESSAGE_INVALID_INDEX = "Invalid Index.";
+	protected static final String MESSAGE_MULTIPLE_MATCHES = "Multiple matches found.";
+
 	protected boolean isUndoable;
 	protected List<Task> matchedTasks;
 	protected Database dataHandler;
@@ -30,6 +32,9 @@ public abstract class Command {
 	private static final Logger logger = MhsLogger.getLogger();
 	private Task lastTask = null;
 	private static int lineLimit = 0;
+	private static CommandInfo lastQueryCommandInfo;
+	protected String commandFeedback;
+	protected String currentState;
 
 	public Command() {
 		indexExpected = false;
@@ -68,6 +73,7 @@ public abstract class Command {
 	 */
 	protected List<Task> queryTask(CommandInfo inputCommand) throws IOException {
 		logger.entering(getClass().getName(), this.getClass().getName());
+		lastQueryCommandInfo = inputCommand;
 		boolean name, startDate, endDate;
 		List<Task> queryResultList;
 		name = inputCommand.getTaskName() == null ? false : true;
@@ -234,6 +240,34 @@ public abstract class Command {
 	public static void setLineLimit(int limit) {
 		lineLimit = limit;
 
+	}
+
+	/**
+	 * Returns the command feedback
+	 * 
+	 * @return
+	 */
+	public String getCommandFeedback() {
+		return commandFeedback;
+	}
+
+	public String getCurrentState() {
+		String state = refreshLastState();
+		return state;
+	}
+
+	protected String refreshLastState() {
+		String lastStateString = new String();
+		List<Task> resultList;
+		try {
+			resultList = queryTask(lastQueryCommandInfo);
+			matchedTasks = resultList;
+			lastStateString = displayListOfTasks(resultList);
+			System.out.println(lastStateString);
+			return lastStateString;
+		} catch (IOException e) {
+			return "Read/Write error";
+		}
 	}
 
 }

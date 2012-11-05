@@ -67,6 +67,7 @@ public class CommandMark extends Command {
 		assert (matchedTasks != null);
 		if (matchedTasks.isEmpty()) {
 			outputString = MESSAGE_NO_MATCH;
+			commandFeedback = outputString;
 		}
 		// if only 1 match is found then display it
 		else if (matchedTasks.size() == 1) {
@@ -76,6 +77,7 @@ public class CommandMark extends Command {
 				updateTask(editedTask);
 				outputString = String.format(CONFIRM_TASK_MARKED,
 						editedTask.getTaskName());
+				commandFeedback = outputString;
 			} catch (Exception e) {
 				outputString = MESSAGE_TASK_NOT_MARKED;
 			}
@@ -85,6 +87,7 @@ public class CommandMark extends Command {
 			outputString = displayListOfTasksCategory(matchedTasks,
 					TaskCategory.FLOATING);
 			indexExpected = true;
+			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}
 		logExitMethod("executeCommand");
 		return outputString;
@@ -152,6 +155,7 @@ public class CommandMark extends Command {
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
+		commandFeedback= outputString;
 		logExitMethod("executeByIndex");
 		return outputString;
 	}
@@ -177,6 +181,7 @@ public class CommandMark extends Command {
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
+		commandFeedback = outputString;
 		logExitMethod("executeByIndexAndType");
 		return outputString;
 	}

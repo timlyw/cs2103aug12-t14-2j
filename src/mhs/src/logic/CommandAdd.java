@@ -60,6 +60,13 @@ public class CommandAdd extends Command {
 	}
 
 	/**
+	 * Constructor for index command
+	 */
+	public CommandAdd() {
+		commandFeedback = MESSAGE_ADD_INDEX_CANNOT;
+	}
+
+	/**
 	 * Creates a Timed Task
 	 * 
 	 * @param inputCommand
@@ -135,7 +142,7 @@ public class CommandAdd extends Command {
 		String outputString = new String();
 		assert (taskToAddTask != null);
 		if (taskToAddTask.getTaskName() == null) {
-			return MESSAGE_INVALID_TASK;
+			outputString = MESSAGE_INVALID_TASK;
 		} else {
 			try {
 				// Store last added task for undo
@@ -151,8 +158,9 @@ public class CommandAdd extends Command {
 				outputString = MESSAGE_TASK_NOT_ADDED;
 			}
 		}
+		commandFeedback = outputString;
 		logExitMethod("executeCommand");
-		return outputString;
+		return null;
 	}
 
 	/**

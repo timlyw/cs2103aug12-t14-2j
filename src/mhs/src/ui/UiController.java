@@ -58,6 +58,8 @@ public class UiController {
 		startLog("openMhsFrame");
     	mhsFrame.open();
     	mhsFrame.selectInputBox();
+    	updateLineLimit();
+    	processor.showHome();
     	endLog("openMhsFrame");
 	}
 	
