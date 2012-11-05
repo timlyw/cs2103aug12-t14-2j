@@ -1,3 +1,4 @@
+//@author A0086805X
 package mhs.src.logic;
 
 import java.security.InvalidParameterException;
@@ -11,17 +12,10 @@ import mhs.src.common.MhsLogger;
 import org.joda.time.LocalTime;
 
 /**
- * 
- * @author Cheong Kahou
- *A0086805X
- */
-
-/**
  * This is the class to extract the time from the string.
  */
 public class TimeExtractor {
 
-	private static final String REGEX_COLON = ":";
 	// These are the am and pm formats used in timings.
 	private static final String AM = "am";
 	private static final String PM = "pm";
@@ -32,6 +26,7 @@ public class TimeExtractor {
 	private static final String REGEX_12_HOUR_FORMAT = "(1[012]|[1-9])(.)([0-5][0-9])(\\s)?(?i)(am|pm)";
 	private static final String REGEX_PM_IGNORE_CASE = "(?i)pm";
 	private static final String REGEX_AM_IGNORE_CASE = "(?i)am";
+	private static final String REGEX_COLON = ":";
 
 	// These are the regex for clearing.
 	private static final String REGEX_NON_WORD_CHAR = "\\W";
@@ -196,6 +191,9 @@ public class TimeExtractor {
 		int hour;
 		timeArray[i] = timeArray[i].replaceAll(REGEX_AM_IGNORE_CASE, "");
 		hour = Integer.parseInt(timeArray[0]);
+		if (hour == 12) {
+			hour = 0;
+		} 
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return hour;
 	}
@@ -217,7 +215,7 @@ public class TimeExtractor {
 		timeArray[i] = timeArray[i].replaceAll(REGEX_PM_IGNORE_CASE, "");
 		hour = Integer.parseInt(timeArray[0]);
 		if (hour == 12) {
-			hour = 0;
+			hour = 12;
 		} else {
 			hour += 12;
 		}

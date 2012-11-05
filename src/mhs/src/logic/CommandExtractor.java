@@ -1,14 +1,12 @@
+//@author A0086805X
 package mhs.src.logic;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
 
 /**
- * 
- * @author Cheong Kahou A0086805X
- * 
- * 
  *         This is a class that checks string if they are commands and set the
  *         commands.
  * 
@@ -27,8 +25,9 @@ public class CommandExtractor {
 				"search"), sync("sync"), undo("undo"), redo("redo"), rename(
 				"rename"), login("login"), signin("login"), logout("logout"), signout(
 				"logout"), help("help"), mark("mark"), check("mark"), unmark(
-				"unmark"), p("p"), n("n"), displayfloating("displayfloating"), 
-				displaydeadline("displaydeadline"), displaytimed("displaytimed");
+				"unmark"), p("p"), n("n"), displayfloating("displayfloating"), displaydeadline(
+				"displaydeadline"), displaytimed("displaytimed"), home("home"), exit(
+				"exit");
 
 		private final String command;
 
@@ -43,12 +42,20 @@ public class CommandExtractor {
 	private String commandString;
 	private static CommandExtractor commandExtractor;
 
+	/**
+	 * Private constructor for command extractor
+	 */
 	private CommandExtractor() {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("CommandExtractor");
 		commandString = "";
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("CommandExtractor");
 	}
 
+	/**
+	 * Function to get a single instance of the constructor.
+	 * 
+	 * @return Returns a single instance of the constructor.
+	 */
 	public static CommandExtractor getCommandExtractor() {
 		if (commandExtractor == null) {
 			commandExtractor = new CommandExtractor();
@@ -65,15 +72,15 @@ public class CommandExtractor {
 	 * @return Returns if the string is a command type.
 	 */
 	public boolean isCommand(String parseString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("isCommand");
 		assert (parseString != null);
 		for (CommandKeyWord c : CommandKeyWord.values()) {
 			if (parseString.equalsIgnoreCase(c.name())) {
-				logger.exiting(getClass().getName(), this.getClass().getName());
+				logExitMethod("isCommand");
 				return true;
 			}
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("isCommand");
 		return false;
 	}
 
@@ -86,7 +93,7 @@ public class CommandExtractor {
 	 * @return Returns the command that is set.
 	 */
 	public String setCommand(String parseString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("setCommand");
 		assert (parseString != null);
 		try {
 			String[] processArray = parseString.split(REGEX_WHITE_SPACE);
@@ -100,11 +107,31 @@ public class CommandExtractor {
 				commandString = CommandKeyWord.add.name();
 			}
 		} catch (NullPointerException e) {
+			logger.log(Level.FINER, e.getMessage());
 			return null;
 		} catch (ArrayIndexOutOfBoundsException e) {
+			logger.log(Level.FINER, e.getMessage());
 			return null;
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("setCommand");
 		return commandString;
+	}
+	
+	/**
+	 * Logger enter method
+	 * 
+	 * @param methodName
+	 */
+	void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
+	}
+
+	/**
+	 * Logger enter method
+	 * 
+	 * @param methodName
+	 */
+	void logEnterMethod(String methodName) {
+		logger.entering(getClass().getName(), methodName);
 	}
 }
