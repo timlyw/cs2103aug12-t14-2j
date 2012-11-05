@@ -166,6 +166,11 @@ public class TimedTask extends Task {
 
 		String boldTaskName = htmlCreator.makeBold(taskName);
 		String htmlString = timeString + ": " + boldTaskName;
+		
+
+		if(isDone()) {
+			htmlString = htmlCreator.color(htmlString + " [completed]", HtmlCreator.LIGHT_GRAY);
+		}
 
 		return htmlString;
 	}

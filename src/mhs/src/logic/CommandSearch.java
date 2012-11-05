@@ -46,7 +46,7 @@ public class CommandSearch extends Command {
 	/**
 	 * Executes Search command
 	 */
-	public String executeCommand() {
+	public void executeCommand() {
 		logEnterMethod("executeCommand");
 		String outputString = new String();
 		assert (matchedTasks != null);
@@ -61,7 +61,6 @@ public class CommandSearch extends Command {
 			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}
 		logExitMethod("executeCommand");
-		return outputString;
 	}
 
 	/**

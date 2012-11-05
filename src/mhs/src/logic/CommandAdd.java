@@ -137,7 +137,7 @@ public class CommandAdd extends Command {
 	 * Implements the add method of the Command class. Adds the Task to the
 	 * database if valid.
 	 */
-	public String executeCommand() {
+	public void executeCommand() {
 		logEnterMethod("executeCommand");
 		String outputString = new String();
 		assert (taskToAddTask != null);
@@ -160,7 +160,6 @@ public class CommandAdd extends Command {
 		}
 		commandFeedback = outputString;
 		logExitMethod("executeCommand");
-		return null;
 	}
 
 	/**

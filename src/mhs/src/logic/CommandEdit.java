@@ -76,7 +76,7 @@ public class CommandEdit extends Command {
 	/**
 	 * executes edit
 	 */
-	public String executeCommand() {
+	public void executeCommand() {
 		logEnterMethod("executeCommand");
 		String outputString = new String();
 		if (matchedTasks.isEmpty()) {
@@ -104,7 +104,6 @@ public class CommandEdit extends Command {
 			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}
 		logExitMethod("executeCommand");
-		return outputString;
 	}
 
 	/**

@@ -47,6 +47,8 @@ public class CommandCreator {
 		} else {
 			userOutputString = previousCommand.executeByIndex(userCommand
 					.getIndex() - 1);
+			currentState = previousCommand.getCurrentState();
+			commandFeedback = userOutputString;
 
 		}
 		previousCommand = currentCommand;
@@ -75,7 +77,7 @@ public class CommandCreator {
 			break;
 		case edit:
 			currentCommand = new CommandEdit(userCommand);
-			userOutputString = currentCommand.executeCommand();
+			currentCommand.executeCommand();
 			break;
 		case search:
 			currentCommand = new CommandSearch(userCommand);
@@ -91,19 +93,15 @@ public class CommandCreator {
 			break;
 		case mark:
 			currentCommand = new CommandMark(userCommand);
-			userOutputString = currentCommand.executeCommand();
+			currentCommand.executeCommand();
 			break;
 		case unmark:
 			currentCommand = new CommandUnmark(userCommand);
-			userOutputString = currentCommand.executeCommand();
-			break;
-		case help:
-			currentCommand = new CommandHelp();
-			userOutputString = currentCommand.executeCommand();
+			currentCommand.executeCommand();
 			break;
 		case rename:
 			currentCommand = new CommandRename(userCommand);
-			userOutputString = currentCommand.executeCommand();
+			currentCommand.executeCommand();
 			break;
 		default:
 			userOutputString = MESSAGE_INVALID_COMMAND;
@@ -159,9 +157,6 @@ public class CommandCreator {
 			currentCommand = new CommandUnmark(previousCommand.matchedTasks);
 			userOutputString = currentCommand
 					.executeByIndexAndType(local_index - 1);
-			break;
-		case help:
-			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		case rename:
 			currentCommand = new CommandRename(previousCommand.matchedTasks,

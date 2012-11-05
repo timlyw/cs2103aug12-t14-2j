@@ -25,16 +25,17 @@ public abstract class Command {
 	protected static final String MESSAGE_MULTIPLE_MATCHES = "Multiple matches found.";
 
 	protected boolean isUndoable;
-	protected List<Task> matchedTasks;
-	protected Database dataHandler;
+	protected static List<Task> matchedTasks;
+	protected static Database dataHandler;
 	protected boolean indexExpected;
-	protected HtmlCreator htmlCreator;
+	protected static HtmlCreator htmlCreator;
 	private static final Logger logger = MhsLogger.getLogger();
-	private Task lastTask = null;
+	private static Task lastTask = null;
 	private static int lineLimit = 0;
 	private static CommandInfo lastQueryCommandInfo;
 	protected String commandFeedback;
-	protected String currentState;
+	protected static String currentState;
+	protected static int minTaskQuery = 0;
 
 	public Command() {
 		indexExpected = false;
@@ -52,7 +53,7 @@ public abstract class Command {
 		}
 	}
 
-	abstract public String executeCommand();
+	abstract public void executeCommand();
 
 	abstract public String undo();
 
@@ -71,9 +72,9 @@ public abstract class Command {
 	 * @return List of matched tasks
 	 * @throws IOException
 	 */
-	protected List<Task> queryTask(CommandInfo inputCommand) throws IOException {
-		logger.entering(getClass().getName(), this.getClass().getName());
-		lastQueryCommandInfo = inputCommand;
+	protected static List<Task> queryTask(CommandInfo inputCommand)
+			throws IOException {
+
 		boolean name, startDate, endDate;
 		List<Task> queryResultList;
 		name = inputCommand.getTaskName() == null ? false : true;
@@ -100,7 +101,9 @@ public abstract class Command {
 		} else {
 			queryResultList = dataHandler.query(true);
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		if (queryResultList.size() > minTaskQuery) {
+			lastQueryCommandInfo = inputCommand;
+		}
 		return queryResultList;
 	}
 
@@ -123,6 +126,9 @@ public abstract class Command {
 		} else {
 			queryResultList = null;
 		}
+		if (queryResultList.size() > minTaskQuery) {
+			lastQueryCommandInfo = inputCommand;
+		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return queryResultList;
 	}
@@ -131,12 +137,10 @@ public abstract class Command {
 	 * 
 	 * Displays list of all kinds of tasks
 	 */
-	protected String displayListOfTasks(List<Task> resultList) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+	protected static String displayListOfTasks(List<Task> resultList) {
 		String outputString = new String();
 
 		outputString = createTaskListHtml(resultList, lineLimit);
-		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
 
@@ -171,8 +175,12 @@ public abstract class Command {
 		return lastTask;
 	}
 
-	public String createTaskListHtml(List<Task> taskList, int limit) {
+	public static String createTaskListHtml(List<Task> taskList, int limit) {
 		String taskListHtml = "";
+		
+		if(taskList.size() == 0) {
+			return "No tasks to display";
+		}
 
 		DateTime prevTaskDateTime = null;
 
@@ -221,7 +229,7 @@ public abstract class Command {
 		return taskListHtml;
 	}
 
-	private boolean dateIsEqual(DateTime date1, DateTime date2) {
+	private static boolean dateIsEqual(DateTime date1, DateTime date2) {
 		if (date1 == null || date2 == null) {
 			return false;
 		}
@@ -233,13 +241,13 @@ public abstract class Command {
 		return false;
 	}
 
-	private String getDateString(DateTime date) {
+	private static String getDateString(DateTime date) {
 		return date.toString("dd MMM yy");
 	}
 
 	public static void setLineLimit(int limit) {
 		lineLimit = limit;
-
+		currentState = refreshLastState();
 	}
 
 	/**
@@ -256,12 +264,14 @@ public abstract class Command {
 		return state;
 	}
 
-	protected String refreshLastState() {
+	protected static String refreshLastState() {
 		String lastStateString = new String();
 		List<Task> resultList;
 		try {
 			resultList = queryTask(lastQueryCommandInfo);
 			matchedTasks = resultList;
+			System.out.println("matched task " + matchedTasks.size());
+
 			lastStateString = displayListOfTasks(resultList);
 			System.out.println(lastStateString);
 			return lastStateString;

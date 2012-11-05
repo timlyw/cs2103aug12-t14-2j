@@ -61,7 +61,7 @@ public class CommandMark extends Command {
 	/**
 	 * Executes mark non index based
 	 */
-	public String executeCommand() {
+	public void executeCommand() {
 		logEnterMethod("executeCommand");
 		String outputString = new String();
 		assert (matchedTasks != null);
@@ -90,7 +90,6 @@ public class CommandMark extends Command {
 			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}
 		logExitMethod("executeCommand");
-		return outputString;
 	}
 
 	private void updateTask(Task editedTask) throws IOException,

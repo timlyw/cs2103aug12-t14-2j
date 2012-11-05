@@ -32,7 +32,9 @@ public class CommandRemove extends Command {
 		logEnterMethod("CommandRemove");
 		List<Task> resultList;
 		try {
+			minTaskQuery = 1;
 			resultList = queryTaskByName(userCommand);
+			minTaskQuery = 0;
 			matchedTasks = resultList;
 			assert (matchedTasks != null);
 		} catch (IOException e) {
@@ -57,7 +59,7 @@ public class CommandRemove extends Command {
 	/**
 	 * executes delete
 	 */
-	public String executeCommand() {
+	public void executeCommand() {
 		logEnterMethod("executeCommand");
 		String outputString = new String();
 		assert (matchedTasks != null);
@@ -84,7 +86,6 @@ public class CommandRemove extends Command {
 			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}
 		logExitMethod("executeCommand");
-		return null;
 	}
 
 	/**

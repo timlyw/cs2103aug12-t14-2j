@@ -149,6 +149,10 @@ public class DeadlineTask extends Task {
 
 		String boldTaskName = htmlCreator.makeBold(taskName);
 		String htmlString = timeString + ": " + boldTaskName;
+		
+		if(isDone()) {
+			htmlString = htmlCreator.color(htmlString + " [completed]", HtmlCreator.LIGHT_GRAY);
+		}
 
 		return htmlString;
 	}
@@ -166,5 +170,6 @@ public class DeadlineTask extends Task {
 
 		return timeString;
 	}
-
+	
+	
 }

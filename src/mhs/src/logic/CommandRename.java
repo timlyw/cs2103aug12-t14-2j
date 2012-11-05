@@ -74,7 +74,7 @@ public class CommandRename extends Command {
 	/**
 	 * executes the rename command
 	 */
-	public String executeCommand() {
+	public void executeCommand() {
 		logEnterMethod("executeCommand");
 		String outputString = new String();
 		assert (matchedTasks != null);
@@ -108,7 +108,6 @@ public class CommandRename extends Command {
 			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}
 		logExitMethod("excuteCommand");
-		return outputString;
 	}
 
 	/**
