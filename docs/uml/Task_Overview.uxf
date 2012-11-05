@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="11.5.1">
+  <zoom_level>9</zoom_level>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>423</x>
+      <y>135</y>
+      <w>144</w>
+      <h>225</h>
+    </coordinates>
+    <panel_attributes>Task
+--
+-taskId
+-taskName 
+-taskCreated 
+-taskLastUpdated
+-gCalEventId
+-taskLastSync
+-isDone
+-isDeleted
+--
++clone()
++getters()
++setters()
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>639</x>
+      <y>414</y>
+      <w>90</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>FloatingTask
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>252</x>
+      <y>414</y>
+      <w>99</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>TimedTask
+--
+-startDateTime
+-endDateTime </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>450</x>
+      <y>414</y>
+      <w>90</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>DeadlineTask
+
+--
+-endDateTime </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>270</x>
+      <y>333</y>
+      <w>242</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>225;27;225;45;171;45;27;45;27;81</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>468</x>
+      <y>333</y>
+      <w>233</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>27;27;27;45;216;45;216;81</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>468</x>
+      <y>333</y>
+      <w>44</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>27;27;27;81</additional_attributes>
+  </element>
+</diagram>
