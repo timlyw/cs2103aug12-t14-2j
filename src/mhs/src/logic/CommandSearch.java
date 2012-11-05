@@ -35,6 +35,13 @@ public class CommandSearch extends Command {
 		}
 		logExitMethod("CommandSearch");
 	}
+	
+	/**
+	 * Constructor for index commands
+	 */
+	public CommandSearch() {
+		commandFeedback = MESSAGE_SEARCH_INDEX_CANNOT;
+	}
 
 	/**
 	 * Executes Search command
@@ -45,11 +52,13 @@ public class CommandSearch extends Command {
 		assert (matchedTasks != null);
 		if (matchedTasks.isEmpty()) {
 			outputString = MESSAGE_NO_MATCH;
+			commandFeedback = outputString;
 		}
 		// if multiple matches are found display the list
 		else {
 			outputString = displayListOfTasks(matchedTasks);
 			indexExpected = true;
+			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}
 		logExitMethod("executeCommand");
 		return outputString;

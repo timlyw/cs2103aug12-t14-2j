@@ -79,11 +79,12 @@ public class CommandRename extends Command {
 		String outputString = new String();
 		assert (matchedTasks != null);
 		if (tempCommandInfo.getEdittedName() == null) {
-			return MESSAGE_NO_EDITED_NAME;
+			commandFeedback = MESSAGE_NO_EDITED_NAME;
 		}
 		assert (tempCommandInfo.getEdittedName() != null);
 		if (matchedTasks.isEmpty()) {
 			outputString = MESSAGE_NO_MATCH;
+			commandFeedback = outputString;
 		}
 		// if only 1 match is found then display it
 		else if (matchedTasks.size() == 1) {
@@ -98,11 +99,13 @@ public class CommandRename extends Command {
 			} catch (Exception e) {
 				outputString = MESSAGE_TASK_NOT_RENAMED;
 			}
+			commandFeedback = outputString;
 		}
 		// if multiple matches are found display the list
 		else {
 			outputString = displayListOfTasks(matchedTasks);
 			indexExpected = true;
+			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}
 		logExitMethod("excuteCommand");
 		return outputString;
@@ -268,6 +271,7 @@ public class CommandRename extends Command {
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
+		commandFeedback = outputString;
 		logExitMethod("executeByIndex");
 		return outputString;
 	}
@@ -292,6 +296,7 @@ public class CommandRename extends Command {
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
+		commandFeedback = outputString;
 		logExitMethod("executeByIndexAndType");
 		return outputString;
 	}
