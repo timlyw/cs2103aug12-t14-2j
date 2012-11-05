@@ -8,6 +8,8 @@ public class CommandHelp extends Command {
 
 	private static final Logger logger = MhsLogger.getLogger();
 
+	private static final String MESSAGE_FEEDBACK = "Syntax shown above.";
+
 	public CommandHelp() {
 
 	}
@@ -20,6 +22,7 @@ public class CommandHelp extends Command {
 				+ htmlCreator.makeBold("Add") + htmlCreator.NEW_LINE
 				+ "[add] <task name> <start date/time> to <end date/time>"
 				+ htmlCreator.NEW_LINE + "add movie 4pm 5pm";
+		commandFeedback = MESSAGE_FEEDBACK;
 		logExitMethod("executeCommand");
 		return helpString;
 	}

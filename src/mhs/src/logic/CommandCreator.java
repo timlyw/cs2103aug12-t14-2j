@@ -8,7 +8,7 @@ import java.util.Stack;
 /**
  * Creates commands based on type
  * 
- * @author Shekhar
+ * @author A0088669A
  * 
  */
 public class CommandCreator {
@@ -18,9 +18,13 @@ public class CommandCreator {
 	private Command previousCommand;
 	private Stack<Command> undoListCommands;
 	private static final Logger logger = MhsLogger.getLogger();
+	private String commandFeedback = "feedback";
+	private String currentState = "state";
 
 	public CommandCreator() {
+		logEnterMethod("CommandCreator");
 		undoListCommands = new Stack<Command>();
+		logExitMethod("CommandCreator");
 	}
 
 	/**
@@ -30,8 +34,9 @@ public class CommandCreator {
 	 * @return output String
 	 */
 	public String createCommand(CommandInfo userCommand) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("createCommand");
 		String userOutputString = new String();
+		assert (userCommand != null);
 		if (userCommand.getCommandEnum() != null) {
 			if (userCommand.getIndex() != 0) {
 				userOutputString = executeCommandByIndex(userCommand);
@@ -45,7 +50,7 @@ public class CommandCreator {
 
 		}
 		previousCommand = currentCommand;
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("CommandCreator");
 		return userOutputString;
 	}
 
@@ -62,11 +67,11 @@ public class CommandCreator {
 		switch (userCommand.getCommandEnum()) {
 		case add:
 			currentCommand = new CommandAdd(userCommand);
-			userOutputString = currentCommand.executeCommand();
+			currentCommand.executeCommand();
 			break;
 		case remove:
 			currentCommand = new CommandRemove(userCommand);
-			userOutputString = currentCommand.executeCommand();
+			currentCommand.executeCommand();
 			break;
 		case edit:
 			currentCommand = new CommandEdit(userCommand);
@@ -74,7 +79,7 @@ public class CommandCreator {
 			break;
 		case search:
 			currentCommand = new CommandSearch(userCommand);
-			userOutputString = currentCommand.executeCommand();
+			currentCommand.executeCommand();
 			break;
 		case undo:
 			if (undoListCommands.isEmpty()) {
@@ -88,10 +93,10 @@ public class CommandCreator {
 			currentCommand = new CommandMark(userCommand);
 			userOutputString = currentCommand.executeCommand();
 			break;
-		/*
-		 * case unmark: currentCommand = new CommandUnmark(userCommand);
-		 * userOutputString = currentCommand.executeCommand(); break;
-		 */
+		case unmark:
+			currentCommand = new CommandUnmark(userCommand);
+			userOutputString = currentCommand.executeCommand();
+			break;
 		case help:
 			currentCommand = new CommandHelp();
 			userOutputString = currentCommand.executeCommand();
@@ -107,6 +112,8 @@ public class CommandCreator {
 		if (currentCommand.isUndoable()) {
 			undoListCommands.push(currentCommand);
 		}
+		currentState = currentCommand.getCurrentState();
+		commandFeedback = currentCommand.getCommandFeedback();
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return userOutputString;
 	}
@@ -124,7 +131,7 @@ public class CommandCreator {
 		int local_index = userCommand.getIndex();
 		switch (userCommand.getCommandEnum()) {
 		case add:
-			userOutputString = MESSAGE_INVALID_COMMAND;
+			currentCommand = new CommandAdd();
 			break;
 		case remove:
 			currentCommand = new CommandRemove(previousCommand.matchedTasks);
@@ -148,11 +155,11 @@ public class CommandCreator {
 			userOutputString = currentCommand
 					.executeByIndexAndType(local_index - 1);
 			break;
-		/*
-		 * case unmark: currentCommand = new
-		 * CommandUnmark(previousCommand.matchedTasks); userOutputString =
-		 * currentCommand .executeByIndexAndType(local_index - 1); break;
-		 */
+		case unmark:
+			currentCommand = new CommandUnmark(previousCommand.matchedTasks);
+			userOutputString = currentCommand
+					.executeByIndexAndType(local_index - 1);
+			break;
 		case help:
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
@@ -169,8 +176,36 @@ public class CommandCreator {
 		if (currentCommand.isUndoable()) {
 			undoListCommands.push(currentCommand);
 		}
+		currentState = currentCommand.getCurrentState();
+		commandFeedback = currentCommand.getCommandFeedback();
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return userOutputString;
+	}
+
+	public String getState() {
+		return currentState;
+	}
+
+	public String getFeedback() {
+		return commandFeedback;
+	}
+
+	/**
+	 * Logger enter method
+	 * 
+	 * @param methodName
+	 */
+	private void logEnterMethod(String methodName) {
+		logger.entering(getClass().getName(), methodName);
+	}
+
+	/**
+	 * Logger exit method
+	 * 
+	 * @param methodName
+	 */
+	private void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
 	}
 
 }

@@ -11,10 +11,9 @@ import com.google.gdata.data.calendar.CalendarEventEntry;
  * TimedTask
  * 
  * Timed Task object
- *  
- * - inherits from base class Task 
- * - Task with startDateTime and endDateTime
- * - syncs with google calendar
+ * 
+ * - inherits from base class Task - Task with startDateTime and endDateTime -
+ * syncs with google calendar
  * 
  * @author Timothy Lim Yi Wen A0087048X
  * 
@@ -153,45 +152,48 @@ public class TimedTask extends Task {
 	 */
 	public String toHtmlString() {
 		String dateString = "";
-		if(dateIsEqual(startDateTime, endDateTime)) {
+		String endDateString = "";
+		if (dateIsEqual(startDateTime, endDateTime)) {
 			dateString = getDateString(startDateTime);
+		} else {
+			endDateString = " " + getDateString(endDateTime) + ", ";
 		}
-		
-		HtmlCreator htmlCreator = new HtmlCreator();
 
+		HtmlCreator htmlCreator = new HtmlCreator();
 		dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
-		String timeString = getTimeString(startDateTime) + " - " + getTimeString(endDateTime);
-		
+		String timeString = getTimeString(startDateTime) + " - "
+				+ endDateString + getTimeString(endDateTime);
+
 		String boldTaskName = htmlCreator.makeBold(taskName);
 		String htmlString = timeString + ": " + boldTaskName;
-		
+
 		return htmlString;
 	}
-	
+
 	private boolean dateIsEqual(DateTime date1, DateTime date2) {
-		if(date1.getDayOfYear() == date2.getDayOfYear() && date1.getYear() == date2.getYear()) {
+		if (date1.getDayOfYear() == date2.getDayOfYear()
+				&& date1.getYear() == date2.getYear()) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	private String getDateString(DateTime date) {
 		return date.toString("dd MMM yy");
 	}
-	
+
 	private String getTimeString(DateTime date) {
 		String timeString = "";
-		
-		if(date.getMinuteOfHour() == 0) {
+
+		if (date.getMinuteOfHour() == 0) {
 			timeString = date.toString("h aa");
 		} else {
 			timeString = date.toString("h.mm aa");
 		}
-		
+
 		timeString = timeString.toLowerCase();
-		
+
 		return timeString;
 	}
-	
-	
+
 }
