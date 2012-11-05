@@ -3,6 +3,8 @@ package mhs.src.logic;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
+import mhs.src.logic.CommandInfo.CommandKeyWords;
+
 import java.util.Stack;
 
 /**
@@ -103,9 +105,18 @@ public class CommandCreator {
 			currentCommand = new CommandRename(userCommand);
 			currentCommand.executeCommand();
 			break;
+		case n:
+			Command.displayNext();
+			break;
+		case p:
+			Command.displayPrev();
+			break;
 		default:
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
+		}
+		if(!(userCommand.getCommandEnum() == CommandKeyWords.p || userCommand.getCommandEnum() == CommandKeyWords.n)) {
+			Command.resetDisplayIndex();
 		}
 		if (currentCommand.isUndoable()) {
 			undoListCommands.push(currentCommand);

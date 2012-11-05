@@ -32,9 +32,7 @@ public class CommandRemove extends Command {
 		logEnterMethod("CommandRemove");
 		List<Task> resultList;
 		try {
-			minTaskQuery = 1;
 			resultList = queryTaskByName(userCommand);
-			minTaskQuery = 0;
 			matchedTasks = resultList;
 			assert (matchedTasks != null);
 		} catch (IOException e) {

@@ -35,16 +35,15 @@
     "isDeleted": true
   },
   {
-    "startDateTime": "2012-11-04T20:00:00.000+08:00",
-    "endDateTime": "2012-11-04T21:00:00.000+08:00",
+    "endDateTime": "2012-11-08T00:00:00.000+08:00",
     "taskId": 4,
     "taskName": "squash physicals",
-    "taskCategory": "TIMED",
+    "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-05T11:47:53.000+08:00",
-    "taskUpdated": "2012-11-06T00:53:50.255+08:00",
+    "taskUpdated": "2012-11-06T01:07:56.880+08:00",
     "taskLastSync": "2012-11-05T11:47:53.000+08:00",
     "gCalTaskId": "saof5vp3trtilc87k0tf97i3bg@google.com",
-    "isDone": true,
+    "isDone": false,
     "isDeleted": false
   },
   {
@@ -59,16 +58,15 @@
     "isDeleted": true
   },
   {
-    "startDateTime": "2012-11-06T17:00:00.000+08:00",
-    "endDateTime": "2012-11-06T19:00:00.000+08:00",
+    "endDateTime": "2012-11-08T00:00:00.000+08:00",
     "taskId": 6,
-    "taskName": "buy ipad",
-    "taskCategory": "TIMED",
+    "taskName": "iphone",
+    "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-04T03:00:19.367+08:00",
-    "taskUpdated": "2012-11-06T00:28:16.814+08:00",
+    "taskUpdated": "2012-11-06T01:04:57.500+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": true,
+    "isDone": false,
     "isDeleted": false
   },
   {
@@ -632,13 +630,12 @@
     "isDeleted": true
   },
   {
-    "startDateTime": "2012-11-06T18:00:00.000+08:00",
-    "endDateTime": "2012-11-06T19:00:00.000+08:00",
+    "endDateTime": "2013-11-04T00:00:00.000+08:00",
     "taskId": 54,
     "taskName": "humvee",
-    "taskCategory": "TIMED",
+    "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-05T20:15:58.951+08:00",
-    "taskUpdated": "2012-11-05T20:15:58.951+08:00",
+    "taskUpdated": "2012-11-06T01:03:42.574+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
@@ -1046,10 +1043,10 @@
     "taskName": "event2",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T00:50:37.265+08:00",
-    "taskUpdated": "2012-11-06T00:53:57.996+08:00",
+    "taskUpdated": "2012-11-06T01:05:48.275+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": false,
+    "isDone": true,
     "isDeleted": false
   },
   {
@@ -1070,6 +1067,51 @@
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-06T00:54:24.035+08:00",
     "taskUpdated": "2012-11-06T00:54:24.035+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "endDateTime": "2012-11-08T13:00:00.000+08:00",
+    "taskId": 93,
+    "taskName": "hello",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-06T01:07:26.904+08:00",
+    "taskUpdated": "2012-11-06T01:07:26.904+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 94,
+    "taskName": "displayu",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T01:53:59.336+08:00",
+    "taskUpdated": "2012-11-06T01:53:59.336+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 95,
+    "taskName": "cga",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T01:58:23.853+08:00",
+    "taskUpdated": "2012-11-06T01:58:23.853+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 96,
+    "taskName": "cgb",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T01:58:25.240+08:00",
+    "taskUpdated": "2012-11-06T01:58:25.240+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,

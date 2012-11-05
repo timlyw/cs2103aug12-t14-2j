@@ -30,12 +30,13 @@ public abstract class Command {
 	protected boolean indexExpected;
 	protected static HtmlCreator htmlCreator;
 	private static final Logger logger = MhsLogger.getLogger();
-	private static Task lastTask = null;
+	private static int firstIndexDisplayed = 0;
+	private static int lastIndexDisplayed = 0;
 	private static int lineLimit = 0;
 	private static CommandInfo lastQueryCommandInfo;
 	protected String commandFeedback;
 	protected static String currentState;
-	protected static int minTaskQuery = 0;
+	protected static int minTaskQuery = 1;
 
 	public Command() {
 		indexExpected = false;
@@ -170,10 +171,22 @@ public abstract class Command {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
-
-	public Task getLastTaskDisplayed() {
-		return lastTask;
+	
+	public static void displayNext() {
+		firstIndexDisplayed = lastIndexDisplayed;
 	}
+	
+	public static void displayPrev() {
+		firstIndexDisplayed = firstIndexDisplayed - lineLimit;
+		if(firstIndexDisplayed < 0) {
+			firstIndexDisplayed = 0;
+		}
+	}
+	
+	public static void resetDisplayIndex() {
+		firstIndexDisplayed = 0;
+	}
+
 
 	public static String createTaskListHtml(List<Task> taskList, int limit) {
 		String taskListHtml = "";
@@ -185,8 +198,10 @@ public abstract class Command {
 		DateTime prevTaskDateTime = null;
 
 		int lineCount = 0;
+		
+		System.out.println("index " + firstIndexDisplayed);
 
-		for (int i = 0; i < taskList.size() && lineCount < limit; i++) {
+		for (int i = firstIndexDisplayed; i < taskList.size() && lineCount < limit; i++) {
 			Task task = taskList.get(i);
 			DateTime currTaskDateTime = null;
 
@@ -223,9 +238,9 @@ public abstract class Command {
 			taskListHtml += indexString + task.toHtmlString()
 					+ htmlCreator.NEW_LINE;
 			lineCount += 2;
-			lastTask = task;
+			lastIndexDisplayed = i;
 		}
-
+		
 		return taskListHtml;
 	}
 
