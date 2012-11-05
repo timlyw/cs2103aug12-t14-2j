@@ -199,6 +199,22 @@ public class NameExtractor {
 		int j;
 		Queue<String> commandQueue = new LinkedList<String>();
 		for (j = counter; j < processArray.length; j++) {
+
+			for (SpecialKeyWords k : SpecialKeyWords.values()) {
+				if (processArray[j].equalsIgnoreCase(k.name())
+						&& !processArray[j].equalsIgnoreCase(k.to.name())) {
+					try {
+						if (checkNameFormat(processArray[j + 1])) {
+							commandQueue.add(processArray[j]);
+							System.out.println(processArray[j]);
+							j++;
+						}
+					} catch (ArrayIndexOutOfBoundsException e) {
+						System.out.println("oob");
+					}
+				}
+			}
+
 			if (checkNameFormat(processArray[j])) {
 				commandQueue.add(processArray[j]);
 			} else {
