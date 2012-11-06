@@ -39,7 +39,7 @@ public class CommandSearch extends Command {
 				matchedTasks = null;
 			}
 			break;
-		case displayfloating:
+		case floating:
 			try {
 				minTaskQuery = 0;
 				resultList = queryTaskByCategory(inputCommand, null);
@@ -50,9 +50,9 @@ public class CommandSearch extends Command {
 				matchedTasks = null;
 			}
 			break;
-		case displaydeadline:
+		case deadline:
 			break;
-		case displaytimed:
+		case timed:
 			break;
 		case home:
 			break;
