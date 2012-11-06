@@ -135,6 +135,25 @@ public abstract class Command {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return queryResultList;
 	}
+	
+	protected List<Task> queryTaskByCategory(CommandInfo inputCommand, TaskCategory taskCategory)
+			throws IOException {
+		logger.entering(getClass().getName(), this.getClass().getName());
+		boolean name;
+		List<Task> queryResultList;
+		name = inputCommand.getTaskName() == null ? false : true;
+		if (name) {
+			queryResultList = dataHandler.query(inputCommand.getTaskName(),
+					true);
+		} else {
+			queryResultList = null;
+		}
+		if (queryResultList.size() > minTaskQuery) {
+			lastQueryCommandInfo = inputCommand;
+		}
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		return queryResultList;
+	}
 
 	/*
 	 * 
