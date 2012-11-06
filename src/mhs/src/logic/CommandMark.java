@@ -72,8 +72,7 @@ public class CommandMark extends Command {
 		}
 		// if only 1 match is found then display it
 		else if (matchedTasks.size() == 1) {
-			lastTask = matchedTasks.get(0);
-			System.out.println("undo##" + lastTask.isDone());
+			lastTask = matchedTasks.get(0).clone();
 			Task editedTask = markDone(matchedTasks.get(0));
 			try {
 				updateTask(editedTask);
@@ -120,7 +119,6 @@ public class CommandMark extends Command {
 	public String undo() {
 		logEnterMethod("undo");
 		String outputString = new String();
-		System.out.println("undo!!" + lastTask.isDone());
 		if (isUndoable()) {
 			try {
 				dataHandler.update(lastTask);
@@ -155,7 +153,7 @@ public class CommandMark extends Command {
 	private String markByIndex(int index) {
 		String outputString;
 		assert (index >= 0 && index < matchedTasks.size());
-		lastTask = matchedTasks.get(index);
+		lastTask = matchedTasks.get(index).clone();
 		Task tempTask = markDone(matchedTasks.get(index));
 		try {
 			updateTask(tempTask);

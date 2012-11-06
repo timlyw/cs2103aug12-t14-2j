@@ -71,8 +71,8 @@ public class CommandUnmark extends Command {
 		}
 		// if only 1 match is found then display it
 		else if (matchedTasks.size() == 1) {
-			lastTask = matchedTasks.get(0);
-			Task editedTask = markPending(lastTask);
+			lastTask = matchedTasks.get(0).clone();
+			Task editedTask = markPending(matchedTasks.get(0));
 			try {
 				updateTask(editedTask);
 				outputString = String.format(CONFIRM_TASK_UNMARKED,
@@ -152,12 +152,12 @@ public class CommandUnmark extends Command {
 	private String unmarkByIndex(int index) {
 		String outputString;
 		assert (index >= 0 && index < matchedTasks.size());
+		lastTask = matchedTasks.get(index).clone();
 		Task tempTask = markPending(matchedTasks.get(index));
-		lastTask = tempTask;
 		try {
 			updateTask(tempTask);
-			outputString = String.format(CONFIRM_TASK_UNMARKED,
-					matchedTasks.get(index).getTaskName());
+			outputString = String.format(CONFIRM_TASK_UNMARKED, matchedTasks
+					.get(index).getTaskName());
 			indexExpected = false;
 		} catch (Exception e) {
 			outputString = MESSAGE_TASK_NOT_UNMARKED;
