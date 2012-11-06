@@ -358,7 +358,7 @@ public abstract class Command {
 				resultList = queryTask(lastQueryCommandInfo);
 				break;
 			case QUERY_BY_NAME:
-				resultList = queryTaskByName(lastQueryCommandInfo);
+				resultList = queryTask(lastQueryCommandInfo);
 				break;
 			case QUERY_BY_CATEGORY:
 				resultList = queryTaskByCategory(lastQueryCategory);
