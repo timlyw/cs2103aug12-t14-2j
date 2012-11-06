@@ -100,15 +100,24 @@ public class UiController {
 	/**
 	 * display the mhsFrame to user
 	 */
-	public void openMhsFrame() {
+	public void showUserInterface() {
 		startLog("openMhsFrame");
+		showHomePage();
+		openMhsFrame();
+    	endLog("openMhsFrame");
+	}
+	
+	private void showHomePage() {
+    	updateLineLimit();
+    	processor.showHome();
+	}
+	
+	private void openMhsFrame() {
     	mhsFrame.open();
     	mhsFrame.selectInputBox();
     	updateMhsFrameSize();
-    	updateLineLimit();
-    	processor.showHome();
-    	endLog("openMhsFrame");
 	}
+	
 	
 	public void updateMhsFrameSize() {
 		mhsFrame.setSize(mhsFrameWidth, mhsFrameHeight, mhsFrameMaximized);

@@ -80,7 +80,13 @@ public abstract class Command {
 		boolean name, startDate, endDate;
 		List<Task> queryResultList;
 		
+		if(inputCommand == null) {
+			System.out.println("input command null");
+		}
+		
 		name = inputCommand.getTaskName() == null ? false : true;
+	
+		
 		startDate = inputCommand.getStartDate() == null ? false : true;
 		endDate = inputCommand.getEndDate() == null ? false : true;
 		if (name && startDate && endDate) {

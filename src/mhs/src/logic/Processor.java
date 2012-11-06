@@ -142,9 +142,11 @@ public class Processor {
 				break;
 			case login:
 				userOutputString = loginUser();
+				currentState = userOutputString;
 				break;
 			case logout:
 				userOutputString = logoutUser();
+				currentState = userOutputString;
 				break;
 			case exit:
 				System.exit(0);
@@ -152,8 +154,11 @@ public class Processor {
 			case help:
 				break;
 			default:
+				System.out.println("user command " + userCommand);
+				
 				userOutputString = createCommand.createCommand(userCommand);
-				System.out.println(userOutputString);
+				commandFeedback = createCommand.getFeedback();
+				currentState = createCommand.getState();
 				break;
 			}
 
@@ -177,6 +182,7 @@ public class Processor {
 				usernameIsExpected = false;
 				isPasswordExpected = true;
 				screenOutput = "Enter password";
+				currentState = screenOutput;
 			} else if (isPasswordExpected) {
 				password = currentCommand;
 				isPasswordExpected = false;
@@ -185,6 +191,7 @@ public class Processor {
 				} catch (AuthenticationException e) {
 					screenOutput = "Login failed! Check username and password.";
 				}
+				currentState = screenOutput;
 			} else {
 				try {
 					userCommand = commandParser
@@ -199,8 +206,6 @@ public class Processor {
 			screenOutput = "Exceptional Situation";
 			e.printStackTrace();
 		}
-		commandFeedback = createCommand.getFeedback();
-		currentState = createCommand.getState();
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		updateStateListeners();
 	}
@@ -257,6 +262,7 @@ public class Processor {
 		String outputString = new String();
 		if (!userIsLoggedIn) {
 			outputString = loginUser();
+			currentState = outputString;
 		} else {
 			try {
 				dataHandler.syncronizeDatabases();
@@ -266,6 +272,8 @@ public class Processor {
 			} catch (ServiceException e) {
 				outputString = "No internet connection detected !";
 			}
+			commandFeedback = outputString;
+			refreshDisplay();
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;

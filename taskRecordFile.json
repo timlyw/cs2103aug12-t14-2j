@@ -1190,7 +1190,7 @@
     "taskName": "AP meet",
     "taskCategory": "TIMED",
     "taskCreated": "2012-11-06T02:51:38.320+08:00",
-    "taskUpdated": "2012-11-06T02:51:38.320+08:00",
+    "taskUpdated": "2012-11-06T14:27:32.076+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
@@ -1279,32 +1279,32 @@
     "taskName": "dipslay",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T11:59:03.150+08:00",
-    "taskUpdated": "2012-11-06T11:59:03.150+08:00",
+    "taskUpdated": "2012-11-06T14:26:59.574+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 112,
     "taskName": "[",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T11:59:46.624+08:00",
-    "taskUpdated": "2012-11-06T11:59:46.624+08:00",
+    "taskUpdated": "2012-11-06T14:27:06.274+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 113,
     "taskName": "disply",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T12:05:05.162+08:00",
-    "taskUpdated": "2012-11-06T12:05:05.162+08:00",
+    "taskUpdated": "2012-11-06T14:27:24.743+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": false,
+    "isDone": true,
     "isDeleted": false
   },
   {
