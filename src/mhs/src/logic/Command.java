@@ -167,7 +167,6 @@ public abstract class Command {
 	 */
 	protected static String displayListOfTasks(List<Task> resultList) {
 		String outputString = new String();
-
 		outputString = createTaskListHtml(resultList, lineLimit - 2);
 		return outputString;
 	}
@@ -224,6 +223,10 @@ public abstract class Command {
 
 		if (taskList.size() == 0) {
 			return "No tasks to display";
+		}
+		
+		if(limit < 0) {
+			limit = 1;
 		}
 
 		if(firstIndexDisplayed > taskList.size()) {
