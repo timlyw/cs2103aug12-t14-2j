@@ -63,7 +63,7 @@ class Syncronize {
 	private static final String CONFIG_PARAM_GOOGLE_USER_ACCOUNT = "GOOGLE_USER_ACCOUNT";
 	private static final String CONFIG_PARAM_GOOGLE_AUTH_TOKEN = "GOOGLE_AUTH_TOKEN";
 	private static final String GOOGLE_CALENDAR_APP_NAME = "My Hot Secretary";
-
+		
 	/**
 	 * Default Constructor for Syncronize.
 	 * 
