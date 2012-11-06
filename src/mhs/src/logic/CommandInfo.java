@@ -3,6 +3,7 @@ package mhs.src.logic;
 
 import java.util.logging.Logger;
 
+import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 
 import org.joda.time.DateTime;
@@ -24,7 +25,7 @@ public class CommandInfo {
 	 */
 	public static enum CommandKeyWords {
 		add, remove, edit, search, sync, undo, login, logout, rename, redo, mark,
-		help, unmark, p, n, displayfloating, displaydeadline, displaytimed, home, exit;
+		help, unmark, p, n, floating, deadline, timed, home, exit;
 	}
 
 	private String taskName;
@@ -165,13 +166,38 @@ public class CommandInfo {
 		if (edittedName != null)
 			outString += (" Editted name : " + edittedName);
 		if (startDate != null)
-			outString += (" Start Date : " + startDate.toString());
+			outString += (" Start Date : " + startDate.toString("dd MMM yyyy HH:mm"));
 		if (endDate != null)
-			outString += (" End Date : " + endDate.toString());
-		outString += (" Index is : " + index);
-
+			outString += (" End Date : " + endDate.toString("dd MMM yyyy HH:mm"));
+		if(index != 0){
+			outString += (" Index is : " + index);
+		}
 		logExitMethod("toString");
 		return outString;
+	}
+
+	public String toHtmlString() {
+		logEnterMethod("toString");
+		HtmlCreator htmlCreator = new HtmlCreator(); 
+		String outString = "";
+		if (commandEnum != null)
+			outString = ((commandEnum.name()));
+		if(index != 0)
+			outString += (" " + (index));
+		if (taskName != null)
+			outString += (" " + taskName);
+		if (edittedName != null)
+			outString += (" " + edittedName);
+		if (startDate != null)
+			outString += (" " + startDate.toString("dd MMM yyyy HH:mm"));
+		if (endDate != null){
+			if(startDate != null){
+				outString += " -";
+			}
+			outString += (" " + endDate.toString("dd MMM yyyy HH:mm"));
+		}
+		logExitMethod("toString");
+		return htmlCreator.makeBold(outString);
 	}
 
 	/**
