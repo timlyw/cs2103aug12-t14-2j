@@ -262,6 +262,18 @@ public class MhsFrame extends JFrame {
 		}
 	}
 	
+	public void maximize() {
+		this.maximize();
+	}
+	
+	public void setSize(int width, int height, boolean maximized) {
+		setFrameSize(width, height);
+		if(maximized) {
+			this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		}
+		this.setLocationRelativeTo(null);
+	}
+	
 	/**
 	 * private constructor to initialize an instance of MhsFrame
 	 */

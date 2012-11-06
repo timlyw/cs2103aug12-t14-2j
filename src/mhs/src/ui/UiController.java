@@ -12,8 +12,10 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.logging.Logger;
 
+import javax.swing.JFrame;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -21,9 +23,16 @@ import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 import mhs.src.logic.Processor;
 import mhs.src.logic.StateListener;
+import mhs.src.storage.persistence.local.ConfigFile;
 
 public class UiController {
 	
+	private static final String MHS_FRAME_MAXIMIZED = "mhsFrameMaximized";
+
+	private static final String MHS_FRAME_HEIGHT = "mhsFrameHeight";
+
+	private static final String MHS_FRAME_WIDTH = "mhsFrameWidth";
+
 	// mhsFrame used to handle user input and display output to user
 	private MhsFrame mhsFrame;
 	
@@ -42,6 +51,12 @@ public class UiController {
 	// class name used for logging
 	private static final String CLASS_NAME = "UiController";
 	
+	int mhsFrameWidth = 600;
+	int mhsFrameHeight = 450;
+	boolean mhsFrameMaximized = true;
+	
+	ConfigFile configFile = null;
+	
 	/**
 	 * sets up the mhsFrame and event listeners
 	 */
@@ -49,8 +64,38 @@ public class UiController {
 		startLog("constructor");
 		initMhsFrame();
 		initListeners();
+		loadMhsParameters();
+		initHotKey();
 		endLog("constructor");
 	}
+	
+	private void initHotKey() {
+		/*
+		JIntellitype jShortcut = JIntellitype.getInstance();
+		jShortcut.registerHotKey(1, JIntellitype.MOD_WIN, (int)'A');
+		MhsHotKeyListener mhsHotKeyListener = new MhsHotKeyListener();
+		jShortcut.addHotKeyListener(mhsHotKeyListener);
+		*/
+	}
+	
+	private void loadMhsParameters() {
+		try {
+			configFile = new ConfigFile();
+			String widthString = configFile.getConfigParameter(MHS_FRAME_WIDTH);
+			String heightString = configFile.getConfigParameter(MHS_FRAME_HEIGHT);
+			String maximizedString = configFile.getConfigParameter(MHS_FRAME_MAXIMIZED);
+			if(widthString == null || heightString == null || maximizedString == null) {
+				return;
+			}
+			mhsFrameWidth = Integer.parseInt(widthString);
+			mhsFrameHeight = Integer.parseInt(heightString);
+			mhsFrameMaximized = Boolean.parseBoolean(maximizedString);
+			
+		} catch(IOException e) {
+			
+		}
+	}
+	
 	
 	/**
 	 * display the mhsFrame to user
@@ -59,9 +104,53 @@ public class UiController {
 		startLog("openMhsFrame");
     	mhsFrame.open();
     	mhsFrame.selectInputBox();
+    	updateMhsFrameSize();
     	updateLineLimit();
     	processor.showHome();
     	endLog("openMhsFrame");
+	}
+	
+	public void updateMhsFrameSize() {
+		mhsFrame.setSize(mhsFrameWidth, mhsFrameHeight, mhsFrameMaximized);
+	}
+	
+	private void mhsFrameResized() {
+		updateLineLimit();	
+		storeMhsParameters();
+	}
+	
+	private void storeMhsParameters() {
+		 updateMhsFrameMaximized();
+		 updateMhsFrameDimensionst();
+		 saveParameters();
+	}
+	
+	private void saveParameters() {
+		if(configFile == null) {
+			return;
+		}
+		try {
+			configFile.setConfigParameter(MHS_FRAME_WIDTH, Integer.toString(mhsFrameWidth));
+			configFile.setConfigParameter(MHS_FRAME_HEIGHT, Integer.toString(mhsFrameHeight));
+			configFile.setConfigParameter(MHS_FRAME_MAXIMIZED, Boolean.toString(mhsFrameMaximized));
+		} catch(IOException e) {
+			
+		}
+	}
+	
+	private void updateMhsFrameMaximized() {
+		if(mhsFrame.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
+			mhsFrameMaximized = true;
+		} else {
+			mhsFrameMaximized = false;
+		}
+	}
+	
+	private void updateMhsFrameDimensionst() {
+		if(!mhsFrameMaximized) {
+			mhsFrameWidth = mhsFrame.getWidth();
+			mhsFrameHeight = mhsFrame.getHeight();
+		}
 	}
 	
 	/**
@@ -280,13 +369,21 @@ public class UiController {
 		}
 
 		public void componentResized(ComponentEvent arg0) {
-			updateLineLimit();
+			mhsFrameResized();
 		}
 
 		public void componentShown(ComponentEvent arg0) {
 		}
 		
 	}
+	
+	/*
+	private class MhsHotKeyListener implements HotkeyListener {
+		public void onHotKey(int arg0) {
+			maximizeMhsFrame();
+		}
+	}
+	*/
 	
 	private void startLog(String methodName) {
 		logger.entering(CLASS_NAME, methodName);
