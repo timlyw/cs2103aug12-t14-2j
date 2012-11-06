@@ -3,7 +3,6 @@
 package mhs.src.storage;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
@@ -79,7 +78,8 @@ public class DatabaseFactory {
 	 * @throws DatabaseFactoryNotInstantiatedException
 	 */
 	public synchronized static Database getDatabaseInstance()
-			throws IllegalArgumentException, DatabaseFactoryNotInstantiatedException {
+			throws IllegalArgumentException,
+			DatabaseFactoryNotInstantiatedException {
 		logEnterMethod("getDatabaseInstance");
 		if (databaseInstance == null) {
 			throw new DatabaseFactoryNotInstantiatedException(
