@@ -84,15 +84,15 @@ public class CommandCreator {
 			currentCommand = new CommandSearch(userCommand);
 			currentCommand.executeCommand();
 			break;
-		case displayfloating:
+		case floating:
 			currentCommand = new CommandSearch(userCommand);
 			currentCommand.executeCommand();
 			break;
-		case displaydeadline:
+		case deadline:
 			currentCommand = new CommandSearch(userCommand);
 			currentCommand.executeCommand();
 			break;
-		case displaytimed:
+		case timed:
 			currentCommand = new CommandSearch(userCommand);
 			currentCommand.executeCommand();
 			break;
