@@ -90,6 +90,14 @@ class Syncronize {
 		this.database.logExitMethod("Syncronize");
 	}
 
+	/**
+	 * Waits for syncronize background task to complete given maxExecutionTime
+	 * 
+	 * @param maxExecutionTimeInSeconds
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 */
 	synchronized void waitForSyncronizeBackgroundTaskToComplete(
 			int maxExecutionTimeInSeconds) throws InterruptedException,
 			ExecutionException, TimeoutException {

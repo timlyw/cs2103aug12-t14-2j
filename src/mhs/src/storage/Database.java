@@ -466,6 +466,8 @@ public class Database {
 		if (isRemoteSyncEnabled) {
 			try {
 				syncronize.pushSyncTask(taskToAdd);
+			}catch(UnknownHostException e){			
+				syncronize.disableRemoteSync();
 			} catch (NullPointerException e) {
 				logger.log(Level.FINER, e.getMessage());
 			} catch (ServiceException e) {
@@ -525,6 +527,8 @@ public class Database {
 		if (isRemoteSyncEnabled) {
 			try {
 				syncronize.pushSyncTask(taskToDelete);
+			}catch(UnknownHostException e){			
+				syncronize.disableRemoteSync();				
 			} catch (NullPointerException | ServiceException
 					| InvalidTaskFormatException e) {
 				// SilentFailSync Policy
@@ -595,6 +599,8 @@ public class Database {
 		if (isRemoteSyncEnabled) {
 			try {
 				syncronize.pushSyncTask(updatedTaskToSave);
+			}catch(UnknownHostException e){			
+				syncronize.disableRemoteSync();				
 			} catch (NullPointerException | ServiceException
 					| InvalidTaskFormatException e) {
 				// SilentFailSync Policy
@@ -719,7 +725,9 @@ public class Database {
 			try {
 				googleCalendar.deleteEvents(DateTime.now().minusYears(1)
 						.toString(), DateTime.now().plusYears(1).toString());
-			} catch (NullPointerException | ServiceException e) {
+			} catch (UnknownHostException e){
+				syncronize.disableRemoteSync();
+			}catch (NullPointerException | ServiceException e) {
 				// SilentFailSync Policy
 				logger.log(Level.FINER, e.getMessage());
 			}
