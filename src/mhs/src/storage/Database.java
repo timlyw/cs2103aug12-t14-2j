@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -124,6 +123,17 @@ public class Database {
 			throws IOException {
 		logEnterMethod("initializeSyncronize");
 		syncronize = new Syncronize(this, disableSyncronize);
+		if (!disableSyncronize) {
+			try {
+				initializeGoogleCalendarService();
+			} catch (AuthenticationException e) {
+				syncronize.disableRemoteSync();
+				logger.log(Level.FINER, e.getMessage());
+			} catch (ServiceException e) {
+				syncronize.disableRemoteSync();
+				logger.log(Level.FINER, e.getMessage());
+			}
+		}
 		logExitMethod("initializeSyncronize");
 	}
 
@@ -151,6 +161,42 @@ public class Database {
 		logEnterMethod("syncronizeDatabases");
 		syncronize.syncronizeDatabases();
 		logExitMethod("syncronizeDatabases");
+	}
+
+	/**
+	 * Initialize Google Calendar Service with saved Google Information
+	 * 
+	 * @throws IOException
+	 * @throws AuthenticationException
+	 * @throws ServiceException
+	 * @return true google calendar service is successfully initialized
+	 */
+	boolean initializeGoogleCalendarService() throws IOException,
+			AuthenticationException, ServiceException {
+		logEnterMethod("initializeGoogleCalendarService");
+		if (!configFile
+				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)) {
+			logExitMethod("initializeGoogleCalendarService");
+			return false;
+		}
+		if (!configFile
+				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
+			logExitMethod("initializeGoogleCalendarService");
+			return false;
+		}
+
+		String userGoogleAccount = configFile
+				.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT);
+		String userGoogleAuthToken = configFile
+				.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN);
+
+		assert (userGoogleAccount != null && userGoogleAuthToken != null);
+
+		googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
+				userGoogleAccount, userGoogleAuthToken);
+
+		logExitMethod("initializeGoogleCalendarService");
+		return true;
 	}
 
 	/**
@@ -186,8 +232,8 @@ public class Database {
 				GOOGLE_CALENDAR_APP_NAME, userName, userPassword);
 		googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
 				userName, googleAccessToken);
-		saveGoogleAccountInfo(userName, googleAccessToken);
 		syncronize.enableRemoteSync();
+		saveGoogleAccountInfo(userName, googleAccessToken);
 
 		logExitMethod("loginUserGoogleAccount");
 	}
@@ -628,53 +674,6 @@ public class Database {
 		taskLists.removeTaskInTaskLists(taskToRemove);
 
 		logExitMethod("removeRecord");
-	}
-
-	/**
-	 * Clears deleted and expired/done local and remote tasks
-	 * 
-	 * @throws Exception
-	 */
-	public void cleanupTasks() throws Exception {
-		logEnterMethod("cleanupTasks");
-
-		syncronizeDatabases();
-		cleanupLocalTasks();
-
-		logExitMethod("cleanupTasks");
-	}
-
-	/**
-	 * Clears deleted and expired/done local tasks
-	 * 
-	 * @throws Exception
-	 */
-	private void cleanupLocalTasks() throws Exception {
-		logEnterMethod("cleanupLocalTasks");
-
-		for (Map.Entry<Integer, Task> entry : taskLists.getTaskList()
-				.entrySet()) {
-
-			if (!entry.getValue().isDeleted()) {
-				continue;
-			}
-
-			switch (entry.getValue().getTaskCategory()) {
-			case TIMED:
-			case DEADLINE:
-				if (entry.getValue().getEndDateTime().isAfterNow()) {
-					removeRecord(entry.getValue());
-				}
-				break;
-			case FLOATING:
-				if (entry.getValue().isDone()) {
-					removeRecord(entry.getValue());
-				}
-				break;
-			}
-		}
-		saveTaskRecordFile();
-		logExitMethod("cleanupLocalTasks");
 	}
 
 	/**

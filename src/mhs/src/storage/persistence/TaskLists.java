@@ -427,22 +427,6 @@ public class TaskLists {
 	}
 
 	/**
-	 * Checks if startDateTime and endDateTime are within a dateTime interval
-	 * 
-	 * @param dateTimeInterval
-	 * @param startDateTime
-	 * @param endDateTime
-	 * @return true if start and end DateTime are with dateTimeInterval
-	 */
-	private boolean isWithinInterval(Interval dateTimeInterval,
-			DateTime startDateTime, DateTime endDateTime) {
-		logEnterMethod("isWithinInterval");
-		logExitMethod("isWithinInterval");
-		return dateTimeInterval.contains(startDateTime)
-				|| dateTimeInterval.contains(endDateTime);
-	}
-
-	/**
 	 * Returns task that matches any of the specified parameters (exclusive of
 	 * deleted tasks)
 	 * 
@@ -588,6 +572,22 @@ public class TaskLists {
 			}
 		}
 		logExitMethod("getTasksMatchingParameters");
+	}
+
+	/**
+	 * Checks if startDateTime and endDateTime are within a dateTime interval
+	 * 
+	 * @param dateTimeInterval
+	 * @param startDateTime
+	 * @param endDateTime
+	 * @return true if start and end DateTime are with dateTimeInterval
+	 */
+	private boolean isWithinInterval(Interval dateTimeInterval,
+			DateTime startDateTime, DateTime endDateTime) {
+		logEnterMethod("isWithinInterval");
+		logExitMethod("isWithinInterval");
+		return dateTimeInterval.contains(startDateTime)
+				|| dateTimeInterval.contains(endDateTime);
 	}
 
 	/**
