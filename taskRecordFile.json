@@ -1281,10 +1281,10 @@
     "taskName": "run",
     "taskCategory": "TIMED",
     "taskCreated": "2012-11-06T13:19:46.000+08:00",
-    "taskUpdated": "2012-11-06T13:19:46.000+08:00",
+    "taskUpdated": "2012-11-06T16:11:15.679+08:00",
     "taskLastSync": "2012-11-06T13:19:46.000+08:00",
     "gCalTaskId": "gkh339aq44jv0bjc48l9q5qvfs@google.com",
-    "isDone": false,
+    "isDone": true,
     "isDeleted": false
   },
   {
@@ -1303,10 +1303,10 @@
     "taskName": "isplay",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T13:27:28.980+08:00",
-    "taskUpdated": "2012-11-06T13:27:28.980+08:00",
+    "taskUpdated": "2012-11-06T16:08:31.393+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": false,
+    "isDone": true,
     "isDeleted": false
   }
 ]
