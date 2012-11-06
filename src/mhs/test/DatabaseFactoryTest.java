@@ -9,6 +9,7 @@ import mhs.src.common.exceptions.TaskNotFoundException;
 import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseFactory;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -90,5 +91,10 @@ public class DatabaseFactoryTest {
 		DatabaseFactory.getDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
 		Database testDatabase = DatabaseFactory.getDatabaseInstance();
 		assert (testDatabase != null);
+	}
+	
+	@After
+	public void testCleanup(){
+		DatabaseFactory.destroy();
 	}
 }

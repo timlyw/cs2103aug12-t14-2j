@@ -123,17 +123,6 @@ public class Database {
 			throws IOException {
 		logEnterMethod("initializeSyncronize");
 		syncronize = new Syncronize(this, disableSyncronize);
-		if (!disableSyncronize) {
-			try {
-				initializeGoogleCalendarService();
-			} catch (AuthenticationException e) {
-				syncronize.disableRemoteSync();
-				logger.log(Level.FINER, e.getMessage());
-			} catch (ServiceException e) {
-				syncronize.disableRemoteSync();
-				logger.log(Level.FINER, e.getMessage());
-			}
-		}
 		logExitMethod("initializeSyncronize");
 	}
 
@@ -464,17 +453,7 @@ public class Database {
 		addTaskToTaskList(taskToAdd);
 
 		if (isRemoteSyncEnabled) {
-			try {
-				syncronize.pushSyncTask(taskToAdd);
-			}catch(UnknownHostException e){			
-				syncronize.disableRemoteSync();
-			} catch (NullPointerException e) {
-				logger.log(Level.FINER, e.getMessage());
-			} catch (ServiceException e) {
-				logger.log(Level.FINER, e.getMessage());
-			} catch (TaskNotFoundException e) {
-				logger.log(Level.FINER, e.getMessage());
-			}
+			syncronize.schedulePushSyncTask(taskToAdd);
 		}
 
 		saveTaskRecordFile();
@@ -525,15 +504,7 @@ public class Database {
 		deleteTaskInTaskList(taskToDelete);
 
 		if (isRemoteSyncEnabled) {
-			try {
-				syncronize.pushSyncTask(taskToDelete);
-			}catch(UnknownHostException e){			
-				syncronize.disableRemoteSync();				
-			} catch (NullPointerException | ServiceException
-					| InvalidTaskFormatException e) {
-				// SilentFailSync Policy
-				logger.log(Level.FINER, e.getMessage());
-			}
+			syncronize.schedulePushSyncTask(taskToDelete);
 		}
 		saveTaskRecordFile();
 		logExitMethod("delete");
@@ -597,15 +568,7 @@ public class Database {
 		updateTaskinTaskList(updatedTaskToSave);
 
 		if (isRemoteSyncEnabled) {
-			try {
-				syncronize.pushSyncTask(updatedTaskToSave);
-			}catch(UnknownHostException e){			
-				syncronize.disableRemoteSync();				
-			} catch (NullPointerException | ServiceException
-					| InvalidTaskFormatException e) {
-				// SilentFailSync Policy
-				logger.log(Level.FINER, e.getMessage());
-			}
+			syncronize.schedulePushSyncTask(updatedTaskToSave);
 		}
 
 		saveTaskRecordFile();
@@ -639,12 +602,10 @@ public class Database {
 	 * @throws ExecutionException
 	 * @throws TimeoutException
 	 */
-	public void waitForSyncronizeBackgroundTaskToComplete(
-			int maxExecutionTimeInSeconds) throws InterruptedException,
-			ExecutionException, TimeoutException {
+	public void waitForAllBackgroundTasks(int maxExecutionTimeInSeconds)
+			throws InterruptedException, ExecutionException, TimeoutException {
 		logEnterMethod("waitForSyncronizeBackgroundTaskToComplete");
-		syncronize
-				.waitForSyncronizeBackgroundTaskToComplete(maxExecutionTimeInSeconds);
+		syncronize.waitForAllBackgroundTasks(maxExecutionTimeInSeconds);
 		logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
 	}
 
@@ -725,9 +686,9 @@ public class Database {
 			try {
 				googleCalendar.deleteEvents(DateTime.now().minusYears(1)
 						.toString(), DateTime.now().plusYears(1).toString());
-			} catch (UnknownHostException e){
+			} catch (UnknownHostException e) {
 				syncronize.disableRemoteSync();
-			}catch (NullPointerException | ServiceException e) {
+			} catch (NullPointerException | ServiceException e) {
 				// SilentFailSync Policy
 				logger.log(Level.FINER, e.getMessage());
 			}

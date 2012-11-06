@@ -8,16 +8,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.InvalidTaskFormatException;
 import mhs.src.common.exceptions.TaskNotFoundException;
-import mhs.src.storage.persistence.remote.GoogleCalendarMhs;
 import mhs.src.storage.persistence.task.DeadlineTask;
 import mhs.src.storage.persistence.task.Task;
 import mhs.src.storage.persistence.task.TaskCategory;
@@ -27,6 +31,7 @@ import org.joda.time.DateTime;
 
 import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.data.extensions.When;
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
@@ -50,20 +55,18 @@ import com.google.gdata.util.ServiceException;
  */
 class Syncronize {
 
-	private final Database database;
+	final Database database;
 	private ScheduledThreadPoolExecutor syncronizeBackgroundExecutor;
 	private Runnable syncronizeDatabasesBackgroundTask;
 	private TimerTask pullSyncTimedBackgroundTask;
 	private Future<?> futureSyncronizeBackgroundTask;
+	Map<String, Callable<Boolean>> pushSyncBackgroundTasks;
 
 	private static final int PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES = 2;
 	private static final int PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES = 1;
 
-	// Config parameters
-	private static final String CONFIG_PARAM_GOOGLE_USER_ACCOUNT = "GOOGLE_USER_ACCOUNT";
-	private static final String CONFIG_PARAM_GOOGLE_AUTH_TOKEN = "GOOGLE_AUTH_TOKEN";
-	private static final String GOOGLE_CALENDAR_APP_NAME = "My Hot Secretary";
-		
+	static final Logger logger = MhsLogger.getLogger();
+
 	/**
 	 * Default Constructor for Syncronize.
 	 * 
@@ -77,17 +80,63 @@ class Syncronize {
 	 */
 	Syncronize(Database database, boolean disableSyncronize) throws IOException {
 		this.database = database;
-		this.database.logEnterMethod("Syncronize");
+		logEnterMethod("Syncronize");
 
 		syncronizeBackgroundExecutor = new ScheduledThreadPoolExecutor(1);
 		initializeRunnableTasks();
-		if (initializeGoogleCalendarService() && !disableSyncronize) {
-			enableRemoteSync();
-		} else {
+		initializePushSyncBackgroundTasksList();
+
+		try {
+			if (this.database.initializeGoogleCalendarService()
+					&& !disableSyncronize) {
+				enableRemoteSync();
+			} else {
+				disableRemoteSync();
+			}
+		} catch (AuthenticationException e) {
 			disableRemoteSync();
+			logger.log(Level.FINER, e.getMessage());
+		} catch (ServiceException e) {
+			logger.log(Level.FINER, e.getMessage());
 		}
 
-		this.database.logExitMethod("Syncronize");
+		logExitMethod("Syncronize");
+	}
+
+	private void initializePushSyncBackgroundTasksList() {
+		pushSyncBackgroundTasks = new ConcurrentHashMap<String, Callable<Boolean>>();
+	}
+
+	synchronized void schedulePushSyncTask(Task taskToScheduleSync) {
+		Callable<Boolean> pushTaskToSchedule = new SyncPushTask(
+				taskToScheduleSync, this);
+		pushSyncBackgroundTasks.put(getSyncTaskQueueUid(), pushTaskToSchedule);
+		syncronizeBackgroundExecutor.submit(pushTaskToSchedule);
+	}
+
+	/**
+	 * Get unique id for SyncTaskQueueUID
+	 * 
+	 * @return
+	 */
+	synchronized private String getSyncTaskQueueUid() {
+		return UUID.randomUUID().toString();
+	}
+
+	/**
+	 * Removes push sync task from list
+	 * 
+	 * @param syncTaskQueueUid
+	 */
+	public synchronized void removePushSyncTaskFromList(String syncTaskQueueUid) {
+		System.out.println("Removing..." + syncTaskQueueUid);
+		pushSyncBackgroundTasks.remove(syncTaskQueueUid);
+	}
+
+	synchronized void waitForAllBackgroundTasks(int maxExecutionTimeInSeconds)
+			throws InterruptedException, ExecutionException, TimeoutException {
+		waitForSyncronizeBackgroundTask(maxExecutionTimeInSeconds);
+		waitForBackgroundPushSyncTasks();
 	}
 
 	/**
@@ -98,20 +147,34 @@ class Syncronize {
 	 * @throws ExecutionException
 	 * @throws TimeoutException
 	 */
-	synchronized void waitForSyncronizeBackgroundTaskToComplete(
+	private synchronized void waitForSyncronizeBackgroundTask(
 			int maxExecutionTimeInSeconds) throws InterruptedException,
 			ExecutionException, TimeoutException {
 		this.database
 				.logEnterMethod("waitForSyncronizeBackgroundTaskToComplete");
-		Database.logger.log(Level.INFO,
-				"Waiting for background task to complete.");
+		logger.log(Level.INFO, "Waiting for background task to complete.");
 		if (futureSyncronizeBackgroundTask == null) {
 			return;
 		}
 		futureSyncronizeBackgroundTask.get(maxExecutionTimeInSeconds,
 				TimeUnit.SECONDS);
+		waitForBackgroundPushSyncTasks();
+
 		this.database
 				.logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
+	}
+
+	private synchronized void waitForBackgroundPushSyncTasks()
+			throws InterruptedException {
+		logEnterMethod("waitForBackgroundPushSyncTasks");
+		if (pushSyncBackgroundTasks.isEmpty()) {
+			return;
+		}
+		System.out.println(pushSyncBackgroundTasks.values().toString());
+		syncronizeBackgroundExecutor
+				.invokeAll(pushSyncBackgroundTasks.values());
+		pushSyncBackgroundTasks.clear();
+		logExitMethod("waitForBackgroundPushSyncTasks");
 	}
 
 	/**
@@ -127,14 +190,14 @@ class Syncronize {
 	 * @return
 	 */
 	boolean syncronizeDatabases() {
-		this.database.logEnterMethod("syncronizeDatabases");
+		logEnterMethod("syncronizeDatabases");
 		// checks if user is logged out
 		if (Database.googleCalendar == null) {
 			return false;
 		}
 		futureSyncronizeBackgroundTask = syncronizeBackgroundExecutor
 				.submit(syncronizeDatabasesBackgroundTask);
-		this.database.logExitMethod("syncronizeDatabases");
+		logExitMethod("syncronizeDatabases");
 		return true;
 	}
 
@@ -142,121 +205,120 @@ class Syncronize {
 	 * Enables remote sync for task operations and auto-sync
 	 */
 	void enableRemoteSync() {
-		this.database.logEnterMethod("enableRemoteSync");
-		Database.logger.log(Level.INFO, "Enabling remote sync");
+		logEnterMethod("enableRemoteSync");
+		logger.log(Level.INFO, "Enabling remote sync");
 		Database.isRemoteSyncEnabled = true;
 		scheduleTimedPullSync();
-		this.database.logExitMethod("enableRemoteSync");
+		logExitMethod("enableRemoteSync");
 	}
 
 	/**
 	 * Disables remote sync for task operations and auto-sync
 	 */
 	void disableRemoteSync() {
-		this.database.logEnterMethod("disableRemoteSync");
-		Database.logger.log(Level.INFO, "Disabling remote sync");
+		logEnterMethod("disableRemoteSync");
+		logger.log(Level.INFO, "Disabling remote sync");
 		Database.isRemoteSyncEnabled = false;
 		cancelTimedPullSync();
-		this.database.logExitMethod("disableRemoteSync");
+		logExitMethod("disableRemoteSync");
 	}
 
 	/**
 	 * Initialize runnable tasks
 	 */
 	private void initializeRunnableTasks() {
-		this.database.logEnterMethod("initializeRunnableTasks");
+		logEnterMethod("initializeRunnableTasks");
 		initializeSyncronizeRunnableTask();
 		initializeTimedPullSyncRunnableTask();
-		this.database.logExitMethod("initializeRunnableTasks");
+		logExitMethod("initializeRunnableTasks");
 	}
 
 	/**
 	 * Initialize Syncronize Runnable Task
 	 */
 	private void initializeSyncronizeRunnableTask() {
-		this.database.logEnterMethod("initializeSyncronizeRunnableTask");
+		logEnterMethod("initializeSyncronizeRunnableTask");
 		syncronizeDatabasesBackgroundTask = new Runnable() {
 			@Override
 			public void run() {
 				try {
-					Database.logger.log(Level.INFO,
+					logger.log(Level.INFO,
 							"Executing syncronize background task");
 					pullSync();
 					pushSync();
 					Syncronize.this.database.saveTaskRecordFile();
 				} catch (UnknownHostException e) {
-					Database.logger.log(Level.FINER, e.getMessage());
+					logger.log(Level.FINER, e.getMessage());
 					disableRemoteSync();
 				} catch (TaskNotFoundException e) {
 					// SilentFailSync Policy
-					Database.logger.log(Level.FINER, e.getMessage());
+					logger.log(Level.FINER, e.getMessage());
 				} catch (InvalidTaskFormatException e) {
 					// SilentFailSync Policy
-					Database.logger.log(Level.FINER, e.getMessage());
+					logger.log(Level.FINER, e.getMessage());
 				} catch (NullPointerException e) {
-					Database.logger.log(Level.FINER, e.getMessage());
+					logger.log(Level.FINER, e.getMessage());
 				} catch (IOException e) {
-					Database.logger.log(Level.FINER, e.getMessage());
+					logger.log(Level.FINER, e.getMessage());
 				} catch (ServiceException e) {
 					// SilentFailSync Policy
-					Database.logger.log(Level.FINER, e.getMessage());
+					logger.log(Level.FINER, e.getMessage());
 				}
 			}
 		};
-		this.database.logExitMethod("initializeSyncronizeRunnableTask");
+		logExitMethod("initializeSyncronizeRunnableTask");
 	}
 
 	/**
 	 * Schedules timed pull-sync
 	 */
 	private void scheduleTimedPullSync() {
-		this.database.logEnterMethod("scheduleTimedPullSync");
+		logEnterMethod("scheduleTimedPullSync");
 		syncronizeBackgroundExecutor.scheduleAtFixedRate(
 				pullSyncTimedBackgroundTask,
 				PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES,
 				PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES, TimeUnit.MINUTES);
-		this.database.logExitMethod("scheduleTimedPullSync");
+		logExitMethod("scheduleTimedPullSync");
 	}
 
 	/**
 	 * Initialize Timed Pull Sync Runnable Task
 	 */
 	private void initializeTimedPullSyncRunnableTask() {
-		this.database.logEnterMethod("initializeTimedPullSyncRunnableTask");
+		logEnterMethod("initializeTimedPullSyncRunnableTask");
 		pullSyncTimedBackgroundTask = new TimerTask() {
 			@Override
 			public void run() {
-				Database.logger.log(Level.INFO,
-						"Executing timed pull sync task");
+				logger.log(Level.INFO, "Executing timed pull sync task");
 				try {
 					Database.syncronize.pullSync();
 					Syncronize.this.database.saveTaskRecordFile();
 				} catch (UnknownHostException e) {
-					Database.logger.log(Level.FINER, e.getMessage());
+					logger.log(Level.FINER, e.getMessage());
 					disableRemoteSync();
 				} catch (TaskNotFoundException e) {
 					// SilentFailSync Policy
-					Database.logger.log(Level.FINER, e.getMessage());
+					logger.log(Level.FINER, e.getMessage());
 				} catch (InvalidTaskFormatException e) {
 					// SilentFailSyncPolicy
-					Database.logger.log(Level.FINER, e.getMessage());
+					logger.log(Level.FINER, e.getMessage());
 				} catch (IOException e) {
-					Database.logger.log(Level.FINER, e.getMessage());
+					logger.log(Level.FINER, e.getMessage());
 				}
 			}
 		};
-		this.database.logExitMethod("initializeTimedPullSyncRunnableTask");
+		logExitMethod("initializeTimedPullSyncRunnableTask");
 	}
 
 	/**
 	 * Cancel timed pull sync
 	 */
 	private void cancelTimedPullSync() {
-		this.database.logEnterMethod("cancelTimedPullSync");
+		logEnterMethod("cancelTimedPullSync");
 		if (pullSyncTimedBackgroundTask != null) {
 			pullSyncTimedBackgroundTask.cancel();
 		}
-		this.database.logExitMethod("cancelTimedPullSync");
+		logExitMethod("cancelTimedPullSync");
 	}
 
 	/**
@@ -267,9 +329,9 @@ class Syncronize {
 	 * @throws TaskNotFoundException
 	 * @throws ServiceException
 	 */
-	private void pullSync() throws UnknownHostException, TaskNotFoundException,
+	void pullSync() throws UnknownHostException, TaskNotFoundException,
 			InvalidTaskFormatException {
-		this.database.logEnterMethod("pullSync");
+		logEnterMethod("pullSync");
 		List<CalendarEventEntry> googleCalendarEvents;
 
 		try {
@@ -284,16 +346,16 @@ class Syncronize {
 				pullSyncTask(gCalEntry);
 			}
 		} catch (UnknownHostException e) {
-			Database.logger.log(Level.FINER, e.getMessage());
+			logger.log(Level.FINER, e.getMessage());
 			throw e;
 		} catch (ServiceException e) {
-			Database.logger.log(Level.FINER, e.getMessage());
+			logger.log(Level.FINER, e.getMessage());
 		} catch (NullPointerException e) {
-			Database.logger.log(Level.FINER, e.getMessage());
+			logger.log(Level.FINER, e.getMessage());
 		} catch (IOException e) {
-			Database.logger.log(Level.FINER, e.getMessage());
+			logger.log(Level.FINER, e.getMessage());
 		}
-		this.database.logExitMethod("pullSync");
+		logExitMethod("pullSync");
 	}
 
 	/**
@@ -307,7 +369,7 @@ class Syncronize {
 	private void pullSyncTask(CalendarEventEntry gCalEntry)
 			throws TaskNotFoundException, InvalidTaskFormatException,
 			IOException {
-		this.database.logEnterMethod("pullSyncTask");
+		logEnterMethod("pullSyncTask");
 
 		if (Database.taskLists.containsSyncTask(gCalEntry.getIcalUID())) {
 
@@ -316,7 +378,7 @@ class Syncronize {
 
 			// pull sync deleted event
 			if (Database.googleCalendar.isDeleted(gCalEntry)) {
-				Database.logger.log(Level.INFO, "Deleting cancelled task : "
+				logger.log(Level.INFO, "Deleting cancelled task : "
 						+ gCalEntry.getTitle().getPlainText());
 				// delete local task
 				this.database.deleteTaskInTaskList(localTask);
@@ -327,8 +389,8 @@ class Syncronize {
 			if (localTask.getTaskLastSync().isBefore(
 					new DateTime(gCalEntry.getUpdated().getValue()))) {
 
-				Database.logger.log(Level.INFO, "pulling newer event : "
-						+ localTask.getTaskName());
+				logger.log(Level.INFO,
+						"pulling newer event : " + localTask.getTaskName());
 
 				pullSyncExistingTask(gCalEntry, localTask);
 			}
@@ -337,11 +399,11 @@ class Syncronize {
 			if (Database.googleCalendar.isDeleted(gCalEntry)) {
 				return;
 			}
-			Database.logger.log(Level.INFO, "pulling new event : "
+			logger.log(Level.INFO, "pulling new event : "
 					+ gCalEntry.getTitle().getPlainText());
 			pullSyncNewTask(gCalEntry);
 		}
-		this.database.logExitMethod("pullSyncTask");
+		logExitMethod("pullSyncTask");
 	}
 
 	/**
@@ -353,7 +415,7 @@ class Syncronize {
 	 */
 	private void pullSyncNewTask(CalendarEventEntry gCalEntry)
 			throws UnknownHostException {
-		this.database.logEnterMethod("pullSyncNewTask");
+		logEnterMethod("pullSyncNewTask");
 		DateTime syncDateTime = setSyncTime(gCalEntry);
 
 		// add task from google calendar entry
@@ -370,7 +432,7 @@ class Syncronize {
 					gCalEntry, syncDateTime);
 			Database.taskLists.updateTaskInTaskLists(newTask);
 		}
-		this.database.logExitMethod("pullSyncNewTask");
+		logExitMethod("pullSyncNewTask");
 	}
 
 	/**
@@ -386,9 +448,9 @@ class Syncronize {
 	private void pullSyncExistingTask(CalendarEventEntry gCalEntry,
 			Task localTaskEntry) throws UnknownHostException,
 			TaskNotFoundException, InvalidTaskFormatException {
-		this.database.logEnterMethod("pullSyncExistingTask");
+		logEnterMethod("pullSyncExistingTask");
 		updateSyncTask(localTaskEntry, gCalEntry);
-		this.database.logExitMethod("pullSyncExistingTask");
+		logExitMethod("pullSyncExistingTask");
 	}
 
 	/**
@@ -401,16 +463,16 @@ class Syncronize {
 	 * @throws TaskNotFoundException
 	 * @throws NullPointerException
 	 */
-	private void pushSync() throws IOException, UnknownHostException,
-			ServiceException, NullPointerException, TaskNotFoundException,
+	void pushSync() throws IOException, UnknownHostException, ServiceException,
+			NullPointerException, TaskNotFoundException,
 			InvalidTaskFormatException {
-		this.database.logEnterMethod("pushSync");
+		logEnterMethod("pushSync");
 		// push sync tasks from local to google calendar
 		for (Map.Entry<Integer, Task> entry : Database.taskLists.getTaskList()
 				.entrySet()) {
 			pushSyncTask(entry.getValue());
 		}
-		this.database.logExitMethod("pushSync");
+		logExitMethod("pushSync");
 	}
 
 	/**
@@ -425,44 +487,43 @@ class Syncronize {
 	 */
 	void pushSyncTask(Task localTask) throws NullPointerException, IOException,
 			TaskNotFoundException, InvalidTaskFormatException, ServiceException {
-		this.database.logEnterMethod("pushSyncTask");
+		logEnterMethod("pushSyncTask");
 		// skip floating tasks
 		if (localTask.getTaskCategory().equals(TaskCategory.FLOATING)) {
-			this.database.logExitMethod("pushSyncTask");
+			logExitMethod("pushSyncTask");
 			return;
 		}
 		// remove deleted task
 		if (localTask.isDeleted()) {
-			Database.logger.log(Level.INFO, "Removing deleted synced task : "
+			logger.log(Level.INFO, "Removing deleted synced task : "
 					+ localTask.getTaskName());
 			try {
 				Database.googleCalendar.deleteEvent(localTask.getgCalTaskId());
 			} catch (ResourceNotFoundException e) {
 				// SilentFailSync Policy
-				Database.logger.log(Level.FINER, e.getMessage());
+				logger.log(Level.FINER, e.getMessage());
 			} catch (NullPointerException e) {
-				Database.logger.log(Level.FINER, e.getMessage());
+				logger.log(Level.FINER, e.getMessage());
 			}
-			this.database.logExitMethod("pushSyncTask");
+			logExitMethod("pushSyncTask");
 			return;
 		}
 
 		// add unsynced tasks
 		if (TaskValidator.isUnsyncedTask(localTask)) {
-			Database.logger.log(Level.INFO, "Pushing new sync task : "
-					+ localTask.getTaskName());
+			logger.log(Level.INFO,
+					"Pushing new sync task : " + localTask.getTaskName());
 			pushSyncNewTask(localTask);
 		} else {
 			// add updated tasks
 			if (localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync())) {
-				Database.logger.log(Level.INFO, "Pushing updated task : "
-						+ localTask.getTaskName());
+				logger.log(Level.INFO,
+						"Pushing updated task : " + localTask.getTaskName());
 				pushSyncExistingTask(localTask);
 			}
 		}
 
-		Database.logger.exiting(getClass().getName(),
-				new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("pushSyncTask");
 	}
 
 	/**
@@ -480,12 +541,12 @@ class Syncronize {
 	private void pushSyncNewTask(Task localTask) throws NullPointerException,
 			IOException, ServiceException, TaskNotFoundException,
 			InvalidTaskFormatException {
-		this.database.logEnterMethod("pushSyncNewTask");
+		logEnterMethod("pushSyncNewTask");
 		// adds event to google calendar
 		CalendarEventEntry addedGCalEvent = Database.googleCalendar
 				.createEvent(localTask);
 		updateSyncTask(localTask, addedGCalEvent);
-		this.database.logExitMethod("pushSyncNewTask");
+		logExitMethod("pushSyncNewTask");
 	}
 
 	/**
@@ -503,12 +564,12 @@ class Syncronize {
 	private void pushSyncExistingTask(Task localTask)
 			throws NullPointerException, IOException, ServiceException,
 			TaskNotFoundException, InvalidTaskFormatException {
-		this.database.logEnterMethod("pushSyncExistingTask");
+		logEnterMethod("pushSyncExistingTask");
 		// update remote task
 		CalendarEventEntry updatedGcalEvent = Database.googleCalendar
 				.updateEvent(localTask.clone());
 		updateSyncTask(localTask, updatedGcalEvent);
-		this.database.logExitMethod("pushSyncExistingTask");
+		logExitMethod("pushSyncExistingTask");
 	}
 
 	/**
@@ -521,7 +582,7 @@ class Syncronize {
 	private Task updateSyncTask(Task localSyncTaskToUpdate,
 			CalendarEventEntry UpdatedCalendarEvent)
 			throws TaskNotFoundException, InvalidTaskFormatException {
-		this.database.logEnterMethod("updateSyncTask");
+		logEnterMethod("updateSyncTask");
 		if (!Database.taskLists.containsTask(localSyncTaskToUpdate.getTaskId())) {
 			throw new TaskNotFoundException(
 					Database.EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
@@ -536,7 +597,7 @@ class Syncronize {
 		localSyncTaskToUpdate = updateLocalSyncTask(localSyncTaskToUpdate,
 				UpdatedCalendarEvent, syncDateTime);
 		Database.taskLists.updateTaskInTaskLists(localSyncTaskToUpdate);
-		this.database.logExitMethod("updateSyncTask");
+		logExitMethod("updateSyncTask");
 		return localSyncTaskToUpdate;
 	}
 
@@ -549,7 +610,7 @@ class Syncronize {
 	 */
 	private Task updateLocalSyncTask(Task localSyncTaskToUpdate,
 			CalendarEventEntry UpdatedCalendarEvent, DateTime syncDateTime) {
-		this.database.logEnterMethod("updateLocalSyncTask");
+		logEnterMethod("updateLocalSyncTask");
 		When eventTimes = UpdatedCalendarEvent.getTimes().get(0);
 		// Update Task Type
 		if (eventTimes.getStartTime().equals(eventTimes.getEndTime())) {
@@ -561,7 +622,7 @@ class Syncronize {
 					localSyncTaskToUpdate.getTaskId(), UpdatedCalendarEvent,
 					syncDateTime);
 		}
-		this.database.logExitMethod("updateLocalSyncTask");
+		logExitMethod("updateLocalSyncTask");
 		return localSyncTaskToUpdate;
 	}
 
@@ -572,7 +633,7 @@ class Syncronize {
 	 * @return sync datetime for updating local task
 	 */
 	private DateTime setSyncTime(CalendarEventEntry gCalEntry) {
-		this.database.logEnterMethod("setSyncTime");
+		logEnterMethod("setSyncTime");
 		new DateTime();
 		DateTime syncDateTime = DateTime.now();
 
@@ -584,74 +645,16 @@ class Syncronize {
 		assert (syncDateTime.isEqual(new DateTime(gCalEntry.getUpdated()
 				.toString())));
 
-		this.database.logExitMethod("setSyncTime");
+		logExitMethod("setSyncTime");
 		return syncDateTime;
 	}
 
-	/**
-	 * Initializes Google Calendar Service with saved access token
-	 * 
-	 * @throws IOException
-	 * @throws ServiceException
-	 */
-	boolean initializeGoogleCalendarService() {
-		this.database.logEnterMethod("initializeGoogleCalendarService");
-		if (!Database.configFile
-				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)) {
-			this.database.logExitMethod("initializeGoogleCalendarService");
-			return false;
-		}
-		if (!Database.configFile
-				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
-			this.database.logExitMethod("initializeGoogleCalendarService");
-			return false;
-		}
-
-		try {
-			authenticateGoogleAccount(
-					Database.configFile
-							.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT),
-					Database.configFile
-							.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN));
-		} catch (UnknownHostException e) {
-		} catch (IOException e) {
-		} catch (ServiceException e) {
-		}
-
-		this.database.logExitMethod("initializeGoogleCalendarService");
-		return true;
+	void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
 	}
 
-	/**
-	 * Authenticates user google account with account email and access token
-	 * 
-	 * @param googleUserAccount
-	 * @param googleAuthToken
-	 * @throws IOException
-	 */
-	private void authenticateGoogleAccount(String googleUserAccount,
-			String googleAuthToken) throws IOException, ServiceException,
-			UnknownHostException {
-		this.database.logEnterMethod("authenticateGoogleAccount");
-		assert (googleUserAccount != null);
-		assert (googleAuthToken != null);
-
-		try {
-			Database.googleCalendar = new GoogleCalendarMhs(
-					GOOGLE_CALENDAR_APP_NAME, googleUserAccount,
-					googleAuthToken);
-		} catch (NullPointerException e) {
-			Database.logger.log(Level.FINER, e.getMessage());
-		} catch (UnknownHostException e) {
-			Database.logger.log(Level.FINER, e.getMessage());
-			throw e;
-		} catch (ServiceException e) {
-			Database.logger.log(Level.FINER, e.getMessage());
-			throw e;
-		}
-
-		this.database.saveGoogleAccountInfo(googleUserAccount, googleAuthToken);
-		this.database.logExitMethod("authenticateGoogleAccount");
+	void logEnterMethod(String methodName) {
+		logger.entering(getClass().getName(), methodName);
 	}
 
 }

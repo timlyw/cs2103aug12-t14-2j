@@ -191,8 +191,8 @@ public class DatabaseTest {
 		assertEquals(queryList.size(), 1);
 		assertEquals(queryList.get(0).getTaskId(), 1);
 
-		queryList = database
-				.query(testStartDt, testEndDt.plusMinutes(1), false, false);
+		queryList = database.query(testStartDt, testEndDt.plusMinutes(1),
+				false, false);
 
 		assertEquals(queryList.size(), 1);
 		assertEquals(queryList.get(0).getTaskId(), 1);
@@ -598,7 +598,7 @@ public class DatabaseTest {
 				new DateTime(updatedCreatedEvent.getUpdated().getValue())));
 
 		database.syncronizeDatabases();
-		database.waitForSyncronizeBackgroundTaskToComplete(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
+		database.waitForAllBackgroundTasks(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
 
 		queryList = database.query(updatedEventName, false);
 
@@ -630,7 +630,7 @@ public class DatabaseTest {
 		CalendarEventEntry createdEvent = gCal.createEvent(task3);
 
 		database.syncronizeDatabases();
-		database.waitForSyncronizeBackgroundTaskToComplete(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
+		database.waitForAllBackgroundTasks(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
 
 		queryList = database.query(false);
 		Iterator<Task> iterator = queryList.iterator();
@@ -659,6 +659,7 @@ public class DatabaseTest {
 		Task updatedTask = queryList.get(0);
 		updatedTask.setTaskName("Updated Task");
 		database.update(updatedTask);
+		database.waitForAllBackgroundTasks(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
 
 		Task queryTask = database.query(updatedTask.getTaskId());
 
@@ -675,13 +676,17 @@ public class DatabaseTest {
 	 * @throws InvalidTaskFormatException
 	 * @throws ResourceNotFoundException
 	 * @throws NullPointerException
+	 * @throws TimeoutException
+	 * @throws ExecutionException
+	 * @throws InterruptedException
 	 */
 	private void testPushSyncNewTask(GoogleCalendarMhs gCal)
 			throws IOException, InvalidTaskFormatException,
-			NullPointerException, ResourceNotFoundException {
+			NullPointerException, ResourceNotFoundException,
+			InterruptedException, ExecutionException, TimeoutException {
 		database.add(task);
 		database.add(task2);
-
+		database.waitForAllBackgroundTasks(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
 		// Test push new task sync
 		queryList = database.query(false);
 
@@ -742,7 +747,7 @@ public class DatabaseTest {
 		// Test whether isUserGoogleCalendarAuthenticated reflects correct
 		// status
 		assertTrue(database.isUserGoogleCalendarAuthenticated());
-		database.waitForSyncronizeBackgroundTaskToComplete(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
+		database.waitForAllBackgroundTasks(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
 		database.clearDatabase();
 		assertEquals(0, database.query(false).size());
 	}
@@ -771,5 +776,6 @@ public class DatabaseTest {
 		if (database != null) {
 			database.clearDatabase();
 		}
+		DatabaseFactory.destroy();
 	}
 }
