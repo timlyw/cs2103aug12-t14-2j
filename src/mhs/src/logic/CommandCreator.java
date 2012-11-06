@@ -84,6 +84,22 @@ public class CommandCreator {
 			currentCommand = new CommandSearch(userCommand);
 			currentCommand.executeCommand();
 			break;
+		case displayfloating:
+			currentCommand = new CommandSearch(userCommand);
+			currentCommand.executeCommand();
+			break;
+		case displaydeadline:
+			currentCommand = new CommandSearch(userCommand);
+			currentCommand.executeCommand();
+			break;
+		case displaytimed:
+			currentCommand = new CommandSearch(userCommand);
+			currentCommand.executeCommand();
+			break;
+		case home:
+			currentCommand = new CommandSearch(userCommand);
+			currentCommand.executeCommand();
+			break;
 		case undo:
 			if (undoListCommands.isEmpty()) {
 				userOutputString = MESSAGE_NOTHING_TO_UNDO;

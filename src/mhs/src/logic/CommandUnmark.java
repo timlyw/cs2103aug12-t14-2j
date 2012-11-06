@@ -105,7 +105,6 @@ public class CommandUnmark extends Command {
 	 */
 	private Task markPending(Task unmarkedTask) {
 		logEnterMethod("markPending");
-		assert (unmarkedTask.isDone() == true);
 		Task editedTask = unmarkedTask;
 		editedTask.setDone(false);
 		logExitMethod("markPending");
