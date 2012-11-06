@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
+import mhs.src.storage.persistence.task.TaskCategory;
 import mhs.src.storage.persistence.task.Task;
 
 /**
@@ -26,14 +27,35 @@ public class CommandSearch extends Command {
 	public CommandSearch(CommandInfo inputCommand) {
 		logEnterMethod("CommandSearch");
 		List<Task> resultList;
-		try {
-			minTaskQuery = 0;
-			resultList = queryTask(inputCommand);
-			minTaskQuery = 1;
-			matchedTasks = resultList;
-			assert (matchedTasks != null);
-		} catch (IOException e) {
-			matchedTasks = null;
+		switch (inputCommand.getCommandEnum()) {
+		case search:
+			try {
+				minTaskQuery = 0;
+				resultList = queryTask(inputCommand);
+				minTaskQuery = 1;
+				matchedTasks = resultList;
+				assert (matchedTasks != null);
+			} catch (IOException e) {
+				matchedTasks = null;
+			}
+			break;
+		case displayfloating:
+			try {
+				minTaskQuery = 0;
+				resultList = queryTaskByCategory(inputCommand, null);
+				minTaskQuery = 1;
+				matchedTasks = resultList;
+				assert (matchedTasks != null);
+			} catch (IOException e) {
+				matchedTasks = null;
+			}
+			break;
+		case displaydeadline:
+			break;
+		case displaytimed:
+			break;
+		case home:
+			break;
 		}
 		logExitMethod("CommandSearch");
 	}
