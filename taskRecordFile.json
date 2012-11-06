@@ -998,11 +998,11 @@
     "taskName": "event 16/1/13",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T00:38:42.479+08:00",
-    "taskUpdated": "2012-11-06T00:53:00.396+08:00",
+    "taskUpdated": "2012-11-06T02:51:46.219+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": true,
-    "isDeleted": false
+    "isDone": false,
+    "isDeleted": true
   },
   {
     "endDateTime": "2013-01-16T00:00:00.000+08:00",
@@ -1010,11 +1010,11 @@
     "taskName": "event",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-06T00:39:10.271+08:00",
-    "taskUpdated": "2012-11-06T00:53:19.072+08:00",
+    "taskUpdated": "2012-11-06T02:52:10.675+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": true,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 88,
@@ -1043,22 +1043,22 @@
     "taskName": "event2",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T00:50:37.265+08:00",
-    "taskUpdated": "2012-11-06T01:05:48.275+08:00",
+    "taskUpdated": "2012-11-06T02:52:20.075+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": true,
-    "isDeleted": false
+    "isDone": false,
+    "isDeleted": true
   },
   {
     "taskId": 91,
     "taskName": "umark 2",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T00:52:53.516+08:00",
-    "taskUpdated": "2012-11-06T00:52:53.516+08:00",
+    "taskUpdated": "2012-11-06T02:36:46.782+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-11-07T00:00:00.000+08:00",
@@ -1066,11 +1066,11 @@
     "taskName": "event5",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-06T00:54:24.035+08:00",
-    "taskUpdated": "2012-11-06T00:54:24.035+08:00",
+    "taskUpdated": "2012-11-06T02:52:31.799+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-11-08T13:00:00.000+08:00",
@@ -1089,32 +1089,189 @@
     "taskName": "displayu",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T01:53:59.336+08:00",
-    "taskUpdated": "2012-11-06T01:53:59.336+08:00",
+    "taskUpdated": "2012-11-06T02:37:26.489+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 95,
     "taskName": "cga",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T01:58:23.853+08:00",
-    "taskUpdated": "2012-11-06T01:58:23.853+08:00",
+    "taskUpdated": "2012-11-06T02:37:05.061+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 96,
     "taskName": "cgb",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T01:58:25.240+08:00",
-    "taskUpdated": "2012-11-06T01:58:25.240+08:00",
+    "taskUpdated": "2012-11-06T02:37:19.293+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 97,
+    "taskName": "umark 2",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T02:35:52.339+08:00",
+    "taskUpdated": "2012-11-06T02:51:31.970+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 98,
+    "taskName": "cga",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T02:36:07.443+08:00",
+    "taskUpdated": "2012-11-06T02:37:12.434+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 99,
+    "taskName": "cga",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T02:36:14.539+08:00",
+    "taskUpdated": "2012-11-06T02:37:22.269+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 100,
+    "taskName": "busy",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T02:42:05.971+08:00",
+    "taskUpdated": "2012-11-06T02:43:15.461+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 101,
+    "taskName": "uno",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T02:50:56.680+08:00",
+    "taskUpdated": "2012-11-06T02:52:01.423+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 102,
+    "taskName": "test",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T02:51:25.180+08:00",
+    "taskUpdated": "2012-11-06T03:38:39.989+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "startDateTime": "2012-11-06T18:00:00.000+08:00",
+    "endDateTime": "2012-11-06T19:00:00.000+08:00",
+    "taskId": 103,
+    "taskName": "AP meet",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-06T02:51:38.320+08:00",
+    "taskUpdated": "2012-11-06T02:51:38.320+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
     "isDeleted": false
+  },
+  {
+    "taskId": 104,
+    "taskName": "Buy iPad case",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T02:52:03.439+08:00",
+    "taskUpdated": "2012-11-06T04:10:49.519+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": true,
+    "isDeleted": false
+  },
+  {
+    "endDateTime": "2012-11-06T15:00:00.000+08:00",
+    "taskId": 105,
+    "taskName": "Go to Clementi",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-06T02:52:26.098+08:00",
+    "taskUpdated": "2012-11-06T03:58:12.880+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 106,
+    "taskName": "test2",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T03:37:17.883+08:00",
+    "taskUpdated": "2012-11-06T03:38:36.106+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 107,
+    "taskName": "test 3",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T03:37:21.106+08:00",
+    "taskUpdated": "2012-11-06T03:38:31.162+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 108,
+    "taskName": "home",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T03:37:47.845+08:00",
+    "taskUpdated": "2012-11-06T03:38:53.580+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 109,
+    "taskName": "fun",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T03:47:24.611+08:00",
+    "taskUpdated": "2012-11-06T11:45:20.440+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": true,
+    "isDeleted": false
+  },
+  {
+    "taskId": 110,
+    "taskName": "fun",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-06T03:48:12.466+08:00",
+    "taskUpdated": "2012-11-06T03:49:27.420+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": true,
+    "isDeleted": true
   }
 ]

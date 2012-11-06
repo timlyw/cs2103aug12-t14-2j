@@ -131,32 +131,44 @@ public class CommandRemove extends Command {
 			outputString = MESSAGE_CANNOT_UNDO;
 		}
 		logExitMethod("undo");
+		commandFeedback = outputString;
 		return outputString;
 	}
 
 	/**
 	 * executes based on index only. Works when delete returned multiple matches
 	 */
-	public String executeByIndex(int index) {
+	public void executeByIndex(int index) {
 		logEnterMethod("executeByIndex");
 		String outputString = new String();
 		if (indexExpected && index < matchedTasks.size() && index >= 0) {
-			assert (index >= 0 && index < matchedTasks.size());
-			try {
-				assert (matchedTasks.get(index) != null);
-				storeLastTask(matchedTasks.get(index));
-				deleteTask(matchedTasks.get(index));
-				indexExpected = false;
-				outputString = String.format(CONFIRM_TASK_DELETED, matchedTasks
-						.get(index).getTaskName());
-			} catch (Exception e) {
-				outputString = MESSAGE_TASK_NOT_DELETED;
-			}
+			outputString = deleteByIndex(index);
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
 		commandFeedback = outputString;
 		logExitMethod("executeByIndex");
+	}
+
+	/**
+	 * Deletes by index
+	 * 
+	 * @param index
+	 * @return
+	 */
+	private String deleteByIndex(int index) {
+		String outputString;
+		assert (index >= 0 && index < matchedTasks.size());
+		try {
+			assert (matchedTasks.get(index) != null);
+			storeLastTask(matchedTasks.get(index));
+			deleteTask(matchedTasks.get(index));
+			indexExpected = false;
+			outputString = String.format(CONFIRM_TASK_DELETED, matchedTasks
+					.get(index).getTaskName());
+		} catch (Exception e) {
+			outputString = MESSAGE_TASK_NOT_DELETED;
+		}
 		return outputString;
 	}
 
@@ -164,26 +176,16 @@ public class CommandRemove extends Command {
 	 * executes based on index and type of command. Works when there is a list
 	 * present.
 	 */
-	public String executeByIndexAndType(int index) {
+	public void executeByIndexAndType(int index) {
 		logEnterMethod("executeByIndexAndType");
 		String outputString = new String();
 		if (index < matchedTasks.size() && index >= 0) {
-			assert (index >= 0 && index < matchedTasks.size());
-			try {
-				assert (matchedTasks.get(index) != null);
-				storeLastTask(matchedTasks.get(index));
-				deleteTask(matchedTasks.get(index));
-				outputString = String.format(CONFIRM_TASK_DELETED, matchedTasks
-						.get(index).getTaskName());
-			} catch (Exception e) {
-				outputString = MESSAGE_TASK_NOT_DELETED;
-			}
+			outputString = deleteByIndex(index);
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
 		commandFeedback = outputString;
 		logExitMethod("executeByIndexAndType");
-		return outputString;
 	}
 
 	/**
