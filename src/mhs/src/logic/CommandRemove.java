@@ -79,7 +79,6 @@ public class CommandRemove extends Command {
 		}
 		// if multiple matches are found display the list
 		else {
-			outputString = displayListOfTasks(matchedTasks);
 			indexExpected = true;
 			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}
