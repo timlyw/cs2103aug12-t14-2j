@@ -209,7 +209,7 @@ public class Processor {
 		currentCommand = command;
 		if (!isPasswordExpected) {
 			CommandInfo tempCommand = commandParser.getParsedCommand(command);
-			String boldCommand = htmlCreator.makeBold(tempCommand.toString());
+			String boldCommand = tempCommand.toHtmlString();
 			commandFeedback = "feedback:" + boldCommand;
 
 		} else {
