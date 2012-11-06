@@ -1257,11 +1257,11 @@
     "taskName": "fun",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T03:47:24.611+08:00",
-    "taskUpdated": "2012-11-06T11:45:20.440+08:00",
+    "taskUpdated": "2012-11-06T22:44:41.063+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": true,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 110,
@@ -1303,10 +1303,10 @@
     "taskName": "isplay",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-06T13:27:28.980+08:00",
-    "taskUpdated": "2012-11-06T16:08:31.393+08:00",
+    "taskUpdated": "2012-11-06T22:44:33.372+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
-    "isDone": true,
+    "isDone": false,
     "isDeleted": false
   }
 ]

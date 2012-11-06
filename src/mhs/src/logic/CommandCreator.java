@@ -84,7 +84,7 @@ public class CommandCreator {
 			currentCommand = new CommandSearch(userCommand);
 			currentCommand.executeCommand();
 			break;
-		case displayfloating:
+		/*case displayfloating:
 			currentCommand = new CommandSearch(userCommand);
 			currentCommand.executeCommand();
 			break;
@@ -95,7 +95,7 @@ public class CommandCreator {
 		case displaytimed:
 			currentCommand = new CommandSearch(userCommand);
 			currentCommand.executeCommand();
-			break;
+			break;*/
 		case home:
 			currentCommand = new CommandSearch(userCommand);
 			currentCommand.executeCommand();
