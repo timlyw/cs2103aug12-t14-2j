@@ -21,11 +21,15 @@ import org.joda.time.Interval;
  * TaskLists
  * 
  * Abstracts operations on the taskLists containing different views of tasks:
+ * 
  * 1. taskList - by taskId
+ * 
  * 2. gCalTaskList - by gCalTaskId
  * 
  * Functionality
+ * 
  * - logic for CRUD on tasks in all task lists
+ * 
  * - getters for taskLists
  * 
  * @author Timothy Lim Yi Wen A0087048X
@@ -83,9 +87,7 @@ public class TaskLists {
 	}
 
 	/**
-	 * Create task lists 
-	 * - taskList 
-	 * - gCalTaskList
+	 * Create task lists - taskList - gCalTaskList
 	 */
 	private void createTaskLists() {
 		logExitMethod("createTaskLists");
@@ -341,12 +343,14 @@ public class TaskLists {
 	 * 
 	 * @param startDateTime
 	 * @param endDateTime
+	 * @param includeFloatingTasks
 	 * @param orderByStartDateTime
-	 * @return list of matched tasks
+	 * @return list of tasks matching query
 	 */
 	public List<Task> getTasks(DateTime startDateTime, DateTime endDateTime,
-			boolean orderByStartDateTime) {
+			boolean includeFloatingTasks, boolean orderByStartDateTime) {
 		logEnterMethod("getTasks");
+
 		if (startDateTime == null | endDateTime == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER,
@@ -354,10 +358,10 @@ public class TaskLists {
 		}
 
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-
 		Interval dateTimeInterval = getDateTimeInterval(startDateTime,
 				endDateTime);
-		getAllTasksWithinInterval(queriedTaskRecordset, dateTimeInterval);
+		getAllTasksWithinInterval(queriedTaskRecordset, dateTimeInterval,
+				includeFloatingTasks);
 		sortTaskList(orderByStartDateTime, queriedTaskRecordset);
 
 		logExitMethod("getTasks");
@@ -386,9 +390,10 @@ public class TaskLists {
 	 * 
 	 * @param queriedTaskRecordset
 	 * @param dateTimeInterval
+	 * @param includeFloatingTasks
 	 */
 	private void getAllTasksWithinInterval(List<Task> queriedTaskRecordset,
-			Interval dateTimeInterval) {
+			Interval dateTimeInterval, boolean includeFloatingTasks) {
 		logEnterMethod("getAllTasksWithinInterval");
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
 			Task taskEntry = entry.getValue();
@@ -411,6 +416,9 @@ public class TaskLists {
 				}
 				break;
 			case FLOATING:
+				if (includeFloatingTasks) {
+					queriedTaskRecordset.add(entry.getValue().clone());
+				}
 			default:
 				break;
 			}
@@ -474,6 +482,7 @@ public class TaskLists {
 	 * @param taskName
 	 * @param startDateTime
 	 * @param endDateTime
+	 * @param includeFloatingTasks
 	 * @param queriedTaskRecordset
 	 */
 	private void getTasksMatchingParameters(String taskName,
