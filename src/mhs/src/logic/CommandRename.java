@@ -245,59 +245,53 @@ public class CommandRename extends Command {
 			outputString = MESSAGE_CANNOT_UNDO;
 		}
 		logExitMethod("undo");
+		commandFeedback = outputString;
 		return outputString;
 	}
 
 	/**
 	 * Execute rename by index when last rename query returned multiple matches.
 	 */
-	public String executeByIndex(int index) {
+	public void executeByIndex(int index) {
 		logEnterMethod("executeByIndex");
 		String outputString = new String();
 		if (indexExpected && index < matchedTasks.size() && index >= 0) {
-			Task givenTask = matchedTasks.get(index);
-			assert (givenTask != null);
-			storeLastTask(givenTask);
-			Task newTask = createRenamedTask(tempCommandInfo, oldTask);
-			try {
-				updateTask(newTask);
-				outputString = String.format(CONFIRM_TASK_RENAMED,
-						givenTask.getTaskName(), newTask.getTaskName());
-				indexExpected = false;
-			} catch (Exception e) {
-				outputString = MESSAGE_TASK_NOT_RENAMED;
-			}
+			outputString = renameByIndex(index);
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
 		commandFeedback = outputString;
 		logExitMethod("executeByIndex");
+	}
+
+	private String renameByIndex(int index) {
+		String outputString;
+		Task givenTask = matchedTasks.get(index);
+		assert (givenTask != null);
+		storeLastTask(givenTask);
+		Task newTask = createRenamedTask(tempCommandInfo, oldTask);
+		try {
+			updateTask(newTask);
+			outputString = String.format(CONFIRM_TASK_RENAMED,
+					givenTask.getTaskName(), newTask.getTaskName());
+			indexExpected = false;
+		} catch (Exception e) {
+			outputString = MESSAGE_TASK_NOT_RENAMED;
+		}
 		return outputString;
 	}
 
 	@Override
-	public String executeByIndexAndType(int index) {
+	public void executeByIndexAndType(int index) {
 		logEnterMethod("executeByIndexAndType");
 		String outputString = new String();
 		if (index < matchedTasks.size() && index >= 0) {
-			Task givenTask = matchedTasks.get(index);
-			assert (givenTask != null);
-			storeLastTask(givenTask);
-			Task newTask = createRenamedTask(tempCommandInfo, oldTask);
-			try {
-				updateTask(newTask);
-				outputString = String.format(CONFIRM_TASK_RENAMED,
-						givenTask.getTaskName(), newTask.getTaskName());
-				indexExpected = false;
-			} catch (Exception e) {
-				outputString = MESSAGE_TASK_NOT_RENAMED;
-			}
+			outputString = renameByIndex(index);
 		} else {
 			outputString = MESSAGE_INVALID_INDEX;
 		}
 		commandFeedback = outputString;
 		logExitMethod("executeByIndexAndType");
-		return outputString;
 	}
 
 	/**

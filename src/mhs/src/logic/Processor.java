@@ -89,7 +89,7 @@ public class Processor {
 		Command.setLineLimit(limit);
 		refreshDisplay();
 	}
-	
+
 	private void refreshDisplay() {
 		currentState = Command.refreshLastState();
 		updateStateListeners();
@@ -146,8 +146,9 @@ public class Processor {
 			case logout:
 				userOutputString = logoutUser();
 				break;
-			// case exit:
-			// break;
+			case exit:
+				System.exit(0);
+				break;
 			case help:
 				break;
 			default:
