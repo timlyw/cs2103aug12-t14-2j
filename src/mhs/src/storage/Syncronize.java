@@ -57,10 +57,9 @@ class Syncronize {
 
 	final Database database;
 	private ScheduledThreadPoolExecutor syncronizeBackgroundExecutor;
-	private Runnable syncronizeDatabasesBackgroundTask;
 	private TimerTask pullSyncTimedBackgroundTask;
 	private Future<?> futureSyncronizeBackgroundTask;
-	Map<String, Callable<Boolean>> pushSyncBackgroundTasks;
+	Map<String, Callable<Boolean>> syncBackgroundTasks;
 
 	private static final int PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES = 2;
 	private static final int PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES = 1;
@@ -83,7 +82,8 @@ class Syncronize {
 		logEnterMethod("Syncronize");
 
 		syncronizeBackgroundExecutor = new ScheduledThreadPoolExecutor(1);
-		initializeRunnableTasks();
+
+		initializeTimedPullSyncTasks();
 		initializePushSyncBackgroundTasksList();
 
 		try {
@@ -103,14 +103,22 @@ class Syncronize {
 		logExitMethod("Syncronize");
 	}
 
+	/**
+	 * Initialize Push-Sync Background tasks list
+	 */
 	private void initializePushSyncBackgroundTasksList() {
-		pushSyncBackgroundTasks = new ConcurrentHashMap<String, Callable<Boolean>>();
+		syncBackgroundTasks = new ConcurrentHashMap<String, Callable<Boolean>>();
 	}
 
+	/**
+	 * Schedule Push-Sync Task
+	 * 
+	 * @param taskToScheduleSync
+	 */
 	synchronized void schedulePushSyncTask(Task taskToScheduleSync) {
 		Callable<Boolean> pushTaskToSchedule = new SyncPushTask(
 				taskToScheduleSync, this);
-		pushSyncBackgroundTasks.put(getSyncTaskQueueUid(), pushTaskToSchedule);
+		syncBackgroundTasks.put(getSyncTaskQueueUid(), pushTaskToSchedule);
 		syncronizeBackgroundExecutor.submit(pushTaskToSchedule);
 	}
 
@@ -128,15 +136,28 @@ class Syncronize {
 	 * 
 	 * @param syncTaskQueueUid
 	 */
-	public synchronized void removePushSyncTaskFromList(String syncTaskQueueUid) {
-		System.out.println("Removing..." + syncTaskQueueUid);
-		pushSyncBackgroundTasks.remove(syncTaskQueueUid);
+	synchronized void removePushSyncTaskFromList(String syncTaskQueueUid) {
+		syncBackgroundTasks.remove(syncTaskQueueUid);
 	}
 
+	/**
+	 * Wait for all background tasks to end.
+	 * 
+	 * - Background Sync
+	 * 
+	 * - Background push sync tasks
+	 * 
+	 * @param maxExecutionTimeInSeconds
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 */
 	synchronized void waitForAllBackgroundTasks(int maxExecutionTimeInSeconds)
 			throws InterruptedException, ExecutionException, TimeoutException {
+		logEnterMethod("waitForAllBackgroundTasks");
 		waitForSyncronizeBackgroundTask(maxExecutionTimeInSeconds);
 		waitForBackgroundPushSyncTasks();
+		logExitMethod("waitForAllBackgroundTasks");
 	}
 
 	/**
@@ -150,8 +171,7 @@ class Syncronize {
 	private synchronized void waitForSyncronizeBackgroundTask(
 			int maxExecutionTimeInSeconds) throws InterruptedException,
 			ExecutionException, TimeoutException {
-		this.database
-				.logEnterMethod("waitForSyncronizeBackgroundTaskToComplete");
+		logEnterMethod("waitForSyncronizeBackgroundTaskToComplete");
 		logger.log(Level.INFO, "Waiting for background task to complete.");
 		if (futureSyncronizeBackgroundTask == null) {
 			return;
@@ -160,20 +180,18 @@ class Syncronize {
 				TimeUnit.SECONDS);
 		waitForBackgroundPushSyncTasks();
 
-		this.database
-				.logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
+		logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
 	}
 
 	private synchronized void waitForBackgroundPushSyncTasks()
 			throws InterruptedException {
 		logEnterMethod("waitForBackgroundPushSyncTasks");
-		if (pushSyncBackgroundTasks.isEmpty()) {
+		if (syncBackgroundTasks.isEmpty()) {
 			return;
 		}
-		System.out.println(pushSyncBackgroundTasks.values().toString());
-		syncronizeBackgroundExecutor
-				.invokeAll(pushSyncBackgroundTasks.values());
-		pushSyncBackgroundTasks.clear();
+		System.out.println(syncBackgroundTasks.values().toString());
+		syncronizeBackgroundExecutor.invokeAll(syncBackgroundTasks.values());
+		syncBackgroundTasks.clear();
 		logExitMethod("waitForBackgroundPushSyncTasks");
 	}
 
@@ -195,8 +213,9 @@ class Syncronize {
 		if (Database.googleCalendar == null) {
 			return false;
 		}
+		SyncAllTasks syncronizeAllTasks = new SyncAllTasks(this);
 		futureSyncronizeBackgroundTask = syncronizeBackgroundExecutor
-				.submit(syncronizeDatabasesBackgroundTask);
+				.submit(syncronizeAllTasks);
 		logExitMethod("syncronizeDatabases");
 		return true;
 	}
@@ -226,47 +245,10 @@ class Syncronize {
 	/**
 	 * Initialize runnable tasks
 	 */
-	private void initializeRunnableTasks() {
+	private void initializeTimedPullSyncTasks() {
 		logEnterMethod("initializeRunnableTasks");
-		initializeSyncronizeRunnableTask();
 		initializeTimedPullSyncRunnableTask();
 		logExitMethod("initializeRunnableTasks");
-	}
-
-	/**
-	 * Initialize Syncronize Runnable Task
-	 */
-	private void initializeSyncronizeRunnableTask() {
-		logEnterMethod("initializeSyncronizeRunnableTask");
-		syncronizeDatabasesBackgroundTask = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					logger.log(Level.INFO,
-							"Executing syncronize background task");
-					pullSync();
-					pushSync();
-					Syncronize.this.database.saveTaskRecordFile();
-				} catch (UnknownHostException e) {
-					logger.log(Level.FINER, e.getMessage());
-					disableRemoteSync();
-				} catch (TaskNotFoundException e) {
-					// SilentFailSync Policy
-					logger.log(Level.FINER, e.getMessage());
-				} catch (InvalidTaskFormatException e) {
-					// SilentFailSync Policy
-					logger.log(Level.FINER, e.getMessage());
-				} catch (NullPointerException e) {
-					logger.log(Level.FINER, e.getMessage());
-				} catch (IOException e) {
-					logger.log(Level.FINER, e.getMessage());
-				} catch (ServiceException e) {
-					// SilentFailSync Policy
-					logger.log(Level.FINER, e.getMessage());
-				}
-			}
-		};
-		logExitMethod("initializeSyncronizeRunnableTask");
 	}
 
 	/**
