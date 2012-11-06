@@ -49,7 +49,7 @@ public class Processor {
 	 */
 	public Processor() {
 		try {
-			DatabaseFactory.getDatabaseFactory("taskRecordFile.json", true);
+			DatabaseFactory.getDatabaseFactory("taskRecordFile.json", false);
 			dataHandler = DatabaseFactory.getDatabaseInstance();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
@@ -288,7 +288,7 @@ public class Processor {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		String outputString;
 		if (!userIsLoggedIn) {
-			outputString = "To Sync you need to log in. \nEnter Google username . e.g: jim@gmail.com ";
+			outputString = "To Sync you need to log in. \nEnter Google username . e.g: tom.sawyer@gmail.com ";
 			usernameIsExpected = true;
 		} else {
 			outputString = "You are already logged in!";
