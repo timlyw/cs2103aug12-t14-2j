@@ -41,8 +41,10 @@ public class CommandSearch extends Command {
 			break;
 		case floating:
 			try {
+				System.out.println("float me");
 				minTaskQuery = 0;
-				resultList = queryTaskByCategory(inputCommand, null);
+				resultList = queryTaskByCategory(TaskCategory.FLOATING);
+				System.out.println(resultList);
 				minTaskQuery = 1;
 				matchedTasks = resultList;
 				assert (matchedTasks != null);
@@ -51,10 +53,37 @@ public class CommandSearch extends Command {
 			}
 			break;
 		case deadline:
+			try {
+				minTaskQuery = 0;
+				resultList = queryTaskByCategory(TaskCategory.DEADLINE);
+				minTaskQuery = 1;
+				matchedTasks = resultList;
+				assert (matchedTasks != null);
+			} catch (IOException e) {
+				matchedTasks = null;
+			}
 			break;
 		case timed:
+			try {
+				minTaskQuery = 0;
+				resultList = queryTaskByCategory(TaskCategory.TIMED);
+				minTaskQuery = 1;
+				matchedTasks = resultList;
+				assert (matchedTasks != null);
+			} catch (IOException e) {
+				matchedTasks = null;
+			}
 			break;
 		case home:
+			try {
+				minTaskQuery = 0;
+				resultList = queryHome();
+				minTaskQuery = 1;
+				matchedTasks = resultList;
+				assert (matchedTasks != null);
+			} catch (IOException e) {
+				matchedTasks = null;
+			}
 			break;
 		}
 		logExitMethod("CommandSearch");
@@ -81,7 +110,6 @@ public class CommandSearch extends Command {
 		// if multiple matches are found display the list
 		else {
 			outputString = displayListOfTasks(matchedTasks);
-			indexExpected = true;
 			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}
 		logExitMethod("executeCommand");

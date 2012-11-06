@@ -77,7 +77,7 @@ public class Processor {
 	}
 
 	public void showHome() {
-		setCommand("display today");
+		setCommand("home");
 		executeCommand();
 	}
 
@@ -155,7 +155,7 @@ public class Processor {
 				break;
 			default:
 				System.out.println("user command " + userCommand);
-				
+
 				userOutputString = createCommand.createCommand(userCommand);
 				commandFeedback = createCommand.getFeedback();
 				currentState = createCommand.getState();
