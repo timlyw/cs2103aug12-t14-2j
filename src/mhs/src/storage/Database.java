@@ -90,7 +90,7 @@ public class Database {
 		initializeSyncDateTimes();
 		initalizeDatabase(taskRecordFileName);
 		initializeSyncronize(disableSyncronize);
-		
+
 		logExitMethod("Database");
 	}
 
@@ -116,11 +116,12 @@ public class Database {
 	 * 
 	 * Updates remoteSyncEnabled to true if successful
 	 * 
-	 * @param disableSyncronize 
+	 * @param disableSyncronize
 	 * 
 	 * @throws IOException
 	 */
-	private void initializeSyncronize(boolean disableSyncronize) throws IOException {
+	private void initializeSyncronize(boolean disableSyncronize)
+			throws IOException {
 		logEnterMethod("initializeSyncronize");
 		syncronize = new Syncronize(this, disableSyncronize);
 		logExitMethod("initializeSyncronize");
@@ -166,7 +167,8 @@ public class Database {
 	 *             when Google Calendar Service Exception occurs
 	 */
 	public void loginUserGoogleAccount(String userName, String userPassword)
-			throws IOException, AuthenticationException, UnknownHostException, ServiceException {
+			throws IOException, AuthenticationException, UnknownHostException,
+			ServiceException {
 		logEnterMethod("loginUserGoogleAccount");
 
 		if (userName == null) {
@@ -198,7 +200,7 @@ public class Database {
 	public void logOutUserGoogleAccount() throws IOException {
 		logEnterMethod("logOutUserGoogleAccount");
 		assert (syncronize != null);
-		
+
 		syncronize.disableRemoteSync();
 		googleCalendar = null;
 		configFile.removeConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN);
@@ -316,10 +318,11 @@ public class Database {
 	 * @param orderByStartDateTime
 	 * @param startDateTime
 	 * @param endDateTime
+	 * @param includeFloatingTasks
 	 * @return list of matched tasks
 	 */
 	public List<Task> query(DateTime startDateTime, DateTime endDateTime,
-			boolean orderByStartDateTime) {
+			boolean includeFloatingTasks, boolean orderByStartDateTime) {
 		logEnterMethod("query");
 		if (startDateTime == null || endDateTime == null) {
 			throw new IllegalArgumentException(String.format(
@@ -328,18 +331,18 @@ public class Database {
 		}
 		logExitMethod("query");
 		return taskLists.getTasks(startDateTime, endDateTime,
-				orderByStartDateTime);
+				includeFloatingTasks, orderByStartDateTime);
 	}
 
 	/**
 	 * Returns task that matches any of the specified parameters (exclusive of
 	 * deleted tasks)
 	 * 
-	 * @param orderByStartDateTime
 	 * @param taskName
 	 * @param startDateTime
 	 * @param endDateTime
-	 * @return list of matched tasks
+	 * @param orderByStartDateTime
+	 * @return list of tasks matching query
 	 */
 	public List<Task> query(String taskName, DateTime startDateTime,
 			DateTime endDateTime, boolean orderByStartDateTime) {

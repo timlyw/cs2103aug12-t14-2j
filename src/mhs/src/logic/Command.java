@@ -78,7 +78,7 @@ public abstract class Command {
 					true);
 		} else if (startDate && endDate && !name) {
 			queryResultList = dataHandler.query(inputCommand.getStartDate(),
-					inputCommand.getEndDate(), true);
+					inputCommand.getEndDate(), false, true);
 		} else if (name && !startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					true);
@@ -89,7 +89,7 @@ public abstract class Command {
 		} else if (!name && startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getStartDate(),
 					inputCommand.getStartDate().plusDays(1).toDateMidnight()
-							.toDateTime(), true);
+							.toDateTime(), false, true);
 		} else {
 			queryResultList = dataHandler.query(true);
 		}
@@ -183,68 +183,73 @@ public abstract class Command {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
-	
+
 	public Task getLastTaskDisplayed() {
 		return lastTask;
 	}
-	
+
 	public String createTaskListHtml(List<Task> taskList, int limit) {
 		String taskListHtml = "";
-		
+
 		DateTime prevTaskDateTime = null;
-		
+
 		int lineCount = 0;
-		
-		for(int i = 0; i < taskList.size() && lineCount < limit; i++) {
+
+		for (int i = 0; i < taskList.size() && lineCount < limit; i++) {
 			Task task = taskList.get(i);
 			DateTime currTaskDateTime = null;
-			
-			if(task.isTimed()) {
+
+			if (task.isTimed()) {
 				currTaskDateTime = task.getStartDateTime();
-			} else if(task.isDeadline()) {
+			} else if (task.isDeadline()) {
 				currTaskDateTime = task.getEndDateTime();
-			} else if(task.isFloating()) {
-				if(i == 0) {
-					taskListHtml += htmlCreator.color("Floating Tasks:", HtmlCreator.LIGHT_BLUE) + htmlCreator.NEW_LINE;
+			} else if (task.isFloating()) {
+				if (i == 0) {
+					taskListHtml += htmlCreator.color("Floating Tasks:",
+							HtmlCreator.LIGHT_BLUE) + htmlCreator.NEW_LINE;
 					lineCount += 2;
 				}
-				
+
 				currTaskDateTime = null;
 			} else {
 				continue;
 			}
-			
-			if(!dateIsEqual(prevTaskDateTime, currTaskDateTime) && currTaskDateTime != null) {
-				if(i > 0) {
+
+			if (!dateIsEqual(prevTaskDateTime, currTaskDateTime)
+					&& currTaskDateTime != null) {
+				if (i > 0) {
 					taskListHtml += htmlCreator.NEW_LINE;
 					lineCount++;
 				}
 				String dateString = getDateString(currTaskDateTime);
 				dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
-				taskListHtml +=  dateString + htmlCreator.NEW_LINE;
+				taskListHtml += dateString + htmlCreator.NEW_LINE;
 			}
-			
+
 			prevTaskDateTime = currTaskDateTime;
-			String indexString = htmlCreator.color(Integer.toString(i + 1) + ". ", HtmlCreator.GRAY);
-			taskListHtml += indexString + task.toHtmlString() + htmlCreator.NEW_LINE;
+			String indexString = htmlCreator.color(Integer.toString(i + 1)
+					+ ". ", HtmlCreator.GRAY);
+			taskListHtml += indexString + task.toHtmlString()
+					+ htmlCreator.NEW_LINE;
 			lineCount += 2;
 			lastTask = task;
 		}
-		
+
 		return taskListHtml;
 	}
-	
+
 	private boolean dateIsEqual(DateTime date1, DateTime date2) {
-		if(date1 == null || date2 == null) {
+		if (date1 == null || date2 == null) {
 			return false;
 		}
-		
-		if(date1.getDayOfYear() == date2.getDayOfYear() && date1.getYear() == date2.getYear()) {
+
+		if (date1.getDayOfYear() == date2.getDayOfYear()
+				&& date1.getYear() == date2.getYear()) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	private String getDateString(DateTime date) {
 		return date.toString("dd MMM yy");
 	}
