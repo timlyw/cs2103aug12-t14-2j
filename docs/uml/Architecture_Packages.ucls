@@ -1,0 +1,39 @@
+<class-diagram version="1.0.10" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true">  
+  <package id="1" corner="BOTTOM_RIGHT" language="java" name="mhs.src.storage" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/storage" binary="false">    
+    <position height="49" width="118" x="208" y="140"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <package id="2" corner="BOTTOM_RIGHT" language="java" name="mhs.src.ui" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/ui" binary="false">    
+    <position height="49" width="99" x="507" y="140"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <package id="3" corner="BOTTOM_RIGHT" language="java" name="mhs.src.logic" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/logic" binary="false">    
+    <position height="49" width="101" x="366" y="140"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <package id="4" corner="BOTTOM_RIGHT" language="java" name="mhs.test" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/test" binary="false">    
+    <position height="49" width="99" x="646" y="140"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <package id="5" corner="BOTTOM_RIGHT" language="java" name="mhs.src.common" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src/common" binary="false">    
+    <position height="49" width="124" x="924" y="140"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <package id="6" corner="BOTTOM_RIGHT" language="java" name="mhs.src" project="cs2103-MHS" 
+    file="/cs2103-MHS/src/mhs/src" binary="false">    
+    <position height="49" width="99" x="785" y="140"/>    
+    <display autosize="true" stereotype="true"/>  
+  </package>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true"/>    
+    <operations public="true" package="true" protected="true" private="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
