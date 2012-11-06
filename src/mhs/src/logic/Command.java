@@ -2,6 +2,7 @@ package mhs.src.logic;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
@@ -30,6 +31,7 @@ public abstract class Command {
 	protected boolean indexExpected;
 	protected static HtmlCreator htmlCreator;
 	private static final Logger logger = MhsLogger.getLogger();
+	private static Stack<Integer> indexDisplayedStack = new Stack<Integer>();
 	private static int firstIndexDisplayed = 0;
 	private static int lastIndexDisplayed = 0;
 	private static int lineLimit = 0;
@@ -78,6 +80,7 @@ public abstract class Command {
 
 		boolean name, startDate, endDate;
 		List<Task> queryResultList;
+		
 		name = inputCommand.getTaskName() == null ? false : true;
 		startDate = inputCommand.getStartDate() == null ? false : true;
 		endDate = inputCommand.getEndDate() == null ? false : true;
@@ -164,7 +167,7 @@ public abstract class Command {
 						+ htmlCreator.makeBold(selectedTask.getTaskName() + "-"
 								+ selectedTask.getTaskCategory() + "("
 								+ selectedTask.isDone() + ")")
-						+ htmlCreator.NEW_LINE;
+						+ HtmlCreator.NEW_LINE;
 			}
 			count++;
 		}
@@ -173,18 +176,20 @@ public abstract class Command {
 	}
 	
 	public static void displayNext() {
+		indexDisplayedStack.add(firstIndexDisplayed);
 		firstIndexDisplayed = lastIndexDisplayed;
 	}
 	
 	public static void displayPrev() {
-		firstIndexDisplayed = firstIndexDisplayed - lineLimit;
-		if(firstIndexDisplayed < 0) {
+		if(indexDisplayedStack.empty()) {
 			firstIndexDisplayed = 0;
 		}
+		firstIndexDisplayed = indexDisplayedStack.pop();
 	}
 	
 	public static void resetDisplayIndex() {
 		firstIndexDisplayed = 0;
+		indexDisplayedStack.clear();
 	}
 
 
@@ -195,9 +200,8 @@ public abstract class Command {
 			return "No tasks to display";
 		}
 
-		DateTime prevTaskDateTime = null;
-
 		int lineCount = 0;
+		DateTime prevTaskDateTime = null;
 		
 		System.out.println("index " + firstIndexDisplayed);
 
@@ -210,10 +214,9 @@ public abstract class Command {
 			} else if (task.isDeadline()) {
 				currTaskDateTime = task.getEndDateTime();
 			} else if (task.isFloating()) {
-				if (i == 0) {
+				if (i == firstIndexDisplayed) {
 					taskListHtml += htmlCreator.color("Floating Tasks:",
-							HtmlCreator.LIGHT_BLUE) + htmlCreator.NEW_LINE;
-					lineCount += 2;
+							HtmlCreator.LIGHT_BLUE) + HtmlCreator.NEW_LINE;
 				}
 
 				currTaskDateTime = null;
@@ -223,26 +226,46 @@ public abstract class Command {
 
 			if (!dateIsEqual(prevTaskDateTime, currTaskDateTime)
 					&& currTaskDateTime != null) {
-				if (i > 0) {
-					taskListHtml += htmlCreator.NEW_LINE;
-					lineCount++;
+				if (i > firstIndexDisplayed) {
+					taskListHtml += HtmlCreator.NEW_LINE;
 				}
 				String dateString = getDateString(currTaskDateTime);
 				dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
-				taskListHtml += dateString + htmlCreator.NEW_LINE;
+				taskListHtml += dateString + HtmlCreator.NEW_LINE;
 			}
 
 			prevTaskDateTime = currTaskDateTime;
 			String indexString = htmlCreator.color(Integer.toString(i + 1)
 					+ ". ", HtmlCreator.GRAY);
 			taskListHtml += indexString + task.toHtmlString()
-					+ htmlCreator.NEW_LINE;
-			lineCount += 2;
+					+ HtmlCreator.NEW_LINE;
 			lastIndexDisplayed = i;
+			
+			lineCount = HtmlCreator.countNewLine(taskListHtml);
+			System.out.println(lineCount);
 		}
+		lastIndexDisplayed++;
+
+		String pageInstruction = "";
+		if(lastIndexDisplayed + 1 < taskList.size()) {
+			pageInstruction = "n: next page";
+		}
+		if(firstIndexDisplayed > 0) {
+			pageInstruction = "p: previous page";
+		}
+		if(lastIndexDisplayed + 1 < taskList.size() && firstIndexDisplayed > 0) {
+			pageInstruction = "n: next page | p: previous page";
+		}
+			
+		String pagination = "[Task " + Integer.toString(firstIndexDisplayed + 1) + " - " + Integer.toString(lastIndexDisplayed + 1) + " of " + Integer.toString(taskList.size()) + "] " + pageInstruction;
+		pagination = htmlCreator.color(pagination, HtmlCreator.GRAY);
+		taskListHtml += HtmlCreator.NEW_LINE;
+		taskListHtml += pagination;
 		
 		return taskListHtml;
 	}
+	
+
 
 	private static boolean dateIsEqual(DateTime date1, DateTime date2) {
 		if (date1 == null || date2 == null) {

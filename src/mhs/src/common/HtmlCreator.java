@@ -1,5 +1,7 @@
 package mhs.src.common;
 
+import com.sun.xml.internal.ws.util.StringUtils;
+
 
 public class HtmlCreator {
 	private static final String HTML_FEEDBACK = "<html><font color='#383838' size='5' face='calibri'>%1$s</font></html>";
@@ -16,7 +18,9 @@ public class HtmlCreator {
 	private static final String FORMAT_BOLD = "<b>%1$s</b>";
 	private static final String FORMAT_COLOR = "<font color=%1$s>%2$s</font>";
 
-	public final String NEW_LINE = "<br/>";
+	public static final String NEW_LINE = "<br/>";
+	
+	public static final int DEFAULT_LINE_HEIGHT = 35;
 
 	public String createFeedbackScreenHtml(String htmlBody) {
 		String htmlText = String.format(HTML_FEEDBACK, htmlBody);
@@ -42,5 +46,14 @@ public class HtmlCreator {
 		String boldString = String.format(FORMAT_COLOR, color, htmlText);
 		return boldString;
 	}
-
+	
+	public static int countNewLine(String htmlString) {
+		int count = 0;
+		int index = 0;
+		while ((index = htmlString.indexOf(NEW_LINE, index)) != -1) {
+		   count++;
+		   index++;
+		}
+		return count;
+	}
 }

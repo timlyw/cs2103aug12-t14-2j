@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 import mhs.src.logic.Processor;
 import mhs.src.logic.StateListener;
@@ -85,8 +86,7 @@ public class UiController {
 	 */
 	private int calculateNewLineLimit() {
 		int displayScreenHeight = mhsFrame.getDisplayScreenHeight();
-		int processorLineHeight = processor.LINE_HEIGHT;
-		int newLineLimit = displayScreenHeight / processorLineHeight;
+		int newLineLimit = displayScreenHeight / HtmlCreator.DEFAULT_LINE_HEIGHT;
 		return newLineLimit;
 	}
 	
