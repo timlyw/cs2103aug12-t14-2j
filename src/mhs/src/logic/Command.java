@@ -143,7 +143,7 @@ public abstract class Command {
 	protected static String displayListOfTasks(List<Task> resultList) {
 		String outputString = new String();
 
-		outputString = createTaskListHtml(resultList, lineLimit);
+		outputString = createTaskListHtml(resultList, lineLimit - 2);
 		return outputString;
 	}
 
@@ -175,13 +175,16 @@ public abstract class Command {
 	}
 
 	public static void displayNext() {
-		indexDisplayedStack.add(firstIndexDisplayed);
-		firstIndexDisplayed = lastIndexDisplayed;
+		if(lastIndexDisplayed + 1 < matchedTasks.size()) {
+			indexDisplayedStack.add(firstIndexDisplayed);
+			firstIndexDisplayed = lastIndexDisplayed + 1;
+		}
 	}
 
 	public static void displayPrev() {
 		if(indexDisplayedStack.empty()) {
 			firstIndexDisplayed = 0;
+			return;
 		}
 		firstIndexDisplayed = indexDisplayedStack.pop();
 	}
@@ -198,10 +201,12 @@ public abstract class Command {
 			return "No tasks to display";
 		}
 
+		if(firstIndexDisplayed > taskList.size()) {
+			firstIndexDisplayed = taskList.size() - 2;
+		}
+		
 		int lineCount = 0;
 		DateTime prevTaskDateTime = null;
-
-		System.out.println("index " + firstIndexDisplayed);
 
 		for (int i = firstIndexDisplayed; i < taskList.size()
 				&& lineCount < limit; i++) {
@@ -243,7 +248,6 @@ public abstract class Command {
 			lineCount = HtmlCreator.countNewLine(taskListHtml);
 			System.out.println(lineCount);
 		}
-		lastIndexDisplayed++;
 
 		String pageInstruction = "";
 		if(lastIndexDisplayed + 1 < taskList.size()) {

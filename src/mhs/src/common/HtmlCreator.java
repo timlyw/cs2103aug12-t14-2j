@@ -20,7 +20,7 @@ public class HtmlCreator {
 
 	public static final String NEW_LINE = "<br/>";
 	
-	public static final int DEFAULT_LINE_HEIGHT = 35;
+	public static final int DEFAULT_LINE_HEIGHT = 32;
 
 	public String createFeedbackScreenHtml(String htmlBody) {
 		String htmlText = String.format(HTML_FEEDBACK, htmlBody);
