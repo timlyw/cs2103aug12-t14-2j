@@ -3,6 +3,7 @@ package mhs.test;
 import static org.junit.Assert.*;
 
 import mhs.src.logic.Processor;
+import mhs.src.storage.DatabaseFactory;
 
 import org.junit.After;
 import org.junit.AfterClass;
