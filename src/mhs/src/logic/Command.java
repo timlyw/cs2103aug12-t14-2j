@@ -95,7 +95,7 @@ public abstract class Command {
 					true);
 		} else if (startDate && endDate && !name) {
 			queryResultList = dataHandler.query(inputCommand.getStartDate(),
-					inputCommand.getEndDate(), true);
+					inputCommand.getEndDate(), false, true);
 		} else if (name && !startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					true);
@@ -106,7 +106,7 @@ public abstract class Command {
 		} else if (!name && startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getStartDate(),
 					inputCommand.getStartDate().plusDays(1).toDateMidnight()
-							.toDateTime(), true);
+							.toDateTime(), false, true);
 		} else {
 			queryResultList = dataHandler.query(true);
 		}
