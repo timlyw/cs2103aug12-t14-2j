@@ -179,20 +179,20 @@ public class DatabaseTest {
 
 		// Boundary testing
 		// Test on boundary
-		queryList = database.query(testStartDt, testEndDt, false);
+		queryList = database.query(testStartDt, testEndDt, false, false);
 
 		assertEquals(queryList.size(), 1);
 		assertEquals(queryList.get(0).getTaskId(), 1);
 
 		// Test around boundary
 		queryList = database.query(testStartDt.minusMinutes(1), testEndDt,
-				false);
+				false, false);
 
 		assertEquals(queryList.size(), 1);
 		assertEquals(queryList.get(0).getTaskId(), 1);
 
 		queryList = database
-				.query(testStartDt, testEndDt.plusMinutes(1), false);
+				.query(testStartDt, testEndDt.plusMinutes(1), false, false);
 
 		assertEquals(queryList.size(), 1);
 		assertEquals(queryList.get(0).getTaskId(), 1);
