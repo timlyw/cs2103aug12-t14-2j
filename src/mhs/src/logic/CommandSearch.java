@@ -85,6 +85,8 @@ public class CommandSearch extends Command {
 				matchedTasks = null;
 			}
 			break;
+		default:
+			break;
 		}
 		logExitMethod("CommandSearch");
 	}

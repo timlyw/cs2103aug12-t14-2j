@@ -1,15 +1,9 @@
 package mhs.src.logic;
 
 import java.io.IOException;
-import java.sql.Time;
 import java.util.List;
 import java.util.Stack;
-import java.util.logging.Logger;
-
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-
-import mhs.src.common.MhsLogger;
 import mhs.src.common.HtmlCreator;
 import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
 import mhs.src.storage.Database;
@@ -36,7 +30,6 @@ public abstract class Command {
 	protected static Database dataHandler;
 	protected boolean indexExpected;
 	protected static HtmlCreator htmlCreator;
-	private static final Logger logger = MhsLogger.getLogger();
 	private static Stack<Integer> indexDisplayedStack = new Stack<Integer>();
 	private static boolean firstTimeDisplay = true;
 	private static int firstIndexDisplayed = 0;
@@ -253,21 +246,25 @@ public abstract class Command {
 
 		int lineCount = 0;
 		DateTime prevTaskDateTime = null;
-		
-		if(firstTimeDisplay) {
-			while(true) {
+
+		if (firstTimeDisplay) {
+			while (true) {
 				if (firstIndexDisplayed > taskList.size()) {
 					firstIndexDisplayed = taskList.size() - 2;
 					break;
 				}
 				Task task = taskList.get(firstIndexDisplayed);
-				if(task.isFloating()) {
+				if (task.isFloating()) {
 					break;
-				} else if(task.isDeadline() && task.getEndDateTime().getMillis() > DateTime.now().getMillis()) {
+				} else if (task.isDeadline()
+						&& task.getEndDateTime().getMillis() > DateTime.now()
+								.getMillis()) {
 					break;
-				} else if(task.isTimed() && task.getEndDateTime().getMillis() > DateTime.now().getMillis()) {
+				} else if (task.isTimed()
+						&& task.getEndDateTime().getMillis() > DateTime.now()
+								.getMillis()) {
 					break;
-				} 
+				}
 				firstIndexDisplayed++;
 			}
 		}
@@ -350,18 +347,16 @@ public abstract class Command {
 	}
 
 	private static String getDateString(DateTime date) {
-		if(dateIsEqual(date, DateTime.now())) {
+		if (dateIsEqual(date, DateTime.now())) {
 			return "TODAY";
 		}
-		
-		if(dateIsEqual(date, DateTime.now().plusDays(1))) {
+
+		if (dateIsEqual(date, DateTime.now().plusDays(1))) {
 			return "TOMORROW";
 		}
-		
+
 		return date.toString("dd MMM yy");
 	}
-	
-	
 
 	public static void setLineLimit(int limit) {
 		lineLimit = limit;
