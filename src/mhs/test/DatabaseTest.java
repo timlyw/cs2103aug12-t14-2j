@@ -28,6 +28,7 @@ import mhs.src.storage.persistence.task.TaskCategory;
 import mhs.src.storage.persistence.task.TimedTask;
 
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -157,6 +158,11 @@ public class DatabaseTest {
 	/**
 	 * Test query by date
 	 * 
+	 * Tests for: 1. Query by date functionality 2. Multiple days event
+	 * 
+	 * Implemented: 1. Test on boundary 2. Test around boundary
+	 * 
+	 * 
 	 * @throws NullPointerException
 	 * @throws IOException
 	 * @throws ServiceException
@@ -167,9 +173,13 @@ public class DatabaseTest {
 			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
 		// Query by date
 		new DateTime();
-		DateTime testStartDt = DateTime.now().minusDays(1).minusHours(1);
+		DateTime testStartDt = DateTime.now().minusDays(5).minusHours(1);
 		new DateTime();
 		DateTime testEndDt = DateTime.now().minusDays(1);
+		new DateTime();
+		DateTime queryDateTime = DateTime.now().minusDays(5);
+		new DateTime();
+		DateTime queryDateTime2 = DateTime.now().minusDays(5).plusHours(1);
 
 		task = new TimedTask(1, TEST_TASK_1_NAME, TaskCategory.TIMED,
 				testStartDt, testEndDt, testStartDt, testStartDt, testStartDt,
@@ -177,25 +187,43 @@ public class DatabaseTest {
 
 		database.update(task);
 
-		// Boundary testing
+		// Test query within boundary
+		queryList = database.query(testStartDt.plusDays(1), testStartDt.plusDays(2), false, false);
+
+		assertEquals(1, queryList.size());
+		assertEquals(1, queryList.get(0).getTaskId());
+
+
+		// Test query within boundary
+		queryList = database.query(testStartDt.plusDays(1), testStartDt.plusDays(2), false, false);
+
+		assertEquals(1, queryList.size());
+		assertEquals(1, queryList.get(0).getTaskId());
+
 		// Test on boundary
 		queryList = database.query(testStartDt, testEndDt, false, false);
 
-		assertEquals(queryList.size(), 1);
-		assertEquals(queryList.get(0).getTaskId(), 1);
+		assertEquals(1, queryList.size());
+		assertEquals(1, queryList.get(0).getTaskId());
 
 		// Test around boundary
 		queryList = database.query(testStartDt.minusMinutes(1), testEndDt,
 				false, false);
 
-		assertEquals(queryList.size(), 1);
-		assertEquals(queryList.get(0).getTaskId(), 1);
+		assertEquals(1, queryList.size());
+		assertEquals(1, queryList.get(0).getTaskId());
 
 		queryList = database.query(testStartDt, testEndDt.plusMinutes(1),
 				false, false);
 
-		assertEquals(queryList.size(), 1);
-		assertEquals(queryList.get(0).getTaskId(), 1);
+		assertEquals(1, queryList.size());
+		assertEquals(1, queryList.get(0).getTaskId());
+
+		queryList = database.query(testStartDt.minusMinutes(1), testEndDt.plusMinutes(1),
+				false, false);
+
+		assertEquals(1, queryList.size());
+		assertEquals(1, queryList.get(0).getTaskId());
 	}
 
 	/**
@@ -719,7 +747,8 @@ public class DatabaseTest {
 			DatabaseAlreadyInstantiatedException,
 			DatabaseFactoryNotInstantiatedException {
 		DatabaseFactory.destroy();
-		DatabaseFactory.initializeDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
+		DatabaseFactory.initializeDatabaseFactory(TEST_TASK_RECORD_FILENAME,
+				true);
 		database = DatabaseFactory.getDatabaseInstance();
 	}
 
