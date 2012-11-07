@@ -18,9 +18,14 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.logging.Logger;
 
@@ -44,6 +49,8 @@ public class MhsFrame extends JFrame {
 	
 	// this variable is required by JFrame
 	private static final long serialVersionUID = 1L;
+	
+	private static final String TRAY_MENU_EXIT = "Exit";
 	
 	// frame parameters
 	private static final int FRAME_WIDTH = 600;
@@ -325,17 +332,43 @@ public class MhsFrame extends JFrame {
 	
 	private void initTrayIcon() {
 		if(SystemTray.isSupported()) {
-			ImageIcon icon = new ImageIcon(
-					MhsFrame.class.getResource(TRAY_ICON_FILE_NAME));
-			trayIcon = new TrayIcon(icon.getImage(), FRAME_TITLE);
-			SystemTray systemTray = SystemTray.getSystemTray();
-			try {
-				systemTray.add(trayIcon);
-			} catch (AWTException e) {
-			}
+			createTrayIcon();
+			addTrayIconToSystemTray(trayIcon);
+			addTrayIconMenu(trayIcon);
 		}
 	}
+	
+	private void createTrayIcon() {
+		ImageIcon icon = new ImageIcon(
+				MhsFrame.class.getResource(TRAY_ICON_FILE_NAME));
+		trayIcon = new TrayIcon(icon.getImage(), FRAME_TITLE);
+	}
 
+	private void addTrayIconToSystemTray(TrayIcon icon) {
+		if(icon == null) {
+			return;
+		}
+		try {
+			SystemTray systemTray = SystemTray.getSystemTray();
+			systemTray.add(icon);
+		} catch (AWTException e) {
+		}
+	}
+	
+	private void addTrayIconMenu(TrayIcon icon) {
+		if(icon == null) {
+			return;
+		}
+		PopupMenu trayMenu = new PopupMenu();
+		
+		MenuItem exitItem = new MenuItem(TRAY_MENU_EXIT);
+		ClickTrayExitItem clickExit = new ClickTrayExitItem();
+		exitItem.addActionListener(clickExit);
+		
+		trayMenu.add(exitItem);
+		icon.setPopupMenu(trayMenu);
+	}
+	
 	/**
 	 * initialize frame size, background color, location, exit action and icon
 	 */
@@ -343,15 +376,15 @@ public class MhsFrame extends JFrame {
 		setFrameSize(FRAME_WIDTH, FRAME_HEIGHT);
 		setFrameBackground(FRAME_BACKGROUND_COLOR);
 		setFrameLocationToCenter();
-		setFrameToExitOnClose();
+		setFrameToHideOnClose();
 		setFrameIcon();
 	}
 
 	/**
 	 * set frame to exit application when user closes frame
 	 */
-	private void setFrameToExitOnClose() {
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	private void setFrameToHideOnClose() {
+		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 	}
 
 	/**
@@ -664,4 +697,16 @@ public class MhsFrame extends JFrame {
 	private void endLog(String methodName) {
 		logger.entering(CLASS_NAME, methodName);
 	}
+	
+	private void closeApplication() {
+		System.exit(0);
+	}
+	
+	
+	private class ClickTrayExitItem implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+			closeApplication();
+		}
+	}
+	
 }
