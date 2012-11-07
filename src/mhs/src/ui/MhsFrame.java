@@ -25,7 +25,6 @@ import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.logging.Logger;
 
@@ -72,29 +71,29 @@ public class MhsFrame extends JFrame {
 
 	// display screen sizing and position parameters
 	private static final int TITLE_SCREEN_POSITION_Y = 3;
-	private static final int TITLE_SCREEN_WEIGHT_Y = 0;
+	private static final int TITLE_SCREEN_WEIGHT_Y = 1;
 	private static final int TITLE_SCREEN_HEIGHT = 1;
 	private static final int TITLE_SCREEN_TOP_PADDING = 0;
 	private static final int TITLE_SCREEN_BOTTOM_PADDING = 1;
 	
 	// display screen sizing and position parameters
 	private static final int DISPLAY_SCREEN_POSITION_Y = 0;
-	private static final int DISPLAY_SCREEN_WEIGHT_Y = 1;
+	private static final int DISPLAY_SCREEN_WEIGHT_Y = 30;
 	private static final int DISPLAY_SCREEN_HEIGHT = 1;
-	private static final int DISPLAY_SCREEN_TOP_PADDING = 0;
+	private static final int DISPLAY_SCREEN_TOP_PADDING = 1;
 	private static final int DISPLAY_SCREEN_BOTTOM_PADDING = 0;
 	private static final int DISPLAY_SIDE_PADDING = 5;
 
 	// feedback screen sizing and position parameters
 	private static final int FEEDBACK_SCREEN_POSITION_Y = 1;
-	private static final int FEEDBACK_SCREEN_WEIGHT_Y = 0;
+	private static final int FEEDBACK_SCREEN_WEIGHT_Y = 1;
 	private static final int FEEDBACK_SCREEN_HEIGHT = 1;
 	private static final int FEEDBACK_SCREEN_TOP_PADDING = 0;
 	private static final String CONTENT_TYPE_HTML = "text/html";
 
 	// input box sizing and position parameters
 	private static final int INPUT_BOX_POSITION_Y = 2;
-	private static final int INPUT_BOX_WEIGHT_Y = 0;
+	private static final int INPUT_BOX_WEIGHT_Y = 1;
 	private static final int INPUT_BOX_HEIGHT = 1;
 	private static final int INPUT_BOX_TOP_PADDING = 0;
 	private static final int INPUT_BOX_BOTTOM_PADDING = 0;
@@ -234,8 +233,9 @@ public class MhsFrame extends JFrame {
 	}
 	
 	public void setTitleText(String titleText) {
-		String htmlText = htmlCreator.createTitleScreenHtml(titleText);
+		String htmlText = htmlCreator.createTitleScreenHtml("Logged in");
 		titleScreen.setText(htmlText);
+		titleScreen.repaint();
 	}
 	
 	/**
@@ -303,6 +303,7 @@ public class MhsFrame extends JFrame {
 	private MhsFrame() {
 		super(FRAME_TITLE);
 		initFrame();
+		//this.setUndecorated(true);
 	}
 	
 	/**
@@ -376,15 +377,15 @@ public class MhsFrame extends JFrame {
 		setFrameSize(FRAME_WIDTH, FRAME_HEIGHT);
 		setFrameBackground(FRAME_BACKGROUND_COLOR);
 		setFrameLocationToCenter();
-		setFrameToHideOnClose();
+		setFrameToExitOnClose();
 		setFrameIcon();
 	}
 
 	/**
 	 * set frame to exit application when user closes frame
 	 */
-	private void setFrameToHideOnClose() {
-		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+	private void setFrameToExitOnClose() {
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	/**
