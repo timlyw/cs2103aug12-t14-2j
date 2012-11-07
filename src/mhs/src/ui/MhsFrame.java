@@ -56,6 +56,7 @@ public class MhsFrame extends JFrame {
 	private static final int DEFAULT_PADDING_WIDTH = 2;
 	private static final int DEFAULT_FONT_SIZE = 14;
 	private static final String DEFAULT_FONT_TYPE = "calibri";
+	private static final int NO_PADDING = 0;
 
 	// display screen sizing and position parameters
 	private static final int TITLE_SCREEN_POSITION_Y = 3;
@@ -70,6 +71,7 @@ public class MhsFrame extends JFrame {
 	private static final int DISPLAY_SCREEN_HEIGHT = 1;
 	private static final int DISPLAY_SCREEN_TOP_PADDING = 0;
 	private static final int DISPLAY_SCREEN_BOTTOM_PADDING = 0;
+	private static final int DISPLAY_SIDE_PADDING = 5;
 
 	// feedback screen sizing and position parameters
 	private static final int FEEDBACK_SCREEN_POSITION_Y = 1;
@@ -498,6 +500,8 @@ public class MhsFrame extends JFrame {
 	private void formatEditorPane(JEditorPane editorPane) {
 		editorPane.setEditable(false);
 		editorPane.setContentType(CONTENT_TYPE_HTML);
+		EmptyBorder padding = createPaddingBorder(DISPLAY_SIDE_PADDING, NO_PADDING, NO_PADDING);
+		editorPane.setBorder(padding);
 	}
 	
 	/**
