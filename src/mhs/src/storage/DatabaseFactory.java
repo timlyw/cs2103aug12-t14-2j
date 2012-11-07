@@ -37,7 +37,8 @@ public class DatabaseFactory {
 	private static final Logger logger = MhsLogger.getLogger();
 
 	/**
-	 * Initialize DatabaseFactory parameters for initializing database singleton
+	 * Initialize DatabaseFactory with parameters and initialize database
+	 * singleton
 	 * 
 	 * @param taskRecordFileName
 	 * @param disableSync
@@ -46,7 +47,7 @@ public class DatabaseFactory {
 	 * @throws ServiceException
 	 * @throws DatabaseAlreadyInstantiatedException
 	 */
-	public synchronized static DatabaseFactory getDatabaseFactory(
+	public synchronized static void initializeDatabaseFactory(
 			String taskRecordFileName, boolean disableSync) throws IOException,
 			DatabaseAlreadyInstantiatedException {
 		logEnterMethod("DatabaseFactory");
@@ -65,7 +66,6 @@ public class DatabaseFactory {
 					DatabaseFactory.disableSync);
 		}
 		logExitMethod("DatabaseFactory");
-		return instance;
 	}
 
 	/**
