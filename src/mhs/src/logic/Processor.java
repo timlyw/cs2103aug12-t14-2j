@@ -249,7 +249,7 @@ public class Processor {
 		try {
 			dataHandler.loginUserGoogleAccount(userName, password);
 			userIsLoggedIn = true;
-			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
+			return "You have successfully logged in!" + HtmlCreator.NEW_LINE + "Your tasks will now be synced with Google Calender.";
 		} catch (AuthenticationException e) {
 			return "Login unsuccessful! Please check username and password.";
 		} catch (UnknownHostException e) {
@@ -297,7 +297,7 @@ public class Processor {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		String outputString;
 		if (!userIsLoggedIn) {
-			outputString = "To Sync you need to log in. \nEnter Google username . e.g: jim@gmail.com ";
+			outputString = "Please enter your Google Calendar account email to continue." + HtmlCreator.NEW_LINE + "e.g. jim@gmail.com ";
 			usernameIsExpected = true;
 		} else {
 			outputString = "You are already logged in!";
