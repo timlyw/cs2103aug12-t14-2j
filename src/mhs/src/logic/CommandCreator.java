@@ -130,8 +130,12 @@ public class CommandCreator {
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		}
-		if (!(userCommand.getCommandEnum() == CommandKeyWords.p || userCommand
-				.getCommandEnum() == CommandKeyWords.n)) {
+		if (userCommand.getCommandEnum() == CommandKeyWords.search
+				|| userCommand.getCommandEnum() == CommandKeyWords.floating
+				|| userCommand.getCommandEnum() == CommandKeyWords.deadline
+				|| userCommand.getCommandEnum() == CommandKeyWords.timed
+				|| userCommand.getCommandEnum() == CommandKeyWords.home) {
+			
 			Command.resetDisplayIndex();
 		}
 		if (currentCommand.isUndoable()) {

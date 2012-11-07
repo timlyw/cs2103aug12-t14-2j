@@ -1,27 +1,34 @@
 package mhs.src.common;
 
-import com.sun.xml.internal.ws.util.StringUtils;
-
-
 public class HtmlCreator {
-	private static final String HTML_FEEDBACK = "<html><font color='#383838' size='5' face='calibri'>%1$s</font></html>";
-	private static final String HTML_DISPLAY = "<html><font size='5' face='calibri'>%1$s</font></html>";
-	private static final String HTML_TITLE = "<html><center><font size='5' face='calibri'>%1$s</font></center></html>";
-
-	public static final String BLUE = "#3300CC";
-	public static final String PURPLE = "#660066";
+	private static final String DEFAULT_FONT = "calibri";
+	private static final String DEFAULT_FONT_SIZE = "5";
+	
+	public static final String BLUE = "#0094f0";
+	public static final String PURPLE = "#548dd4";
 	public static final String ORANGE = "#FF6600";
-	public static final String LIGHT_BLUE = "#3333FF";
-	public static final String GRAY = "#7A7A59";
+	public static final String LIGHT_BLUE = "#0094f0";
+	public static final String GRAY = "#a7a798";
 	public static final String LIGHT_GRAY = "#B8B8B8";
+
+	private static final String HTML_FEEDBACK = "<html><font color='#383838' size='" + DEFAULT_FONT_SIZE + "' face='" + DEFAULT_FONT  + "'>%1$s</font></html>";
+	private static final String HTML_DISPLAY = "<html><font size='" + DEFAULT_FONT_SIZE + "' face='" + DEFAULT_FONT  + "'>%1$s</font></html>";
+	private static final String HTML_TITLE = "<html><center><font size='" + DEFAULT_FONT_SIZE + "' face='" + DEFAULT_FONT  + "'>%1$s</font></center></html>";
 
 	private static final String FORMAT_BOLD = "<b>%1$s</b>";
 	private static final String FORMAT_COLOR = "<font color=%1$s>%2$s</font>";
 
 	public static final String NEW_LINE = "<br/>";
 	
-	public static final int DEFAULT_LINE_HEIGHT = 32;
+	public static final int DEFAULT_LINE_HEIGHT = 30;
+	
+	public static final String LARGE_FONT = "6";
+	public static final String FONT_SIZE_FORMAT = "<font face='courier' size=%1$s>%2$s</font>";
 
+	public String largeFont(String htmlBody) {
+		return String.format(FONT_SIZE_FORMAT, LARGE_FONT, htmlBody);
+	}
+	
 	public String createFeedbackScreenHtml(String htmlBody) {
 		String htmlText = String.format(HTML_FEEDBACK, htmlBody);
 		return htmlText;

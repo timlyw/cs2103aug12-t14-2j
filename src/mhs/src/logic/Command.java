@@ -263,7 +263,8 @@ public abstract class Command {
 				currTaskDateTime = task.getEndDateTime();
 			} else if (task.isFloating()) {
 				if (i == firstIndexDisplayed) {
-					taskListHtml += htmlCreator.color("Floating Tasks:",
+					String floatingHtml = htmlCreator.largeFont("TASKS");
+					taskListHtml += htmlCreator.color(floatingHtml,
 							HtmlCreator.LIGHT_BLUE) + HtmlCreator.NEW_LINE;
 				}
 
@@ -279,6 +280,7 @@ public abstract class Command {
 				}
 				String dateString = getDateString(currTaskDateTime);
 				dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
+				dateString = htmlCreator.largeFont(dateString);
 				taskListHtml += dateString + HtmlCreator.NEW_LINE;
 			}
 
@@ -327,8 +329,18 @@ public abstract class Command {
 	}
 
 	private static String getDateString(DateTime date) {
+		if(dateIsEqual(date, DateTime.now())) {
+			return "TODAY";
+		}
+		
+		if(dateIsEqual(date, DateTime.now().plusDays(1))) {
+			return "TOMORROW";
+		}
+		
 		return date.toString("dd MMM yy");
 	}
+	
+	
 
 	public static void setLineLimit(int limit) {
 		lineLimit = limit;

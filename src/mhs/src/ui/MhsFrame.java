@@ -357,7 +357,7 @@ public class MhsFrame extends JFrame {
 	 */
 	private void initFrameComponents() {
 		initFramePanel();
-		initTitleScreen();
+		//initTitleScreen();
 		initDisplayScreen();
 		initFeedbackScreen();
 		initInputBox();
