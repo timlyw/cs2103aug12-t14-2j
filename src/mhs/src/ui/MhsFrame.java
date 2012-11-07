@@ -12,12 +12,16 @@ package mhs.src.ui;
  * @author John Wong
  */
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
 import java.util.logging.Logger;
 
 import javax.swing.Box;
@@ -48,6 +52,7 @@ public class MhsFrame extends JFrame {
 	private static final Color FRAME_BACKGROUND_COLOR = new Color(0, 0, 0);
 	private static final Color TITLE_BACKGROUND_COLOR = new Color(255, 255, 255);
 	private static final String ICON_FILE_NAME = "mhsIconSmall.png";
+	private static final String TRAY_ICON_FILE_NAME = "mhsTrayIcon.png";
 
 	// default margin, position and font parameters
 	private static final int DEFAULT_CONSTRAINT_POSITION_X = 0;
@@ -128,6 +133,8 @@ public class MhsFrame extends JFrame {
 	// class name used for logging
 	private static final String CLASS_NAME = "MhsFrame";
 	
+	TrayIcon trayIcon = null;
+	
 	/**
 	 * MhsFrame's constructor is private, this function returns the 
 	 * only instance of MhsFrame 
@@ -148,6 +155,10 @@ public class MhsFrame extends JFrame {
 		startLog("open");
 		this.setVisible(true);
 		endLog("open");
+	}
+	
+	public void close() {
+		this.setVisible(false);
 	}
 	
 	/**
@@ -189,6 +200,10 @@ public class MhsFrame extends JFrame {
 	public void addInputChangedListener(DocumentListener inputListener) {
 		plainTextBox.getDocument().addDocumentListener(inputListener);
 		passwordBox.getDocument().addDocumentListener(inputListener);
+	}
+	
+	public void addTrayListener(MouseListener trayListener) {
+		trayIcon.addMouseListener(trayListener);
 	}
 	
 	/**
@@ -271,6 +286,7 @@ public class MhsFrame extends JFrame {
 		} else {
 			setFrameSize(width, height);
 			this.setLocationRelativeTo(null);
+			this.setExtendedState(JFrame.NORMAL);
 		}
 	}
 	
@@ -303,7 +319,21 @@ public class MhsFrame extends JFrame {
 		startLog("initFrame");
 		initFrameProperties();
 		initFrameComponents();
+		initTrayIcon();
 		endLog("initFrame");
+	}
+	
+	private void initTrayIcon() {
+		if(SystemTray.isSupported()) {
+			ImageIcon icon = new ImageIcon(
+					MhsFrame.class.getResource(TRAY_ICON_FILE_NAME));
+			trayIcon = new TrayIcon(icon.getImage(), FRAME_TITLE);
+			SystemTray systemTray = SystemTray.getSystemTray();
+			try {
+				systemTray.add(trayIcon);
+			} catch (AWTException e) {
+			}
+		}
 	}
 
 	/**
