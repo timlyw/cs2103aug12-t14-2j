@@ -189,7 +189,6 @@ class Syncronize {
 		if (syncBackgroundTasks.isEmpty()) {
 			return;
 		}
-		System.out.println(syncBackgroundTasks.values().toString());
 		syncronizeBackgroundExecutor.invokeAll(syncBackgroundTasks.values());
 		syncBackgroundTasks.clear();
 		logExitMethod("waitForBackgroundPushSyncTasks");
