@@ -270,8 +270,8 @@ public class MhsFrame extends JFrame {
 			this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		} else {
 			setFrameSize(width, height);
+			this.setLocationRelativeTo(null);
 		}
-		this.setLocationRelativeTo(null);
 	}
 	
 	/**
