@@ -25,7 +25,7 @@ public class CommandInfo {
 	 */
 	public static enum CommandKeyWords {
 		add, remove, edit, search, sync, undo, login, logout, rename, redo, mark,
-		help, unmark, p, n, floating, deadline, timed, home, exit;
+		help, unmark, previous, next, floating, deadline, timed, home, exit;
 	}
 
 	private String taskName;

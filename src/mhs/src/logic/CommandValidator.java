@@ -302,8 +302,8 @@ public class CommandValidator {
 			commandEnum == CommandInfo.CommandKeyWords.redo ||
 			commandEnum == CommandInfo.CommandKeyWords.sync ||
 			commandEnum == CommandInfo.CommandKeyWords.home ||
-			commandEnum == CommandInfo.CommandKeyWords.p ||
-			commandEnum == CommandInfo.CommandKeyWords.n ||
+			commandEnum == CommandInfo.CommandKeyWords.previous ||
+			commandEnum == CommandInfo.CommandKeyWords.next ||
 			commandEnum == CommandInfo.CommandKeyWords.floating ||
 			commandEnum == CommandInfo.CommandKeyWords.deadline ||
 			commandEnum == CommandInfo.CommandKeyWords.timed ||
