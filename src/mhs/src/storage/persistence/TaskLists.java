@@ -378,9 +378,17 @@ public class TaskLists {
 	private Interval getDateTimeInterval(DateTime startDateTime,
 			DateTime endDateTime) {
 		logEnterMethod("getDateTimeInterval");
+		Interval dateTimeInterval;
 		// Set interval for matched range (increase endtime by 1 ms to include)
-		Interval dateTimeInterval = new Interval(startDateTime,
-				endDateTime.plusMillis(1));
+		if (startDateTime.isBefore(endDateTime)) {
+			dateTimeInterval = new Interval(startDateTime,
+					endDateTime.plusMillis(1));
+		} else if (startDateTime.isAfter(endDateTime)) {
+			dateTimeInterval = new Interval(endDateTime,
+					startDateTime.plusMillis(1));
+		} else {
+			dateTimeInterval = new Interval(startDateTime, startDateTime);
+		}
 		logExitMethod("getDateTimeInterval");
 		return dateTimeInterval;
 	}
@@ -396,7 +404,9 @@ public class TaskLists {
 			Interval dateTimeInterval, boolean includeFloatingTasks) {
 		logEnterMethod("getAllTasksWithinInterval");
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
+
 			Task taskEntry = entry.getValue();
+
 			if (taskEntry.isDeleted()) {
 				continue;
 			}
@@ -577,6 +587,8 @@ public class TaskLists {
 	/**
 	 * Checks if startDateTime and endDateTime are within a dateTime interval
 	 * 
+	 * - Includes overlapping datetimes
+	 * 
 	 * @param dateTimeInterval
 	 * @param startDateTime
 	 * @param endDateTime
@@ -586,8 +598,8 @@ public class TaskLists {
 			DateTime startDateTime, DateTime endDateTime) {
 		logEnterMethod("isWithinInterval");
 		logExitMethod("isWithinInterval");
-		return dateTimeInterval.contains(startDateTime)
-				|| dateTimeInterval.contains(endDateTime);
+		return dateTimeInterval.overlaps(getDateTimeInterval(startDateTime,
+				endDateTime));
 	}
 
 	/**
