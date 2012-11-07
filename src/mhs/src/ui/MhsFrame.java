@@ -78,7 +78,7 @@ public class MhsFrame extends JFrame {
 	
 	// display screen sizing and position parameters
 	private static final int DISPLAY_SCREEN_POSITION_Y = 0;
-	private static final int DISPLAY_SCREEN_WEIGHT_Y = 30;
+	private static final int DISPLAY_SCREEN_WEIGHT_Y = 50;
 	private static final int DISPLAY_SCREEN_HEIGHT = 1;
 	private static final int DISPLAY_SCREEN_TOP_PADDING = 1;
 	private static final int DISPLAY_SCREEN_BOTTOM_PADDING = 0;
@@ -233,7 +233,7 @@ public class MhsFrame extends JFrame {
 	}
 	
 	public void setTitleText(String titleText) {
-		String htmlText = htmlCreator.createTitleScreenHtml("Logged in");
+		String htmlText = htmlCreator.createTitleScreenHtml(titleText);
 		titleScreen.setText(htmlText);
 		titleScreen.repaint();
 	}
