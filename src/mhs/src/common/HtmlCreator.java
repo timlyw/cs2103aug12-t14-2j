@@ -3,6 +3,7 @@ package mhs.src.common;
 public class HtmlCreator {
 	private static final String DEFAULT_FONT = "calibri";
 	private static final String DEFAULT_FONT_SIZE = "5";
+	private static final String SMALL_FONT = "3";
 	
 	public static final String BLUE = "#0094f0";
 	public static final String PURPLE = "#548dd4";
@@ -13,7 +14,7 @@ public class HtmlCreator {
 
 	private static final String HTML_FEEDBACK = "<html><font color='#383838' size='" + DEFAULT_FONT_SIZE + "' face='" + DEFAULT_FONT  + "'>%1$s</font></html>";
 	private static final String HTML_DISPLAY = "<html><font size='" + DEFAULT_FONT_SIZE + "' face='" + DEFAULT_FONT  + "'>%1$s</font></html>";
-	private static final String HTML_TITLE = "<html><center><font size='" + DEFAULT_FONT_SIZE + "' face='" + DEFAULT_FONT  + "'>%1$s</font></center></html>";
+	private static final String HTML_TITLE = "<html><div align='right'><font color='" + GRAY + "' size='" + SMALL_FONT + "' face='" + DEFAULT_FONT  + "'>%1$s</font></div></html>";
 
 	private static final String FORMAT_BOLD = "<b>%1$s</b>";
 	private static final String FORMAT_COLOR = "<font color=%1$s>%2$s</font>";

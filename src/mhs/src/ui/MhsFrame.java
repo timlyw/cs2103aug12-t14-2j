@@ -58,31 +58,32 @@ public class MhsFrame extends JFrame {
 	private static final String DEFAULT_FONT_TYPE = "calibri";
 
 	// display screen sizing and position parameters
-	private static final int TITLE_SCREEN_POSITION_Y = 0;
+	private static final int TITLE_SCREEN_POSITION_Y = 3;
 	private static final int TITLE_SCREEN_WEIGHT_Y = 0;
 	private static final int TITLE_SCREEN_HEIGHT = 1;
 	private static final int TITLE_SCREEN_TOP_PADDING = 0;
 	private static final int TITLE_SCREEN_BOTTOM_PADDING = 1;
 	
 	// display screen sizing and position parameters
-	private static final int DISPLAY_SCREEN_POSITION_Y = 1;
+	private static final int DISPLAY_SCREEN_POSITION_Y = 0;
 	private static final int DISPLAY_SCREEN_WEIGHT_Y = 1;
 	private static final int DISPLAY_SCREEN_HEIGHT = 1;
 	private static final int DISPLAY_SCREEN_TOP_PADDING = 0;
 	private static final int DISPLAY_SCREEN_BOTTOM_PADDING = 0;
 
 	// feedback screen sizing and position parameters
-	private static final int FEEDBACK_SCREEN_POSITION_Y = 2;
+	private static final int FEEDBACK_SCREEN_POSITION_Y = 1;
 	private static final int FEEDBACK_SCREEN_WEIGHT_Y = 0;
 	private static final int FEEDBACK_SCREEN_HEIGHT = 1;
 	private static final int FEEDBACK_SCREEN_TOP_PADDING = 0;
 	private static final String CONTENT_TYPE_HTML = "text/html";
 
 	// input box sizing and position parameters
-	private static final int INPUT_BOX_POSITION_Y = 3;
+	private static final int INPUT_BOX_POSITION_Y = 2;
 	private static final int INPUT_BOX_WEIGHT_Y = 0;
 	private static final int INPUT_BOX_HEIGHT = 1;
 	private static final int INPUT_BOX_TOP_PADDING = 0;
+	private static final int INPUT_BOX_BOTTOM_PADDING = 0;
 	public static final Font INPUT_BOX_FONT = new Font(DEFAULT_FONT_TYPE,
 			Font.BOLD, DEFAULT_FONT_SIZE);
 
@@ -357,7 +358,7 @@ public class MhsFrame extends JFrame {
 	 */
 	private void initFrameComponents() {
 		initFramePanel();
-		//initTitleScreen();
+		initTitleScreen();
 		initDisplayScreen();
 		initFeedbackScreen();
 		initInputBox();
@@ -443,7 +444,7 @@ public class MhsFrame extends JFrame {
 
 		Box inputBoxContainer = createContainer(passwordBox,
 				DEFAULT_PADDING_WIDTH, INPUT_BOX_TOP_PADDING,
-				DEFAULT_PADDING_WIDTH);
+				INPUT_BOX_BOTTOM_PADDING);
 		framePanel.add(inputBoxContainer, constraints);
 	}
 	
@@ -476,7 +477,7 @@ public class MhsFrame extends JFrame {
 
 		Box inputBoxContainer = createContainer(plainTextBox,
 				DEFAULT_PADDING_WIDTH, INPUT_BOX_TOP_PADDING,
-				DEFAULT_PADDING_WIDTH);
+				INPUT_BOX_BOTTOM_PADDING);
 		framePanel.add(inputBoxContainer, constraints);
 	}
 

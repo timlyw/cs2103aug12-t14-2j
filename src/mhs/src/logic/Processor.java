@@ -42,7 +42,7 @@ public class Processor {
 	private CommandInfo userCommand;
 	private static final Logger logger = MhsLogger.getLogger();
 
-	public String headerText = "My Hot Secretary ";
+	public String headerText = "Logged in as cs2103mhs";
 
 	/**
 	 * Default Processor Constructor
