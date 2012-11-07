@@ -265,7 +265,7 @@ public abstract class Command {
 					break;
 				} else if(task.isDeadline() && task.getEndDateTime().getMillis() > DateTime.now().getMillis()) {
 					break;
-				} else if(task.isTimed() && task.getStartDateTime().getMillis() > DateTime.now().getMillis()) {
+				} else if(task.isTimed() && task.getEndDateTime().getMillis() > DateTime.now().getMillis()) {
 					break;
 				} 
 				firstIndexDisplayed++;

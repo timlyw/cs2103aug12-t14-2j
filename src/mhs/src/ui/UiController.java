@@ -289,6 +289,8 @@ public class UiController {
 		updateDisplayScreen();
 		updateFeedbackText();
 		updateInputType();
+		updateMhsFrameDimensionst();
+		mhsFrame.repaint();
 	}
 	
 	private void updateTitleScreen() {
