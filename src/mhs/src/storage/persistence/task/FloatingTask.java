@@ -62,7 +62,7 @@ public class FloatingTask extends Task {
 	public String toHtmlString() {
 		HtmlCreator htmlCreator = new HtmlCreator();
 
-		String boldTaskName = htmlCreator.makeBold(taskName);
+		String boldTaskName = taskName;
 		String htmlString = boldTaskName;
 		
 		if(isDone()) {
