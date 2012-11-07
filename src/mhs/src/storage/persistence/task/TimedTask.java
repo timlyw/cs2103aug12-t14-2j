@@ -164,7 +164,7 @@ public class TimedTask extends Task {
 		String timeString = getTimeString(startDateTime) + " - "
 				+ endDateString + getTimeString(endDateTime);
 
-		String boldTaskName = htmlCreator.makeBold(taskName);
+		String boldTaskName = taskName;
 		String htmlString = timeString + ": " + boldTaskName;
 		
 

@@ -350,7 +350,8 @@ public class GoogleCalendar {
 	 * @return if event has been deleted
 	 */
 	public boolean isDeleted(CalendarEventEntry calendarEvent) {
-		if (calendarEvent.getStatus().getValue().contains(PARAMETER_IS_DELETED)) {
+		String status = calendarEvent.getStatus().getValue();
+		if (status.contains(PARAMETER_IS_DELETED)) {
 			return true;
 		}
 		return false;

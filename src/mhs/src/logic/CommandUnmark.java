@@ -84,8 +84,6 @@ public class CommandUnmark extends Command {
 		}
 		// if multiple matches are found display the list
 		else {
-			outputString = displayListOfTasksCategory(matchedTasks,
-					TaskCategory.FLOATING);
 			indexExpected = true;
 			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
 		}

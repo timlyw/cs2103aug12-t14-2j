@@ -147,7 +147,7 @@ public class DeadlineTask extends Task {
 		dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
 		String timeString = getTimeString(endDateTime);
 
-		String boldTaskName = htmlCreator.makeBold(taskName);
+		String boldTaskName = taskName;
 		String htmlString = timeString + ": " + boldTaskName;
 		
 		if(isDone()) {

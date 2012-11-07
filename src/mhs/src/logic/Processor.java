@@ -42,7 +42,7 @@ public class Processor {
 	private CommandInfo userCommand;
 	private static final Logger logger = MhsLogger.getLogger();
 
-	public String headerText = "My Hot Secretary ";
+	public String headerText = "Logged in";
 
 	/**
 	 * Default Processor Constructor
@@ -72,12 +72,17 @@ public class Processor {
 	}
 
 	public String getHeaderText() {
-		String boldTitle = htmlCreator.makeBold(headerText);
+		String boldTitle = new String();
+		if (dataHandler.isUserGoogleCalendarAuthenticated()) {
+			boldTitle = htmlCreator.makeBold(headerText);
+		} else {
+			boldTitle = htmlCreator.makeBold("Please login");
+		}
 		return boldTitle;
 	}
 
 	public void showHome() {
-		setCommand("display today");
+		setCommand("home");
 		executeCommand();
 	}
 
@@ -152,10 +157,11 @@ public class Processor {
 				System.exit(0);
 				break;
 			case help:
+				currentState = getHelp();
 				break;
 			default:
 				System.out.println("user command " + userCommand);
-				
+
 				userOutputString = createCommand.createCommand(userCommand);
 				commandFeedback = createCommand.getFeedback();
 				currentState = createCommand.getState();
@@ -165,6 +171,12 @@ public class Processor {
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return userOutputString;
+	}
+
+	private String getHelp() {
+		String helpString = new String();
+
+		return helpString;
 	}
 
 	/**
@@ -237,15 +249,12 @@ public class Processor {
 		try {
 			dataHandler.loginUserGoogleAccount(userName, password);
 			userIsLoggedIn = true;
-			return "You have successfully logged in! Your tasks will now be synced with Google Calender.";
+			return "You have successfully logged in!" + HtmlCreator.NEW_LINE + "Your tasks will now be synced with Google Calender.";
 		} catch (AuthenticationException e) {
-			// TODO
 			return "Login unsuccessful! Please check username and password.";
 		} catch (UnknownHostException e) {
-			// TODO
 			return "No internet connection available.";
 		} catch (ServiceException e) {
-			// TODO
 			return "Login unsuccessful! Please check username and password.";
 		}
 	}
@@ -288,7 +297,7 @@ public class Processor {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		String outputString;
 		if (!userIsLoggedIn) {
-			outputString = "To Sync you need to log in. \nEnter Google username . e.g: tom.sawyer@gmail.com ";
+			outputString = "Please enter your Google Calendar account email to continue." + HtmlCreator.NEW_LINE + "e.g. jim@gmail.com ";
 			usernameIsExpected = true;
 		} else {
 			outputString = "You are already logged in!";

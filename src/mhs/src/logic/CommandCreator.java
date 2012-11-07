@@ -16,9 +16,12 @@ import java.util.Stack;
 public class CommandCreator {
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command";
 	private static final String MESSAGE_NOTHING_TO_UNDO = "Nothing to undo";
+	private static final String MESSAGE_NOTHING_TO_REDO = "Nothing to redo";
+
 	private Command currentCommand;
 	private Command previousCommand;
 	private Stack<Command> undoListCommands;
+	private Stack<Command> redoListCommands;
 	private static final Logger logger = MhsLogger.getLogger();
 	private String commandFeedback = "feedback";
 	private String currentState = "state";
@@ -26,6 +29,7 @@ public class CommandCreator {
 	public CommandCreator() {
 		logEnterMethod("CommandCreator");
 		undoListCommands = new Stack<Command>();
+		redoListCommands = new Stack<Command>();
 		logExitMethod("CommandCreator");
 	}
 
@@ -106,6 +110,15 @@ public class CommandCreator {
 			} else {
 				Command undoCommand = undoListCommands.pop();
 				userOutputString = undoCommand.undo();
+				redoListCommands.push(undoCommand);
+			}
+			break;
+		case redo:
+			if (redoListCommands.isEmpty()) {
+				userOutputString = MESSAGE_NOTHING_TO_REDO;
+			} else {
+				Command redoCommand = redoListCommands.pop();
+				redoCommand.executeCommand();
 			}
 			break;
 		case mark:
@@ -130,8 +143,12 @@ public class CommandCreator {
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		}
-		if (!(userCommand.getCommandEnum() == CommandKeyWords.p || userCommand
-				.getCommandEnum() == CommandKeyWords.n)) {
+		if (userCommand.getCommandEnum() == CommandKeyWords.search
+				|| userCommand.getCommandEnum() == CommandKeyWords.floating
+				|| userCommand.getCommandEnum() == CommandKeyWords.deadline
+				|| userCommand.getCommandEnum() == CommandKeyWords.timed
+				|| userCommand.getCommandEnum() == CommandKeyWords.home) {
+			
 			Command.resetDisplayIndex();
 		}
 		if (currentCommand.isUndoable()) {
@@ -139,6 +156,7 @@ public class CommandCreator {
 		}
 		currentState = currentCommand.getCurrentState();
 		commandFeedback = currentCommand.getCommandFeedback();
+		System.out.println(commandFeedback);
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return userOutputString;
 	}
@@ -165,12 +183,6 @@ public class CommandCreator {
 		case edit:
 			currentCommand = new CommandEdit(Command.matchedTasks, userCommand);
 			currentCommand.executeByIndexAndType(local_index - 1);
-			break;
-		case search:
-			commandFeedback = MESSAGE_INVALID_COMMAND;
-			break;
-		case undo:
-			commandFeedback = MESSAGE_INVALID_COMMAND;
 			break;
 		case mark:
 			currentCommand = new CommandMark(Command.matchedTasks);
