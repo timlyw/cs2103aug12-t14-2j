@@ -719,7 +719,7 @@ public class DatabaseTest {
 			DatabaseAlreadyInstantiatedException,
 			DatabaseFactoryNotInstantiatedException {
 		DatabaseFactory.destroy();
-		DatabaseFactory.getDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
+		DatabaseFactory.initializeDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
 		database = DatabaseFactory.getDatabaseInstance();
 	}
 

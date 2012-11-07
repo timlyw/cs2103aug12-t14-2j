@@ -49,7 +49,7 @@ public class Processor {
 	 */
 	public Processor() {
 		try {
-			DatabaseFactory.getDatabaseFactory("taskRecordFile.json", false);
+			DatabaseFactory.initializeDatabaseFactory("taskRecordFile.json", false);
 			dataHandler = DatabaseFactory.getDatabaseInstance();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
