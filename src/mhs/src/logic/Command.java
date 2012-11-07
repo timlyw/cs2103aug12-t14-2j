@@ -38,6 +38,7 @@ public abstract class Command {
 	protected static HtmlCreator htmlCreator;
 	private static final Logger logger = MhsLogger.getLogger();
 	private static Stack<Integer> indexDisplayedStack = new Stack<Integer>();
+	private static boolean firstTimeDisplay = true;
 	private static int firstIndexDisplayed = 0;
 	private static int lastIndexDisplayed = 0;
 	private static int lineLimit = 0;
@@ -232,6 +233,7 @@ public abstract class Command {
 	public static void resetDisplayIndex() {
 		firstIndexDisplayed = 0;
 		indexDisplayedStack.clear();
+		firstTimeDisplay = true;
 	}
 
 	public static String createTaskListHtml(List<Task> taskList, int limit) {
@@ -251,6 +253,24 @@ public abstract class Command {
 
 		int lineCount = 0;
 		DateTime prevTaskDateTime = null;
+		
+		if(firstTimeDisplay) {
+			while(true) {
+				if (firstIndexDisplayed > taskList.size()) {
+					firstIndexDisplayed = taskList.size() - 2;
+					break;
+				}
+				Task task = taskList.get(firstIndexDisplayed);
+				if(task.isFloating()) {
+					break;
+				} else if(task.isDeadline() && task.getEndDateTime().getMillis() > DateTime.now().getMillis()) {
+					break;
+				} else if(task.isTimed() && task.getStartDateTime().getMillis() > DateTime.now().getMillis()) {
+					break;
+				} 
+				firstIndexDisplayed++;
+			}
+		}
 
 		for (int i = firstIndexDisplayed; i < taskList.size()
 				&& lineCount < limit; i++) {
@@ -263,7 +283,8 @@ public abstract class Command {
 				currTaskDateTime = task.getEndDateTime();
 			} else if (task.isFloating()) {
 				if (i == firstIndexDisplayed) {
-					taskListHtml += htmlCreator.color("Floating Tasks:",
+					String floatingHtml = htmlCreator.largeFont("TASKS");
+					taskListHtml += htmlCreator.color(floatingHtml,
 							HtmlCreator.LIGHT_BLUE) + HtmlCreator.NEW_LINE;
 				}
 
@@ -279,6 +300,7 @@ public abstract class Command {
 				}
 				String dateString = getDateString(currTaskDateTime);
 				dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
+				dateString = htmlCreator.largeFont(dateString);
 				taskListHtml += dateString + HtmlCreator.NEW_LINE;
 			}
 
@@ -311,6 +333,7 @@ public abstract class Command {
 		taskListHtml += HtmlCreator.NEW_LINE;
 		taskListHtml += pagination;
 
+		firstTimeDisplay = false;
 		return taskListHtml;
 	}
 
@@ -327,8 +350,18 @@ public abstract class Command {
 	}
 
 	private static String getDateString(DateTime date) {
+		if(dateIsEqual(date, DateTime.now())) {
+			return "TODAY";
+		}
+		
+		if(dateIsEqual(date, DateTime.now().plusDays(1))) {
+			return "TOMORROW";
+		}
+		
 		return date.toString("dd MMM yy");
 	}
+	
+	
 
 	public static void setLineLimit(int limit) {
 		lineLimit = limit;

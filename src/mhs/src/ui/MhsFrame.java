@@ -12,12 +12,21 @@ package mhs.src.ui;
  * @author John Wong
  */
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.logging.Logger;
 
 import javax.swing.Box;
@@ -41,6 +50,8 @@ public class MhsFrame extends JFrame {
 	// this variable is required by JFrame
 	private static final long serialVersionUID = 1L;
 	
+	private static final String TRAY_MENU_EXIT = "Exit";
+	
 	// frame parameters
 	private static final int FRAME_WIDTH = 600;
 	private static final int FRAME_HEIGHT = 450;
@@ -48,6 +59,7 @@ public class MhsFrame extends JFrame {
 	private static final Color FRAME_BACKGROUND_COLOR = new Color(0, 0, 0);
 	private static final Color TITLE_BACKGROUND_COLOR = new Color(255, 255, 255);
 	private static final String ICON_FILE_NAME = "mhsIconSmall.png";
+	private static final String TRAY_ICON_FILE_NAME = "mhsTrayIcon.png";
 
 	// default margin, position and font parameters
 	private static final int DEFAULT_CONSTRAINT_POSITION_X = 0;
@@ -56,33 +68,36 @@ public class MhsFrame extends JFrame {
 	private static final int DEFAULT_PADDING_WIDTH = 2;
 	private static final int DEFAULT_FONT_SIZE = 14;
 	private static final String DEFAULT_FONT_TYPE = "calibri";
+	private static final int NO_PADDING = 0;
 
 	// display screen sizing and position parameters
-	private static final int TITLE_SCREEN_POSITION_Y = 0;
+	private static final int TITLE_SCREEN_POSITION_Y = 3;
 	private static final int TITLE_SCREEN_WEIGHT_Y = 0;
 	private static final int TITLE_SCREEN_HEIGHT = 1;
 	private static final int TITLE_SCREEN_TOP_PADDING = 0;
 	private static final int TITLE_SCREEN_BOTTOM_PADDING = 1;
 	
 	// display screen sizing and position parameters
-	private static final int DISPLAY_SCREEN_POSITION_Y = 1;
+	private static final int DISPLAY_SCREEN_POSITION_Y = 0;
 	private static final int DISPLAY_SCREEN_WEIGHT_Y = 1;
 	private static final int DISPLAY_SCREEN_HEIGHT = 1;
 	private static final int DISPLAY_SCREEN_TOP_PADDING = 0;
 	private static final int DISPLAY_SCREEN_BOTTOM_PADDING = 0;
+	private static final int DISPLAY_SIDE_PADDING = 5;
 
 	// feedback screen sizing and position parameters
-	private static final int FEEDBACK_SCREEN_POSITION_Y = 2;
+	private static final int FEEDBACK_SCREEN_POSITION_Y = 1;
 	private static final int FEEDBACK_SCREEN_WEIGHT_Y = 0;
 	private static final int FEEDBACK_SCREEN_HEIGHT = 1;
 	private static final int FEEDBACK_SCREEN_TOP_PADDING = 0;
 	private static final String CONTENT_TYPE_HTML = "text/html";
 
 	// input box sizing and position parameters
-	private static final int INPUT_BOX_POSITION_Y = 3;
+	private static final int INPUT_BOX_POSITION_Y = 2;
 	private static final int INPUT_BOX_WEIGHT_Y = 0;
 	private static final int INPUT_BOX_HEIGHT = 1;
 	private static final int INPUT_BOX_TOP_PADDING = 0;
+	private static final int INPUT_BOX_BOTTOM_PADDING = 0;
 	public static final Font INPUT_BOX_FONT = new Font(DEFAULT_FONT_TYPE,
 			Font.BOLD, DEFAULT_FONT_SIZE);
 
@@ -125,6 +140,8 @@ public class MhsFrame extends JFrame {
 	// class name used for logging
 	private static final String CLASS_NAME = "MhsFrame";
 	
+	TrayIcon trayIcon = null;
+	
 	/**
 	 * MhsFrame's constructor is private, this function returns the 
 	 * only instance of MhsFrame 
@@ -145,6 +162,10 @@ public class MhsFrame extends JFrame {
 		startLog("open");
 		this.setVisible(true);
 		endLog("open");
+	}
+	
+	public void close() {
+		this.setVisible(false);
 	}
 	
 	/**
@@ -186,6 +207,10 @@ public class MhsFrame extends JFrame {
 	public void addInputChangedListener(DocumentListener inputListener) {
 		plainTextBox.getDocument().addDocumentListener(inputListener);
 		passwordBox.getDocument().addDocumentListener(inputListener);
+	}
+	
+	public void addTrayListener(MouseListener trayListener) {
+		trayIcon.addMouseListener(trayListener);
 	}
 	
 	/**
@@ -267,8 +292,9 @@ public class MhsFrame extends JFrame {
 			this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		} else {
 			setFrameSize(width, height);
+			this.setLocationRelativeTo(null);
+			this.setExtendedState(JFrame.NORMAL);
 		}
-		this.setLocationRelativeTo(null);
 	}
 	
 	/**
@@ -300,9 +326,49 @@ public class MhsFrame extends JFrame {
 		startLog("initFrame");
 		initFrameProperties();
 		initFrameComponents();
+		initTrayIcon();
 		endLog("initFrame");
 	}
+	
+	private void initTrayIcon() {
+		if(SystemTray.isSupported()) {
+			createTrayIcon();
+			addTrayIconToSystemTray(trayIcon);
+			addTrayIconMenu(trayIcon);
+		}
+	}
+	
+	private void createTrayIcon() {
+		ImageIcon icon = new ImageIcon(
+				MhsFrame.class.getResource(TRAY_ICON_FILE_NAME));
+		trayIcon = new TrayIcon(icon.getImage(), FRAME_TITLE);
+	}
 
+	private void addTrayIconToSystemTray(TrayIcon icon) {
+		if(icon == null) {
+			return;
+		}
+		try {
+			SystemTray systemTray = SystemTray.getSystemTray();
+			systemTray.add(icon);
+		} catch (AWTException e) {
+		}
+	}
+	
+	private void addTrayIconMenu(TrayIcon icon) {
+		if(icon == null) {
+			return;
+		}
+		PopupMenu trayMenu = new PopupMenu();
+		
+		MenuItem exitItem = new MenuItem(TRAY_MENU_EXIT);
+		ClickTrayExitItem clickExit = new ClickTrayExitItem();
+		exitItem.addActionListener(clickExit);
+		
+		trayMenu.add(exitItem);
+		icon.setPopupMenu(trayMenu);
+	}
+	
 	/**
 	 * initialize frame size, background color, location, exit action and icon
 	 */
@@ -310,15 +376,15 @@ public class MhsFrame extends JFrame {
 		setFrameSize(FRAME_WIDTH, FRAME_HEIGHT);
 		setFrameBackground(FRAME_BACKGROUND_COLOR);
 		setFrameLocationToCenter();
-		setFrameToExitOnClose();
+		setFrameToHideOnClose();
 		setFrameIcon();
 	}
 
 	/**
 	 * set frame to exit application when user closes frame
 	 */
-	private void setFrameToExitOnClose() {
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	private void setFrameToHideOnClose() {
+		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 	}
 
 	/**
@@ -443,7 +509,7 @@ public class MhsFrame extends JFrame {
 
 		Box inputBoxContainer = createContainer(passwordBox,
 				DEFAULT_PADDING_WIDTH, INPUT_BOX_TOP_PADDING,
-				DEFAULT_PADDING_WIDTH);
+				INPUT_BOX_BOTTOM_PADDING);
 		framePanel.add(inputBoxContainer, constraints);
 	}
 	
@@ -476,7 +542,7 @@ public class MhsFrame extends JFrame {
 
 		Box inputBoxContainer = createContainer(plainTextBox,
 				DEFAULT_PADDING_WIDTH, INPUT_BOX_TOP_PADDING,
-				DEFAULT_PADDING_WIDTH);
+				INPUT_BOX_BOTTOM_PADDING);
 		framePanel.add(inputBoxContainer, constraints);
 	}
 
@@ -497,6 +563,8 @@ public class MhsFrame extends JFrame {
 	private void formatEditorPane(JEditorPane editorPane) {
 		editorPane.setEditable(false);
 		editorPane.setContentType(CONTENT_TYPE_HTML);
+		EmptyBorder padding = createPaddingBorder(DISPLAY_SIDE_PADDING, NO_PADDING, NO_PADDING);
+		editorPane.setBorder(padding);
 	}
 	
 	/**
@@ -629,4 +697,16 @@ public class MhsFrame extends JFrame {
 	private void endLog(String methodName) {
 		logger.entering(CLASS_NAME, methodName);
 	}
+	
+	private void closeApplication() {
+		System.exit(0);
+	}
+	
+	
+	private class ClickTrayExitItem implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+			closeApplication();
+		}
+	}
+	
 }
