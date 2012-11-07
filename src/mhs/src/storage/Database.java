@@ -245,6 +245,22 @@ public class Database {
 	}
 
 	/**
+	 * @return user google account name if it exists or null
+	 */
+	public String getUserGoogleAccountName() {
+		logEnterMethod("getUserGoogleAccountName");
+		logExitMethod("getUserGoogleAccountName");
+		if (configFile.hasConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
+			String[] googleUserAccountString = configFile.getConfigParameter(
+					CONFIG_PARAM_GOOGLE_USER_ACCOUNT).split("@");
+			if (googleUserAccountString.length > 0) {
+				return googleUserAccountString[0];
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Checks if Remote Sync (Google Calendar) is currently active
 	 * 
 	 * @return
