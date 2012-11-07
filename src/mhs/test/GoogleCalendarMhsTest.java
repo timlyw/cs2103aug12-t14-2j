@@ -53,6 +53,22 @@ public class GoogleCalendarMhsTest {
 		accessToken = GoogleCalendarMhs.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
 		assertTrue(accessToken.length() > 0);
 	}
+	
+	@Test
+	public void testMoveEvent() throws NullPointerException, IOException, ServiceException {
+		String accessToken;
+		accessToken = GoogleCalendarMhs.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
+		GoogleCalendarMhs gCal = new GoogleCalendarMhs(APP_NAME, USER_EMAIL, accessToken);
+
+		String startTime = "2013-06-01T13:00:00+08:00";
+		String endTime = "2013-06-30T15:00:00+08:00";
+		List<CalendarEventEntry> taskList = gCal.retrieveEvents(startTime, endTime);
+		display(taskList);
+		for(int i = 0; i < taskList.size(); i++) {
+			String isDeleted = Boolean.toString(gCal.isDeleted(taskList.get(i)));
+			display(isDeleted);
+		}
+	}
 
 	/**
 	 * prints out the events within the date range to console
@@ -181,7 +197,9 @@ public class GoogleCalendarMhsTest {
 	}
 	
 	public void display(CalendarEventEntry calendarEvent) {
-		display(calendarEvent.getTitle().getPlainText());
+		String title = calendarEvent.getTitle().getPlainText();
+		String id = calendarEvent.getIcalUID();
+		display(title + " " + id);
 	}
 	
 	public void display(List<CalendarEventEntry> eventList) {

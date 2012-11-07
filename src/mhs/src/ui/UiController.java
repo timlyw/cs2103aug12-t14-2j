@@ -12,6 +12,10 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -206,7 +210,19 @@ public class UiController {
 		initInputTextChangedListener();
 		initInputKeyListener();
 		initFrameListener();
+		initTrayListener();
+		initWindowListener();
 		endLog("initListeners");
+	}
+	
+	private void initWindowListener() {
+		MhsWindowListener mhsWindowListener = new MhsWindowListener();
+		mhsFrame.addWindowListener(mhsWindowListener);
+	}
+	
+	private void initTrayListener() {
+		TrayClickListener trayListener = new TrayClickListener();
+		mhsFrame.addTrayListener(trayListener);
 	}
 	
 	/**
@@ -273,6 +289,8 @@ public class UiController {
 		updateDisplayScreen();
 		updateFeedbackText();
 		updateInputType();
+		updateMhsFrameDimensionst();
+		mhsFrame.repaint();
 	}
 	
 	private void updateTitleScreen() {
@@ -382,6 +400,51 @@ public class UiController {
 		}
 
 		public void componentShown(ComponentEvent arg0) {
+		}
+		
+	}
+	
+	private class TrayClickListener implements MouseListener {
+		public void mouseClicked(MouseEvent arg0) {
+			openMhsFrame();
+		}
+
+		public void mousePressed(MouseEvent arg0) {
+			openMhsFrame();
+		}
+		
+		public void mouseEntered(MouseEvent arg0) {
+		}
+
+		public void mouseExited(MouseEvent arg0) {
+		}
+		
+		public void mouseReleased(MouseEvent arg0) {
+		}
+		
+	}
+	
+	private class MhsWindowListener implements WindowListener {
+		public void windowActivated(WindowEvent arg0) {
+		}
+
+		public void windowClosed(WindowEvent arg0) {
+		}
+
+		public void windowClosing(WindowEvent arg0) {
+		}
+
+		public void windowDeactivated(WindowEvent arg0) {
+		}
+
+		public void windowDeiconified(WindowEvent arg0) {
+		}
+
+		public void windowIconified(WindowEvent arg0) {
+			mhsFrame.close();
+		}
+		
+		public void windowOpened(WindowEvent arg0) {
 		}
 		
 	}
