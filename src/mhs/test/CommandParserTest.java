@@ -246,7 +246,7 @@ public class CommandParserTest {
 
 		testCommand = commandParser
 				.getParsedCommand("Find meeting at vivo this month");
-		expectedStartDate = new DateTime(year, month, day, 23, 59);
+		expectedStartDate = new DateTime(year, month, day, 0, 0);
 		expectedEndDate = new DateTime(year, month, 30, 23, 59);
 		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.search,
 				"meeting at vivo", null, expectedStartDate, expectedEndDate, 0);
