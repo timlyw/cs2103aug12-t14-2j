@@ -90,13 +90,13 @@ public class CommandParser {
 		assert (parseString != null);
 		parseString = setEnvironment(parseString);
 		
-		setCommand(parseString);
-		getIndexAtFirstLocation(parseString);
-		parseString = setNameInQuotationMarks(parseString);
-		setTime(parseString);
-		setDate(parseString);
-		setIndex(parseString);
-		setName(parseString);
+		//setCommand(parseString);
+		//getIndexAtFirstLocation(parseString);
+		//parseString = setNameInQuotationMarks(parseString);
+		//setTime(parseString);
+		//setDate(parseString);
+		//setIndex(parseString);
+		//setName(parseString);
 		
 		logExitMethod("getParsedCommand");
 		return setUpCommandObject(command, taskName, edittedName, startDate,
@@ -114,13 +114,13 @@ public class CommandParser {
 		logEnterMethod("getIndexAtFirstLocation");
 		try {
 			String[] processArray = parseString.split(REGEX_WHITE_SPACES);
-			if (processArray.length > 0) {
+			if (processArray.length == 1) {
 				if (isInteger(processArray[0])) {
 					index = Integer.parseInt(processArray[0]);
 					command = null;
 				}
-			}
-		} catch (NullPointerException e) {
+			} 
+			}catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return;
 		}catch(ArrayIndexOutOfBoundsException e){

@@ -45,7 +45,7 @@ public class CommandValidator {
 	public CommandInfo validateCommand(String commandInput, String taskNameInput,
 			String edittedNameInput, LocalDate startDateInput,
 			LocalTime startTimeInput, LocalDate endDateInput,
-			LocalTime endTimeInput, int index) {
+			LocalTime endTimeInput, int indexInput) {
 		
 		logEnterMethod("validateCommand");
 
@@ -57,7 +57,8 @@ public class CommandValidator {
 		}
 		taskName = taskNameInput;
 		edittedName = edittedNameInput;
-
+		index = indexInput;
+		
 		validateStartDate(startDateInput, startTimeInput);
 		validateEndDate(endDateInput, endTimeInput);
 		validateTiming(startDateInput, startTimeInput, endDateInput,
@@ -191,7 +192,8 @@ public class CommandValidator {
 		
 		logEnterMethod("validateEndDateNoEndTime");
 		if (endDateInput != null && endTimeInput == null) {
-			endDate = endDateInput.toDateTimeAtStartOfDay();
+			endTimeInput = new LocalTime(23 , 59);
+			endDate = endDateInput.toDateTime(endTimeInput);
 		}
 		logExitMethod("validateEndDateNoEndTime");
 	}
@@ -239,7 +241,8 @@ public class CommandValidator {
 		
 		logEnterMethod("validateStartDateNoStartTime");
 		if (startDateInput != null && startTimeInput == null) {
-			startDate = startDateInput.toDateTimeAtStartOfDay();
+			startTimeInput = new LocalTime(23 , 59);
+			startDate = startDateInput.toDateTime(startTimeInput);
 		}
 		logExitMethod("validateStartDateNoStartTime");
 	}
