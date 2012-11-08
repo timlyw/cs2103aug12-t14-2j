@@ -17,6 +17,9 @@ import javax.swing.JFrame;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import com.melloware.jintellitype.HotkeyListener;
+import com.melloware.jintellitype.JIntellitype;
+
 import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 import mhs.src.logic.Processor;
@@ -76,12 +79,12 @@ public class UiController {
 	}
 	
 	private void initHotKey() {
-		/*
-		JIntellitype jShortcut = JIntellitype.getInstance();
-		jShortcut.registerHotKey(1, JIntellitype.MOD_WIN, (int)'A');
-		MhsHotKeyListener mhsHotKeyListener = new MhsHotKeyListener();
-		jShortcut.addHotKeyListener(mhsHotKeyListener);
-		*/
+		// Initialize JIntellitype
+		JIntellitype.getInstance();
+		JIntellitype.getInstance().registerHotKey(1, JIntellitype.MOD_ALT,
+				(int) 'X');
+		MhsHotKeyListener mhsHotkeyListener = new MhsHotKeyListener();
+		JIntellitype.getInstance().addHotKeyListener(mhsHotkeyListener);
 	}
 	
 	private void loadMhsParameters() {
@@ -451,13 +454,13 @@ public class UiController {
 		
 	}
 	
-	/*
+
 	private class MhsHotKeyListener implements HotkeyListener {
 		public void onHotKey(int arg0) {
-			maximizeMhsFrame();
+			openMhsFrame();
 		}
 	}
-	*/
+	
 	
 	private void startLog(String methodName) {
 		logger.entering(CLASS_NAME, methodName);
