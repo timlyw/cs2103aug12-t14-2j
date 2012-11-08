@@ -425,11 +425,11 @@ class Syncronize {
 	 * @param localTaskEntry
 	 * @throws InvalidTaskFormatException
 	 * @throws TaskNotFoundException
+	 * @throws IOException 
 	 * @throws Exception
 	 */
 	private void pullSyncExistingTask(CalendarEventEntry gCalEntry,
-			Task localTaskEntry) throws UnknownHostException,
-			TaskNotFoundException, InvalidTaskFormatException {
+			Task localTaskEntry) throws TaskNotFoundException, InvalidTaskFormatException, IOException {
 		logEnterMethod("pullSyncExistingTask");
 		updateSyncTask(localTaskEntry, gCalEntry);
 		logExitMethod("pullSyncExistingTask");
@@ -452,6 +452,8 @@ class Syncronize {
 		// push sync tasks from local to google calendar
 		for (Map.Entry<Integer, Task> entry : Database.taskLists.getTaskList()
 				.entrySet()) {
+			System.out.println(entry.getValue().getTaskName());			
+			System.out.println(entry.getValue().getTaskCategory());			
 			pushSyncTask(entry.getValue());
 		}
 		logExitMethod("pushSync");
@@ -497,6 +499,9 @@ class Syncronize {
 					"Pushing new sync task : " + localTask.getTaskName());
 			pushSyncNewTask(localTask);
 		} else {
+			System.out.println(localTask.getTaskName());
+			System.out.println(localTask.getTaskUpdated() + " " + localTask.getTaskLastSync());
+			System.out.println(localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync()));
 			// add updated tasks
 			if (localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync())) {
 				logger.log(Level.INFO,
@@ -558,12 +563,13 @@ class Syncronize {
 	 * Updates local synced task with newer Calendar Event
 	 * 
 	 * @param updatedTask
+	 * @throws IOException 
 	 * @throws Exception
 	 * @throws ServiceException
 	 */
 	private Task updateSyncTask(Task localSyncTaskToUpdate,
 			CalendarEventEntry UpdatedCalendarEvent)
-			throws TaskNotFoundException, InvalidTaskFormatException {
+			throws TaskNotFoundException, InvalidTaskFormatException, IOException {
 		logEnterMethod("updateSyncTask");
 		if (!Database.taskLists.containsTask(localSyncTaskToUpdate.getTaskId())) {
 			throw new TaskNotFoundException(
@@ -579,6 +585,7 @@ class Syncronize {
 		localSyncTaskToUpdate = updateLocalSyncTask(localSyncTaskToUpdate,
 				UpdatedCalendarEvent, syncDateTime);
 		Database.taskLists.updateTaskInTaskLists(localSyncTaskToUpdate);
+		Database.saveTaskRecordFile();
 		logExitMethod("updateSyncTask");
 		return localSyncTaskToUpdate;
 	}

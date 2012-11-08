@@ -630,12 +630,10 @@ public class Database {
 	 * 
 	 * @throws IOException
 	 */
-	synchronized void saveTaskRecordFile() throws IOException {
+	synchronized static void saveTaskRecordFile() throws IOException {
 		logEnterMethod("saveTaskRecordFile");
 		assert (taskRecordFile != null);
-
 		taskRecordFile.saveTaskList(taskLists.getTaskList());
-
 		logExitMethod("saveTaskRecordFile");
 	}
 
@@ -733,12 +731,12 @@ public class Database {
 		return getNewTaskId;
 	}
 
-	void logExitMethod(String methodName) {
-		logger.exiting(getClass().getName(), methodName);
+	static void logExitMethod(String methodName) {
+		logger.exiting("Database", methodName);
 	}
 
-	void logEnterMethod(String methodName) {
-		logger.entering(getClass().getName(), methodName);
+	static void logEnterMethod(String methodName) {
+		logger.entering("Database", methodName);
 	}
 
 }
