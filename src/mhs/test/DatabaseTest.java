@@ -158,10 +158,14 @@ public class DatabaseTest {
 	/**
 	 * Test query by date
 	 * 
-	 * Tests for: 1. Query by date functionality 2. Multiple days event
+	 * Tests for Query by date functionality
 	 * 
-	 * Implemented: 1. Test on boundary 2. Test around boundary
+	 * Test Case Considerations: 
 	 * 
+	 * 1. Test within boundary
+	 * 2. Test on boundary 
+	 * 3. Test around boundary
+	 * 4. Negative Tests
 	 * 
 	 * @throws NullPointerException
 	 * @throws IOException
@@ -186,14 +190,7 @@ public class DatabaseTest {
 				null, false, false);
 
 		database.update(task);
-
-		// Test query within boundary
-		queryList = database.query(testStartDt.plusDays(1), testStartDt.plusDays(2), false, false);
-
-		assertEquals(1, queryList.size());
-		assertEquals(1, queryList.get(0).getTaskId());
-
-
+		
 		// Test query within boundary
 		queryList = database.query(testStartDt.plusDays(1), testStartDt.plusDays(2), false, false);
 
@@ -201,6 +198,13 @@ public class DatabaseTest {
 		assertEquals(1, queryList.get(0).getTaskId());
 
 		// Test on boundary
+		queryList = database.query(testStartDt, testStartDt, false, false);
+		assertEquals(1, queryList.size());
+		assertEquals(1, queryList.get(0).getTaskId());
+		
+		queryList = database.query(testEndDt, testEndDt, false, false);
+		assertEquals(1, queryList.size());
+		assertEquals(1, queryList.get(0).getTaskId());
 		queryList = database.query(testStartDt, testEndDt, false, false);
 
 		assertEquals(1, queryList.size());
@@ -209,21 +213,27 @@ public class DatabaseTest {
 		// Test around boundary
 		queryList = database.query(testStartDt.minusMinutes(1), testEndDt,
 				false, false);
-
 		assertEquals(1, queryList.size());
 		assertEquals(1, queryList.get(0).getTaskId());
 
 		queryList = database.query(testStartDt, testEndDt.plusMinutes(1),
 				false, false);
-
 		assertEquals(1, queryList.size());
 		assertEquals(1, queryList.get(0).getTaskId());
 
 		queryList = database.query(testStartDt.minusMinutes(1), testEndDt.plusMinutes(1),
 				false, false);
-
 		assertEquals(1, queryList.size());
 		assertEquals(1, queryList.get(0).getTaskId());
+		
+		// Negative Tests
+		queryList = database.query(testStartDt.minusMinutes(1), testStartDt.minusMinutes(1),
+				false, false);
+		assertEquals(0, queryList.size());		
+
+		queryList = database.query(testEndDt.plusMinutes(1), testEndDt.plusMinutes(1),
+				false, false);
+		assertEquals(0, queryList.size());		
 	}
 
 	/**

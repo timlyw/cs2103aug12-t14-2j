@@ -358,7 +358,7 @@ public class TaskLists {
 		}
 
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		Interval dateTimeInterval = getDateTimeInterval(startDateTime,
+		Interval dateTimeInterval = getInclusiveDateTimeInterval(startDateTime,
 				endDateTime);
 		getAllTasksWithinInterval(queriedTaskRecordset, dateTimeInterval,
 				includeFloatingTasks);
@@ -371,23 +371,23 @@ public class TaskLists {
 	/**
 	 * Get DateTime interval from two DateTimes inclusive
 	 * 
-	 * @param startDateTime
-	 * @param endDateTime
+	 * @param dateTime1
+	 * @param dateTime2
 	 * @return dateTimeInterval
 	 */
-	private Interval getDateTimeInterval(DateTime startDateTime,
-			DateTime endDateTime) {
+	private Interval getInclusiveDateTimeInterval(DateTime dateTime1,
+			DateTime dateTime2) {
 		logEnterMethod("getDateTimeInterval");
 		Interval dateTimeInterval;
 		// Set interval for matched range (increase endtime by 1 ms to include)
-		if (startDateTime.isBefore(endDateTime)) {
-			dateTimeInterval = new Interval(startDateTime,
-					endDateTime.plusMillis(1));
-		} else if (startDateTime.isAfter(endDateTime)) {
-			dateTimeInterval = new Interval(endDateTime,
-					startDateTime.plusMillis(1));
+		if (dateTime1.isBefore(dateTime2)) {
+			dateTimeInterval = new Interval(dateTime1.minusMillis(1),
+					dateTime2.plusMillis(1));
+		} else if (dateTime1.isAfter(dateTime2)) {
+			dateTimeInterval = new Interval(dateTime2.minusMillis(1),
+					dateTime1.plusMillis(1));
 		} else {
-			dateTimeInterval = new Interval(startDateTime, startDateTime);
+			dateTimeInterval = new Interval(dateTime1, dateTime1);
 		}
 		logExitMethod("getDateTimeInterval");
 		return dateTimeInterval;
@@ -490,7 +490,7 @@ public class TaskLists {
 				continue;
 			}
 
-			Interval dateTimeInterval = getDateTimeInterval(startDateTime,
+			Interval dateTimeInterval = getInclusiveDateTimeInterval(startDateTime,
 					endDateTime);
 
 			if (taskEntry.getTaskName().contains(taskName)) {
@@ -564,7 +564,7 @@ public class TaskLists {
 				continue;
 			}
 
-			Interval dateTimeInterval = getDateTimeInterval(startDateTime,
+			Interval dateTimeInterval = getInclusiveDateTimeInterval(startDateTime,
 					endDateTime);
 
 			if (taskEntry.getTaskCategory().equals(taskCategory)) {
@@ -598,7 +598,7 @@ public class TaskLists {
 			DateTime startDateTime, DateTime endDateTime) {
 		logEnterMethod("isWithinInterval");
 		logExitMethod("isWithinInterval");
-		return dateTimeInterval.overlaps(getDateTimeInterval(startDateTime,
+		return dateTimeInterval.overlaps(getInclusiveDateTimeInterval(startDateTime,
 				endDateTime));
 	}
 
