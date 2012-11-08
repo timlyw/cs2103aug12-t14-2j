@@ -41,6 +41,7 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
+	private static final String PARAMETER_CONFIG_PARAMETER = "configParameter";
 	static GoogleCalendarMhs googleCalendar;
 	static TaskLists taskLists;
 	static Syncronize syncronize;
@@ -131,7 +132,8 @@ public class Database {
 	 */
 	private void initializeSyncDateTimes() {
 		logEnterMethod("initializeSyncDateTimes");
-		syncStartDateTime = DateTime.now().minusMonths(1).toDateMidnight().toDateTime();
+		syncStartDateTime = DateTime.now().minusMonths(1).toDateMidnight()
+				.toDateTime();
 		syncEndDateTime = DateTime.now().plusMonths(12).toDateMidnight()
 				.toDateTime();
 		logExitMethod("initializeSyncDateTimes");
@@ -686,6 +688,84 @@ public class Database {
 		taskLists.clearTaskLists();
 		saveTaskRecordFile();
 		logExitMethod("clearLocalDatabase");
+	}
+
+	/**
+	 * Gets config parameter from Configuration File
+	 * 
+	 * @param configParameter
+	 * @return configuration parameter value
+	 */
+	public String getConfigParameter(String configParameter) {
+		if (configParameter == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETER_CONFIG_PARAMETER));
+		}
+		configFile.getConfigParameter(configParameter);
+		return null;
+	}
+
+	/**
+	 * Sets config parameter
+	 * 
+	 * @param configParameterToSet
+	 * @param configParameterValueToSet
+	 * @return
+	 * @throws IOException
+	 */
+	public boolean setConfigParameter(String configParameterToSet,
+			String configParameterValueToSet) throws IOException {
+		if (configParameterToSet == null || configParameterValueToSet == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETER_CONFIG_PARAMETER));
+		}
+		if (!configFile.hasConfigParameter(configParameterToSet)) {
+		}
+		configFile.setConfigParameter(configParameterToSet,
+				configParameterValueToSet);
+		return false;
+	}
+
+	/**
+	 * Checks if configuration parameter exists in configuration file
+	 * 
+	 * @param configParameter
+	 * @return true if configParameter exists
+	 */
+	public boolean hasConfigParameter(String configParameter) {
+		if (configParameter == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETER_CONFIG_PARAMETER));
+		}
+		if (configFile.hasConfigParameter(configParameter)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Removes specified configuration parameter from configuration file
+	 * 
+	 * @param configParameter
+	 * @return true if configuration parameter is removed successfully or false
+	 *         if it does not exist
+	 * @throws IOException
+	 */
+	public boolean removeConfigParameter(String configParameter)
+			throws IOException {
+		if (configParameter == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETER_CONFIG_PARAMETER));
+		}
+		if (!configFile.hasConfigParameter(configParameter)) {
+			return false;
+		}
+		configFile.removeConfigParameter(configParameter);
+		return true;
 	}
 
 	/**

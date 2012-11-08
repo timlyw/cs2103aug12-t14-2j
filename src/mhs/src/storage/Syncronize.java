@@ -471,6 +471,11 @@ class Syncronize {
 			if (entry.getValue().getTaskCategory().equals(TaskCategory.FLOATING)) {
 				return;
 			}
+			System.out.println(entry.getValue().getTaskName());
+			System.out.println(entry.getValue().getTaskUpdated() + " "
+					+ entry.getValue().getTaskLastSync());
+			System.out.println(entry.getValue().getTaskUpdated().isAfter(
+					entry.getValue().getTaskLastSync()));
 			pushSyncTask(entry.getValue());
 		}
 		logExitMethod("pushSync");
