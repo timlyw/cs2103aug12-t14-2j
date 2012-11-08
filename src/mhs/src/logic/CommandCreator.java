@@ -135,10 +135,10 @@ public class CommandCreator {
 			currentCommand = new CommandRename(userCommand);
 			currentCommand.executeCommand();
 			break;
-		case n:
+		case next:
 			Command.displayNext();
 			break;
-		case p:
+		case previous:
 			Command.displayPrev();
 			break;
 		default:

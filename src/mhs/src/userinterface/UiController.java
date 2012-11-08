@@ -1,12 +1,6 @@
-package mhs.src.ui;
+//@author A0088015H
 
-/**
- * This class controls the interaction between MhsFrame and Processor
- * It makes use of the observer pattern to listen for changes in MhsFrame and
- * Processor, this allows it to update both classes at the appropriate times
- * 
- * @author John Wong
- */
+package mhs.src.userinterface;
 
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -28,6 +22,14 @@ import mhs.src.common.MhsLogger;
 import mhs.src.logic.Processor;
 import mhs.src.logic.StateListener;
 import mhs.src.storage.persistence.local.ConfigFile;
+
+/**
+ * UiController controls the interaction between MhsFrame and Processor
+ * It makes use of the observer pattern to listen for changes in MhsFrame and
+ * Processor, this allows it to update both classes at the appropriate times
+ * 
+ * @author John Wong
+ */
 
 public class UiController {
 	

@@ -131,7 +131,7 @@ public class Database {
 	 */
 	private void initializeSyncDateTimes() {
 		logEnterMethod("initializeSyncDateTimes");
-		syncStartDateTime = DateTime.now().toDateMidnight().toDateTime();
+		syncStartDateTime = DateTime.now().minusMonths(3).toDateMidnight().toDateTime();
 		syncEndDateTime = DateTime.now().plusMonths(12).toDateMidnight()
 				.toDateTime();
 		logExitMethod("initializeSyncDateTimes");
@@ -242,6 +242,22 @@ public class Database {
 		configFile.removeConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT);
 		configFile.save();
 		logExitMethod("logOutUserGoogleAccount");
+	}
+
+	/**
+	 * @return user google account name if it exists or null
+	 */
+	public String getUserGoogleAccountName() {
+		logEnterMethod("getUserGoogleAccountName");
+		logExitMethod("getUserGoogleAccountName");
+		if (configFile.hasConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
+			String[] googleUserAccountString = configFile.getConfigParameter(
+					CONFIG_PARAM_GOOGLE_USER_ACCOUNT).split("@");
+			if (googleUserAccountString.length > 0) {
+				return googleUserAccountString[0];
+			}
+		}
+		return null;
 	}
 
 	/**

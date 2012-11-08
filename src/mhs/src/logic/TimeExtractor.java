@@ -39,13 +39,16 @@ public class TimeExtractor {
 
 	private static final Logger logger = MhsLogger.getLogger();
 
+	/**
+	 * This is the constructor for TimeExtractor. 
+	 */
 	private TimeExtractor() {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("TimeExtractor");
 
 		setTime = null;
 		timeQueue = new LinkedList<LocalTime>();
 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("TimeExtractor");	
 	}
 
 	public static TimeExtractor getTimeExtractor() {
@@ -64,7 +67,7 @@ public class TimeExtractor {
 	 * @return Returns a local time object with the timings set.
 	 */
 	public Queue<LocalTime> processTime(String parseString) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("processTime");
 		assert (parseString != null);
 		try {
 			timeQueue = new LinkedList<LocalTime>();
@@ -82,12 +85,14 @@ public class TimeExtractor {
 				}
 			}
 		} catch (NullPointerException e) {
+			logger.log(Level.FINER, e.getMessage());
 			return timeQueue;
 		}
 		catch(ArrayIndexOutOfBoundsException e){
+			logger.log(Level.FINER, e.getMessage());
 			return timeQueue;
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("processTime");	
 		return timeQueue;
 	}
 
@@ -98,7 +103,7 @@ public class TimeExtractor {
 	 *            This is the string to process.
 	 */
 	private void process24hrFormat(String time) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("process24hrFormat");
 
 		String[] timeArray = new String[2];
 		timeArray = time.split(REGEX_COLON);
@@ -108,7 +113,7 @@ public class TimeExtractor {
 		} catch (InvalidParameterException e) {
 			logger.log(Level.FINER, e.getMessage());
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("process24hrFormat");	
 	}
 
 	/**
@@ -118,7 +123,7 @@ public class TimeExtractor {
 	 *            This is the string to process.
 	 */
 	private void process12HrFormat(String time) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("process12HrFormat");
 
 		String[] timeArray = new String[2];
 		time = time.replaceAll(REGEX_NON_WORD_CHAR, REGEX_SPACE);
@@ -132,7 +137,7 @@ public class TimeExtractor {
 		} catch (InvalidParameterException e) {
 			logger.log(Level.FINER, e.getMessage());
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("process12HrFormat");	
 	}
 
 	/**
@@ -144,12 +149,12 @@ public class TimeExtractor {
 	 * @return Returns the minutes.
 	 */
 	private int extractMinute(String[] timeArray) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("extractMinute");
 		int minute = 0;
 		if (timeArray.length > 1) {
 			minute = Integer.parseInt(timeArray[1]);
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("extractMinute");	
 		return minute;
 	}
 
@@ -162,7 +167,7 @@ public class TimeExtractor {
 	 * @return Returns the hours.
 	 */
 	private int extractHour(String[] timeArray) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("extractHour");
 		int hour = 0;
 		for (int i = 0; i < timeArray.length; i++) {
 			if (timeArray[i].contains(PM)) {
@@ -171,7 +176,7 @@ public class TimeExtractor {
 				hour = extractHourAM(timeArray, i);
 			}
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("extractHour");	
 		return hour;
 	}
 
@@ -187,14 +192,14 @@ public class TimeExtractor {
 	 * @return Returns the hour.
 	 */
 	private int extractHourAM(String[] timeArray, int i) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("extractHourAM");
 		int hour;
 		timeArray[i] = timeArray[i].replaceAll(REGEX_AM_IGNORE_CASE, "");
 		hour = Integer.parseInt(timeArray[0]);
 		if (hour == 12) {
 			hour = 0;
 		} 
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("extractHourAM");	
 		return hour;
 	}
 
@@ -210,7 +215,7 @@ public class TimeExtractor {
 	 * @return Returns the appended hour.
 	 */
 	private int extractHourPM(String[] timeArray, int i) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("extractHourPM");
 		int hour;
 		timeArray[i] = timeArray[i].replaceAll(REGEX_PM_IGNORE_CASE, "");
 		hour = Integer.parseInt(timeArray[0]);
@@ -219,7 +224,7 @@ public class TimeExtractor {
 		} else {
 			hour += 12;
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("extractHourPM");	
 		return hour;
 	}
 
@@ -232,13 +237,13 @@ public class TimeExtractor {
 	 * @return Returns true if valid.
 	 */
 	private boolean is12HrFormat(String time) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("is12HrFormat");
 		if (time.matches(REGEX_12_HOUR_FORMAT)
 				|| time.matches(REGEX_12_HOUR_FORMAT_WITHOUT_MINUTES)) {
-			logger.exiting(getClass().getName(), this.getClass().getName());
+			logExitMethod("is12HrFormat");	
 			return true;
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("is12HrFormat");	
 		return false;
 	}
 
@@ -251,13 +256,13 @@ public class TimeExtractor {
 	 * @return Returns true if valid.
 	 */
 	private boolean is24HrFormat(String time) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("is24HrFormat");
 
 		if (time.matches(REGEX_24_HOUR_FORMAT)) {
-			logger.exiting(getClass().getName(), this.getClass().getName());
+			logExitMethod("is24HrFormat");	
 			return true;
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("is24HrFormat");	
 		return false;
 	}
 
@@ -270,14 +275,31 @@ public class TimeExtractor {
 	 * @return Returns true if valid.
 	 */
 	public boolean checkTimeFormat(String time) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("checkTimeFormat");
 		assert (time != null);
 		if (is12HrFormat(time) || is24HrFormat(time)) {
-			logger.exiting(getClass().getName(), this.getClass().getName());
+			logExitMethod("checkTimeFormat");	
 			return true;
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("checkTimeFormat");	
 		return false;
 
+	}
+	/**
+	 * Logger enter method
+	 * 
+	 * @param methodName
+	 */
+	void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
+	}
+
+	/**
+	 * Logger enter method
+	 * 
+	 * @param methodName
+	 */
+	void logEnterMethod(String methodName) {
+		logger.entering(getClass().getName(), methodName);
 	}
 }

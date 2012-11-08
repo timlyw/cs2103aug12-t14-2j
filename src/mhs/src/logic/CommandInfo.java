@@ -13,6 +13,23 @@ import org.joda.time.DateTime;
  */
 public class CommandInfo {
 
+	//Strings for feedback ont the commands given
+	private static final String COMMAND_FEEDBACK_SEARCH = "Display : ";
+	private static final String COMMAND_FEEDBACK_UNMARK = "Unmark : ";
+	private static final String COMMAND_FEEDBACK_MARK = "Mark : ";
+	private static final String COMMAND_FEEDBACK_EXIT = "Exit program";
+	private static final String COMMAND_FEEDBACK_LOGOUT = "Logout from Google Calendar ";
+	private static final String COMMAND_FEEDBACK_LOGIN = "Login to Google Calendar ";
+	private static final String COMMAND_FEEDBACK_SYNC = "Sync tasks with Google Calendar";
+	private static final String COMMAND_FEEDBACK_REMOVE = "Delete : ";
+	private static final String COMMAND_FEEDBACK_RENAME = "Rename : ";
+	private static final String COMMAND_FEEDBACK_TIMED = "Display all timed tasks";
+	private static final String COMMAND_FEEDBACK_DEADLINE = "Display all deadline tasks";
+	private static final String COMMAND_FEEDBACK_FLOATING = "Display all floating tasks";
+	private static final String COMMAND_FEEDBACK_HOME = "Display home page";
+	private static final String COMMAND_FEEDBACK_EDIT = "Edit : ";
+	private static final String COMMAND_FEEDBACK_ADD = "Add : ";
+	
 	// Error strings that display when parameters are not equal.
 	private static final String ERROR_TASK_NAME = "Task Name Error! ";
 	private static final String ERROR_EDITTED_NAME = "Editted Name Error! ";
@@ -25,7 +42,7 @@ public class CommandInfo {
 	 */
 	public static enum CommandKeyWords {
 		add, remove, edit, search, sync, undo, login, logout, rename, redo, mark,
-		help, unmark, p, n, floating, deadline, timed, home, exit;
+		help, unmark, previous, next, floating, deadline, timed, home, exit;
 	}
 
 	private String taskName;
@@ -180,21 +197,73 @@ public class CommandInfo {
 		logEnterMethod("toString");
 		HtmlCreator htmlCreator = new HtmlCreator(); 
 		String outString = "";
-		if (commandEnum != null)
-			outString = ((commandEnum.name()));
+		if (commandEnum != null){
+			switch(commandEnum){
+			case add : 
+				outString = COMMAND_FEEDBACK_ADD;
+				break;
+			case edit :
+				outString = COMMAND_FEEDBACK_EDIT;
+				break;
+			case home :
+				outString = COMMAND_FEEDBACK_HOME;
+				break;
+			case floating:
+				outString = COMMAND_FEEDBACK_FLOATING;
+				break;
+			case deadline :
+				outString = COMMAND_FEEDBACK_DEADLINE;
+				break;
+			case timed :
+				outString = COMMAND_FEEDBACK_TIMED;
+				break;
+			case rename :
+				outString = COMMAND_FEEDBACK_RENAME;
+				break;
+			case remove :
+				outString = COMMAND_FEEDBACK_REMOVE;
+				break;
+			case sync :
+				outString = COMMAND_FEEDBACK_SYNC;
+				break;
+			case login :
+				outString = COMMAND_FEEDBACK_LOGIN;
+				break;
+			case logout :
+				outString = COMMAND_FEEDBACK_LOGOUT;
+				break;
+			case exit :
+				outString = COMMAND_FEEDBACK_EXIT;
+				break;
+			case mark : 
+				outString = COMMAND_FEEDBACK_MARK;
+				break;
+			case unmark:
+				outString = COMMAND_FEEDBACK_UNMARK;
+				break;
+			case search:
+				outString = COMMAND_FEEDBACK_SEARCH;
+				break;	
+			default :
+				outString = (commandEnum.name());
+			break;
+			}
+			
+			
+		}
 		if(index != 0)
-			outString += (" " + (index));
+			outString += (" at index" + (index));
 		if (taskName != null)
 			outString += (" " + taskName);
 		if (edittedName != null)
 			outString += (" " + edittedName);
 		if (startDate != null)
-			outString += (" " + startDate.toString("dd MMM yyyy HH:mm"));
+			outString += (" " + startDate.toString("dd MMM yyyy, hh mm aa"));
 		if (endDate != null){
 			if(startDate != null){
 				outString += " -";
 			}
-			outString += (" " + endDate.toString("dd MMM yyyy HH:mm"));
+			outString += (" " + endDate.toString("dd MMM yyyy, hh mm aa"));
 		}
 		logExitMethod("toString");
 		return htmlCreator.makeBold(outString);

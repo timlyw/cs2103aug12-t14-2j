@@ -31,9 +31,6 @@ public class DateExtractor {
 	private static final int NUMBER_OF_DAYS_IN_NORMAL_YEAR = 365;
 	private static final int NUMBER_OF_DAYS_IN_LEAP_YEAR = 366;
 
-	// This an error message
-	private static final String ERROR_MESSAGE_NOT_NUMERICAL_DATE = "error not numerical date!";
-
 	// These are regex to check the dateformat and for clearing.
 	private static final String REGEX_FULL_DATE_FORMAT = "(0?[1-9]|[12][0-9]|3[01])(/|-)(0?[1-9]|1[012])((/|-)(((20)\\d\\d)))?";
 	private static final String REGEX_NON_WORD_CHAR = "\\W";

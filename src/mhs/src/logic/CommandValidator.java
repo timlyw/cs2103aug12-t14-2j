@@ -27,6 +27,7 @@ public class CommandValidator {
 	private static final Logger logger = MhsLogger.getLogger();
 	private int index;
 	private CommandInfo command;
+	private boolean searchStartDateFlag;
 
 	/**
 	 * This is the method to validate commandInfo parameters and sets up CommandInfo.
@@ -45,10 +46,12 @@ public class CommandValidator {
 	public CommandInfo validateCommand(String commandInput, String taskNameInput,
 			String edittedNameInput, LocalDate startDateInput,
 			LocalTime startTimeInput, LocalDate endDateInput,
-			LocalTime endTimeInput, int index) {
+			LocalTime endTimeInput, int indexInput) {
 		
 		logEnterMethod("validateCommand");
 
+		searchStartDateFlag = false;
+		
 		now = DateTime.now();
 		for (CommandInfo.CommandKeyWords c : CommandInfo.CommandKeyWords.values()) {
 			if (commandInput == c.name()) {
@@ -57,7 +60,8 @@ public class CommandValidator {
 		}
 		taskName = taskNameInput;
 		edittedName = edittedNameInput;
-
+		index = indexInput;
+		
 		validateStartDate(startDateInput, startTimeInput);
 		validateEndDate(endDateInput, endTimeInput);
 		validateTiming(startDateInput, startTimeInput, endDateInput,
@@ -191,7 +195,8 @@ public class CommandValidator {
 		
 		logEnterMethod("validateEndDateNoEndTime");
 		if (endDateInput != null && endTimeInput == null) {
-			endDate = endDateInput.toDateTimeAtStartOfDay();
+			endTimeInput = new LocalTime(23 , 59);
+			endDate = endDateInput.toDateTime(endTimeInput);
 		}
 		logExitMethod("validateEndDateNoEndTime");
 	}
@@ -239,7 +244,9 @@ public class CommandValidator {
 		
 		logEnterMethod("validateStartDateNoStartTime");
 		if (startDateInput != null && startTimeInput == null) {
-			startDate = startDateInput.toDateTimeAtStartOfDay();
+			startTimeInput = new LocalTime(23 , 59);
+			startDate = startDateInput.toDateTime(startTimeInput);
+			searchStartDateFlag = true;
 		}
 		logExitMethod("validateStartDateNoStartTime");
 	}
@@ -302,8 +309,8 @@ public class CommandValidator {
 			commandEnum == CommandInfo.CommandKeyWords.redo ||
 			commandEnum == CommandInfo.CommandKeyWords.sync ||
 			commandEnum == CommandInfo.CommandKeyWords.home ||
-			commandEnum == CommandInfo.CommandKeyWords.p ||
-			commandEnum == CommandInfo.CommandKeyWords.n ||
+			commandEnum == CommandInfo.CommandKeyWords.previous ||
+			commandEnum == CommandInfo.CommandKeyWords.next ||
 			commandEnum == CommandInfo.CommandKeyWords.floating ||
 			commandEnum == CommandInfo.CommandKeyWords.deadline ||
 			commandEnum == CommandInfo.CommandKeyWords.timed ||
@@ -317,6 +324,9 @@ public class CommandValidator {
 			endDate = null;		
 		}
 		if (commandEnum == CommandInfo.CommandKeyWords.search) {
+			if(searchStartDateFlag == true){
+				startDate = startDate.minusHours(23).minusMinutes(59);
+			}
 			enforceDateRange();
 			edittedName = null;
 		}
