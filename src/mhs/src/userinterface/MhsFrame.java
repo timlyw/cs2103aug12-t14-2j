@@ -1,4 +1,4 @@
-package mhs.src.ui;
+package mhs.src.userinterface;
 
 /**
  * This class provides the interface to display program output to user and

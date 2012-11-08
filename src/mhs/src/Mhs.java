@@ -1,6 +1,6 @@
 package mhs.src;
 
-import mhs.src.ui.UiController;
+import mhs.src.userinterface.UiController;
 
 public class Mhs {
 	public static void main(String[] args) {
