@@ -61,6 +61,7 @@ class Syncronize {
 	private Future<?> futureSyncronizeBackgroundTask;
 	Map<String, Callable<Boolean>> syncBackgroundTasks;
 
+	private static final int THREADS_TO_INITIALIZE_1 = 1;
 	private static final int PULL_SYNC_TIMER_DEFAULT_INITIAL_DELAY_IN_MINUTES = 2;
 	private static final int PULL_SYNC_TIMER_DEFAULT_PERIOD_IN_MINUTES = 1;
 
@@ -81,11 +82,21 @@ class Syncronize {
 		this.database = database;
 		logEnterMethod("Syncronize");
 
-		syncronizeBackgroundExecutor = new ScheduledThreadPoolExecutor(1);
-
+		initializeSyncronizeBackgroundExecutor();
 		initializeTimedPullSyncTasks();
 		initializePushSyncBackgroundTasksList();
+		initializeGoogleCalendarAndSync(disableSyncronize);
 
+		logExitMethod("Syncronize");
+	}
+
+	private void initializeSyncronizeBackgroundExecutor() {
+		syncronizeBackgroundExecutor = new ScheduledThreadPoolExecutor(
+				THREADS_TO_INITIALIZE_1);
+	}
+
+	private void initializeGoogleCalendarAndSync(boolean disableSyncronize)
+			throws IOException {
 		try {
 			if (this.database.initializeGoogleCalendarService()
 					&& !disableSyncronize) {
@@ -100,8 +111,6 @@ class Syncronize {
 		} catch (ServiceException e) {
 			logger.log(Level.FINER, e.getMessage());
 		}
-
-		logExitMethod("Syncronize");
 	}
 
 	/**
@@ -138,7 +147,9 @@ class Syncronize {
 	 * @param syncTaskQueueUid
 	 */
 	synchronized void removePushSyncTaskFromList(String syncTaskQueueUid) {
+		logEnterMethod("removePushSyncTaskFromList");
 		syncBackgroundTasks.remove(syncTaskQueueUid);
+		logExitMethod("removePushSyncTaskFromList");
 	}
 
 	/**
@@ -173,10 +184,12 @@ class Syncronize {
 			int maxExecutionTimeInSeconds) throws InterruptedException,
 			ExecutionException, TimeoutException {
 		logEnterMethod("waitForSyncronizeBackgroundTaskToComplete");
-		logger.log(Level.INFO, "Waiting for background task to complete.");
+
 		if (futureSyncronizeBackgroundTask == null) {
 			return;
 		}
+		
+		logger.log(Level.INFO, "Waiting for background task to complete.");
 		futureSyncronizeBackgroundTask.get(maxExecutionTimeInSeconds,
 				TimeUnit.SECONDS);
 		waitForBackgroundPushSyncTasks();
@@ -360,10 +373,12 @@ class Syncronize {
 
 			// pull sync deleted event
 			if (Database.googleCalendar.isDeleted(gCalEntry)) {
-				logger.log(Level.INFO, "Deleting cancelled task : "
-						+ gCalEntry.getTitle().getPlainText());
-				// delete local task
-				this.database.deleteTaskInTaskList(localTask);
+				if (!localTask.isDeleted()) {
+					logger.log(Level.INFO, "Deleting cancelled task : "
+							+ gCalEntry.getTitle().getPlainText());
+					// delete local task
+					this.database.deleteTaskInTaskList(localTask);
+				}
 				return;
 			}
 
@@ -425,11 +440,12 @@ class Syncronize {
 	 * @param localTaskEntry
 	 * @throws InvalidTaskFormatException
 	 * @throws TaskNotFoundException
-	 * @throws IOException 
+	 * @throws IOException
 	 * @throws Exception
 	 */
 	private void pullSyncExistingTask(CalendarEventEntry gCalEntry,
-			Task localTaskEntry) throws TaskNotFoundException, InvalidTaskFormatException, IOException {
+			Task localTaskEntry) throws TaskNotFoundException,
+			InvalidTaskFormatException, IOException {
 		logEnterMethod("pullSyncExistingTask");
 		updateSyncTask(localTaskEntry, gCalEntry);
 		logExitMethod("pullSyncExistingTask");
@@ -452,8 +468,9 @@ class Syncronize {
 		// push sync tasks from local to google calendar
 		for (Map.Entry<Integer, Task> entry : Database.taskLists.getTaskList()
 				.entrySet()) {
-			System.out.println(entry.getValue().getTaskName());			
-			System.out.println(entry.getValue().getTaskCategory());			
+			if (entry.getValue().getTaskCategory().equals(TaskCategory.FLOATING)) {
+				return;
+			}
 			pushSyncTask(entry.getValue());
 		}
 		logExitMethod("pushSync");
@@ -499,9 +516,6 @@ class Syncronize {
 					"Pushing new sync task : " + localTask.getTaskName());
 			pushSyncNewTask(localTask);
 		} else {
-			System.out.println(localTask.getTaskName());
-			System.out.println(localTask.getTaskUpdated() + " " + localTask.getTaskLastSync());
-			System.out.println(localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync()));
 			// add updated tasks
 			if (localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync())) {
 				logger.log(Level.INFO,
@@ -563,13 +577,14 @@ class Syncronize {
 	 * Updates local synced task with newer Calendar Event
 	 * 
 	 * @param updatedTask
-	 * @throws IOException 
+	 * @throws IOException
 	 * @throws Exception
 	 * @throws ServiceException
 	 */
 	private Task updateSyncTask(Task localSyncTaskToUpdate,
 			CalendarEventEntry UpdatedCalendarEvent)
-			throws TaskNotFoundException, InvalidTaskFormatException, IOException {
+			throws TaskNotFoundException, InvalidTaskFormatException,
+			IOException {
 		logEnterMethod("updateSyncTask");
 		if (!Database.taskLists.containsTask(localSyncTaskToUpdate.getTaskId())) {
 			throw new TaskNotFoundException(

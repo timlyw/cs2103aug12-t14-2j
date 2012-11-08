@@ -27,7 +27,7 @@ public class SyncAllTasks implements Callable<Boolean> {
 		try {
 			syncronize.pullSync();
 			syncronize.pushSync();
-			syncronize.database.saveTaskRecordFile();
+			Database.saveTaskRecordFile();
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 		} catch (IOException e) {

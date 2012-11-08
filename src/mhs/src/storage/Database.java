@@ -131,7 +131,7 @@ public class Database {
 	 */
 	private void initializeSyncDateTimes() {
 		logEnterMethod("initializeSyncDateTimes");
-		syncStartDateTime = DateTime.now().minusMonths(3).toDateMidnight().toDateTime();
+		syncStartDateTime = DateTime.now().minusMonths(1).toDateMidnight().toDateTime();
 		syncEndDateTime = DateTime.now().plusMonths(12).toDateMidnight()
 				.toDateTime();
 		logExitMethod("initializeSyncDateTimes");
