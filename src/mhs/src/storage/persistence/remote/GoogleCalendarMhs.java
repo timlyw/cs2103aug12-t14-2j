@@ -171,6 +171,25 @@ public class GoogleCalendarMhs {
 		List<CalendarEventEntry> eventList = defaultCalendar.retrieveEvents(startTime, endTime);
 		List<CalendarEventEntry> taskList = taskCalendar.retrieveEvents(startTime, endTime);
 		eventList.addAll(taskList);
+		
+		for(int i = 0; i < eventList.size(); i++) {
+			CalendarEventEntry event1 = eventList.get(i);
+			for(int j = i + 1; j < eventList.size(); j++) {
+				CalendarEventEntry event2 = eventList.get(j);
+				if(event1.getIcalUID().equals(event2.getIcalUID())) {
+					if(isDeleted(event1) && isDeleted(event2)) {
+						continue;
+					}
+					if(isDeleted(event1)) {
+						eventList.remove(i);
+					}
+					if(isDeleted(event2)) {
+						eventList.remove(j);
+					}
+				}
+			}
+		}
+		
 		endLog("retrieveEvents");
 		
 		return eventList;
