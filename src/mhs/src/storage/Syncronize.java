@@ -94,7 +94,7 @@ class Syncronize {
 			} else {
 				disableRemoteSync();
 			}
-		} catch (AuthenticationException e) {
+		} catch (AuthenticationException | UnknownHostException e) {
 			disableRemoteSync();
 			logger.log(Level.FINER, e.getMessage());
 		} catch (ServiceException e) {
@@ -274,7 +274,7 @@ class Syncronize {
 				logger.log(Level.INFO, "Executing timed pull sync task");
 				try {
 					Database.syncronize.pullSync();
-					Syncronize.this.database.saveTaskRecordFile();
+					Database.saveTaskRecordFile();
 				} catch (UnknownHostException e) {
 					logger.log(Level.FINER, e.getMessage());
 					disableRemoteSync();
