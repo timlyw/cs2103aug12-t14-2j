@@ -42,6 +42,7 @@ public class Processor {
 	private boolean isPasswordExpected = false;
 	public int LINE_HEIGHT = 20;
 	private CommandInfo userCommand;
+	private boolean isCommandQueried = false;
 	private static final Logger logger = MhsLogger.getLogger();
 
 	public String headerText = "Logged in";
@@ -100,7 +101,9 @@ public class Processor {
 	}
 
 	private void refreshDisplay() {
-		currentState = Command.refreshLastState();
+		if (isCommandQueried) {
+			currentState = Command.refreshLastState();
+		}
 		updateStateListeners();
 	}
 
@@ -142,6 +145,7 @@ public class Processor {
 	private void processCommand(CommandInfo userCommand) throws Exception {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		String userOutputString = new String();
+		isCommandQueried = false;
 		if (userCommand.getCommandEnum() == null) {
 			userOutputString = createCommand.createCommand(userCommand);
 			commandFeedback = createCommand.getFeedback();
@@ -164,9 +168,10 @@ public class Processor {
 				System.exit(0);
 				break;
 			case help:
-				currentState = getHelp();
+				showHelp();
 				break;
 			default:
+				isCommandQueried = true;
 				userOutputString = createCommand.createCommand(userCommand);
 				commandFeedback = createCommand.getFeedback();
 				currentState = createCommand.getState();
@@ -177,10 +182,10 @@ public class Processor {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
-	private String getHelp() {
-		String helpString = new String();
-
-		return helpString;
+	private void showHelp() {
+		Help help = new Help();
+		currentState = help.getState();
+		commandFeedback = help.getCommandFeedback();
 	}
 
 	/**
