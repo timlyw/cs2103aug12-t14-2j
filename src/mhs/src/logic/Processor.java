@@ -51,7 +51,8 @@ public class Processor {
 	 */
 	public Processor() {
 		try {
-			DatabaseFactory.initializeDatabaseFactory("taskRecordFile.json", false);
+			DatabaseFactory.initializeDatabaseFactory("taskRecordFile.json",
+					false);
 			dataHandler = DatabaseFactory.getDatabaseInstance();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
@@ -67,7 +68,6 @@ public class Processor {
 			e.printStackTrace();
 		}
 		userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
-		System.out.println(userIsLoggedIn);
 		commandParser = CommandParser.getCommandParser();
 		createCommand = new CommandCreator();
 		userCommand = new CommandInfo();
@@ -76,6 +76,8 @@ public class Processor {
 	public String getHeaderText() {
 		String boldTitle = new String();
 		if (dataHandler.isUserGoogleCalendarAuthenticated()) {
+			headerText = dataHandler.getUserGoogleAccountName();
+			headerText = "Hi " + headerText;
 			boldTitle = htmlCreator.makeBold(headerText);
 		} else {
 			boldTitle = htmlCreator.makeBold("Please login");
@@ -137,11 +139,13 @@ public class Processor {
 	 * @return confirmation string
 	 * @throws Exception
 	 */
-	private String processCommand(CommandInfo userCommand) throws Exception {
+	private void processCommand(CommandInfo userCommand) throws Exception {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		String userOutputString = new String();
 		if (userCommand.getCommandEnum() == null) {
 			userOutputString = createCommand.createCommand(userCommand);
+			commandFeedback = createCommand.getFeedback();
+			currentState = createCommand.getState();
 		} else {
 			switch (userCommand.getCommandEnum()) {
 			case sync:
@@ -156,6 +160,7 @@ public class Processor {
 				currentState = userOutputString;
 				break;
 			case exit:
+				commandFeedback = "Exiting...";
 				System.exit(0);
 				break;
 			case help:
@@ -170,7 +175,6 @@ public class Processor {
 
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
-		return userOutputString;
 	}
 
 	private String getHelp() {
@@ -208,10 +212,12 @@ public class Processor {
 				try {
 					userCommand = commandParser
 							.getParsedCommand(currentCommand);
-					screenOutput = processCommand(userCommand);
+					processCommand(userCommand);
+					System.out.println("!entering processCommand!");
 
 				} catch (NullPointerException e1) {
 					screenOutput = "No Params specified";
+					commandFeedback = screenOutput;
 				}
 			}
 		} catch (Exception e) {
