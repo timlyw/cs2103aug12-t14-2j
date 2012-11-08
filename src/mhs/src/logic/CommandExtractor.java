@@ -14,21 +14,43 @@ import mhs.src.common.MhsLogger;
 
 public class CommandExtractor {
 
+	private static final String COMMAND_ADD = "add";
+	private static final String COMMAND_REMOVE = "remove";
+	private static final String COMMAND_SEARCH = "search";
+	private static final String COMMAND_EDIT = "edit";
+	private static final String COMMAND_SYNC = "sync";
+	private static final String COMMAND_UNDO = "undo";
+	private static final String COMMAND_REDO = "redo";
+	private static final String COMMAND_LOGIN = "login";
+	private static final String COMMAND_LOGOUT = "logout";
+	private static final String COMMAND_HELP = "help";
+	private static final String COMMAND_MARK = "mark";
+	private static final String COMMAND_UNMARK = "unmark";
+	private static final String COMMAND_PREVIOUS = "previous";
+	private static final String COMMAND_NEXT = "next";
+	private static final String COMMAND_FLOATING = "floating";
+	private static final String COMMAND_DEADLINE = "deadline";
+	private static final String COMMAND_TIMED = "timed";
+	private static final String COMMAND_HOME = "home";
+	private static final String COMMAND_EXIT = "exit";
+
+	
 	/**
 	 * 
 	 * These are the enum commands that are used and the different keywords the
 	 * user may enter.
 	 */
 	enum CommandKeyWord {
-		add("add"), remove("remove"), delete("remove"), update("edit"), edit(
-				"edit"), postpone("edit"), search("search"), find("search"), display(
-				"search"), sync("sync"), undo("undo"), redo("redo"), rename(
-				"rename"), login("login"), signin("login"), logout("logout"), signout(
-				"logout"), help("help"), mark("mark"), check("mark"), unmark(
-				"unmark"), p("p"), n("n"), floating("floating"), deadline(
-				"deadline"), timed("timed"), home("home"), exit(
-				"exit");
+		add(COMMAND_ADD), remove(COMMAND_REMOVE), delete(COMMAND_REMOVE), update(COMMAND_EDIT), edit(
+				COMMAND_EDIT), postpone(COMMAND_EDIT), search(COMMAND_SEARCH), find(COMMAND_SEARCH), display(
+				COMMAND_SEARCH), sync(COMMAND_SYNC), undo(COMMAND_UNDO), redo(COMMAND_REDO), rename(
+				"rename"), login(COMMAND_LOGIN), signin(COMMAND_LOGIN), logout(COMMAND_LOGOUT), signout(
+				COMMAND_LOGOUT), help(COMMAND_HELP), mark(COMMAND_MARK), check(COMMAND_MARK), unmark(
+				COMMAND_UNMARK), p(COMMAND_PREVIOUS), n(COMMAND_NEXT), floating(COMMAND_FLOATING), deadline(
+				COMMAND_DEADLINE), timed(COMMAND_TIMED), home(COMMAND_HOME), exit(
+				COMMAND_EXIT);
 
+		
 		private final String command;
 
 		CommandKeyWord(String command) {

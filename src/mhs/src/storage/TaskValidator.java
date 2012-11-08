@@ -6,14 +6,11 @@ import mhs.src.storage.persistence.task.Task;
 /**
  * TaskValidator
  * 
- * Helper class to validate task format and type
+ * Performs validation on task format and sync type check
  * 
- * Validate Task Formats:
- * 1. Timed Task
- * 2. Deadline Task
- * 3. Floating Task
+ * Validate Task Formats: 1. Timed Task 2. Deadline Task 3. Floating Task
  * 
- * Check Task Sync Status
+ * Type Check: 1. Sync Task
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
@@ -102,6 +99,13 @@ class TaskValidator {
 		logExitMethod("isUnsyncedTask");
 		return localTask.getgCalTaskId() == null
 				|| localTask.getTaskLastSync() == null;
+	}
+
+	static boolean isSyncedTask(Task localTask) {
+		logEnterMethod("isSyncedTask");
+		assert (localTask != null);
+		logExitMethod("isSyncedTask");
+		return !isUnsyncedTask(localTask);
 	}
 
 	private static void logExitMethod(String methodName) {

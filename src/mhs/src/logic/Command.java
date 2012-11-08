@@ -243,7 +243,7 @@ public abstract class Command {
 		}
 
 		if (firstIndexDisplayed > taskList.size()) {
-			firstIndexDisplayed = taskList.size() - 2;
+			firstIndexDisplayed = taskList.size() - 1;
 		}
 
 		int lineCount = 0;

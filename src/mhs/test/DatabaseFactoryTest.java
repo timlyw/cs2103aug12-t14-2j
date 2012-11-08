@@ -59,8 +59,8 @@ public class DatabaseFactoryTest {
 			DatabaseFactoryNotInstantiatedException {
 		thrown.expect(DatabaseAlreadyInstantiatedException.class);
 		thrown.expectMessage(EXCEPTION_MESSAGE_DATABASE_FACTORY_ALREADY_INSTANTIATED);
-		DatabaseFactory.getDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
-		DatabaseFactory.getDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
+		DatabaseFactory.initializeDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
+		DatabaseFactory.initializeDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class DatabaseFactoryTest {
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage(String.format(EXCEPTION_MESSAGE_NULL_PARAMETER,
 				PARAMETER_TASK_RECORD_FILE_NAME));
-		DatabaseFactory.getDatabaseFactory(null, true);
+		DatabaseFactory.initializeDatabaseFactory(null, true);
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public class DatabaseFactoryTest {
 			IOException, ServiceException,
 			DatabaseAlreadyInstantiatedException,
 			DatabaseFactoryNotInstantiatedException {
-		DatabaseFactory.getDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
+		DatabaseFactory.initializeDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
 		Database testDatabase = DatabaseFactory.getDatabaseInstance();
 		assert (testDatabase != null);
 	}

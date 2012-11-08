@@ -113,13 +113,13 @@ public class CommandParser {
 		logEnterMethod("getIndexAtFirstLocation");
 		try {
 			String[] processArray = parseString.split(REGEX_WHITE_SPACES);
-			if (processArray.length > 0) {
+			if (processArray.length == 1) {
 				if (isInteger(processArray[0])) {
 					index = Integer.parseInt(processArray[0]);
 					command = null;
 				}
-			}
-		} catch (NullPointerException e) {
+			} 
+			}catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return;
 		} catch (ArrayIndexOutOfBoundsException e) {
