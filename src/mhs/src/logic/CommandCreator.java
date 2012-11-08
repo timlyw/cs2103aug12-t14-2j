@@ -109,12 +109,7 @@ public class CommandCreator {
 			userOutputString = undoLastCommand();
 			break;
 		case redo:
-			if (redoListCommands.isEmpty()) {
-				userOutputString = MESSAGE_NOTHING_TO_REDO;
-			} else {
-				Command redoCommand = redoListCommands.pop();
-				redoCommand.executeCommand();
-			}
+			userOutputString = redoLastCommand();
 			break;
 		case mark:
 			currentCommand = new CommandMark(userCommand);
@@ -143,6 +138,17 @@ public class CommandCreator {
 		currentState = currentCommand.getCurrentState();
 		commandFeedback = currentCommand.getCommandFeedback();
 		logger.exiting(getClass().getName(), this.getClass().getName());
+		return userOutputString;
+	}
+
+	private String redoLastCommand() {
+		String userOutputString = new String();
+		if (redoListCommands.isEmpty()) {
+			userOutputString = MESSAGE_NOTHING_TO_REDO;
+		} else {
+			Command redoCommand = redoListCommands.pop();
+			redoCommand.executeCommand();
+		}
 		return userOutputString;
 	}
 
@@ -205,30 +211,31 @@ public class CommandCreator {
 		logEnterMethod("executeCommandByIndex");
 		String userOutputString = new String();
 		int local_index = userCommand.getIndex();
+		int index = local_index - 1;
 		switch (userCommand.getCommandEnum()) {
 		case add:
 			currentCommand = new CommandAdd();
 			break;
 		case remove:
 			currentCommand = new CommandRemove(Command.matchedTasks);
-			currentCommand.executeByIndexAndType(local_index - 1);
+			currentCommand.executeByIndexAndType(index);
 			break;
 		case edit:
 			currentCommand = new CommandEdit(Command.matchedTasks, userCommand);
-			currentCommand.executeByIndexAndType(local_index - 1);
+			currentCommand.executeByIndexAndType(index);
 			break;
 		case mark:
 			currentCommand = new CommandMark(Command.matchedTasks);
-			currentCommand.executeByIndexAndType(local_index - 1);
+			currentCommand.executeByIndexAndType(index);
 			break;
 		case unmark:
 			currentCommand = new CommandUnmark(Command.matchedTasks);
-			currentCommand.executeByIndexAndType(local_index - 1);
+			currentCommand.executeByIndexAndType(index);
 			break;
 		case rename:
 			currentCommand = new CommandRename(Command.matchedTasks,
 					userCommand);
-			currentCommand.executeByIndexAndType(local_index - 1);
+			currentCommand.executeByIndexAndType(index);
 			break;
 		default:
 			commandFeedback = MESSAGE_INVALID_COMMAND;
