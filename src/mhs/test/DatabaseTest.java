@@ -28,7 +28,6 @@ import mhs.src.storage.persistence.task.TaskCategory;
 import mhs.src.storage.persistence.task.TimedTask;
 
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -73,10 +72,7 @@ public class DatabaseTest {
 	private static final String EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST = "Task does not exist!";
 	private static final String EXCEPTION_MESSAGE_NULL_PARAMETER = "%1$s cannot be null!";
 
-	private static final String PARAMETER_TASK_RECORD_FILE_NAME = "taskRecordFileName";
-	private static final String PARAMETER_TASK = "task";
 	private static final String PARAMETER_TASK_NAME = "taskName";
-	private static final String PARAMETER_START_AND_END_DATE_TIMES = "start and end date times";
 	private final static String TEST_TASK_RECORD_FILENAME = "testTaskRecordFile.json";
 
 	@Rule
@@ -135,6 +131,11 @@ public class DatabaseTest {
 	/**
 	 * Tests database query under local environment
 	 * 
+	 * Test Cases:
+	 * 1. Query by TaskId
+	 * 2. Query by TaskName
+	 * 3. Query by TaskCategory
+	 * 4. Query by DateTime
 	 */
 	public void testQueryDatabase() throws InvalidTaskFormatException,
 			IOException, ServiceException, TaskNotFoundException,
@@ -152,7 +153,7 @@ public class DatabaseTest {
 		testQueryByTaskId();
 		testQueryByTaskName();
 		testQueryByTaskCategory();
-		testQueryByDate();
+		testQueryByDateTime();
 	}
 
 	/**
@@ -160,11 +161,11 @@ public class DatabaseTest {
 	 * 
 	 * Tests for Query by date functionality
 	 * 
-	 * Test Case Considerations: 
+	 * Test Case Considerations:
 	 * 
-	 * 1. Test within boundary
+	 * 1. Test within boundary 
 	 * 2. Test on boundary 
-	 * 3. Test around boundary
+	 * 3. Test around boundary 
 	 * 4. Negative Tests
 	 * 
 	 * @throws NullPointerException
@@ -173,26 +174,24 @@ public class DatabaseTest {
 	 * @throws TaskNotFoundException
 	 * @throws InvalidTaskFormatException
 	 */
-	private void testQueryByDate() throws NullPointerException, IOException,
+	private void testQueryByDateTime() throws NullPointerException, IOException,
 			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
+		
 		// Query by date
 		new DateTime();
 		DateTime testStartDt = DateTime.now().minusDays(5).minusHours(1);
 		new DateTime();
 		DateTime testEndDt = DateTime.now().minusDays(1);
-		new DateTime();
-		DateTime queryDateTime = DateTime.now().minusDays(5);
-		new DateTime();
-		DateTime queryDateTime2 = DateTime.now().minusDays(5).plusHours(1);
 
 		task = new TimedTask(1, TEST_TASK_1_NAME, TaskCategory.TIMED,
 				testStartDt, testEndDt, testStartDt, testStartDt, testStartDt,
 				null, false, false);
 
 		database.update(task);
-		
+
 		// Test query within boundary
-		queryList = database.query(testStartDt.plusDays(1), testStartDt.plusDays(2), false, false);
+		queryList = database.query(testStartDt.plusDays(1),
+				testStartDt.plusDays(2), false, false);
 
 		assertEquals(1, queryList.size());
 		assertEquals(1, queryList.get(0).getTaskId());
@@ -201,7 +200,7 @@ public class DatabaseTest {
 		queryList = database.query(testStartDt, testStartDt, false, false);
 		assertEquals(1, queryList.size());
 		assertEquals(1, queryList.get(0).getTaskId());
-		
+
 		queryList = database.query(testEndDt, testEndDt, false, false);
 		assertEquals(1, queryList.size());
 		assertEquals(1, queryList.get(0).getTaskId());
@@ -221,19 +220,19 @@ public class DatabaseTest {
 		assertEquals(1, queryList.size());
 		assertEquals(1, queryList.get(0).getTaskId());
 
-		queryList = database.query(testStartDt.minusMinutes(1), testEndDt.plusMinutes(1),
-				false, false);
+		queryList = database.query(testStartDt.minusMinutes(1),
+				testEndDt.plusMinutes(1), false, false);
 		assertEquals(1, queryList.size());
 		assertEquals(1, queryList.get(0).getTaskId());
-		
-		// Negative Tests
-		queryList = database.query(testStartDt.minusMinutes(1), testStartDt.minusMinutes(1),
-				false, false);
-		assertEquals(0, queryList.size());		
 
-		queryList = database.query(testEndDt.plusMinutes(1), testEndDt.plusMinutes(1),
-				false, false);
-		assertEquals(0, queryList.size());		
+		// Negative Tests
+		queryList = database.query(testStartDt.minusMinutes(1),
+				testStartDt.minusMinutes(1), false, false);
+		assertEquals(0, queryList.size());
+
+		queryList = database.query(testEndDt.plusMinutes(1),
+				testEndDt.plusMinutes(1), false, false);
+		assertEquals(0, queryList.size());
 	}
 
 	/**
@@ -277,7 +276,6 @@ public class DatabaseTest {
 	 * Test query by task name
 	 */
 	private void testQueryByTaskName() {
-		// Test query by task name
 		// word query
 		queryList = database.query("assignment", false);
 		assertEquals(queryList.size(), 1);
