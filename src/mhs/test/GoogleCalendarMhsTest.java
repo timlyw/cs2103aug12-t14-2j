@@ -62,8 +62,8 @@ public class GoogleCalendarMhsTest {
 		accessToken = GoogleCalendarMhs.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
 		GoogleCalendarMhs gCal = new GoogleCalendarMhs(APP_NAME, USER_EMAIL, accessToken);
 
-		String startTime = "2013-06-01T13:00:00+08:00";
-		String endTime = "2013-06-30T15:00:00+08:00";
+		String startTime = "2013-07-01T13:00:00+08:00";
+		String endTime = "2013-07-30T15:00:00+08:00";
 		List<CalendarEventEntry> taskList = gCal.retrieveEvents(startTime, endTime);
 		display(taskList);
 		for(int i = 0; i < taskList.size(); i++) {
