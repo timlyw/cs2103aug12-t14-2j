@@ -1281,11 +1281,11 @@
     "taskName": "send email",
     "taskCategory": "TIMED",
     "taskCreated": "2012-11-06T13:19:46.000+08:00",
-    "taskUpdated": "2012-11-08T00:10:50.070+08:00",
+    "taskUpdated": "2012-11-08T23:26:30.494+08:00",
     "taskLastSync": "2012-11-06T13:19:46.000+08:00",
     "gCalTaskId": "gkh339aq44jv0bjc48l9q5qvfs@google.com",
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 112,
@@ -2673,11 +2673,11 @@
     "taskName": "undi",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-08T16:55:42.888+08:00",
-    "taskUpdated": "2012-11-08T16:55:42.888+08:00",
+    "taskUpdated": "2012-11-08T23:26:38.824+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 235,
@@ -2706,11 +2706,11 @@
     "taskName": "hi",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-08T16:56:28.766+08:00",
-    "taskUpdated": "2012-11-08T16:59:01.863+08:00",
+    "taskUpdated": "2012-11-08T23:26:28.456+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 238,
@@ -2739,7 +2739,19 @@
     "taskName": "jom",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-08T17:01:04.416+08:00",
-    "taskUpdated": "2012-11-08T17:01:04.416+08:00",
+    "taskUpdated": "2012-11-08T23:26:36.085+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "endDateTime": "2012-12-10T18:00:00.000+08:00",
+    "taskId": 241,
+    "taskName": "tello",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-08T23:56:37.267+08:00",
+    "taskUpdated": "2012-11-08T23:56:37.267+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
