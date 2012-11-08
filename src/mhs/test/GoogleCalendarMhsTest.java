@@ -1,3 +1,5 @@
+//@author A0088015H
+
 package mhs.test;
 
 import java.io.IOException;
@@ -25,7 +27,7 @@ import static org.junit.Assert.*;
  * 
  * It also tests for exception cases of null or invalid inputs
  * 
- * @author John
+ * @author John Wong
  *
  */
 
@@ -82,17 +84,14 @@ public class GoogleCalendarMhsTest {
 		accessToken = GoogleCalendarMhs.retrieveUserToken(APP_NAME, USER_EMAIL, USER_PASSWORD);
 		GoogleCalendarMhs gCal = new GoogleCalendarMhs(APP_NAME, USER_EMAIL, accessToken);
 
-		
 		String title1 = "mhs test event 1";
 		String startTime1 = "2013-01-16T13:00:00+08:00";
 		String endTime1 = "2013-01-16T15:00:00+08:00";
 		
-		
 		String title2 = "mhs test event 2";
 		String startTime2 = "2013-01-18T09:00:00+08:00";
 		String endTime2 = "2013-01-18T20:00:00+08:00";
-		
-
+	
 		List<CalendarEventEntry> initialList = gCal.retrieveEvents(startTime1, endTime2);
 
 		TimedTask newTask1 = createTask(title1, startTime1, endTime1);
@@ -109,6 +108,22 @@ public class GoogleCalendarMhsTest {
 		gCal.deleteEvents(startTime1, endTime2);
 	}
 	
+	/**
+	 * Test the creation, retrieval, update and delete methods for GoogleCalendarMhs
+	 * 
+	 * 1) create a task "mhs test time calendar" on 12 Jan 2013, 11pm to 13 Jan 2012, 1am
+	 * 2) retrieve the task using GoogleCalendarMhs and check whether the retrieved parameters
+	 * 	  match the parameters used for creation
+	 * 3) update the task title, start and end time
+	 * 4) retrieve the task again and check if the parameters match the parameters used to 
+	 *    update the task
+	 * 5) delete the task and try to retrieve it with GoogleCalendarMhs
+	 * 6) check that the retrieve method for the task now returns null
+	 * 
+	 * @throws NullPointerException
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	@Test
 	public void testCrudForSingleEvent() throws NullPointerException, IOException, ServiceException {
 		// test createEvent
@@ -164,6 +179,13 @@ public class GoogleCalendarMhsTest {
 		assertEquals(null, deletedTask);
 	}
 	
+	/**
+	 * creates a basic TimedTask for testing purposes
+	 * @param title
+	 * @param startTime
+	 * @param endTime
+	 * @return created task
+	 */
 	private TimedTask createTask(String title, String startTime, String endTime) {
 		DateTime start = DateTime.parse(startTime);
 		DateTime end = DateTime.parse(endTime);
