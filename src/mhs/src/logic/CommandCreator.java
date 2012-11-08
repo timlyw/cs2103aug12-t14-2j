@@ -52,11 +52,10 @@ public class CommandCreator {
 				userOutputString = executeCommand(userCommand);
 				// Add to undo stack if undoable
 			}
-		} else {   
+		} else {
 			previousCommand.executeByIndex(userCommand.getIndex() - 1);
 			currentState = previousCommand.getCurrentState();
 			commandFeedback = previousCommand.getCommandFeedback();
-			System.out.println(currentState + "//" + commandFeedback);
 		}
 		previousCommand = currentCommand;
 		logExitMethod("CommandCreator");
@@ -212,7 +211,6 @@ public class CommandCreator {
 	}
 
 	public String getState() {
-		System.out.println(currentState);
 		return currentState;
 	}
 
