@@ -252,7 +252,7 @@ public class CommandInfo {
 			
 		}
 		if(index != 0)
-			outString += (" at" + (index));
+			outString += (" at index" + (index));
 		if (taskName != null)
 			outString += (" " + taskName);
 		if (edittedName != null)

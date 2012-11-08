@@ -1,3 +1,5 @@
+//@author A0088669A
+
 package mhs.src.logic;
 
 import java.io.IOException;
@@ -84,6 +86,8 @@ public class CommandSearch extends Command {
 			} catch (IOException e) {
 				matchedTasks = null;
 			}
+			break;
+		default:
 			break;
 		}
 		logExitMethod("CommandSearch");
