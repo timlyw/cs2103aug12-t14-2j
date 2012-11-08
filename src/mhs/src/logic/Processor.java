@@ -1,3 +1,5 @@
+//@author A0088669A
+
 package mhs.src.logic;
 
 import java.io.IOException;
@@ -160,8 +162,6 @@ public class Processor {
 				currentState = getHelp();
 				break;
 			default:
-				System.out.println("user command " + userCommand);
-
 				userOutputString = createCommand.createCommand(userCommand);
 				commandFeedback = createCommand.getFeedback();
 				currentState = createCommand.getState();

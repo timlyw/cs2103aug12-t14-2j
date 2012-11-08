@@ -1,3 +1,5 @@
+//@author A0088669A
+
 package mhs.src.logic;
 
 import java.util.logging.Logger;
@@ -50,11 +52,11 @@ public class CommandCreator {
 				userOutputString = executeCommand(userCommand);
 				// Add to undo stack if undoable
 			}
-		} else {
+		} else {   
 			previousCommand.executeByIndex(userCommand.getIndex() - 1);
 			currentState = previousCommand.getCurrentState();
-			commandFeedback = userOutputString;
-
+			commandFeedback = previousCommand.getCommandFeedback();
+			System.out.println(currentState + "//" + commandFeedback);
 		}
 		previousCommand = currentCommand;
 		logExitMethod("CommandCreator");
@@ -148,7 +150,7 @@ public class CommandCreator {
 				|| userCommand.getCommandEnum() == CommandKeyWords.deadline
 				|| userCommand.getCommandEnum() == CommandKeyWords.timed
 				|| userCommand.getCommandEnum() == CommandKeyWords.home) {
-			
+
 			Command.resetDisplayIndex();
 		}
 		if (currentCommand.isUndoable()) {
@@ -156,7 +158,6 @@ public class CommandCreator {
 		}
 		currentState = currentCommand.getCurrentState();
 		commandFeedback = currentCommand.getCommandFeedback();
-		System.out.println(commandFeedback);
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return userOutputString;
 	}
@@ -211,6 +212,7 @@ public class CommandCreator {
 	}
 
 	public String getState() {
+		System.out.println(currentState);
 		return currentState;
 	}
 

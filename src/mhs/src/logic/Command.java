@@ -1,3 +1,5 @@
+//@author A0088669A
+
 package mhs.src.logic;
 
 import java.io.IOException;
@@ -386,6 +388,7 @@ public abstract class Command {
 				resultList = queryTask(lastQueryCommandInfo);
 				break;
 			case QUERY_BY_NAME:
+				System.out.println("testing");
 				resultList = queryTask(lastQueryCommandInfo);
 				break;
 			case QUERY_BY_CATEGORY:
