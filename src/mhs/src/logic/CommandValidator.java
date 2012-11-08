@@ -27,6 +27,7 @@ public class CommandValidator {
 	private static final Logger logger = MhsLogger.getLogger();
 	private int index;
 	private CommandInfo command;
+	private boolean searchStartDateFlag;
 
 	/**
 	 * This is the method to validate commandInfo parameters and sets up CommandInfo.
@@ -49,6 +50,8 @@ public class CommandValidator {
 		
 		logEnterMethod("validateCommand");
 
+		searchStartDateFlag = false;
+		
 		now = DateTime.now();
 		for (CommandInfo.CommandKeyWords c : CommandInfo.CommandKeyWords.values()) {
 			if (commandInput == c.name()) {
@@ -243,6 +246,7 @@ public class CommandValidator {
 		if (startDateInput != null && startTimeInput == null) {
 			startTimeInput = new LocalTime(23 , 59);
 			startDate = startDateInput.toDateTime(startTimeInput);
+			searchStartDateFlag = true;
 		}
 		logExitMethod("validateStartDateNoStartTime");
 	}
@@ -320,6 +324,9 @@ public class CommandValidator {
 			endDate = null;		
 		}
 		if (commandEnum == CommandInfo.CommandKeyWords.search) {
+			if(searchStartDateFlag == true){
+				startDate = startDate.minusHours(23).minusMinutes(59);
+			}
 			enforceDateRange();
 			edittedName = null;
 		}
