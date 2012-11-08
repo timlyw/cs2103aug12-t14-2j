@@ -90,13 +90,13 @@ public class CommandParser {
 		assert (parseString != null);
 		parseString = setEnvironment(parseString);
 		
-		//setCommand(parseString);
-		//getIndexAtFirstLocation(parseString);
-		//parseString = setNameInQuotationMarks(parseString);
-		//setTime(parseString);
-		//setDate(parseString);
-		//setIndex(parseString);
-		//setName(parseString);
+		setCommand(parseString);
+		getIndexAtFirstLocation(parseString);
+		parseString = setNameInQuotationMarks(parseString);
+		setTime(parseString);
+		setDate(parseString);
+		setIndex(parseString);
+		setName(parseString);
 		
 		logExitMethod("getParsedCommand");
 		return setUpCommandObject(command, taskName, edittedName, startDate,
