@@ -20,10 +20,8 @@ import com.google.gdata.util.ServiceException;
 /**
  * DatabaseFactoryTest
  * 
- * jUnit test for DatabaseFactoryTest
- * 
- * jUnit Tests
- * 
+ * jUnit tests for DatabaseFactoryTest
+ *  
  * Exceptions
  * 1. testDatabaseFactoryAlreadyInstantiatedExceptionExceptions
  * 2. testDatabaseFactoryNotInstantiatedExceptionExceptions
@@ -41,7 +39,6 @@ public class DatabaseFactoryTest {
 	private static final String PARAMETER_TASK_RECORD_FILE_NAME = "taskRecordFileName";
 	private static final String EXCEPTION_MESSAGE_DATABASE_FACTORY_NOT_INSTANTIATED = "DatabaseFactory not instantiated. Call getDatabaseFactory first.";
 	private static final String EXCEPTION_MESSAGE_DATABASE_FACTORY_ALREADY_INSTANTIATED = "DatabaseFactory already instantiated. Destory DatabaseFactory first.";
-	private static final String EXCEPTION_MESSAGE_DATABASE_WITH_PARAMETERS_ALREADY_INSTANTIATED = "Database with parameters %1$s already instantiated";
 	private static final String EXCEPTION_MESSAGE_NULL_PARAMETER = "%1$s cannot be null!";
 
 	@Rule
@@ -53,27 +50,58 @@ public class DatabaseFactoryTest {
 	}
 
 	@Test
+	/**
+	 * Test DatabaseFactoryAlreadyInstantiatedExceptionExceptions
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws TaskNotFoundException
+	 * @throws DatabaseAlreadyInstantiatedException
+	 * @throws DatabaseFactoryNotInstantiatedException
+	 */
 	public void testDatabaseFactoryAlreadyInstantiatedExceptionExceptions()
 			throws IllegalArgumentException, IOException, ServiceException,
 			TaskNotFoundException, DatabaseAlreadyInstantiatedException,
 			DatabaseFactoryNotInstantiatedException {
 		thrown.expect(DatabaseAlreadyInstantiatedException.class);
-		thrown.expectMessage(EXCEPTION_MESSAGE_DATABASE_FACTORY_ALREADY_INSTANTIATED);
+		thrown.expectMessage(EXCEPTION_MESSAGE_DATABASE_FACTORY_ALREADY_INSTANTIATED);		
 		DatabaseFactory.initializeDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
-		DatabaseFactory.initializeDatabaseFactory(TEST_TASK_RECORD_FILENAME, true);
+		// Initialize DatabaseFactory again without destroying
+		DatabaseFactory.initializeDatabaseFactory(TEST_2_TASK_RECORD_FILENAME, true);		
 	}
 
 	@Test
+	/**
+	 * Test DatabaseFactoryNotInstantiatedException
+	 *  
+	 * @throws IllegalArgumentException
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws TaskNotFoundException
+	 * @throws DatabaseAlreadyInstantiatedException
+	 * @throws DatabaseFactoryNotInstantiatedException
+	 */
 	public void testDatabaseFactoryNotInstantiatedExceptionExceptions()
 			throws IllegalArgumentException, IOException, ServiceException,
 			TaskNotFoundException, DatabaseAlreadyInstantiatedException,
 			DatabaseFactoryNotInstantiatedException {
 		thrown.expect(DatabaseFactoryNotInstantiatedException.class);
 		thrown.expectMessage(EXCEPTION_MESSAGE_DATABASE_FACTORY_NOT_INSTANTIATED);
-		Database testDatabase = DatabaseFactory.getDatabaseInstance();
+		// Get database instance without intializing DatabaseFactory
+		DatabaseFactory.getDatabaseInstance();
 	}
 
 	@Test
+	/**
+	 * Tests for IllegalArgumentException 
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws TaskNotFoundException
+	 * @throws DatabaseAlreadyInstantiatedException
+	 */
 	public void testDatabaseFactoryIllegalArugmentsExceptions()
 			throws IllegalArgumentException, IOException, ServiceException,
 			TaskNotFoundException, DatabaseAlreadyInstantiatedException {
@@ -84,6 +112,19 @@ public class DatabaseFactoryTest {
 	}
 
 	@Test
+	/**
+	 * Test DatabaseFactory functionality
+	 * 
+	 * 1. DatabaseFactory initialization
+	 * 
+	 * 2. Database Creation 
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws DatabaseAlreadyInstantiatedException
+	 * @throws DatabaseFactoryNotInstantiatedException
+	 */
 	public void testDatabaseFactory() throws IllegalArgumentException,
 			IOException, ServiceException,
 			DatabaseAlreadyInstantiatedException,
