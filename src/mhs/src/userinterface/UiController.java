@@ -1,4 +1,4 @@
-package mhs.src.ui;
+package mhs.src.userinterface;
 
 /**
  * This class controls the interaction between MhsFrame and Processor
