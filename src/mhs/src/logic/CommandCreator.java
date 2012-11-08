@@ -1,3 +1,5 @@
+//@author A0088669A
+
 package mhs.src.logic;
 
 import java.util.logging.Logger;
@@ -53,8 +55,7 @@ public class CommandCreator {
 		} else {
 			previousCommand.executeByIndex(userCommand.getIndex() - 1);
 			currentState = previousCommand.getCurrentState();
-			commandFeedback = userOutputString;
-
+			commandFeedback = previousCommand.getCommandFeedback();
 		}
 		previousCommand = currentCommand;
 		logExitMethod("CommandCreator");
@@ -105,13 +106,7 @@ public class CommandCreator {
 			currentCommand.executeCommand();
 			break;
 		case undo:
-			if (undoListCommands.isEmpty()) {
-				userOutputString = MESSAGE_NOTHING_TO_UNDO;
-			} else {
-				Command undoCommand = undoListCommands.pop();
-				userOutputString = undoCommand.undo();
-				redoListCommands.push(undoCommand);
-			}
+			userOutputString = undoLastCommand();
 			break;
 		case redo:
 			if (redoListCommands.isEmpty()) {
@@ -143,21 +138,59 @@ public class CommandCreator {
 			userOutputString = MESSAGE_INVALID_COMMAND;
 			break;
 		}
+		updateDisplayIndex(userCommand);
+		pushToUndoStack();
+		currentState = currentCommand.getCurrentState();
+		commandFeedback = currentCommand.getCommandFeedback();
+		logger.exiting(getClass().getName(), this.getClass().getName());
+		return userOutputString;
+	}
+
+	/**
+	 * Pushes comamnd to undo stack if undoable
+	 */
+	private void pushToUndoStack() {
+		logEnterMethod("pushToUndoStack");
+		if (currentCommand.isUndoable()) {
+			undoListCommands.push(currentCommand);
+		}
+		logExitMethod("pushToRedoStack");
+	}
+
+	/**
+	 * Ensures that writing display brings the screen back to the first page
+	 * 
+	 * @param userCommand
+	 */
+	private void updateDisplayIndex(CommandInfo userCommand) {
+		logEnterMethod("updateDisplayIndex");
 		if (userCommand.getCommandEnum() == CommandKeyWords.search
 				|| userCommand.getCommandEnum() == CommandKeyWords.floating
 				|| userCommand.getCommandEnum() == CommandKeyWords.deadline
 				|| userCommand.getCommandEnum() == CommandKeyWords.timed
 				|| userCommand.getCommandEnum() == CommandKeyWords.home) {
-			
+
 			Command.resetDisplayIndex();
 		}
-		if (currentCommand.isUndoable()) {
-			undoListCommands.push(currentCommand);
+		logExitMethod("updateDisplayIndex");
+	}
+
+	/**
+	 * Pops from undo stack and calls the undo method
+	 * 
+	 * @return
+	 */
+	private String undoLastCommand() {
+		logEnterMethod("undoLastCommand");
+		String userOutputString;
+		if (undoListCommands.isEmpty()) {
+			userOutputString = MESSAGE_NOTHING_TO_UNDO;
+		} else {
+			Command undoCommand = undoListCommands.pop();
+			redoListCommands.push(undoCommand);
+			userOutputString = undoCommand.undo();
 		}
-		currentState = currentCommand.getCurrentState();
-		commandFeedback = currentCommand.getCommandFeedback();
-		System.out.println(commandFeedback);
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("undoLastCommand");
 		return userOutputString;
 	}
 
@@ -169,7 +202,7 @@ public class CommandCreator {
 	 * @return output String
 	 */
 	private String executeCommandByIndex(CommandInfo userCommand) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("executeCommandByIndex");
 		String userOutputString = new String();
 		int local_index = userCommand.getIndex();
 		switch (userCommand.getCommandEnum()) {
@@ -201,12 +234,10 @@ public class CommandCreator {
 			commandFeedback = MESSAGE_INVALID_COMMAND;
 			break;
 		}
-		if (currentCommand.isUndoable()) {
-			undoListCommands.push(currentCommand);
-		}
+		pushToUndoStack();
 		currentState = currentCommand.getCurrentState();
 		commandFeedback = currentCommand.getCommandFeedback();
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		logExitMethod("executeCommandByIndex");
 		return userOutputString;
 	}
 

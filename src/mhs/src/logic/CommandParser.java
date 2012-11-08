@@ -6,7 +6,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
-import mhs.src.storage.Database;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -17,18 +16,18 @@ import org.joda.time.LocalTime;
  */
 public class CommandParser {
 
-	//These are the regex strings
+	// These are the regex strings
 	private static final String REGEX_WHITE_SPACES = "\\s+";
 	private static final String REGEX_LEFT_BRACER = "\\<";
 	private static final String REGEX_RIGHT_BRACER = "\\>";
-	
-	//These are the commands that allow indexing
+
+	// These are the commands that allow indexing
 	private static final String COMMAND_UNMARK = "unmark";
 	private static final String COMMAND_RENAME = "rename";
 	private static final String COMMAND_MARK = "mark";
 	private static final String COMMAND_EDIT = "edit";
 	private static final String COMMAND_REMOVE = "remove";
-	
+
 	private DateExtractor dateParser;
 	private TimeExtractor timeParser;
 	private CommandExtractor commandExtractor;
@@ -86,10 +85,10 @@ public class CommandParser {
 	 */
 	public CommandInfo getParsedCommand(String parseString) {
 		logEnterMethod("getParsedCommand");
-		
+
 		assert (parseString != null);
 		parseString = setEnvironment(parseString);
-		
+
 		setCommand(parseString);
 		getIndexAtFirstLocation(parseString);
 		parseString = setNameInQuotationMarks(parseString);
@@ -97,7 +96,7 @@ public class CommandParser {
 		setDate(parseString);
 		setIndex(parseString);
 		setName(parseString);
-		
+
 		logExitMethod("getParsedCommand");
 		return setUpCommandObject(command, taskName, edittedName, startDate,
 				startTime, endDate, endTime, index);
@@ -108,22 +107,22 @@ public class CommandParser {
 	 * Method to get a single index at the first location of the string.
 	 * 
 	 * @param parseString
-	 * 			The string that needs to be parsed.
+	 *            The string that needs to be parsed.
 	 */
 	private void getIndexAtFirstLocation(String parseString) {
 		logEnterMethod("getIndexAtFirstLocation");
 		try {
 			String[] processArray = parseString.split(REGEX_WHITE_SPACES);
-			if (processArray.length > 0) {
+			if (processArray.length == 1) {
 				if (isInteger(processArray[0])) {
 					index = Integer.parseInt(processArray[0]);
 					command = null;
 				}
-			}
-		} catch (NullPointerException e) {
+			} 
+			}catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return;
-		}catch(ArrayIndexOutOfBoundsException e){
+		} catch (ArrayIndexOutOfBoundsException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return;
 		}
@@ -134,7 +133,7 @@ public class CommandParser {
 	 * Method to get an index at the second position of the string.
 	 * 
 	 * @param parseString
-	 * 			The String that needs to be parsed.
+	 *            The String that needs to be parsed.
 	 */
 	private void setIndex(String parseString) {
 		logEnterMethod("setIndex");
@@ -160,7 +159,7 @@ public class CommandParser {
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return;
-		}catch(ArrayIndexOutOfBoundsException e){
+		} catch (ArrayIndexOutOfBoundsException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return;
 		}
@@ -195,13 +194,13 @@ public class CommandParser {
 	 */
 	private String setEnvironment(String parseString) {
 		logEnterMethod("setEnvironment");
-		
+
 		setEnvironment();
 		parseString = removeHtmlBrackets(parseString);
-		
+
 		logExitMethod("setEnvironment");
 		return parseString;
-		
+
 	}
 
 	/**
@@ -209,14 +208,15 @@ public class CommandParser {
 	 */
 	private String removeHtmlBrackets(String parseString) {
 		logEnterMethod("removeHtmlBrackets");
-		parseString = parseString.replaceAll(REGEX_LEFT_BRACER,"");
-		parseString = parseString.replaceAll(REGEX_RIGHT_BRACER,"");
+		parseString = parseString.replaceAll(REGEX_LEFT_BRACER, "");
+		parseString = parseString.replaceAll(REGEX_RIGHT_BRACER, "");
 		logExitMethod("removeHtmlBrackets");
 		return parseString;
 	}
 
 	/**
-	 * This is a function to set up the environment clearing all parameters and resetting flags.
+	 * This is a function to set up the environment clearing all parameters and
+	 * resetting flags.
 	 */
 	private void setEnvironment() {
 		logEnterMethod("setEnvironment");
@@ -389,7 +389,7 @@ public class CommandParser {
 	private CommandInfo setUpCommandObject(String command, String taskName,
 			String edittedName, LocalDate startDate, LocalTime startTime,
 			LocalDate endDate, LocalTime endTime, int index) {
-		
+
 		logEnterMethod("setUpCommandObject");
 		CommandValidator commandValidator = new CommandValidator();
 		CommandInfo object = commandValidator.validateCommand(command,
@@ -398,7 +398,7 @@ public class CommandParser {
 		logExitMethod("setUpCommandObject");
 		return object;
 	}
-	
+
 	/**
 	 * Logger enter method
 	 * 
