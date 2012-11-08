@@ -90,6 +90,7 @@ class Syncronize {
 			if (this.database.initializeGoogleCalendarService()
 					&& !disableSyncronize) {
 				enableRemoteSync();
+				syncronizeDatabases();
 			} else {
 				disableRemoteSync();
 			}
