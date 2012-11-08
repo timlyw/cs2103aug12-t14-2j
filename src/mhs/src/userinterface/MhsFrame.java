@@ -1,16 +1,6 @@
-package mhs.src.userinterface;
+//@author A0088015H
 
-/**
- * This class provides the interface to display program output to user and
- * to read user input, this is provided by:
- * 		1) Display Screen: Show program output to user
- * 		2) Feedback Screen: Show command feedback to user
- * 		3) Input Box: two format types available	
- * 			a) plain text input
- * 			b) password input
- * 
- * @author John Wong
- */
+package mhs.src.userinterface;
 
 import java.awt.AWTException;
 import java.awt.Color;
@@ -40,6 +30,18 @@ import javax.swing.event.DocumentListener;
 
 import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
+
+/**
+ * MhsFrame provides the interface to display program output to user and
+ * to read user input, this is provided by:
+ * 		1) Display Screen: Show program output to user
+ * 		2) Feedback Screen: Show command feedback to user
+ * 		3) Input Box: two format types available	
+ * 			a) plain text input
+ * 			b) password input
+ * 
+ * @author John Wong
+ */
 
 public class MhsFrame extends JFrame {
 
@@ -296,6 +298,31 @@ public class MhsFrame extends JFrame {
 			this.setExtendedState(JFrame.NORMAL);
 		}
 	}
+	
+	public boolean framePanelInitialized() {
+		return framePanel.getParent()== this.getContentPane();
+	}
+
+	public boolean titleScreenInitialized() {
+		return titleScreen.getParent().getParent() == framePanel;
+	}
+	
+	public boolean displayScreenInitialized() {
+		return displayScreen.getParent().getParent() == framePanel;
+	}
+	
+	public boolean feedbackScreenInitialized() {
+		return feedbackScreen.getParent().getParent() == framePanel;
+	}
+
+	public boolean plainTextBoxInitialized() {
+		return plainTextBox.getParent().getParent() == framePanel;
+	}
+	
+	public boolean passwordBoxInitialized() {
+		return passwordBox.getParent().getParent() == framePanel;
+	}
+	
 	
 	/**
 	 * private constructor to initialize an instance of MhsFrame

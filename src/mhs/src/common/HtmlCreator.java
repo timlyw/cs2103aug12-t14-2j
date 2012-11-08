@@ -1,4 +1,13 @@
+//@author A0088015H
+
 package mhs.src.common;
+
+/**
+ * This class contains the constants and methods to create basic HTML for MHS
+ * 
+ * @author John Wong
+ *
+ */
 
 public class HtmlCreator {
 	private static final String DEFAULT_FONT = "calibri";
