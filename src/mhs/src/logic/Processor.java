@@ -36,13 +36,14 @@ public class Processor {
 	private static final int HELP_NAME = 6;
 	private static final int HELP_COMMAND = 7;
 
+	private static Processor processor;
 	private Database dataHandler;
 	private CommandParser commandParser;
 	private boolean usernameIsExpected = false;
 	private String username;
 	private String password;
 	private boolean userIsLoggedIn;
-	private CommandCreator createCommand;
+	private CommandCreator commandCreator;
 
 	private ArrayList<StateListener> stateListeners = new ArrayList<StateListener>();
 	private String commandFeedback = null;
@@ -62,7 +63,7 @@ public class Processor {
 	/**
 	 * Default Processor Constructor
 	 */
-	public Processor() {
+	private Processor() {
 		try {
 			DatabaseFactory.initializeDatabaseFactory("taskRecordFile.json",
 					false);
@@ -82,8 +83,15 @@ public class Processor {
 		}
 		userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
 		commandParser = CommandParser.getCommandParser();
-		createCommand = new CommandCreator();
+		commandCreator = CommandCreator.getCommandCreator();
 		userCommand = new CommandInfo();
+	}
+
+	public static Processor getProcessor() {
+		if (processor == null) {
+			processor = new Processor();
+		}
+		return processor;
 	}
 
 	public String getHeaderText() {
@@ -208,9 +216,9 @@ public class Processor {
 	}
 
 	private void commandByIndexOnly(CommandInfo userCommand) {
-		createCommand.createCommand(userCommand);
-		commandFeedback = createCommand.getFeedback();
-		currentState = createCommand.getState();
+		commandCreator.createCommand(userCommand);
+		commandFeedback = commandCreator.getFeedback();
+		currentState = commandCreator.getState();
 	}
 
 	private void helpByIndex(CommandInfo userCommand) {

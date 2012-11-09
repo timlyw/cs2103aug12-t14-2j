@@ -20,6 +20,7 @@ public class CommandCreator {
 	private static final String MESSAGE_NOTHING_TO_UNDO = "Nothing to undo";
 	private static final String MESSAGE_NOTHING_TO_REDO = "Nothing to redo";
 
+	private static CommandCreator commandCreator;
 	private Command currentCommand;
 	private Command previousCommand;
 	private Stack<Command> undoListCommands;
@@ -28,11 +29,18 @@ public class CommandCreator {
 	private String commandFeedback = "feedback";
 	private String currentState = "state";
 
-	public CommandCreator() {
+	private CommandCreator() {
 		logEnterMethod("CommandCreator");
 		undoListCommands = new Stack<Command>();
 		redoListCommands = new Stack<Command>();
 		logExitMethod("CommandCreator");
+	}
+
+	public static CommandCreator getCommandCreator() {
+		if (commandCreator == null) {
+			commandCreator = new CommandCreator();
+		}
+		return commandCreator;
 	}
 
 	/**
