@@ -95,7 +95,9 @@ public class CommandExtractor {
 	 */
 	public boolean checkCommand(String parseString) {
 		logEnterMethod("isCommand");
-		assert (parseString != null);
+		if(parseString == null){
+			return false;
+		}
 		for (CommandKeyWord c : CommandKeyWord.values()) {
 			if (parseString.equalsIgnoreCase(c.name())) {
 				logExitMethod("isCommand");

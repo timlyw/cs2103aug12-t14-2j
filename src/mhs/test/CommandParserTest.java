@@ -31,7 +31,7 @@ public class CommandParserTest {
 	@Before
 	public void setUpEnvironment() {
 
-		day = 5;
+		day = 7;
 		month = 11;
 		year = 2012;
 		DateTime now = new DateTime(year, month, day, 12 , 0);
@@ -92,13 +92,25 @@ public class CommandParserTest {
 		LocalDate now = new LocalDate(year, month, day);
 
 		
-		testList = dateExtractor.processDate("monday");
+		testList = dateExtractor.extractDate("monday");
 		expectedList = new LinkedList<LocalDate>();
 		testStartDate = new LocalDate(2012, 11, 12);
 		expectedList.add(testStartDate);
 		assertEquals(expectedList, testList);
 		
-		testList = dateExtractor.processDate("10 10 2012 to 17 oct 2012");
+		testList = dateExtractor.extractDate("weD");
+		expectedList = new LinkedList<LocalDate>();
+		testStartDate = new LocalDate(2012, 11, 14);
+		expectedList.add(testStartDate);
+		assertEquals(expectedList, testList);
+		
+		testList = dateExtractor.extractDate("sunday");
+		expectedList = new LinkedList<LocalDate>();
+		testStartDate = new LocalDate(2012, 11, 11);
+		expectedList.add(testStartDate);
+		assertEquals(expectedList, testList);
+		
+		testList = dateExtractor.extractDate("10 10 2012 to 17 oct 2012");
 		expectedList = new LinkedList<LocalDate>();
 		testStartDate = new LocalDate(2012, 10, 10);
 		testEndDate = new LocalDate(2012, 10, 17);
@@ -106,7 +118,7 @@ public class CommandParserTest {
 		expectedList.add(testEndDate);
 		assertEquals(expectedList, testList);
 
-		testList = dateExtractor.processDate("today to tomorrow");
+		testList = dateExtractor.extractDate("today to tomorrow");
 		testStartDate = now;
 		testEndDate = now.plusDays(1);
 		expectedList = new LinkedList<LocalDate>();
@@ -114,7 +126,7 @@ public class CommandParserTest {
 		expectedList.add(testEndDate);
 		assertEquals(expectedList, testList);
 
-		testList = dateExtractor.processDate("today to 5/12/2012");
+		testList = dateExtractor.extractDate("today to 5/12/2012");
 		testStartDate = now;
 		testEndDate = new LocalDate(2012, 12, 5);
 		expectedList = new LinkedList<LocalDate>();
@@ -122,7 +134,7 @@ public class CommandParserTest {
 		expectedList.add(testEndDate);
 		assertEquals(expectedList, testList);
 		
-		testList = dateExtractor.processDate("today to 5/12");
+		testList = dateExtractor.extractDate("today to 5/12");
 		testStartDate = now;
 		testEndDate = new LocalDate(year, 12, 5);
 		expectedList = new LinkedList<LocalDate>();
@@ -130,7 +142,7 @@ public class CommandParserTest {
 		expectedList.add(testEndDate);
 		assertEquals(expectedList, testList);
 
-		testList = dateExtractor.processDate("17 oct to 21 10");
+		testList = dateExtractor.extractDate("17 oct to 21 10");
 		testStartDate = new LocalDate(year+1, 10, 17);
 		testEndDate = new LocalDate(year+1, 10, 21);
 		expectedList = new LinkedList<LocalDate>();
@@ -138,7 +150,7 @@ public class CommandParserTest {
 		expectedList.add(testEndDate);
 		assertEquals(expectedList, testList);
 
-		testList = dateExtractor.processDate("oct 2012");
+		testList = dateExtractor.extractDate("oct 2012");
 		testStartDate = new LocalDate(2012, 10, 1);
 		testEndDate = new LocalDate(2012, 11, 1);
 		expectedList = new LinkedList<LocalDate>();
@@ -146,7 +158,7 @@ public class CommandParserTest {
 		expectedList.add(testEndDate);
 		assertEquals(expectedList, testList);
 		
-		testList = dateExtractor.processDate("this month");
+		testList = dateExtractor.extractDate("this month");
 		testStartDate = new LocalDate(year, month, day);
 		testEndDate = new LocalDate(year, month, 30);
 		expectedList = new LinkedList<LocalDate>();
@@ -154,7 +166,7 @@ public class CommandParserTest {
 		expectedList.add(testEndDate);
 		assertEquals(expectedList, testList);
 		
-		testList = dateExtractor.processDate("this week");
+		testList = dateExtractor.extractDate("this week");
 		testStartDate = new LocalDate(year, month, day);
 		testEndDate = new LocalDate(year, month, 11);
 		expectedList = new LinkedList<LocalDate>();
@@ -162,7 +174,7 @@ public class CommandParserTest {
 		expectedList.add(testEndDate);
 		assertEquals(expectedList, testList);
 		
-		testList = dateExtractor.processDate("this year");
+		testList = dateExtractor.extractDate("this year");
 		testStartDate = new LocalDate(year, month, day);
 		testEndDate = new LocalDate(year, 12, 31);
 		expectedList = new LinkedList<LocalDate>();
@@ -170,7 +182,7 @@ public class CommandParserTest {
 		expectedList.add(testEndDate);
 		assertEquals(expectedList, testList);
 		
-		testList = dateExtractor.processDate("this weekend");
+		testList = dateExtractor.extractDate("this weekend");
 		testStartDate = new LocalDate(2012, 11, 10);
 		testEndDate = new LocalDate(2012, 11, 11);
 		expectedList = new LinkedList<LocalDate>();
@@ -178,13 +190,13 @@ public class CommandParserTest {
 		expectedList.add(testEndDate);
 		assertEquals(expectedList, testList);
 		
-		testList = dateExtractor.processDate("today");
+		testList = dateExtractor.extractDate("today");
 		testStartDate = new LocalDate(year, month, day);
 		expectedList = new LinkedList<LocalDate>();
 		expectedList.add(testStartDate);
 		assertEquals(expectedList, testList);
 		
-		testList = dateExtractor.processDate("ToMorrow");
+		testList = dateExtractor.extractDate("ToMorrow");
 		testStartDate = new LocalDate(year, month, day+1);
 		expectedList = new LinkedList<LocalDate>();
 		expectedList.add(testStartDate);
@@ -295,6 +307,27 @@ public class CommandParserTest {
 				.getParsedCommand("1AM");
 		expectedStartDate = new DateTime(year, month, day+1, 1, 0);
 		expectedEndDate = new DateTime(year, month, day+2, 1, 0);
+		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.search,
+				null, null, expectedStartDate, expectedEndDate, 0);
+		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
+		
+		testCommand = commandParser.getParsedCommand("29 feb 2013");
+		expectedStartDate = new DateTime(2013, 3, 1, 0, 0);
+		expectedEndDate = new DateTime(2013, 3, 2 , 0, 0);
+		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.search,
+				null, null, expectedStartDate, expectedEndDate, 0);
+		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
+		
+		testCommand = commandParser.getParsedCommand("this year");
+		expectedStartDate = new DateTime(2012, month, day, 0, 0);
+		expectedEndDate = new DateTime(2012, 12, 31 , 23, 59);
+		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.search,
+				null, null, expectedStartDate, expectedEndDate, 0);
+		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
+		
+		testCommand = commandParser.getParsedCommand("search 2013");
+		expectedStartDate = new DateTime(2013, 1, 1, 0, 0);
+		expectedEndDate = new DateTime(2013, 12, 31 , 23, 59);
 		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.search,
 				null, null, expectedStartDate, expectedEndDate, 0);
 		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
