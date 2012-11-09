@@ -90,6 +90,9 @@ class Syncronize {
 		logExitMethod("Syncronize");
 	}
 
+	/**
+	 * Initialize Syncronize Background Executor
+	 */
 	private void initializeSyncronizeBackgroundExecutor() {
 		syncronizeBackgroundExecutor = new ScheduledThreadPoolExecutor(
 				THREADS_TO_INITIALIZE_1);
@@ -188,7 +191,7 @@ class Syncronize {
 		if (futureSyncronizeBackgroundTask == null) {
 			return;
 		}
-		
+
 		logger.log(Level.INFO, "Waiting for background task to complete.");
 		futureSyncronizeBackgroundTask.get(maxExecutionTimeInSeconds,
 				TimeUnit.SECONDS);
@@ -197,6 +200,11 @@ class Syncronize {
 		logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
 	}
 
+	/**
+	 * Wait for background push sync tasks
+	 * 
+	 * @throws InterruptedException
+	 */
 	private synchronized void waitForBackgroundPushSyncTasks()
 			throws InterruptedException {
 		logEnterMethod("waitForBackgroundPushSyncTasks");
@@ -211,19 +219,13 @@ class Syncronize {
 	/**
 	 * Syncronizes Databases (local storage and google calendar service)
 	 * 
-	 * Sets up pull-push syncronize as background task.
-	 * 
-	 * @throws ServiceException
-	 * @throws UnknownHostException
-	 * @throws IOException
-	 * @throws InvalidTaskFormatException
-	 * @throws TaskNotFoundException
-	 * @return
+	 * @return true if successful 
 	 */
 	boolean syncronizeDatabases() {
 		logEnterMethod("syncronizeDatabases");
 		// checks if user is logged out
 		if (Database.googleCalendar == null) {
+			disableRemoteSync();
 			return false;
 		}
 		SyncAllTasks syncronizeAllTasks = new SyncAllTasks(this);
@@ -281,27 +283,7 @@ class Syncronize {
 	 */
 	private void initializeTimedPullSyncRunnableTask() {
 		logEnterMethod("initializeTimedPullSyncRunnableTask");
-		pullSyncTimedBackgroundTask = new TimerTask() {
-			@Override
-			public void run() {
-				logger.log(Level.INFO, "Executing timed pull sync task");
-				try {
-					Database.syncronize.pullSync();
-					Database.saveTaskRecordFile();
-				} catch (UnknownHostException e) {
-					logger.log(Level.FINER, e.getMessage());
-					disableRemoteSync();
-				} catch (TaskNotFoundException e) {
-					// SilentFailSync Policy
-					logger.log(Level.FINER, e.getMessage());
-				} catch (InvalidTaskFormatException e) {
-					// SilentFailSyncPolicy
-					logger.log(Level.FINER, e.getMessage());
-				} catch (IOException e) {
-					logger.log(Level.FINER, e.getMessage());
-				}
-			}
-		};
+		pullSyncTimedBackgroundTask = new SyncPullSyncTimed(this);
 		logExitMethod("initializeTimedPullSyncRunnableTask");
 	}
 
@@ -327,8 +309,8 @@ class Syncronize {
 	void pullSync() throws UnknownHostException, TaskNotFoundException,
 			InvalidTaskFormatException {
 		logEnterMethod("pullSync");
-		List<CalendarEventEntry> googleCalendarEvents;
 
+		List<CalendarEventEntry> googleCalendarEvents;
 		try {
 			googleCalendarEvents = Database.googleCalendar.retrieveEvents(
 					Database.syncStartDateTime.toString(),
@@ -385,10 +367,8 @@ class Syncronize {
 			// pull sync newer task
 			if (localTask.getTaskLastSync().isBefore(
 					new DateTime(gCalEntry.getUpdated().getValue()))) {
-
 				logger.log(Level.INFO,
 						"pulling newer event : " + localTask.getTaskName());
-
 				pullSyncExistingTask(gCalEntry, localTask);
 			}
 		} else {
@@ -468,9 +448,16 @@ class Syncronize {
 		// push sync tasks from local to google calendar
 		for (Map.Entry<Integer, Task> entry : Database.taskLists.getTaskList()
 				.entrySet()) {
-			if (entry.getValue().getTaskCategory().equals(TaskCategory.FLOATING)) {
+			System.out.println(entry.getValue().getTaskName());
+			if (entry.getValue().getTaskCategory()
+					.equals(TaskCategory.FLOATING)) {
 				return;
 			}
+			System.out.println("!"+entry.getValue().getTaskName());
+			System.out.println(entry.getValue().getTaskUpdated() + " "
+					+ entry.getValue().getTaskLastSync());
+			System.out.println(entry.getValue().getTaskUpdated()
+					.isAfter(entry.getValue().getTaskLastSync()));
 			pushSyncTask(entry.getValue());
 		}
 		logExitMethod("pushSync");
@@ -644,7 +631,6 @@ class Syncronize {
 		if (gCalEntry != null) {
 			syncDateTime = new DateTime(gCalEntry.getUpdated().getValue());
 		}
-
 		// assert that sync DateTimes between local and remote are equal
 		assert (syncDateTime.isEqual(new DateTime(gCalEntry.getUpdated()
 				.toString())));
@@ -653,12 +639,26 @@ class Syncronize {
 		return syncDateTime;
 	}
 
-	void logExitMethod(String methodName) {
-		logger.exiting(getClass().getName(), methodName);
-	}
+	/**
+	 * Logger Methods
+	 */
 
+	/**
+	 * Logger trace method entry
+	 * 
+	 * @param methodName
+	 */
 	void logEnterMethod(String methodName) {
 		logger.entering(getClass().getName(), methodName);
+	}
+
+	/**
+	 * Logger trace method exit
+	 * 
+	 * @param methodName
+	 */
+	void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
 	}
 
 }

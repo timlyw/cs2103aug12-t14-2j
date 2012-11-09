@@ -2,14 +2,19 @@
 
 package mhs.src;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
 import mhs.src.userinterface.UiController;
 
 /**
- * This class contains the main method for MHS
- * It starts up the UiController which displays the MHS interface to the user
+ * This class contains the main method for MHS It starts up the UiController
+ * which displays the MHS interface to the user
  * 
  * @author John Wong
- *
+ * 
  */
 
 public class Mhs {
