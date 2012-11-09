@@ -276,7 +276,7 @@ public class CommandParser {
 	private void setDate(String parseString) {
 		logEnterMethod("setDate");
 		Queue<LocalDate> dateList;
-		dateList = dateParser.processDate(parseString);
+		dateList = dateParser.extractDate(parseString);
 		try {
 			if (dateList.isEmpty()) {
 				logExitMethod("setDate");
