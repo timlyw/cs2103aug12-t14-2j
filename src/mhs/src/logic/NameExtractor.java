@@ -66,8 +66,6 @@ public class NameExtractor {
 
 		DateExtractor dateExtractor = DateExtractor.getDateExtractor();
 		TimeExtractor timeExtractor = TimeExtractor.getTimeExtractor();
-		CommandExtractor commandExtractor = CommandExtractor
-				.getCommandExtractor();
 		assert (parseString != null);
 		if (!(timeExtractor.checkTimeFormat(parseString) || dateExtractor
 				.checkDateFormat(parseString))) {
@@ -116,7 +114,7 @@ public class NameExtractor {
 
 			for (counter = 0; counter < processArray.length; counter++) {
 				if (CommandExtractor.getCommandExtractor().checkCommand(
-						processArray[0]) && counter ==0 ) {
+						processArray[0]) && counter==0) {
 					counter++;
 				}
 				if (checkNameFormat(processArray[counter])) {

@@ -34,7 +34,7 @@ public class CommandParserTest {
 		day = 5;
 		month = 11;
 		year = 2012;
-		DateTime now = new DateTime(year, month, day, 0 , 0);
+		DateTime now = new DateTime(year, month, day, 12 , 0);
 		DateTimeUtils.setCurrentMillisFixed(now.getMillis());
 		
 		dateExtractor = DateExtractor.getDateExtractor();
@@ -276,17 +276,52 @@ public class CommandParserTest {
 		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
 		
 		testCommand = commandParser
-				.getParsedCommand("edit meeting 5 to do tutorial from 2pm  to 4pm ");
-		expectedStartDate = new DateTime(year, month, day, 14, 0);
-		expectedEndDate = new DateTime(year, month, day, 16, 0);
+				.getParsedCommand("edit meeting 5 to do tutorial from 4PM  to 1AM ");
+		expectedStartDate = new DateTime(year, month, day, 16, 0);
+		expectedEndDate = new DateTime(year, month, day + 1, 1, 0);
 		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.edit,
 				"meeting 5", "do tutorial", expectedStartDate, expectedEndDate, 0);
 		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
 		
 		testCommand = commandParser
-				.getParsedCommand("mark meeting 5 to do tutorial from 2pm  to 4pm ");
+				.getParsedCommand("edit meeting 5 to do tutorial from 1AM to 4PM ");
+		expectedStartDate = new DateTime(year, month, day, 16, 0);
+		expectedEndDate = new DateTime(year, month, day+1, 1, 0);
+		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.edit,
+				"meeting 5", "do tutorial", expectedStartDate, expectedEndDate, 0);
+		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
+		
+		testCommand = commandParser
+				.getParsedCommand("1AM");
+		expectedStartDate = new DateTime(year, month, day+1, 1, 0);
+		expectedEndDate = new DateTime(year, month, day+2, 1, 0);
+		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.search,
+				null, null, expectedStartDate, expectedEndDate, 0);
+		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
+		
+		testCommand = commandParser
+				.getParsedCommand("mark meeting 5 to do tutorial from 4pm  to 2pm ");
 		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.mark,
 				"meeting 5", null, null, null, 0);
+		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
+
+		testCommand = commandParser
+				.getParsedCommand("test at 2pm tomorrow at lt3");
+		expectedStartDate = new DateTime(year, month, day+1, 14, 0);
+		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.add,
+				"test lt3", null, expectedStartDate, null, 0);
+		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
+		
+		testCommand = commandParser
+				.getParsedCommand("rename meeting 5 to do tutorial from 4pm  to 2pm ");
+		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.rename,
+				"meeting 5", "do tutorial", null, null, 0);
+		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
+		
+		testCommand = commandParser
+				.getParsedCommand("login meeting 5 to do tutorial from 4pm  to 2pm ");
+		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.login,
+				null, null, null, null, 0);
 		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
 	}
 
