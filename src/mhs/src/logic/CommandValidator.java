@@ -53,20 +53,12 @@ public class CommandValidator {
 		searchStartDateFlag = false;
 		
 		now = DateTime.now();
-		for (CommandInfo.CommandKeyWords c : CommandInfo.CommandKeyWords.values()) {
-			if (commandInput == c.name()) {
-				commandEnum = c;
-			}
-		}
+		setCommandEnum(commandInput);
 		taskName = taskNameInput;
 		edittedName = edittedNameInput;
 		index = indexInput;
 		
-		validateStartDate(startDateInput, startTimeInput);
-		validateEndDate(endDateInput, endTimeInput);
-		validateTiming(startDateInput, startTimeInput, endDateInput,
-				endTimeInput);	
-		validateStartDateIsBeforeEndDate();
+		validateDateTime(startDateInput, startTimeInput, endDateInput, endTimeInput);
 
 		checkParameters();
 		command = new CommandInfo(commandEnum, taskName, edittedName, startDate,
@@ -74,6 +66,39 @@ public class CommandValidator {
 
 		logExitMethod("validateCommand");
 		return command;
+	}
+
+	/**
+	 * Method to validate and default all date time parameters.
+	 * @param startDateInput
+	 * @param startTimeInput
+	 * @param endDateInput
+	 * @param endTimeInput
+	 */
+	private void validateDateTime(LocalDate startDateInput,
+			LocalTime startTimeInput, LocalDate endDateInput,
+			LocalTime endTimeInput) {
+		logEnterMethod("validateDateTime");
+		validateStartDate(startDateInput, startTimeInput);
+		validateEndDate(endDateInput, endTimeInput);
+		validateTiming(startDateInput, startTimeInput, endDateInput, endTimeInput);	
+		validateStartDateIsBeforeEndDate();
+		logExitMethod("validateDateTime");
+
+	}
+
+	/**
+	 * Method to set the command enumeration.
+	 * @param commandInput
+	 */
+	private void setCommandEnum(String commandInput) {
+		logEnterMethod("setCommandEnum");
+		for (CommandInfo.CommandKeyWords c : CommandInfo.CommandKeyWords.values()) {
+			if (commandInput == c.name()) {
+				commandEnum = c;
+			}
+		}
+		logExitMethod("setCommandEnum");
 	}
 
 	/**
@@ -287,23 +312,70 @@ public class CommandValidator {
 	 * This is a method to ensure the parameters parsed match the commands given. 
 	 */
 	private void checkParameters() {
-		logEnterMethod("validateNoStartDateNoStartTime");
-		if (commandEnum == CommandInfo.CommandKeyWords.add) {
-			if(taskName == null && startDate != null){
-				commandEnum = CommandInfo.CommandKeyWords.search;
-			}
-			else if(taskName == null){
-				enforceTaskName();
-			}
+		logEnterMethod("checkParameters");
+		validateAddParameters();
+		validateCommandsWithNameAndIndexParameters();
+		validateCommandWithNoParameters();
+		validateCommandsWithNoDateTIme();
+		validateSearchParameters();
+		logExitMethod("checkParameters");
+	}
 
+	/**
+	 * Method to ensure search parameters
+	 */
+	private void validateSearchParameters() {
+		logEnterMethod("validateSearchParameters");
+		if (commandEnum == CommandInfo.CommandKeyWords.search) {
+			setStartDateToStartOfDay();
+			enforceDateRange();
+			edittedName = null;
 		}
-		if (commandEnum == CommandInfo.CommandKeyWords.mark ||
-			commandEnum == CommandInfo.CommandKeyWords.unmark ||
-			commandEnum == CommandInfo.CommandKeyWords.remove){
-			clearParameterExceptNameAndIndex();		
+		logExitMethod("validateSearchParameters");
+	}
+
+	/**
+	 * Method that sets the start date to start of date if a start time was not originally input.
+	 */
+	private void setStartDateToStartOfDay() {
+		logEnterMethod("setStartDateToStartOfDay");
+		if(searchStartDateFlag == true){
+			startDate = startDate.minusHours(23).minusMinutes(59);
 		}
-		
-		if (commandEnum == CommandInfo.CommandKeyWords.help ||
+		logExitMethod("setStartDateToStartOfDay");
+	}
+
+	/**
+	 * Method that removes the start date and end date parameters for rename.
+	 */
+	private void validateCommandsWithNoDateTIme() {
+		logEnterMethod("validateCommandsWithNoDateTIme");
+		if (commandEnum == CommandInfo.CommandKeyWords.rename) {
+			startDate = null;
+			endDate = null;		
+		}
+		logExitMethod("validateCommandsWithNoDateTIme");
+	}
+
+	/**
+	 * Method to validate commands that expect no parameters.
+	 */
+	private void validateCommandWithNoParameters() {
+		logEnterMethod("validateCommandWithNoParameters");
+		if (isCommandWithNoParameters()){
+			clearAllParameters();
+		}
+		logExitMethod("validateCommandWithNoParameters");
+	}
+
+	/**
+	 * Method that checks if the command should have no other parameters.
+	 * @return
+	 */
+	private boolean isCommandWithNoParameters() {
+		logEnterMethod("isCommandWithNoParameters");
+		logExitMethod("isCommandWithNoParameters");
+		return commandEnum == CommandInfo.CommandKeyWords.help ||
 			commandEnum == CommandInfo.CommandKeyWords.login ||
 			commandEnum == CommandInfo.CommandKeyWords.logout ||
 			commandEnum == CommandInfo.CommandKeyWords.redo ||
@@ -314,24 +386,64 @@ public class CommandValidator {
 			commandEnum == CommandInfo.CommandKeyWords.floating ||
 			commandEnum == CommandInfo.CommandKeyWords.deadline ||
 			commandEnum == CommandInfo.CommandKeyWords.timed ||
-			commandEnum == CommandInfo.CommandKeyWords.exit){
-			clearAllParameters();
+			commandEnum == CommandInfo.CommandKeyWords.exit;
+	}
+
+	/**
+	 * Method for commands that expect no parameter other than name or index.
+	 */
+	private void validateCommandsWithNameAndIndexParameters() {
+		logEnterMethod("validateCommandsWithNameAndIndexParameters");
+		if (isCommandWithNameOrIndexParameters()){
+			clearParameterExceptNameAndIndex();		
 		}
-		
+		logExitMethod("validateCommandsWithNameAndIndexParameters");
+	}
+	/**
+	 * Method that checks if the command should only have a name or index parameter.
+	 * @return
+	 */
+	private boolean isCommandWithNameOrIndexParameters(){
+		logEnterMethod("isCommandWithNameOrIndexParameters");
+		logExitMethod("isCommandWithNameOrIndexParameters");
+		return commandEnum == CommandInfo.CommandKeyWords.mark ||
+				commandEnum == CommandInfo.CommandKeyWords.unmark ||
+				commandEnum == CommandInfo.CommandKeyWords.remove;
+	}
 	
-		if (commandEnum == CommandInfo.CommandKeyWords.rename) {
-			startDate = null;
-			endDate = null;		
+	/**
+	 * Method to check that the parameters for add is correct.
+	 */
+	private void validateAddParameters() {
+		logEnterMethod("validateAddParameters");
+		if (commandEnum == CommandInfo.CommandKeyWords.add) {
+			appendEdittedNameToTaskName();
+			changeCommandToSearch();
 		}
-		if (commandEnum == CommandInfo.CommandKeyWords.search) {
-			if(searchStartDateFlag == true){
-				startDate = startDate.minusHours(23).minusMinutes(59);
-			}
-			enforceDateRange();
+		logExitMethod("validateAddParameters");
+	}
+
+	/**
+	 * Method to change default command to search if only a date time was input.
+	 */
+	private void changeCommandToSearch() {
+		logEnterMethod("changeCommandToSearch");
+		if(taskName == null && startDate != null){
+			commandEnum = CommandInfo.CommandKeyWords.search;
+		}
+		logExitMethod("changeCommandToSearch");
+	}
+
+	/**
+	 * Method to append the editted name to the start name.
+	 */
+	private void appendEdittedNameToTaskName() {
+		logEnterMethod("appendEdittedNameToTaskName");
+		if(edittedName != null){
+			taskName = taskName + " " + edittedName;
 			edittedName = null;
 		}
-
-		logExitMethod("validateNoStartDateNoStartTime");
+		logExitMethod("appendEdittedNameToTaskName");
 	}
 
 	/**
@@ -356,17 +468,6 @@ public class CommandValidator {
 		endDate = null;
 		logExitMethod("clearParameterExceptNameAndIndex");
 	}
-
-
-	/**
-	 * This is the method to enforce a default task name.
-	 */
-	private void enforceTaskName() {
-		logEnterMethod("enforceTaskName");
-		taskName = "Default task";
-		logExitMethod("enforceTaskName");
-	}
-
 
 	/**
 	 * This is a method to clear all the parameters except the command. 
