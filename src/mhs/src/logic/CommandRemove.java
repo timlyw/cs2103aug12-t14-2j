@@ -97,6 +97,7 @@ public class CommandRemove extends Command {
 			IOException {
 		logEnterMethod("deleteTask");
 		dataHandler.delete(taskToDelete.getTaskId());
+		newTask = null;
 		isUndoable = true;
 		logExitMethod("deleteTask");
 	}
@@ -108,32 +109,9 @@ public class CommandRemove extends Command {
 		logEnterMethod("storeLastTask");
 		lastDeletedTask = new Task();
 		lastDeletedTask = taskToStore;
+		lastTask = lastDeletedTask;
 		assert (lastDeletedTask != null);
 		logExitMethod("storeLastTask");
-	}
-
-	/**
-	 * adds previously deleted task
-	 */
-	public String undo() {
-		logEnterMethod("undo");
-		String outputString = new String();
-		if (isUndoable()) {
-			try {
-				assert (lastDeletedTask != null);
-				dataHandler.add(lastDeletedTask);
-				isUndoable = false;
-				outputString = MESSAGE_UNDO_CONFIRM;
-			} catch (Exception e) {
-				outputString = MESSAGE_UNDO_FAIL;
-			}
-
-		} else {
-			outputString = MESSAGE_CANNOT_UNDO;
-		}
-		logExitMethod("undo");
-		commandFeedback = outputString;
-		return outputString;
 	}
 
 	/**

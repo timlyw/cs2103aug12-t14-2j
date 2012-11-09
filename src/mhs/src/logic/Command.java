@@ -40,6 +40,8 @@ public abstract class Command {
 	private static int lastQueryType = 0;
 	private static CommandInfo lastQueryCommandInfo;
 	private static TaskCategory lastQueryCategory;
+	protected Task lastTask;
+	protected Task newTask;
 	protected String commandFeedback;
 	protected static String currentState;
 	protected static int minTaskQuery = 1;
@@ -48,7 +50,8 @@ public abstract class Command {
 		indexExpected = false;
 		isUndoable = false;
 		htmlCreator = new HtmlCreator();
-
+		lastTask = new Task();
+		newTask = new Task();
 		try {
 			dataHandler = DatabaseFactory.getDatabaseInstance();
 		} catch (IllegalArgumentException e) {
@@ -62,7 +65,51 @@ public abstract class Command {
 
 	abstract public void executeCommand();
 
-	abstract public String undo();
+	/**
+	 * adds previously deleted task
+	 */
+	public String undo() {
+		String outputString = new String();
+		if (isUndoable()) {
+			try {
+				if (lastTask == null) {
+					dataHandler.delete(newTask.getTaskId());
+				} else if (newTask == null) {
+					lastTask = dataHandler.add(lastTask);
+				} else {
+					dataHandler.update(lastTask);
+				}
+				isUndoable = false;
+				outputString = MESSAGE_UNDO_CONFIRM;
+			} catch (Exception e) {
+				outputString = MESSAGE_UNDO_FAIL;
+			}
+		} else {
+			outputString = MESSAGE_CANNOT_UNDO;
+		}
+		commandFeedback = outputString;
+		return outputString;
+	}
+
+	public String redo() {
+		String outputString = new String();
+		try {
+			if (lastTask == null) {
+				dataHandler.add(newTask);
+			} else if (newTask == null) {
+				dataHandler.delete(lastTask.getTaskId());
+			} else {
+				dataHandler.update(newTask);
+			}
+			isUndoable = true;
+			outputString = MESSAGE_UNDO_CONFIRM;
+		} catch (Exception e) {
+			outputString = MESSAGE_UNDO_FAIL;
+		}
+
+		commandFeedback = outputString;
+		return outputString;
+	}
 
 	public boolean isUndoable() {
 		return isUndoable;

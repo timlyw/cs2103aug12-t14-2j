@@ -24,8 +24,6 @@ public class CommandMark extends Command {
 	private static final String MESSAGE_TASK_NOT_MARKED = "Error occured. Task not marked.";
 	private static final String CONFIRM_TASK_MARKED = "Marked Task - '%1$s' as DONE";
 
-	Task lastTask;
-
 	private static final Logger logger = MhsLogger.getLogger();
 
 	/**
@@ -54,7 +52,6 @@ public class CommandMark extends Command {
 	 */
 	public CommandMark(List<Task> lastUsedList) {
 		logEnterMethod("CommandMark-index");
-		lastTask = new Task();
 		matchedTasks = lastUsedList;
 		assert (matchedTasks != null);
 		logExitMethod("CommandMark-index");
@@ -77,6 +74,7 @@ public class CommandMark extends Command {
 			Task editedTask = markDone(matchedTasks.get(0));
 			try {
 				updateTask(editedTask);
+				newTask = editedTask;
 				outputString = String.format(CONFIRM_TASK_MARKED,
 						editedTask.getTaskName());
 				commandFeedback = outputString;
@@ -155,6 +153,7 @@ public class CommandMark extends Command {
 		Task tempTask = markDone(matchedTasks.get(index));
 		try {
 			updateTask(tempTask);
+			newTask = tempTask;
 			outputString = String.format(CONFIRM_TASK_MARKED,
 					matchedTasks.get(index).getTaskName());
 			indexExpected = false;

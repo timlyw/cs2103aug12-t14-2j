@@ -31,8 +31,6 @@ public class CommandRename extends Command {
 	private static final String MESSAGE_TASK_NOT_RENAMED = "Error occured. Task not Re-named.";
 	private static final String CONFIRM_TASK_RENAMED = "Renamed Task - '%1$s' to '%2$s'";
 
-	private Task editedTask;
-	private Task oldTask;
 	private CommandInfo tempCommandInfo;
 
 	private static final Logger logger = MhsLogger.getLogger();
@@ -45,8 +43,8 @@ public class CommandRename extends Command {
 	public CommandRename(CommandInfo userCommand) {
 		logEnterMethod("CommandRename");
 		List<Task> resultList;
-		oldTask = new Task();
-		editedTask = new Task();
+		lastTask = new Task();
+		newTask = new Task();
 		tempCommandInfo = new CommandInfo();
 		try {
 			resultList = queryTaskByName(userCommand);
@@ -91,13 +89,13 @@ public class CommandRename extends Command {
 		// if only 1 match is found then display it
 		else if (matchedTasks.size() == 1) {
 			storeLastTask(matchedTasks.get(0));
-			editedTask = createRenamedTask(tempCommandInfo, matchedTasks.get(0));
-			System.out.println(oldTask.getTaskName() + "/"
-					+ editedTask.getTaskName());
+			newTask = createRenamedTask(tempCommandInfo, matchedTasks.get(0));
+			System.out.println(lastTask.getTaskName() + "/"
+					+ newTask.getTaskName());
 			try {
-				updateTask(editedTask);
+				updateTask(newTask);
 				outputString = String.format(CONFIRM_TASK_RENAMED,
-						oldTask.getTaskName(), editedTask.getTaskName());
+						lastTask.getTaskName(), newTask.getTaskName());
 			} catch (Exception e) {
 				outputString = MESSAGE_TASK_NOT_RENAMED;
 			}
@@ -125,6 +123,7 @@ public class CommandRename extends Command {
 		logEnterMethod("updateTask");
 		assert (taskToUpdate != null);
 		dataHandler.update(taskToUpdate);
+		newTask = taskToUpdate;
 		isUndoable = true;
 		logExitMethod("updateTask");
 	}
@@ -137,7 +136,7 @@ public class CommandRename extends Command {
 	private void storeLastTask(Task taskToStore) {
 		logEnterMethod("storeLastTask");
 		assert (taskToStore != null);
-		oldTask = taskToStore;
+		lastTask = taskToStore;
 		logExitMethod("storeLastTask");
 	}
 
@@ -228,27 +227,6 @@ public class CommandRename extends Command {
 		return floatingTaskToAdd;
 	}
 
-	/**
-	 * Undo the rename
-	 */
-	public String undo() {
-		logEnterMethod("undo");
-		String outputString = new String();
-		if (isUndoable()) {
-			try {
-				dataHandler.update(oldTask);
-				isUndoable = false;
-				outputString = MESSAGE_UNDO_CONFIRM;
-			} catch (Exception e) {
-				outputString = MESSAGE_UNDO_FAIL;
-			}
-		} else {
-			outputString = MESSAGE_CANNOT_UNDO;
-		}
-		logExitMethod("undo");
-		commandFeedback = outputString;
-		return outputString;
-	}
 
 	/**
 	 * Execute rename by index when last rename query returned multiple matches.
@@ -270,7 +248,7 @@ public class CommandRename extends Command {
 		Task givenTask = matchedTasks.get(index);
 		assert (givenTask != null);
 		storeLastTask(givenTask);
-		Task newTask = createRenamedTask(tempCommandInfo, oldTask);
+		Task newTask = createRenamedTask(tempCommandInfo, lastTask);
 		try {
 			updateTask(newTask);
 			outputString = String.format(CONFIRM_TASK_RENAMED,

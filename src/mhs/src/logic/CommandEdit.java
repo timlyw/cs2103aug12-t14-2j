@@ -34,8 +34,6 @@ public class CommandEdit extends Command {
 	private static final int DEADLINE = 1;
 	private static final int TIMED = 2;
 
-	private Task editedTask;
-	private Task oldTask;
 	private CommandInfo tempCommandInfo;
 
 	private static final Logger logger = MhsLogger.getLogger();
@@ -49,7 +47,7 @@ public class CommandEdit extends Command {
 		logEnterMethod("CommandEdit");
 		List<Task> resultList;
 		tempCommandInfo = new CommandInfo();
-		editedTask = new Task();
+		newTask = new Task();
 		try {
 			resultList = queryTaskByName(userCommand);
 			matchedTasks = resultList;
@@ -88,12 +86,12 @@ public class CommandEdit extends Command {
 		// if only 1 match is found then edit it
 		else if (matchedTasks.size() == 1) {
 			storeLastTask(matchedTasks.get(0));
-			editedTask = createEditedTask(tempCommandInfo, oldTask);
+			newTask = createEditedTask(tempCommandInfo, lastTask);
 			try {
-				editTask(editedTask);
+				editTask(newTask);
 				outputString = String.format(CONFIRM_TASK_EDITED,
-						oldTask.getTaskName(), editedTask.getTaskName(),
-						editedTask.getTaskCategory());
+						lastTask.getTaskName(), newTask.getTaskName(),
+						newTask.getTaskCategory());
 			} catch (Exception e) {
 				outputString = MESSAGE_TASK_NOT_EDITED;
 			}
@@ -131,8 +129,7 @@ public class CommandEdit extends Command {
 	 */
 	private void storeLastTask(Task taskToStore) {
 		logEnterMethod("storeLastTask");
-		oldTask = new Task();
-		oldTask = taskToStore;
+		lastTask = taskToStore;
 		logExitMethod("storeLastTask");
 	}
 
@@ -317,28 +314,6 @@ public class CommandEdit extends Command {
 	}
 
 	/**
-	 * Undo the last edit
-	 */
-	public String undo() {
-		logEnterMethod("undo");
-		String outputString = new String();
-		if (isUndoable()) {
-			try {
-				dataHandler.update(oldTask);
-				isUndoable = false;
-				outputString = MESSAGE_UNDO_CONFIRM;
-			} catch (Exception e) {
-				outputString = MESSAGE_UNDO_FAIL;
-			}
-		} else {
-			outputString = MESSAGE_CANNOT_UNDO;
-		}
-		logExitMethod("undo");
-		commandFeedback = outputString;
-		return outputString;
-	}
-
-	/**
 	 * executes based on index only. Works when edit query returns multiple
 	 * matches.
 	 */
@@ -359,7 +334,7 @@ public class CommandEdit extends Command {
 		Task givenTask = matchedTasks.get(index);
 		assert (givenTask != null);
 		storeLastTask(givenTask);
-		Task newTask = createEditedTask(tempCommandInfo, oldTask);
+		Task newTask = createEditedTask(tempCommandInfo, lastTask);
 		try {
 			editTask(newTask);
 			outputString = String.format(CONFIRM_TASK_EDITED,
