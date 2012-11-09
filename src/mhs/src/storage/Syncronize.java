@@ -219,19 +219,13 @@ class Syncronize {
 	/**
 	 * Syncronizes Databases (local storage and google calendar service)
 	 * 
-	 * Sets up pull-push syncronize as background task.
-	 * 
-	 * @throws ServiceException
-	 * @throws UnknownHostException
-	 * @throws IOException
-	 * @throws InvalidTaskFormatException
-	 * @throws TaskNotFoundException
-	 * @return
+	 * @return true if successful 
 	 */
 	boolean syncronizeDatabases() {
 		logEnterMethod("syncronizeDatabases");
 		// checks if user is logged out
 		if (Database.googleCalendar == null) {
+			disableRemoteSync();
 			return false;
 		}
 		SyncAllTasks syncronizeAllTasks = new SyncAllTasks(this);
@@ -454,10 +448,16 @@ class Syncronize {
 		// push sync tasks from local to google calendar
 		for (Map.Entry<Integer, Task> entry : Database.taskLists.getTaskList()
 				.entrySet()) {
+			System.out.println(entry.getValue().getTaskName());
 			if (entry.getValue().getTaskCategory()
 					.equals(TaskCategory.FLOATING)) {
 				return;
 			}
+			System.out.println("!"+entry.getValue().getTaskName());
+			System.out.println(entry.getValue().getTaskUpdated() + " "
+					+ entry.getValue().getTaskLastSync());
+			System.out.println(entry.getValue().getTaskUpdated()
+					.isAfter(entry.getValue().getTaskLastSync()));
 			pushSyncTask(entry.getValue());
 		}
 		logExitMethod("pushSync");
