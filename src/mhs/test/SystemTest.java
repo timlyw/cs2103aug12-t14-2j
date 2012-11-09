@@ -52,7 +52,7 @@ public class SystemTest {
 		} catch (Exception e) {
 			System.out.println("Error");
 		}*/
-		processor.setCommand("search running");
+		processor.setCommand("home");
 		processor.executeCommand();
 	}
 }
