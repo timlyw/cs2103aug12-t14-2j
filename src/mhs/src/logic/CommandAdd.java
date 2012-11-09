@@ -149,6 +149,8 @@ public class CommandAdd extends Command {
 				// Store last added task for undo
 				addedTask = new Task();
 				addedTask = dataHandler.add(taskToAddTask);
+				lastTask = null;
+				newTask = addedTask;
 				isUndoable = true;
 				outputString = String.format(CONFIRM_TASK_ADDED,
 						taskToAddTask.getTaskCategory(),
@@ -163,28 +165,6 @@ public class CommandAdd extends Command {
 		logExitMethod("executeCommand");
 	}
 
-	/**
-	 * Undo the add command
-	 */
-	public String undo() {
-		logEnterMethod("undo");
-		String outputString = new String();
-		assert (addedTask != null);
-		if (isUndoable) {
-			try {
-				dataHandler.delete(addedTask.getTaskId());
-				isUndoable = false;
-				outputString = MESSAGE_UNDO_CONFIRM;
-			} catch (Exception e) {
-				outputString = MESSAGE_UNDO_FAIL;
-			}
-		} else {
-			outputString = MESSAGE_CANNOT_UNDO;
-		}
-		logExitMethod("undo");
-		commandFeedback = outputString;
-		return outputString;
-	}
 
 	/**
 	 * Add does not support index commands

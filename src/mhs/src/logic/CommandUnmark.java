@@ -23,8 +23,6 @@ public class CommandUnmark extends Command {
 	private static final String MESSAGE_TASK_NOT_UNMARKED = "Error occured. Task not un-marked.";
 	private static final String CONFIRM_TASK_UNMARKED = "Marked Task - '%1$s' as PENDING";
 
-	Task lastTask;
-
 	private static final Logger logger = MhsLogger.getLogger();
 
 	/**
@@ -93,6 +91,7 @@ public class CommandUnmark extends Command {
 	private void updateTask(Task editedTask) throws IOException,
 			ServiceException, TaskNotFoundException, InvalidTaskFormatException {
 		dataHandler.update(editedTask);
+		newTask = editedTask;
 		isUndoable = true;
 	}
 
@@ -107,27 +106,6 @@ public class CommandUnmark extends Command {
 		editedTask.setDone(false);
 		logExitMethod("markPending");
 		return editedTask;
-	}
-
-	/**
-	 * Marks a task
-	 */
-	public String undo() {
-		logEnterMethod("undo");
-		String outputString = new String();
-		if (isUndoable()) {
-			try {
-				dataHandler.update(lastTask);
-				outputString = MESSAGE_UNDO_CONFIRM;
-			} catch (Exception e) {
-				outputString = MESSAGE_UNDO_FAIL;
-			}
-		} else {
-			outputString = MESSAGE_UNDO_FAIL;
-		}
-		logExitMethod("undo");
-		commandFeedback = outputString;
-		return outputString;
 	}
 
 	/**
