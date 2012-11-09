@@ -3082,11 +3082,11 @@
     "taskName": "Unit tests",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-09T10:37:14.783+08:00",
-    "taskUpdated": "2012-11-09T10:37:14.783+08:00",
+    "taskUpdated": "2012-11-09T16:29:00.518+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 270,
@@ -3464,11 +3464,11 @@
     "taskName": "test it",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-09T14:51:53.510+08:00",
-    "taskUpdated": "2012-11-09T14:51:53.510+08:00",
+    "taskUpdated": "2012-11-09T16:29:32.488+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 304,
@@ -3526,5 +3526,16 @@
     "gCalTaskId": null,
     "isDone": false,
     "isDeleted": true
+  },
+  {
+    "taskId": 309,
+    "taskName": "heklp",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-09T16:28:03.632+08:00",
+    "taskUpdated": "2012-11-09T16:28:03.632+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": false
   }
 ]
