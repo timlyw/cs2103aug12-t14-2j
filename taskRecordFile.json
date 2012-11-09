@@ -3442,11 +3442,11 @@
     "taskName": "task !!!",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-09T14:42:16.000+08:00",
-    "taskUpdated": "2012-11-09T14:42:16.000+08:00",
+    "taskUpdated": "2012-11-09T15:14:20.027+08:00",
     "taskLastSync": "2012-11-09T14:42:16.000+08:00",
     "gCalTaskId": "neidproalrpp1rpl6cd3545igg@google.com",
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "taskId": 302,
@@ -3476,6 +3476,52 @@
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-09T14:52:03.988+08:00",
     "taskUpdated": "2012-11-09T14:53:06.825+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "startDateTime": "2012-11-09T17:00:00.000+08:00",
+    "endDateTime": "2012-11-09T22:00:00.000+08:00",
+    "taskId": 305,
+    "taskName": "!!!",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-09T14:57:09.000+08:00",
+    "taskUpdated": "2012-11-09T15:14:34.012+08:00",
+    "taskLastSync": "2012-11-09T14:57:09.000+08:00",
+    "gCalTaskId": "aajqta0q5av6ga7424cnesv7ro@google.com",
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 306,
+    "taskName": "do shit",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-09T15:02:12.861+08:00",
+    "taskUpdated": "2012-11-09T15:03:22.990+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 307,
+    "taskName": "do shit",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-09T15:02:25.791+08:00",
+    "taskUpdated": "2012-11-09T15:03:27.289+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "taskId": 308,
+    "taskName": "displat",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-09T15:05:17.539+08:00",
+    "taskUpdated": "2012-11-09T15:06:21.156+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
