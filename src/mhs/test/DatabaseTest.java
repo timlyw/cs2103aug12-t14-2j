@@ -762,21 +762,9 @@ public class DatabaseTest {
 
 	/**
 	 * Initialize empty database with sync enabled
-	 * 
-	 * @throws IOException
-	 * @throws ServiceException
-	 * @throws InterruptedException
-	 * @throws ExecutionException
-	 * @throws TimeoutException
-	 * @throws DatabaseFactoryNotInstantiatedException
-	 * @throws IllegalArgumentException
-	 * @throws DatabaseAlreadyInstantiatedException
+	 * @throws Exception 
 	 */
-	private void getCleanDatabaseWithSync() throws IOException,
-			ServiceException, InterruptedException, ExecutionException,
-			TimeoutException, IllegalArgumentException,
-			DatabaseFactoryNotInstantiatedException,
-			DatabaseAlreadyInstantiatedException {
+	private void getCleanDatabaseWithSync() throws Exception {
 
 		database.loginUserGoogleAccount(GOOGLE_TEST_ACCOUNT_NAME,
 				GOOGLE_TEST_ACCOUNT_PASSWORD);
