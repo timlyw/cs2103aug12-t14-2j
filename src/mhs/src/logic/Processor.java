@@ -26,6 +26,13 @@ import com.google.gdata.util.ServiceException;
  */
 public class Processor {
 
+	private static final int HELP_ADD = 1;
+	private static final int HELP_EDIT = 2;
+	private static final int HELP_DATE = 3;
+	private static final int HELP_TIME = 4;
+	private static final int HELP_NAME = 5;
+	private static final int HELP_COMMAND = 6;
+
 	private Database dataHandler;
 	private CommandParser commandParser;
 	private boolean usernameIsExpected = false;
@@ -43,6 +50,8 @@ public class Processor {
 	public int LINE_HEIGHT = 20;
 	private CommandInfo userCommand;
 	private boolean isCommandQueried = false;
+	private boolean isHelpIndexExpected = false;
+	private Help help;
 	private static final Logger logger = MhsLogger.getLogger();
 
 	public String headerText = "Logged in";
@@ -144,48 +153,87 @@ public class Processor {
 	 */
 	private void processCommand(CommandInfo userCommand) throws Exception {
 		logger.entering(getClass().getName(), this.getClass().getName());
-		String userOutputString = new String();
 		isCommandQueried = false;
-		if (userCommand.getCommandEnum() == null) {
-			userOutputString = createCommand.createCommand(userCommand);
-			commandFeedback = createCommand.getFeedback();
-			currentState = createCommand.getState();
-		} else {
-			switch (userCommand.getCommandEnum()) {
-			case sync:
-				userOutputString = syncGcal(userCommand);
-				break;
-			case login:
-				userOutputString = loginUser();
-				currentState = userOutputString;
-				break;
-			case logout:
-				userOutputString = logoutUser();
-				currentState = userOutputString;
-				break;
-			case exit:
-				commandFeedback = "Exiting...";
-				System.exit(0);
-				break;
-			case help:
-				showHelp();
-				break;
-			default:
-				isCommandQueried = true;
-				userOutputString = createCommand.createCommand(userCommand);
-				commandFeedback = createCommand.getFeedback();
-				currentState = createCommand.getState();
-				break;
-			}
 
+		if (userCommand.getCommandEnum() == null) {
+			if (isHelpIndexExpected) {
+				helpByIndex(userCommand);
+			} else {
+				commandByIndexOnly(userCommand);
+			}
+		} else {
+			executeNonTaskBasedCommand(userCommand);
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 	}
 
-	private void showHelp() {
-		Help help = new Help();
+	private void executeNonTaskBasedCommand(CommandInfo userCommand)
+			throws ServiceException {
+		String userOutputString;
+		switch (userCommand.getCommandEnum()) {
+		case sync:
+			userOutputString = syncGcal(userCommand);
+			break;
+		case login:
+			userOutputString = loginUser();
+			currentState = userOutputString;
+			break;
+		case logout:
+			userOutputString = logoutUser();
+			currentState = userOutputString;
+			break;
+		case exit:
+			commandFeedback = "Exiting...";
+			System.exit(0);
+			break;
+		case help:
+			System.out.println("HELP MAIN");
+			showHelp();
+			break;
+		default:
+			isCommandQueried = true;
+			commandByIndexOnly(userCommand);
+			break;
+		}
+	}
+
+	private void commandByIndexOnly(CommandInfo userCommand) {
+		createCommand.createCommand(userCommand);
+		commandFeedback = createCommand.getFeedback();
+		currentState = createCommand.getState();
+	}
+
+	private void helpByIndex(CommandInfo userCommand) {
+		switch (userCommand.getIndex()) {
+		case HELP_ADD:
+			help.HelpAdd();
+			break;
+		case HELP_EDIT:
+			help.HelpEdit();
+			break;
+		case HELP_DATE:
+			help.HelpDateFormat();
+			break;
+		case HELP_TIME:
+			help.HelpTimeFormat();
+			break;
+		case HELP_NAME:
+			help.HelpNameFormat();
+			break;
+		case HELP_COMMAND:
+			help.HelpCommands();
+			break;
+		}
 		currentState = help.getState();
 		commandFeedback = help.getCommandFeedback();
+		isHelpIndexExpected = false;
+	}
+
+	private void showHelp() {
+		help = new Help();
+		currentState = help.getState();
+		commandFeedback = help.getCommandFeedback();
+		isHelpIndexExpected = true;
 	}
 
 	/**
