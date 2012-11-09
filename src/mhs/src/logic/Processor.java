@@ -379,6 +379,9 @@ public class Processor {
 			return "No internet connection available.";
 		} catch (ServiceException e) {
 			return "Login unsuccessful! Please check username and password.";
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return "Login unsuccessful! Please check username and password.";
 		}
 	}
 
