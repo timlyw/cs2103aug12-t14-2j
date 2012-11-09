@@ -13,7 +13,17 @@ import org.joda.time.DateTime;
  */
 public class CommandInfo {
 
-	//Strings for feedback ont the commands given
+	private static final String REGEX_SPACE = " ";
+	private static final String REGEX_DASH = " -";
+	private static final String DATE_TIME_FORMAT_HTML = "dd MMM yyyy, hh mm aa";
+	private static final String DATE_TIME_FORMAT = "dd MMM yyyy HH:mm";
+	private static final String KEYWORD_INDEX = " Index is : ";
+	private static final String KEYWORD_END_DATE = " End Date : ";
+	private static final String KEYWORD_STARTDATE = " Start Date : ";
+	private static final String KEYWORD_EDITTED_NAME = " Editted name : ";
+	private static final String KEYWORD_TASK_NAME = " Task name : ";
+	private static final String KEYWORD_COMMAND = "Command : ";
+	// Strings for feedback ont the commands given
 	private static final String COMMAND_FEEDBACK_SEARCH = "Display : ";
 	private static final String COMMAND_FEEDBACK_UNMARK = "Unmark : ";
 	private static final String COMMAND_FEEDBACK_MARK = "Mark : ";
@@ -29,7 +39,7 @@ public class CommandInfo {
 	private static final String COMMAND_FEEDBACK_HOME = "Display home page";
 	private static final String COMMAND_FEEDBACK_EDIT = "Edit : ";
 	private static final String COMMAND_FEEDBACK_ADD = "Add : ";
-	
+
 	// Error strings that display when parameters are not equal.
 	private static final String ERROR_TASK_NAME = "Task Name Error! ";
 	private static final String ERROR_EDITTED_NAME = "Editted Name Error! ";
@@ -41,8 +51,7 @@ public class CommandInfo {
 	 * This is the enum of the different type of commands.
 	 */
 	public static enum CommandKeyWords {
-		add, remove, edit, search, sync, undo, login, logout, rename, redo, mark,
-		help, unmark, previous, next, floating, deadline, timed, home, exit;
+		add, remove, edit, search, sync, undo, login, logout, rename, redo, mark, help, unmark, previous, next, floating, deadline, timed, home, exit;
 	}
 
 	private String taskName;
@@ -177,96 +186,131 @@ public class CommandInfo {
 
 		String outString = "";
 		if (commandEnum != null)
-			outString = ("Command : " + commandEnum.name());
+			outString = (KEYWORD_COMMAND + commandEnum.name());
 		if (taskName != null)
-			outString += (" Task name : " + taskName);
+			outString += (KEYWORD_TASK_NAME + taskName);
 		if (edittedName != null)
-			outString += (" Editted name : " + edittedName);
+			outString += (KEYWORD_EDITTED_NAME + edittedName);
 		if (startDate != null)
-			outString += (" Start Date : " + startDate.toString("dd MMM yyyy HH:mm"));
+			outString += (KEYWORD_STARTDATE + startDate
+					.toString(DATE_TIME_FORMAT));
 		if (endDate != null)
-			outString += (" End Date : " + endDate.toString("dd MMM yyyy HH:mm"));
-		if(index != 0){
-			outString += (" Index is : " + index);
+			outString += (KEYWORD_END_DATE + endDate
+					.toString(DATE_TIME_FORMAT));
+		if (index != 0) {
+			outString += (KEYWORD_INDEX + index);
 		}
 		logExitMethod("toString");
 		return outString;
 	}
 
 	public String toHtmlString() {
-		logEnterMethod("toString");
-		HtmlCreator htmlCreator = new HtmlCreator(); 
+		logEnterMethod("toHtmlString");
+		HtmlCreator htmlCreator = new HtmlCreator();
 		String outString = "";
-		if (commandEnum != null){
-			switch(commandEnum){
-			case add : 
-				outString = COMMAND_FEEDBACK_ADD;
+		if (commandEnum != null) {
+			switch (commandEnum) {
+			case add:
+				if (taskName == null && edittedName == null
+						&& startDate == null && endDate == null) {
+					outString = "Enter "
+							+ htmlCreator.color("task name", "red") + " and "
+							+ htmlCreator.color("task details", "green");
+				} else
+					outString = COMMAND_FEEDBACK_ADD;
 				break;
-			case edit :
-				outString = COMMAND_FEEDBACK_EDIT;
+			case edit:
+				if (taskName == null && edittedName == null
+						&& startDate == null && endDate == null) {
+					outString = "Enter "
+							+ htmlCreator.color("task name / index", "red")
+							+ " followed by "
+							+ htmlCreator.color("task details", "green")
+							+ " to be changed.";
+				} else
+					outString = COMMAND_FEEDBACK_EDIT;
 				break;
-			case home :
+			case home:
 				outString = COMMAND_FEEDBACK_HOME;
 				break;
 			case floating:
 				outString = COMMAND_FEEDBACK_FLOATING;
 				break;
-			case deadline :
+			case deadline:
 				outString = COMMAND_FEEDBACK_DEADLINE;
 				break;
-			case timed :
+			case timed:
 				outString = COMMAND_FEEDBACK_TIMED;
 				break;
-			case rename :
+			case rename:
+				if(taskName == null && edittedName == null && startDate == null && endDate == null){
+					outString = "Enter " + htmlCreator.color("task name / index", "red") + " and " + htmlCreator.color("editted name", "green");
+				}
+				else
 				outString = COMMAND_FEEDBACK_RENAME;
 				break;
-			case remove :
+			case remove:
+				if(taskName == null && edittedName == null && startDate == null && endDate == null){
+					outString = "Enter " + htmlCreator.color("task name / index", "red");
+				}
+				else
 				outString = COMMAND_FEEDBACK_REMOVE;
 				break;
-			case sync :
+			case sync:
 				outString = COMMAND_FEEDBACK_SYNC;
 				break;
-			case login :
+			case login:
 				outString = COMMAND_FEEDBACK_LOGIN;
 				break;
-			case logout :
+			case logout:
 				outString = COMMAND_FEEDBACK_LOGOUT;
 				break;
-			case exit :
+			case exit:
 				outString = COMMAND_FEEDBACK_EXIT;
 				break;
-			case mark : 
+			case mark:
+				if(taskName == null && edittedName == null && startDate == null && endDate == null){
+					outString = "Enter " + htmlCreator.color("task name / index", "red");
+				}
+				else
 				outString = COMMAND_FEEDBACK_MARK;
 				break;
 			case unmark:
+				if(taskName == null && edittedName == null && startDate == null && endDate == null){
+					outString = "Enter " + htmlCreator.color("task name / index", "red");
+				}
+				else
 				outString = COMMAND_FEEDBACK_UNMARK;
 				break;
 			case search:
+				if(taskName == null && edittedName == null && startDate == null && endDate == null){
+					outString = "Enter " + htmlCreator.color("task name", "blue") + " or " + htmlCreator.color("date range", "blue");
+				}
+				else
 				outString = COMMAND_FEEDBACK_SEARCH;
-				break;	
-			default :
+				break;
+			default:
 				outString = (commandEnum.name());
-			break;
+				break;
 			}
-			
-			
+
 		}
-		if(index != 0)
+		if (index != 0)
 			outString += (" at index" + (index));
 		if (taskName != null)
-			outString += (" " + taskName);
+			outString += (REGEX_SPACE + taskName);
 		if (edittedName != null)
-			outString += (" " + edittedName);
+			outString += (REGEX_SPACE + edittedName);
 		if (startDate != null)
-			outString += (" " + startDate.toString("dd MMM yyyy, hh mm aa"));
-		if (endDate != null){
-			if(startDate != null){
-				outString += " -";
+			outString += (REGEX_SPACE + startDate.toString(DATE_TIME_FORMAT_HTML));
+		if (endDate != null) {
+			if (startDate != null) {
+				outString += REGEX_DASH;
 			}
-			outString += (" " + endDate.toString("dd MMM yyyy, hh mm aa"));
+			outString += (REGEX_SPACE + endDate.toString(DATE_TIME_FORMAT_HTML));
 		}
-		logExitMethod("toString");
-		return htmlCreator.makeBold(outString);
+		logExitMethod("toHtmlString");
+		return (outString);
 	}
 
 	/**
@@ -307,7 +351,7 @@ public class CommandInfo {
 
 		logEnterMethod("isEqualIndex");
 		if (commandInfo1.index != commandInfo2.index) {
-			System.out.println(ERROR_INDEX + commandInfo1.index + " "
+			System.out.println(ERROR_INDEX + commandInfo1.index + REGEX_SPACE
 					+ commandInfo2.index);
 			logExitMethod("isEqualIndex");
 			return false;
@@ -329,9 +373,7 @@ public class CommandInfo {
 		logEnterMethod("isEqualEndDate");
 		try {
 			if (!commandInfo1.endDate.equals(commandInfo2.endDate)) {
-				System.out.println(ERROR_END_DATE
-						+ commandInfo1.endDate.toString() + " "
-						+ commandInfo2.endDate.toString());
+				printErrorEndDate(commandInfo1, commandInfo2);
 				logExitMethod("isEqualEndDate");
 				return false;
 			}
@@ -343,6 +385,22 @@ public class CommandInfo {
 		}
 		logExitMethod("isEqualEndDate");
 		return true;
+	}
+
+	/**
+	 * Prints the differences in the 2 end dates.
+	 * 
+	 * @param commandInfo1
+	 * @param commandInfo2
+	 */
+	private void printErrorEndDate(CommandInfo commandInfo1,
+			CommandInfo commandInfo2) {
+		logEnterMethod("printErrorEndDate");
+		System.out.println(ERROR_END_DATE
+				+ commandInfo1.endDate.toString() + REGEX_SPACE
+				+ commandInfo2.endDate.toString());
+		logExitMethod("printErrorEndDate");
+
 	}
 
 	/**
@@ -358,9 +416,7 @@ public class CommandInfo {
 		logEnterMethod("isEqualStartDate");
 		try {
 			if (!commandInfo1.startDate.equals(commandInfo2.startDate)) {
-				System.out.println(ERROR_START_DATE
-						+ commandInfo1.startDate.toString() + " "
-						+ commandInfo2.startDate.toString());
+				printErrorStartDate(commandInfo1, commandInfo2);
 				logExitMethod("isEqualStartDate");
 				return false;
 			}
@@ -376,6 +432,21 @@ public class CommandInfo {
 	}
 
 	/**
+	 * Prints the differences in the 2 start dates.
+	 * 
+	 * @param commandInfo1
+	 * @param commandInfo2
+	 */
+	private void printErrorStartDate(CommandInfo commandInfo1,
+			CommandInfo commandInfo2) {
+		logEnterMethod("printErrorStartDate");
+		System.out.println(ERROR_START_DATE
+				+ commandInfo1.startDate.toString() + REGEX_SPACE
+				+ commandInfo2.startDate.toString());
+		logExitMethod("printErrorStartDate");
+	}
+
+	/**
 	 * Function to check if 2 CommandEnum are equal.
 	 * 
 	 * @param commandInfo1
@@ -388,14 +459,28 @@ public class CommandInfo {
 
 		logEnterMethod("isEqualCommandEnum");
 		if (commandInfo1.commandEnum != commandInfo2.commandEnum) {
-			System.out.println("CommanEnum Error! "
-					+ commandInfo1.commandEnum.name() + " "
-					+ commandInfo2.commandEnum.name());
+			printErrorCommand(commandInfo1, commandInfo2);
 			logExitMethod("isEqualCommandEnum");
 			return false;
 		}
 		logExitMethod("isEqualCommandEnum");
 		return true;
+	}
+
+	/**
+	 * Print the differences in the 2 commands
+	 * 
+	 * @param commandInfo1
+	 * @param commandInfo2
+	 */
+	private void printErrorCommand(CommandInfo commandInfo1,
+			CommandInfo commandInfo2) {
+		logEnterMethod("printErrorCommand");
+		System.out.println("CommanEnum Error! "
+				+ commandInfo1.commandEnum.name() + REGEX_SPACE
+				+ commandInfo2.commandEnum.name());
+		logExitMethod("printErrorCommand");
+
 	}
 
 	/**
@@ -412,9 +497,7 @@ public class CommandInfo {
 		logEnterMethod("isEqualEdittedName");
 		try {
 			if (!commandInfo1.edittedName.equals(commandInfo2.edittedName)) {
-				System.out.println(ERROR_EDITTED_NAME
-						+ commandInfo1.edittedName + " "
-						+ commandInfo2.edittedName);
+				printErrorEdittedName(commandInfo1, commandInfo2);
 				logExitMethod("isEqualEdittedName");
 				return false;
 			}
@@ -427,6 +510,22 @@ public class CommandInfo {
 		}
 		logExitMethod("isEqualEdittedName");
 		return true;
+	}
+
+	/**
+	 * Prints the error in the 2 editted names.
+	 * 
+	 * @param commandInfo1
+	 * @param commandInfo2
+	 */
+	private void printErrorEdittedName(CommandInfo commandInfo1,
+			CommandInfo commandInfo2) {
+		logEnterMethod("printErrorEdittedName");
+		System.out.println(ERROR_EDITTED_NAME
+				+ commandInfo1.edittedName + REGEX_SPACE
+				+ commandInfo2.edittedName);
+		logExitMethod("printErrorEdittedName");
+
 	}
 
 	/**
@@ -443,8 +542,7 @@ public class CommandInfo {
 		logEnterMethod("isEqualTaskName");
 		try {
 			if (!commandInfo1.taskName.equals(commandInfo2.taskName)) {
-				System.out.println(ERROR_TASK_NAME + commandInfo1.taskName
-						+ " " + commandInfo2.taskName);
+				printErrorTaskName(commandInfo1, commandInfo2);
 				logExitMethod("isEqualTaskName");
 				return false;
 			}
@@ -457,7 +555,19 @@ public class CommandInfo {
 		logExitMethod("isEqualTaskName");
 		return true;
 	}
-	
+
+	/**
+	 * Prints the error in the 2 task names.
+	 * 
+	 * @param commandInfo1
+	 * @param commandInfo2
+	 */
+	private void printErrorTaskName(CommandInfo commandInfo1,
+			CommandInfo commandInfo2) {
+		System.out.println(ERROR_TASK_NAME + commandInfo1.taskName
+				+ REGEX_SPACE + commandInfo2.taskName);
+	}
+
 	/**
 	 * Logger exit method
 	 * 
@@ -466,7 +576,7 @@ public class CommandInfo {
 	void logExitMethod(String methodName) {
 		logger.exiting(getClass().getName(), methodName);
 	}
-	
+
 	/**
 	 * Logger enter method
 	 * 

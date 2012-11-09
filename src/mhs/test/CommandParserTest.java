@@ -216,11 +216,11 @@ public class CommandParserTest {
 		String expectedCommand;
 		String testCommand;
 
-		testCommand = commandExtractor.setCommand("add task");
+		testCommand = commandExtractor.extractCommand("add task");
 		expectedCommand = "add";
 		assertEquals(expectedCommand, testCommand);
 
-		testCommand = commandExtractor.setCommand("upDaTe task");
+		testCommand = commandExtractor.extractCommand("upDaTe task");
 		expectedCommand = "edit";
 		assertEquals(expectedCommand, testCommand);
 
@@ -273,6 +273,20 @@ public class CommandParserTest {
 		expectedEndDate = new DateTime(year, month, day, 16, 0);
 		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.edit,
 				null, "do tutorial", expectedStartDate, expectedEndDate, 1);
+		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
+		
+		testCommand = commandParser
+				.getParsedCommand("edit meeting 5 to do tutorial from 2pm  to 4pm ");
+		expectedStartDate = new DateTime(year, month, day, 14, 0);
+		expectedEndDate = new DateTime(year, month, day, 16, 0);
+		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.edit,
+				"meeting 5", "do tutorial", expectedStartDate, expectedEndDate, 0);
+		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
+		
+		testCommand = commandParser
+				.getParsedCommand("mark meeting 5 to do tutorial from 2pm  to 4pm ");
+		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.mark,
+				"meeting 5", null, null, null, 0);
 		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
 	}
 

@@ -33,7 +33,7 @@ public class CommandExtractor {
 	private static final String COMMAND_TIMED = "timed";
 	private static final String COMMAND_HOME = "home";
 	private static final String COMMAND_EXIT = "exit";
-
+	private static final String COMMAND_RENAME = "rename";
 	
 	/**
 	 * 
@@ -44,7 +44,7 @@ public class CommandExtractor {
 		add(COMMAND_ADD), remove(COMMAND_REMOVE), delete(COMMAND_REMOVE), update(COMMAND_EDIT), edit(
 				COMMAND_EDIT), postpone(COMMAND_EDIT), search(COMMAND_SEARCH), find(COMMAND_SEARCH), display(
 				COMMAND_SEARCH), sync(COMMAND_SYNC), undo(COMMAND_UNDO), redo(COMMAND_REDO), rename(
-				"rename"), login(COMMAND_LOGIN), signin(COMMAND_LOGIN), logout(COMMAND_LOGOUT), signout(
+				COMMAND_RENAME), login(COMMAND_LOGIN), signin(COMMAND_LOGIN), logout(COMMAND_LOGOUT), signout(
 				COMMAND_LOGOUT), help(COMMAND_HELP), mark(COMMAND_MARK), check(COMMAND_MARK), unmark(
 				COMMAND_UNMARK), p(COMMAND_PREVIOUS), n(COMMAND_NEXT), floating(COMMAND_FLOATING), deadline(
 				COMMAND_DEADLINE), timed(COMMAND_TIMED), home(COMMAND_HOME), exit(
@@ -93,7 +93,7 @@ public class CommandExtractor {
 	 * 
 	 * @return Returns if the string is a command type.
 	 */
-	public boolean isCommand(String parseString) {
+	public boolean checkCommand(String parseString) {
 		logEnterMethod("isCommand");
 		assert (parseString != null);
 		for (CommandKeyWord c : CommandKeyWord.values()) {
@@ -114,20 +114,12 @@ public class CommandExtractor {
 	 * 
 	 * @return Returns the command that is set.
 	 */
-	public String setCommand(String parseString) {
-		logEnterMethod("setCommand");
+	public String extractCommand(String parseString) {
+		logEnterMethod("extractCommand");
 		assert (parseString != null);
 		try {
 			String[] processArray = parseString.split(REGEX_WHITE_SPACE);
-			if (isCommand(processArray[0])) {
-				for (CommandKeyWord c : CommandKeyWord.values()) {
-					if (processArray[0].equalsIgnoreCase(c.name())) {
-						commandString = c.command;
-					}
-				}
-			} else {
-				commandString = CommandKeyWord.add.name();
-			}
+			setCommand(processArray);
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return null;
@@ -135,8 +127,27 @@ public class CommandExtractor {
 			logger.log(Level.FINER, e.getMessage());
 			return null;
 		}
-		logExitMethod("setCommand");
+		logExitMethod("extractCommand");
 		return commandString;
+	}
+
+	/**
+	 * Method to set the command according to what is at the first index of the array.
+	 * 
+	 * @param processArray
+	 */
+	private void setCommand(String[] processArray) {
+		logEnterMethod("setCommand");
+		if (checkCommand(processArray[0])) {
+			for (CommandKeyWord c : CommandKeyWord.values()) {
+				if (processArray[0].equalsIgnoreCase(c.name())) {
+					commandString = c.command;
+				}
+			}
+		} else {
+			commandString = CommandKeyWord.add.name();
+		}
+		logExitMethod("setCommand");
 	}
 	
 	/**
