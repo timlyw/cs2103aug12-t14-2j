@@ -40,7 +40,7 @@ public class TimeExtractor {
 	private static final Logger logger = MhsLogger.getLogger();
 
 	/**
-	 * This is the constructor for TimeExtractor. 
+	 * This is the constructor for TimeExtractor.
 	 */
 	private TimeExtractor() {
 		logEnterMethod("TimeExtractor");
@@ -48,7 +48,7 @@ public class TimeExtractor {
 		setTime = null;
 		timeQueue = new LinkedList<LocalTime>();
 
-		logExitMethod("TimeExtractor");	
+		logExitMethod("TimeExtractor");
 	}
 
 	public static TimeExtractor getTimeExtractor() {
@@ -66,9 +66,11 @@ public class TimeExtractor {
 	 * 
 	 * @return Returns a local time object with the timings set.
 	 */
-	public Queue<LocalTime> processTime(String parseString) {
+	public Queue<LocalTime> extractTime(String parseString) {
 		logEnterMethod("processTime");
-		assert (parseString != null);
+		if (parseString == null) {
+			return null;
+		}
 		try {
 			timeQueue = new LinkedList<LocalTime>();
 			String[] processArray = parseString.split(REGEX_WHITE_SPACE);
@@ -87,12 +89,11 @@ public class TimeExtractor {
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return timeQueue;
-		}
-		catch(ArrayIndexOutOfBoundsException e){
+		} catch (ArrayIndexOutOfBoundsException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return timeQueue;
 		}
-		logExitMethod("processTime");	
+		logExitMethod("processTime");
 		return timeQueue;
 	}
 
@@ -113,7 +114,7 @@ public class TimeExtractor {
 		} catch (InvalidParameterException e) {
 			logger.log(Level.FINER, e.getMessage());
 		}
-		logExitMethod("process24hrFormat");	
+		logExitMethod("process24hrFormat");
 	}
 
 	/**
@@ -137,7 +138,7 @@ public class TimeExtractor {
 		} catch (InvalidParameterException e) {
 			logger.log(Level.FINER, e.getMessage());
 		}
-		logExitMethod("process12HrFormat");	
+		logExitMethod("process12HrFormat");
 	}
 
 	/**
@@ -154,7 +155,7 @@ public class TimeExtractor {
 		if (timeArray.length > 1) {
 			minute = Integer.parseInt(timeArray[1]);
 		}
-		logExitMethod("extractMinute");	
+		logExitMethod("extractMinute");
 		return minute;
 	}
 
@@ -176,7 +177,7 @@ public class TimeExtractor {
 				hour = extractHourAM(timeArray, i);
 			}
 		}
-		logExitMethod("extractHour");	
+		logExitMethod("extractHour");
 		return hour;
 	}
 
@@ -198,8 +199,8 @@ public class TimeExtractor {
 		hour = Integer.parseInt(timeArray[0]);
 		if (hour == 12) {
 			hour = 0;
-		} 
-		logExitMethod("extractHourAM");	
+		}
+		logExitMethod("extractHourAM");
 		return hour;
 	}
 
@@ -224,7 +225,7 @@ public class TimeExtractor {
 		} else {
 			hour += 12;
 		}
-		logExitMethod("extractHourPM");	
+		logExitMethod("extractHourPM");
 		return hour;
 	}
 
@@ -240,10 +241,10 @@ public class TimeExtractor {
 		logEnterMethod("is12HrFormat");
 		if (time.matches(REGEX_12_HOUR_FORMAT)
 				|| time.matches(REGEX_12_HOUR_FORMAT_WITHOUT_MINUTES)) {
-			logExitMethod("is12HrFormat");	
+			logExitMethod("is12HrFormat");
 			return true;
 		}
-		logExitMethod("is12HrFormat");	
+		logExitMethod("is12HrFormat");
 		return false;
 	}
 
@@ -259,10 +260,10 @@ public class TimeExtractor {
 		logEnterMethod("is24HrFormat");
 
 		if (time.matches(REGEX_24_HOUR_FORMAT)) {
-			logExitMethod("is24HrFormat");	
+			logExitMethod("is24HrFormat");
 			return true;
 		}
-		logExitMethod("is24HrFormat");	
+		logExitMethod("is24HrFormat");
 		return false;
 	}
 
@@ -278,13 +279,14 @@ public class TimeExtractor {
 		logEnterMethod("checkTimeFormat");
 		assert (time != null);
 		if (is12HrFormat(time) || is24HrFormat(time)) {
-			logExitMethod("checkTimeFormat");	
+			logExitMethod("checkTimeFormat");
 			return true;
 		}
-		logExitMethod("checkTimeFormat");	
+		logExitMethod("checkTimeFormat");
 		return false;
 
 	}
+
 	/**
 	 * Logger enter method
 	 * 
