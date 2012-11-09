@@ -64,13 +64,15 @@ public class NameExtractor {
 	public boolean checkNameFormat(String parseString) {
 		logEnterMethod("checkNameFormat");
 
+		if (parseString == null) {
+			return false;
+		}
 		DateExtractor dateExtractor = DateExtractor.getDateExtractor();
 		TimeExtractor timeExtractor = TimeExtractor.getTimeExtractor();
-		assert (parseString != null);
 		if (!(timeExtractor.checkTimeFormat(parseString) || dateExtractor
 				.checkDateFormat(parseString))) {
 			if (!isSpecialKeyWord(parseString)) {
-				logger.exiting(getClass().getName(), this.getClass().getName());
+				logExitMethod("checkNameFormat");
 				return true;
 			}
 		}
@@ -88,8 +90,8 @@ public class NameExtractor {
 	private boolean isSpecialKeyWord(String printString) {
 		logEnterMethod("isSpecialKeyWord");
 		for (SpecialKeyWords k : SpecialKeyWords.values()) {
-			if (printString.equals(k.name())) {
-				logger.exiting(getClass().getName(), this.getClass().getName());
+			if (printString.equalsIgnoreCase(k.name())) {
+				logExitMethod("isSpecialKeyWord");
 				return true;
 			}
 		}
@@ -105,28 +107,21 @@ public class NameExtractor {
 	 * 
 	 * @return Returns a string with the full task name.
 	 */
-	public Queue<String> processName(String parseString) {
-		logEnterMethod("processName");
-		assert (parseString != null);
+	public Queue<String> extractName(String parseString) {
+		logEnterMethod("extractName");
+		if (parseString == null) {
+			return null;
+		}
 		try {
 			String[] processArray = parseString.split(REGEX_WHITE_SPACE);
-			Queue<String> nameQueue = new LinkedList<String>();
-
 			for (counter = 0; counter < processArray.length; counter++) {
-				if (CommandExtractor.getCommandExtractor().checkCommand(
-						processArray[0]) && counter==0) {
+				if (isCommandAtFirstLocation(processArray)) {
 					counter++;
 				}
 				if (checkNameFormat(processArray[counter])) {
-					nameQueue = setUpNameQueue(processArray);
-					String name = "";
-					while (!nameQueue.isEmpty()) {
-						String command = nameQueue.poll();
-						name += command + REGEX_BLANK;
-					}
+					String name = processName(processArray);
 					addNameToList(name);
 				}
-
 			}
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
@@ -135,8 +130,43 @@ public class NameExtractor {
 			logger.log(Level.FINER, e.getMessage());
 			return null;
 		}
-		logExitMethod("processName");
+		logExitMethod("extractName");
 		return nameList;
+	}
+
+	/**
+	 * Method to process the name from the array.
+	 * 
+	 * @param processArray
+	 *            Array to be parsed.
+	 * 
+	 * @return Returns the first name in the array.
+	 */
+	private String processName(String[] processArray) {
+		logEnterMethod("processName");
+		Queue<String> nameQueue;
+		nameQueue = setUpNameQueue(processArray);
+		String name = "";
+		while (!nameQueue.isEmpty()) {
+			String command = nameQueue.poll();
+			name += command + REGEX_BLANK;
+		}
+		logExitMethod("processName");
+		return name;
+	}
+
+	/**
+	 * Method to check if the first location is a command.
+	 * 
+	 * @param processArray
+	 * @return
+	 */
+	private boolean isCommandAtFirstLocation(String[] processArray) {
+		logEnterMethod("isCommandAtFirstLocation");
+		logExitMethod("isCommandAtFirstLocation");
+		return CommandExtractor.getCommandExtractor().checkCommand(
+				processArray[0])
+				&& counter == 0;
 	}
 
 	/**
@@ -159,9 +189,12 @@ public class NameExtractor {
 	 * 
 	 * @return Returns the string with everything within quotations removed
 	 */
-	public String processQuotationMarks(String parseString) {
-		logEnterMethod("processQuotationMarks");
-		assert (parseString != null);
+	public String extractNameInQuotationMarks(String parseString) {
+		logEnterMethod("extractNameInQuotationMarks");
+
+		if (parseString == null) {
+			return null;
+		}
 		String name = "";
 		nameList = new LinkedList<String>();
 		if (hasQuotations(parseString)) {
@@ -177,13 +210,8 @@ public class NameExtractor {
 				}
 			}
 		}
-		try {
-			parseString = parseString.trim();
-		} catch (NullPointerException e) {
-			logger.log(Level.FINER, e.getMessage());
-			return parseString;
-		}
-		logExitMethod("processQuotationMarks");
+
+		logExitMethod("extractNameInQuotationMarks");
 		return parseString;
 	}
 
@@ -299,8 +327,7 @@ public class NameExtractor {
 		logEnterMethod("addSpecialKeyWordsToQueue");
 
 		for (SpecialKeyWords k : SpecialKeyWords.values()) {
-			if (processArray[j].equalsIgnoreCase(k.name())
-					&& !processArray[j].equalsIgnoreCase(k.to.name())) {
+			if (isSpecialKeyWordExcludingTo(processArray, j, k)) {
 				try {
 					if (checkNameFormat(processArray[j + 1])) {
 						commandQueue.add(processArray[j]);
@@ -314,6 +341,22 @@ public class NameExtractor {
 		}
 		logExitMethod("addSpecialKeyWordsToQueue");
 		return j;
+	}
+
+	/**
+	 * Check if the the string is a special key word excluding to.
+	 * 
+	 * @param processArray
+	 * @param j
+	 * @param k
+	 * @return
+	 */
+	private boolean isSpecialKeyWordExcludingTo(String[] processArray, int j,
+			SpecialKeyWords k) {
+		logEnterMethod("isSpecialKeyWordExcludingTo");
+		logExitMethod("isSpecialKeyWordExcludingTo");
+		return processArray[j].equalsIgnoreCase(k.name())
+				&& !processArray[j].equalsIgnoreCase(SpecialKeyWords.to.name());
 	}
 
 	/**

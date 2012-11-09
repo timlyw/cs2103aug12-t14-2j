@@ -183,11 +183,11 @@ public class CommandParser {
 	private boolean isIndexExpectedWithCommand() {
 		logEnterMethod("isIndexExpectedWithCommand");
 		logExitMethod("isIndexExpectedWithCommand");
-		return command.equals(COMMAND_REMOVE)
-				|| command.equals(COMMAND_EDIT)
-				|| command.equals(COMMAND_MARK)
-				|| command.equals(COMMAND_RENAME)
-				|| command.equals(COMMAND_UNMARK);
+		return command.equalsIgnoreCase(COMMAND_REMOVE)
+				|| command.equalsIgnoreCase(COMMAND_EDIT)
+				|| command.equalsIgnoreCase(COMMAND_MARK)
+				|| command.equalsIgnoreCase(COMMAND_RENAME)
+				|| command.equalsIgnoreCase(COMMAND_UNMARK);
 		
 	}
 
@@ -317,7 +317,7 @@ public class CommandParser {
 	private void setTime(String parseString) {
 		logEnterMethod("setTime");
 		Queue<LocalTime> timeList;
-		timeList = timeParser.processTime(parseString);
+		timeList = timeParser.extractTime(parseString);
 		if (timeList.isEmpty()) {
 			logExitMethod("setTime");
 			return;
@@ -352,7 +352,7 @@ public class CommandParser {
 	private void setName(String parseString) {
 		logEnterMethod("setName");
 		Queue<String> nameList;
-		nameList = nameParser.processName(parseString);
+		nameList = nameParser.extractName(parseString);
 		try {
 			if (nameList.isEmpty()) {
 				logExitMethod("setName");
@@ -407,7 +407,7 @@ public class CommandParser {
 	 */
 	private String setNameInQuotationMarks(String process) {
 		logEnterMethod("setNameInQuotationMarks");
-		process = nameParser.processQuotationMarks(process);
+		process = nameParser.extractNameInQuotationMarks(process);
 		logExitMethod("setNameInQuotationMarks");
 		return process;
 

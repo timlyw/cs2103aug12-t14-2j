@@ -51,32 +51,40 @@ public class CommandParserTest {
 		LocalTime testStartTime;
 		LocalTime testEndTime;
 
-		testList = timeExtractor.processTime("5pm");
+		testList = timeExtractor.extractTime("5pm");
 		testStartTime = new LocalTime(17, 0);
 		expectedList.add(testStartTime);
 		assertEquals(expectedList, testList);
 
-		testList = timeExtractor.processTime("5Am");
+		testList = timeExtractor.extractTime("5Am");
 		testStartTime = new LocalTime(5, 0);
 		expectedList = new LinkedList<LocalTime>();
 		expectedList.add(testStartTime);
 		assertEquals(expectedList, testList);
 
-		testList = timeExtractor.processTime("20:00");
+		testList = timeExtractor.extractTime("20:00");
 		testStartTime = new LocalTime(20, 0);
 		expectedList = new LinkedList<LocalTime>();
 		expectedList.add(testStartTime);
 		assertEquals(expectedList, testList);
 
-		testList = timeExtractor.processTime("3AM to 19:00");
-		testStartTime = new LocalTime(3, 0);
-		testEndTime = new LocalTime(19, 0);
+		testList = timeExtractor.extractTime("3.22AM to 19:15");
+		testStartTime = new LocalTime(3, 22);
+		testEndTime = new LocalTime(19, 15);
 		expectedList = new LinkedList<LocalTime>();
 		expectedList.add(testStartTime);
 		expectedList.add(testEndTime);
 		assertEquals(expectedList, testList);
 
-		testList = timeExtractor.processTime("27AM to 35:72");
+		testList = timeExtractor.extractTime("12AM to 12PM");
+		testStartTime = new LocalTime(00, 0);
+		testEndTime = new LocalTime(12, 0);
+		expectedList = new LinkedList<LocalTime>();
+		expectedList.add(testStartTime);
+		expectedList.add(testEndTime);
+		assertEquals(expectedList, testList);
+		
+		testList = timeExtractor.extractTime("27AM to 35:72");
 		expectedList = new LinkedList<LocalTime>();
 		assertEquals(expectedList, testList);
 
@@ -213,7 +221,7 @@ public class CommandParserTest {
 		String testName;
 		String testEdittedName;
 
-		testList = nameExtractor.processName("task to task2");
+		testList = nameExtractor.extractName("task to task2");
 		testName = "task";
 		testEdittedName = "task2";
 		expectedList.add(testName);
@@ -336,6 +344,12 @@ public class CommandParserTest {
 				.getParsedCommand("mark meeting 5 to do tutorial from 4pm  to 2pm ");
 		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.mark,
 				"meeting 5", null, null, null, 0);
+		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
+
+		testCommand = commandParser
+				.getParsedCommand("\"watch day after tomorrow\" ");
+		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.add,
+				"watch day after tomorrow", null, null, null, 0);
 		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
 
 		testCommand = commandParser
