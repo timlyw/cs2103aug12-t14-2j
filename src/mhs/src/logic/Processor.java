@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import mhs.src.common.FileHandler;
 import mhs.src.common.MhsLogger;
 import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseFactory;
@@ -36,6 +37,8 @@ public class Processor {
 	private static final int HELP_NAME = 6;
 	private static final int HELP_COMMAND = 7;
 
+	private static boolean DEBUG = false;
+
 	private static Processor processor;
 	private Database dataHandler;
 	private CommandParser commandParser;
@@ -44,6 +47,9 @@ public class Processor {
 	private String password;
 	private boolean userIsLoggedIn;
 	private CommandCreator commandCreator;
+
+	private FileHandler feedbackFile;
+	private FileHandler stateFile;
 
 	private ArrayList<StateListener> stateListeners = new ArrayList<StateListener>();
 	private String commandFeedback = null;
@@ -91,6 +97,36 @@ public class Processor {
 		if (processor == null) {
 			processor = new Processor();
 		}
+		return processor;
+	}
+
+	private Processor(String testDb) {
+		try {
+			DatabaseFactory.initializeDatabaseFactory(testDb, false);
+			dataHandler = DatabaseFactory.getDatabaseInstance();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (DatabaseAlreadyInstantiatedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DatabaseFactoryNotInstantiatedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
+		commandParser = CommandParser.getCommandParser();
+		commandCreator = CommandCreator.getCommandCreator();
+		userCommand = new CommandInfo();
+		feedbackFile = new FileHandler("feedbackoutput.txt");
+		stateFile = new FileHandler("stateoutput.txt");
+	}
+
+	public static Processor getProcessor(String testDb) {
+		processor = new Processor(testDb);
 		return processor;
 	}
 
@@ -301,6 +337,10 @@ public class Processor {
 			screenOutput = "Exceptional Situation";
 			e.printStackTrace();
 		}
+		if (DEBUG) {
+			feedbackFile.writeToFile(commandFeedback);
+			stateFile.writeToFile(currentState);
+		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		updateStateListeners();
 	}
@@ -416,4 +456,19 @@ public class Processor {
 		return outputString;
 	}
 
+	public void setDebugMode() {
+		DEBUG = true;
+	}
+
+	public void clearDatabase() {
+		try {
+			dataHandler.clearDatabase();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
