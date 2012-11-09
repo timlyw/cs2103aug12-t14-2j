@@ -170,7 +170,7 @@ public class TimeExtractor {
 		logEnterMethod("extractHour");
 		int hour = 0;
 		for (int i = 0; i < timeArray.length; i++) {
-			if (timeArray[i].contains(PM)) {
+			if (timeArray[i].toLowerCase().contains(PM)) {
 				hour = extractHourPM(timeArray, i);
 			} else if (timeArray[i].toLowerCase().contains(AM)) {
 				hour = extractHourAM(timeArray, i);

@@ -20,6 +20,7 @@ public class CommandCreator {
 	private static final String MESSAGE_NOTHING_TO_UNDO = "Nothing to undo";
 	private static final String MESSAGE_NOTHING_TO_REDO = "Nothing to redo";
 
+	private static CommandCreator commandCreator;
 	private Command currentCommand;
 	private Command previousCommand;
 	private Stack<Command> undoListCommands;
@@ -28,11 +29,18 @@ public class CommandCreator {
 	private String commandFeedback = "feedback";
 	private String currentState = "state";
 
-	public CommandCreator() {
+	private CommandCreator() {
 		logEnterMethod("CommandCreator");
 		undoListCommands = new Stack<Command>();
 		redoListCommands = new Stack<Command>();
 		logExitMethod("CommandCreator");
+	}
+
+	public static CommandCreator getCommandCreator() {
+		if (commandCreator == null) {
+			commandCreator = new CommandCreator();
+		}
+		return commandCreator;
 	}
 
 	/**
@@ -56,6 +64,7 @@ public class CommandCreator {
 			previousCommand.executeByIndex(userCommand.getIndex() - 1);
 			currentState = previousCommand.getCurrentState();
 			commandFeedback = previousCommand.getCommandFeedback();
+			pushToUndoStack(previousCommand);
 		}
 		previousCommand = currentCommand;
 		logExitMethod("CommandCreator");
@@ -134,7 +143,7 @@ public class CommandCreator {
 			break;
 		}
 		updateDisplayIndex(userCommand);
-		pushToUndoStack();
+		pushToUndoStack(currentCommand);
 		currentState = currentCommand.getCurrentState();
 		commandFeedback = currentCommand.getCommandFeedback();
 		logger.exiting(getClass().getName(), this.getClass().getName());
@@ -147,7 +156,7 @@ public class CommandCreator {
 			userOutputString = MESSAGE_NOTHING_TO_REDO;
 		} else {
 			Command redoCommand = redoListCommands.pop();
-			redoCommand.executeCommand();
+			redoCommand.redo();
 		}
 		return userOutputString;
 	}
@@ -155,10 +164,10 @@ public class CommandCreator {
 	/**
 	 * Pushes comamnd to undo stack if undoable
 	 */
-	private void pushToUndoStack() {
+	private void pushToUndoStack(Command inputCommand) {
 		logEnterMethod("pushToUndoStack");
 		if (currentCommand.isUndoable()) {
-			undoListCommands.push(currentCommand);
+			undoListCommands.push(inputCommand);
 		}
 		logExitMethod("pushToRedoStack");
 	}
@@ -241,7 +250,7 @@ public class CommandCreator {
 			commandFeedback = MESSAGE_INVALID_COMMAND;
 			break;
 		}
-		pushToUndoStack();
+		pushToUndoStack(currentCommand);
 		currentState = currentCommand.getCurrentState();
 		commandFeedback = currentCommand.getCommandFeedback();
 		logExitMethod("executeCommandByIndex");

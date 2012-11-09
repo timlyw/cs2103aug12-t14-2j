@@ -9,14 +9,13 @@ import org.junit.runners.Suite.SuiteClasses;
  * 
  * jUnit Test Suite running all tests
  * 
- * - Add jUnit test to SuiteClasses include in AllTests 
+ * - Add jUnit test to SuiteClasses include in AllTests
  */
 
 @RunWith(Suite.class)
-
-@SuiteClasses({ DatabaseFactoryTest.class, DatabaseTest.class, ConfigFileTest.class,
-		GoogleCalendarMhsTest.class, TaskRecordFileTest.class,
-		CommandParserTest.class, TaskListsTest.class, ProcessorTest.class })
+@SuiteClasses({ DatabaseFactoryTest.class, DatabaseTest.class,
+		ConfigFileTest.class, GoogleCalendarMhsTest.class,
+		TaskRecordFileTest.class, CommandParserTest.class, TaskListsTest.class })
 public class AllTests {
 
 }

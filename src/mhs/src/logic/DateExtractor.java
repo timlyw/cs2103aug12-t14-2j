@@ -744,9 +744,12 @@ public class DateExtractor {
 	 */
 	private void setDay(int parameters) {
 		logEnterMethod("setDay");
-		if (parameters < now.getDayOfWeek()) {
+		System.out.println(parameters);
+		System.out.println(now.getDayOfWeek());
+		if (parameters > now.getDayOfWeek()) {
 			day = setDayInSameWeek(parameters);
-		} else if (parameters > now.getDayOfWeek()) {
+			System.out.println(parameters + " " + day);
+		} else if (parameters < now.getDayOfWeek()) {
 			day = setDayInNextWeek(parameters);
 		} else if (parameters == now.getDayOfWeek()) {
 			day = setDayInExactlyOneWeek();
@@ -775,8 +778,8 @@ public class DateExtractor {
 	private int setDayInNextWeek(int parameters) {
 		logEnterMethod("setDayInNextWeek");
 		logExitMethod("setDayInNextWeek");
-		return parameters + now.getDayOfMonth() - 1;
-	}
+		return NUMBER_OF_DAYS_IN_A_WEEK - now.getDayOfWeek() + parameters + now
+				.getDayOfMonth();	}
 
 	/**
 	 * Method to set a day in the same week.
@@ -788,8 +791,7 @@ public class DateExtractor {
 	private int setDayInSameWeek(int parameters) {
 		logEnterMethod("setDayInSameWeek");
 		logExitMethod("setDayInSameWeek");
-		return NUMBER_OF_DAYS_IN_A_WEEK - now.getDayOfWeek() + parameters + now
-				.getDayOfMonth();
+		return parameters - now.getDayOfWeek() + now.getDayOfMonth();
 	}
 
 	/**
