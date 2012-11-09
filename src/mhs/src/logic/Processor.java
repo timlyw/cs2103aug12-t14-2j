@@ -26,12 +26,15 @@ import com.google.gdata.util.ServiceException;
  */
 public class Processor {
 
+	private static final String MESSAGE_INVALID_INDEX = "Invalid Index";
+
 	private static final int HELP_ADD = 1;
 	private static final int HELP_EDIT = 2;
-	private static final int HELP_DATE = 3;
-	private static final int HELP_TIME = 4;
-	private static final int HELP_NAME = 5;
-	private static final int HELP_COMMAND = 6;
+	private static final int HELP_SEARCH = 3;
+	private static final int HELP_DATE = 4;
+	private static final int HELP_TIME = 5;
+	private static final int HELP_NAME = 6;
+	private static final int HELP_COMMAND = 7;
 
 	private Database dataHandler;
 	private CommandParser commandParser;
@@ -162,9 +165,16 @@ public class Processor {
 				commandByIndexOnly(userCommand);
 			}
 		} else {
+			disableHelpIndex();
 			executeNonTaskBasedCommand(userCommand);
 		}
 		logger.exiting(getClass().getName(), this.getClass().getName());
+	}
+
+	private void disableHelpIndex() {
+		if (isHelpIndexExpected) {
+			isHelpIndexExpected = false;
+		}
 	}
 
 	private void executeNonTaskBasedCommand(CommandInfo userCommand)
@@ -204,29 +214,35 @@ public class Processor {
 	}
 
 	private void helpByIndex(CommandInfo userCommand) {
-		switch (userCommand.getIndex()) {
-		case HELP_ADD:
-			help.HelpAdd();
-			break;
-		case HELP_EDIT:
-			help.HelpEdit();
-			break;
-		case HELP_DATE:
-			help.HelpDateFormat();
-			break;
-		case HELP_TIME:
-			help.HelpTimeFormat();
-			break;
-		case HELP_NAME:
-			help.HelpNameFormat();
-			break;
-		case HELP_COMMAND:
-			help.HelpCommands();
-			break;
+		if (userCommand.getIndex() > 0 && userCommand.getIndex() < 8) {
+			switch (userCommand.getIndex()) {
+			case HELP_ADD:
+				help.HelpAdd();
+				break;
+			case HELP_EDIT:
+				help.HelpEdit();
+				break;
+			case HELP_SEARCH:
+				help.HelpSearch();
+				break;
+			case HELP_DATE:
+				help.HelpDateFormat();
+				break;
+			case HELP_TIME:
+				help.HelpTimeFormat();
+				break;
+			case HELP_NAME:
+				help.HelpNameFormat();
+				break;
+			case HELP_COMMAND:
+				help.HelpCommands();
+				break;
+			}
+			currentState = help.getState();
+			commandFeedback = help.getCommandFeedback();
+		} else {
+			commandFeedback = MESSAGE_INVALID_INDEX;
 		}
-		currentState = help.getState();
-		commandFeedback = help.getCommandFeedback();
-		isHelpIndexExpected = false;
 	}
 
 	private void showHelp() {
