@@ -307,7 +307,7 @@ public class UiController {
 
 	private void updateTitleScreen() {
 		startLog("updateTitleScreen");
-		String titleText = processor.getHeaderText();
+		String titleText = processor.getLoginDisplayFieldText();
 		if (titleText != null) {
 			mhsFrame.setTitleText(titleText);
 		}
