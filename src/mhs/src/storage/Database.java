@@ -12,6 +12,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import mhs.src.common.DateTimeHelper;
 import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.InvalidTaskFormatException;
 import mhs.src.common.exceptions.TaskNotFoundException;
@@ -41,12 +42,19 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
+	private static final int ARRAY_LENGTH_EMPTY_SIZE = 0;
+	private static final String REGEX_EMAIL_AT_SYMBOL = "@";
+	private static final int FORCE_PUSH_UPDATED_DATE_TIME_AHEAD_VALUE = 1;
+	private static final int SYNC_START_DATE_TIME_MONTHS_BEFORE_NOW = 1;
+	private static final int SYNC_END_DATE_TIME_MONTHS_FROM_NOW = 12;
 	private static final String PARAMETER_CONFIG_PARAMETER = "configParameter";
+	
 	static GoogleCalendarMhs googleCalendar;
 	static TaskLists taskLists;
 	static Syncronize syncronize;
 	static TaskValidator taskValidator;
 	private static TaskRecordFile taskRecordFile;
+	static DateTimeHelper dateTimeHelper;
 	static ConfigFile configFile;
 
 	static DateTime syncStartDateTime;
@@ -132,11 +140,29 @@ public class Database {
 	 */
 	private void initializeSyncDateTimes() {
 		logEnterMethod("initializeSyncDateTimes");
-		syncStartDateTime = DateTime.now().minusMonths(1).toDateMidnight()
-				.toDateTime();
-		syncEndDateTime = DateTime.now().plusMonths(12).toDateMidnight()
-				.toDateTime();
+		setSyncStartDateTime(SYNC_END_DATE_TIME_MONTHS_FROM_NOW);
+		setSyncEndDateTime(SYNC_START_DATE_TIME_MONTHS_BEFORE_NOW);
 		logExitMethod("initializeSyncDateTimes");
+	}
+
+	/**
+	 * Set Sync End DateTime
+	 * 
+	 * @param monthsBeforeNow
+	 */
+	private void setSyncEndDateTime(int monthsBeforeNow) {
+		syncEndDateTime = DateTime.now().plusMonths(monthsBeforeNow)
+				.toDateMidnight().toDateTime();
+	}
+
+	/**
+	 * Set Sync Start DateTime
+	 * 
+	 * @param monthsBeforeNow
+	 */
+	private void setSyncStartDateTime(int monthsAfterNow) {
+		syncStartDateTime = DateTime.now().minusMonths(monthsAfterNow)
+				.toDateMidnight().toDateTime();
 	}
 
 	/**
@@ -165,29 +191,46 @@ public class Database {
 	boolean initializeGoogleCalendarService() throws IOException,
 			AuthenticationException, ServiceException {
 		logEnterMethod("initializeGoogleCalendarService");
-		if (!configFile
-				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)) {
+		String userGoogleAccount = getSavedUserGoogleAccount();
+		String userGoogleAuthToken = getSavedUserGoogleAuthToken();
+		if (userGoogleAccount == null || userGoogleAuthToken == null) {
 			logExitMethod("initializeGoogleCalendarService");
 			return false;
 		}
-		if (!configFile
-				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
-			logExitMethod("initializeGoogleCalendarService");
-			return false;
-		}
-
-		String userGoogleAccount = configFile
-				.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT);
-		String userGoogleAuthToken = configFile
-				.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN);
-
-		assert (userGoogleAccount != null && userGoogleAuthToken != null);
-
 		googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
 				userGoogleAccount, userGoogleAuthToken);
-
 		logExitMethod("initializeGoogleCalendarService");
 		return true;
+	}
+
+	/**
+	 * Get saved user google auth token from Configuration File
+	 * 
+	 * @return savedUserGoogleAuthToken or null if it does not exist
+	 */
+	private String getSavedUserGoogleAuthToken() {
+		if (!configFile
+				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)) {
+			return null;
+		}
+		String savedUserGoogleAuthToken = configFile
+				.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN);
+		return savedUserGoogleAuthToken;
+	}
+
+	/**
+	 * Get saved user google account from Configuration File
+	 * 
+	 * @return getSavedUserGoogleAccount or null if it does not exist
+	 */
+	private String getSavedUserGoogleAccount() {
+		if (!configFile
+				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
+			return null;
+		}
+		String savedUserGoogleAccount = configFile
+				.getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT);
+		return savedUserGoogleAccount;
 	}
 
 	/**
@@ -218,15 +261,33 @@ public class Database {
 		}
 		assert (syncronize != null);
 
+		String googleAccessToken = authenticateUserGoogleAccount(userName,
+				userPassword);
+		saveGoogleAccountInfo(userName, googleAccessToken);
+		logExitMethod("loginUserGoogleAccount");
+	}
+	
+	/**
+	 * Authenticate user account with provided user name and password
+	 * 
+	 * @param userName
+	 * @param userPassword
+	 * @return googleAccessToken if authentication is successful
+	 * @throws AuthenticationException
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	private String authenticateUserGoogleAccount(String userName,
+			String userPassword) throws AuthenticationException,
+			UnknownHostException, IOException, ServiceException {
 		syncronize.disableRemoteSync();
 		String googleAccessToken = GoogleCalendarMhs.retrieveUserToken(
 				GOOGLE_CALENDAR_APP_NAME, userName, userPassword);
 		googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
 				userName, googleAccessToken);
 		syncronize.enableRemoteSync();
-		saveGoogleAccountInfo(userName, googleAccessToken);
-
-		logExitMethod("loginUserGoogleAccount");
+		return googleAccessToken;
 	}
 
 	/**
@@ -245,7 +306,7 @@ public class Database {
 		configFile.save();
 		logExitMethod("logOutUserGoogleAccount");
 	}
-
+	
 	/**
 	 * @return user google account name if it exists or null
 	 */
@@ -254,12 +315,23 @@ public class Database {
 		logExitMethod("getUserGoogleAccountName");
 		if (configFile.hasConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
 			String[] googleUserAccountString = configFile.getConfigParameter(
-					CONFIG_PARAM_GOOGLE_USER_ACCOUNT).split("@");
-			if (googleUserAccountString.length > 0) {
+					CONFIG_PARAM_GOOGLE_USER_ACCOUNT).split(REGEX_EMAIL_AT_SYMBOL);
+			if (isArrayNonEmpty(googleUserAccountString)) {
 				return googleUserAccountString[0];
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Checks whether non-null array is empty
+	 * 
+	 * @param non-null arrayToCheck
+	 * @return true if array is not empty
+	 */
+	private boolean isArrayNonEmpty(String[] arrayToCheck) {
+		assert(arrayToCheck != null);
+		return arrayToCheck.length > ARRAY_LENGTH_EMPTY_SIZE;
 	}
 
 	/**
@@ -272,7 +344,7 @@ public class Database {
 		logExitMethod("isUserGoogleCalendarAuthenticated");
 		return isRemoteSyncEnabled;
 	}
-
+	
 	/**
 	 * Saves user Google Calendar Service access token and user google account
 	 * email to config file
@@ -468,12 +540,9 @@ public class Database {
 		}
 
 		Task taskToAdd = task.clone();
+		setTaskToAddParameters(taskToAdd);
 		addTaskToTaskList(taskToAdd);
-
-		if (isRemoteSyncEnabled) {
-			syncronize.schedulePushSyncTask(taskToAdd);
-		}
-
+		schedulePushSyncTask(taskToAdd);
 		saveTaskRecordFile();
 		logExitMethod("add");
 		return taskToAdd;
@@ -487,22 +556,41 @@ public class Database {
 	private void addTaskToTaskList(Task taskToAdd) {
 		logEnterMethod("addTaskToTaskList");
 		assert (taskToAdd != null);
-
-		taskToAdd.setTaskId(getNewTaskId());
-		DateTime UpdateTime = new DateTime();
-		UpdateTime = DateTime.now();
-
-		taskToAdd.setTaskCreated(UpdateTime);
-		taskToAdd.setTaskUpdated(UpdateTime);
-
-		taskToAdd.setTaskLastSync(null);
-		taskToAdd.setgCalTaskId(null);
-
 		taskLists.updateTaskInTaskLists(taskToAdd);
-
 		logExitMethod("addTaskToTaskList");
 	}
 
+	/**
+	 * Creates task to add
+	 * 
+	 * Updates the following attributes: - unique taskId - TaskCreated -
+	 * TaskUpdated
+	 * 
+	 * Sets the following attributes to new task default: - TaskLastSync -
+	 * gCalTaskId
+	 * 
+	 * @param taskToAdd
+	 */
+	private void setTaskToAddParameters(Task taskToAdd) {
+		taskToAdd.setTaskId(getNewTaskId());
+		DateTime UpdateTime = getCurrentDateTime();
+		taskToAdd.setTaskCreated(UpdateTime);
+		taskToAdd.setTaskUpdated(UpdateTime);
+		taskToAdd.setTaskLastSync(null);
+		taskToAdd.setgCalTaskId(null);
+	}
+
+	/**
+	 * Gets current DateTime object
+	 * 
+	 * @return current DateTime
+	 */
+	private DateTime getCurrentDateTime() {
+		DateTime currentDateTime = new DateTime();
+		currentDateTime = DateTime.now();
+		return currentDateTime;
+	}
+	
 	/**
 	 * Deletes a task
 	 * 
@@ -520,11 +608,9 @@ public class Database {
 
 		Task taskToDelete = taskLists.getTask(taskId);
 		deleteTaskInTaskList(taskToDelete);
-
-		if (isRemoteSyncEnabled) {
-			syncronize.schedulePushSyncTask(taskToDelete);
-		}
+		schedulePushSyncTask(taskToDelete);
 		saveTaskRecordFile();
+
 		logExitMethod("delete");
 	}
 
@@ -536,14 +622,9 @@ public class Database {
 	void deleteTaskInTaskList(Task taskToDelete) {
 		logEnterMethod("deleteTaskInTaskList");
 		assert (taskToDelete != null);
-
 		taskToDelete.setDeleted(true);
-
-		// set updated time to force push
-		DateTime UpdateTime = new DateTime();
-		UpdateTime = DateTime.now().plusMinutes(1);
-		taskToDelete.setTaskUpdated(UpdateTime);
-
+		setUpdatedTimeAheadToForcePush(taskToDelete,
+				FORCE_PUSH_UPDATED_DATE_TIME_AHEAD_VALUE);
 		taskLists.updateTaskInTaskLists(taskToDelete);
 		logExitMethod("deleteTaskInTaskList");
 	}
@@ -576,22 +657,33 @@ public class Database {
 		}
 
 		Task updatedTaskToSave = updatedTask.clone();
-
-		// Preserve non-editable fields
-		Task currentTask = query(updatedTaskToSave.getTaskId());
-		updatedTaskToSave.setgCalTaskId(currentTask.getgCalTaskId());
-		updatedTaskToSave.setTaskCreated(currentTask.getTaskCreated());
-		updatedTaskToSave.setTaskLastSync(currentTask.getTaskLastSync());
-
+		preserveTaskNonEditableFields(updatedTaskToSave);
 		updateTaskinTaskList(updatedTaskToSave);
-
-		if (isRemoteSyncEnabled) {
-			syncronize.schedulePushSyncTask(updatedTaskToSave);
-		}
+		schedulePushSyncTask(updatedTaskToSave);
 
 		saveTaskRecordFile();
 		logExitMethod("update");
 		return updatedTaskToSave;
+	}
+
+	private void schedulePushSyncTask(Task updatedTaskToSave) {
+		if (isRemoteSyncEnabled) {
+			syncronize.schedulePushSyncTask(updatedTaskToSave);
+		}
+	}
+
+	/**
+	 * Preserve non-editable fields in task
+	 * 
+	 * @param updatedTaskToSave
+	 * @throws TaskNotFoundException
+	 */
+	private void preserveTaskNonEditableFields(Task updatedTaskToSave)
+			throws TaskNotFoundException {
+		Task currentTask = query(updatedTaskToSave.getTaskId());
+		updatedTaskToSave.setgCalTaskId(currentTask.getgCalTaskId());
+		updatedTaskToSave.setTaskCreated(currentTask.getTaskCreated());
+		updatedTaskToSave.setTaskLastSync(currentTask.getTaskLastSync());
 	}
 
 	/**
@@ -602,14 +694,23 @@ public class Database {
 	private void updateTaskinTaskList(Task updatedTaskToSave) {
 		logEnterMethod("updateTaskinTaskList");
 		assert (updatedTaskToSave != null);
-
-		// set updated time ahead to force push
-		DateTime UpdateTime = new DateTime();
-		UpdateTime = DateTime.now().plusMinutes(1);
-		updatedTaskToSave.setTaskUpdated(UpdateTime);
-
+		setUpdatedTimeAheadToForcePush(updatedTaskToSave,
+				FORCE_PUSH_UPDATED_DATE_TIME_AHEAD_VALUE);
 		taskLists.updateTaskInTaskLists(updatedTaskToSave);
 		logExitMethod("updateTaskinTaskList");
+	}
+
+	/**
+	 * Sets Updated Time Ahead To ForcePush
+	 * 
+	 * @param taskToForcePushSync
+	 */
+	private void setUpdatedTimeAheadToForcePush(Task taskToForcePushSync,
+			int minsToSetUpdatedDateTimeAhead) {
+		// set updated time ahead to force push
+		DateTime UpdateTime = new DateTime();
+		UpdateTime = DateTime.now().plusMinutes(minsToSetUpdatedDateTimeAhead);
+		taskToForcePushSync.setTaskUpdated(UpdateTime);
 	}
 
 	/**
@@ -623,7 +724,9 @@ public class Database {
 	public void waitForAllBackgroundTasks(int maxExecutionTimeInSeconds)
 			throws InterruptedException, ExecutionException, TimeoutException {
 		logEnterMethod("waitForSyncronizeBackgroundTaskToComplete");
+
 		syncronize.waitForAllBackgroundTasks(maxExecutionTimeInSeconds);
+
 		logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
 	}
 
@@ -635,7 +738,9 @@ public class Database {
 	synchronized static void saveTaskRecordFile() throws IOException {
 		logEnterMethod("saveTaskRecordFile");
 		assert (taskRecordFile != null);
+
 		taskRecordFile.saveTaskList(taskLists.getTaskList());
+
 		logExitMethod("saveTaskRecordFile");
 	}
 
@@ -687,85 +792,8 @@ public class Database {
 
 		taskLists.clearTaskLists();
 		saveTaskRecordFile();
+
 		logExitMethod("clearLocalDatabase");
-	}
-
-	/**
-	 * Gets config parameter from Configuration File
-	 * 
-	 * @param configParameter
-	 * @return configuration parameter value
-	 */
-	public String getConfigParameter(String configParameter) {
-		if (configParameter == null) {
-			throw new IllegalArgumentException(String.format(
-					EXCEPTION_MESSAGE_NULL_PARAMETER,
-					PARAMETER_CONFIG_PARAMETER));
-		}
-		configFile.getConfigParameter(configParameter);
-		return null;
-	}
-
-	/**
-	 * Sets config parameter
-	 * 
-	 * @param configParameterToSet
-	 * @param configParameterValueToSet
-	 * @return
-	 * @throws IOException
-	 */
-	public boolean setConfigParameter(String configParameterToSet,
-			String configParameterValueToSet) throws IOException {
-		if (configParameterToSet == null || configParameterValueToSet == null) {
-			throw new IllegalArgumentException(String.format(
-					EXCEPTION_MESSAGE_NULL_PARAMETER,
-					PARAMETER_CONFIG_PARAMETER));
-		}
-		if (!configFile.hasConfigParameter(configParameterToSet)) {
-		}
-		configFile.setConfigParameter(configParameterToSet,
-				configParameterValueToSet);
-		return false;
-	}
-
-	/**
-	 * Checks if configuration parameter exists in configuration file
-	 * 
-	 * @param configParameter
-	 * @return true if configParameter exists
-	 */
-	public boolean hasConfigParameter(String configParameter) {
-		if (configParameter == null) {
-			throw new IllegalArgumentException(String.format(
-					EXCEPTION_MESSAGE_NULL_PARAMETER,
-					PARAMETER_CONFIG_PARAMETER));
-		}
-		if (configFile.hasConfigParameter(configParameter)) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Removes specified configuration parameter from configuration file
-	 * 
-	 * @param configParameter
-	 * @return true if configuration parameter is removed successfully or false
-	 *         if it does not exist
-	 * @throws IOException
-	 */
-	public boolean removeConfigParameter(String configParameter)
-			throws IOException {
-		if (configParameter == null) {
-			throw new IllegalArgumentException(String.format(
-					EXCEPTION_MESSAGE_NULL_PARAMETER,
-					PARAMETER_CONFIG_PARAMETER));
-		}
-		if (!configFile.hasConfigParameter(configParameter)) {
-			return false;
-		}
-		configFile.removeConfigParameter(configParameter);
-		return true;
 	}
 
 	/**
@@ -797,7 +825,6 @@ public class Database {
 	 */
 	int getNewTaskId() {
 		logEnterMethod("getNewTaskId");
-
 		int getNewTaskId = 0;
 		Set<Integer> taskKeySet = taskLists.getTaskList().keySet();
 		Iterator<Integer> iterator = taskKeySet.iterator();
@@ -805,18 +832,124 @@ public class Database {
 		while (iterator.hasNext()) {
 			getNewTaskId = iterator.next();
 		}
-		getNewTaskId++;
 
+		getNewTaskId++;
 		logExitMethod("getNewTaskId");
 		return getNewTaskId;
 	}
 
-	static void logExitMethod(String methodName) {
-		logger.exiting("Database", methodName);
+	/**
+	 * Configuration File Methods
+	 */
+
+	/**
+	 * Gets config parameter from Configuration File
+	 * 
+	 * @param configParameter
+	 * @return configuration parameter value
+	 */
+	public String getConfigParameter(String configParameter) {
+		logEnterMethod("getConfigParameter");
+		if (configParameter == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETER_CONFIG_PARAMETER));
+		}
+		logExitMethod("getConfigParameter");
+		return configFile.getConfigParameter(configParameter);
 	}
 
+	/**
+	 * Sets config parameter
+	 * 
+	 * @param configParameterToSet
+	 * @param configParameterValueToSet
+	 * @return
+	 * @throws IOException
+	 */
+	public boolean setConfigParameter(String configParameterToSet,
+			String configParameterValueToSet) throws IOException {
+		logEnterMethod("setConfigParameter");
+		if (configParameterToSet == null || configParameterValueToSet == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETER_CONFIG_PARAMETER));
+		}
+		if (!configFile.hasConfigParameter(configParameterToSet)) {
+		}
+		configFile.setConfigParameter(configParameterToSet,
+				configParameterValueToSet);
+		logExitMethod("setConfigParameter");
+		return false;
+	}
+
+	/**
+	 * Checks if configuration parameter exists in configuration file
+	 * 
+	 * @param configParameter
+	 * @return true if configParameter exists
+	 */
+	public boolean hasConfigParameter(String configParameter) {
+		logEnterMethod("hasConfigParameter");
+		if (configParameter == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETER_CONFIG_PARAMETER));
+		}
+		if (configFile.hasConfigParameter(configParameter)) {
+			logExitMethod("hasConfigParameter");
+			return true;
+		} else {
+			logExitMethod("hasConfigParameter");
+			return false;
+		}
+	}
+
+	/**
+	 * Removes specified configuration parameter from configuration file
+	 * 
+	 * @param configParameter
+	 * @return true if configuration parameter is removed successfully or false
+	 *         if it does not exist
+	 * @throws IOException
+	 */
+	public boolean removeConfigParameter(String configParameter)
+			throws IOException {
+		logEnterMethod("removeConfigParameter");
+		if (configParameter == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER,
+					PARAMETER_CONFIG_PARAMETER));
+		}
+		if (!configFile.hasConfigParameter(configParameter)) {
+			logExitMethod("removeConfigParameter");
+			return false;
+		}
+		configFile.removeConfigParameter(configParameter);
+		logExitMethod("removeConfigParameter");
+		return true;
+	}
+
+	/**
+	 * Logger methods
+	 */
+
+	/**
+	 * Log trace for method entry
+	 * 
+	 * @param methodName
+	 */
 	static void logEnterMethod(String methodName) {
 		logger.entering("Database", methodName);
+	}
+
+	/**
+	 * Log trace for method exit
+	 * 
+	 * @param methodName
+	 */
+	static void logExitMethod(String methodName) {
+		logger.exiting("Database", methodName);
 	}
 
 }

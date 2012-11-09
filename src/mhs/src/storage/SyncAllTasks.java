@@ -1,6 +1,7 @@
 package mhs.src.storage;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,7 +23,7 @@ public class SyncAllTasks implements Callable<Boolean> {
 	}
 
 	@Override
-	public Boolean call() throws Exception {
+	public Boolean call() {
 		logEnterMethod("call");
 		try {
 			syncronize.pullSync();
@@ -30,6 +31,9 @@ public class SyncAllTasks implements Callable<Boolean> {
 			Database.saveTaskRecordFile();
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
+		} catch (UnknownHostException e) {
+			syncronize.disableRemoteSync();
+			logger.log(Level.FINER, e.getMessage());			
 		} catch (IOException e) {
 			logger.log(Level.FINER, e.getMessage());
 		} catch (TaskNotFoundException e) {
