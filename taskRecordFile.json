@@ -3430,11 +3430,11 @@
     "taskName": "task",
     "taskCategory": "DEADLINE",
     "taskCreated": "2012-11-09T14:44:57.000+08:00",
-    "taskUpdated": "2012-11-09T14:44:57.000+08:00",
+    "taskUpdated": "2012-11-09T16:44:44.122+08:00",
     "taskLastSync": "2012-11-09T14:44:57.000+08:00",
     "gCalTaskId": "uo6eqceteftjk56b3u5r3equjk@google.com",
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "endDateTime": "2012-11-09T15:00:00.000+08:00",
@@ -3532,10 +3532,73 @@
     "taskName": "heklp",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-09T16:28:03.632+08:00",
-    "taskUpdated": "2012-11-09T16:28:03.632+08:00",
+    "taskUpdated": "2012-11-09T16:45:20.538+08:00",
     "taskLastSync": null,
     "gCalTaskId": null,
     "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "startDateTime": "2012-11-09T16:43:25.000+08:00",
+    "endDateTime": "2012-11-09T21:43:25.000+08:00",
+    "taskId": 310,
+    "taskName": "task 1 - a meeting",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-09T16:43:37.000+08:00",
+    "taskUpdated": "2012-11-09T16:43:37.000+08:00",
+    "taskLastSync": "2012-11-09T16:43:37.000+08:00",
+    "gCalTaskId": "fucrhd1c2farhfb858gu5c28as@google.com",
+    "isDone": false,
     "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-11-09T16:43:25.000+08:00",
+    "endDateTime": "2012-11-09T17:43:25.000+08:00",
+    "taskId": 311,
+    "taskName": "task 2 - a project meeting",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-09T16:43:36.000+08:00",
+    "taskUpdated": "2012-11-09T16:43:36.000+08:00",
+    "taskLastSync": "2012-11-09T16:43:36.000+08:00",
+    "gCalTaskId": "t15850lg87v0v3c186h3e32mss@google.com",
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-11-09T16:43:25.000+08:00",
+    "endDateTime": "2012-11-09T17:43:25.000+08:00",
+    "taskId": 312,
+    "taskName": "task 2 - a project meeting",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-09T16:43:36.000+08:00",
+    "taskUpdated": "2012-11-09T16:43:36.000+08:00",
+    "taskLastSync": "2012-11-09T16:43:36.000+08:00",
+    "gCalTaskId": "i8nlhv1q35hs4kqhcbak7mlm4g@google.com",
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "startDateTime": "2012-11-09T16:43:25.000+08:00",
+    "endDateTime": "2012-11-09T21:43:25.000+08:00",
+    "taskId": 313,
+    "taskName": "task 1 - a meeting",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-09T16:43:35.000+08:00",
+    "taskUpdated": "2012-11-09T16:43:35.000+08:00",
+    "taskLastSync": "2012-11-09T16:43:35.000+08:00",
+    "gCalTaskId": "039k4ctsgk2j50gh8vl37krkgs@google.com",
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "taskId": 314,
+    "taskName": "heklp",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-09T16:44:22.056+08:00",
+    "taskUpdated": "2012-11-09T16:45:23.309+08:00",
+    "taskLastSync": null,
+    "gCalTaskId": null,
+    "isDone": false,
+    "isDeleted": true
   }
 ]
