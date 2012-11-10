@@ -78,7 +78,7 @@ public class CommandAdd extends Command {
 		Task timedTaskToAdd = new TimedTask(0, inputCommand.getTaskName(),
 				TaskCategory.TIMED, inputCommand.getStartDate(),
 				inputCommand.getEndDate(), DateTime.now(), null, null, null,
-				false, false);
+				null, false, false);
 		assert (timedTaskToAdd != null);
 		logExitMethod("createTimedTask");
 		return timedTaskToAdd;
@@ -95,7 +95,7 @@ public class CommandAdd extends Command {
 		Task deadlineTaskToAdd = new DeadlineTask(0,
 				inputCommand.getTaskName(), TaskCategory.DEADLINE,
 				inputCommand.getStartDate(), DateTime.now(), null, null, null,
-				false, false);
+				null, false, false);
 		assert (deadlineTaskToAdd != null);
 		logExitMethod("createDeadlineTask");
 		return deadlineTaskToAdd;
@@ -111,7 +111,7 @@ public class CommandAdd extends Command {
 		logEnterMethod("createFloatingTask");
 		Task floatingTaskToAdd = new FloatingTask(0,
 				inputCommand.getTaskName(), TaskCategory.FLOATING,
-				DateTime.now(), null, null, false, false);
+				DateTime.now(), null, null, null, false, false);
 		assert (floatingTaskToAdd != null);
 		logExitMethod("creteFloatingTask");
 		return floatingTaskToAdd;
@@ -164,7 +164,6 @@ public class CommandAdd extends Command {
 		commandFeedback = outputString;
 		logExitMethod("executeCommand");
 	}
-
 
 	/**
 	 * Add does not support index commands

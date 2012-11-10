@@ -11,8 +11,10 @@ import com.google.gson.Gson;
 /**
  * Task
  * 
- * Base Class for Task object Inherited classes 1. FloatingTask 2. TimedTask 3.
- * DeadlineTask
+ * Base Class for Task object Inherited classes<br>
+ * 1. FloatingTask <br>
+ * 2. TimedTask <br>
+ * 3. DeadlineTask <br>
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
@@ -27,7 +29,6 @@ public class Task {
 	protected DateTime taskCreated;
 	protected DateTime taskUpdated;
 	protected DateTime taskLastSync;
-	protected String gCalTaskId;
 	protected Boolean isDone;
 	protected Boolean isDeleted;
 
@@ -38,35 +39,7 @@ public class Task {
 	}
 
 	/**
-	 * Constructor with String taskCategory
-	 * 
-	 * @param taskId
-	 * @param taskName
-	 * @param taskCategory
-	 * @param createdDt
-	 * @param updatedDt
-	 * @param syncDt
-	 * @param gCalTaskId
-	 * @param isDone
-	 * @param isDeleted
-	 */
-	public Task(int taskId, String taskName, String taskCategory,
-			DateTime createdDt, DateTime updatedDt, DateTime syncDt,
-			String gCalTaskId, boolean isDone, boolean isDeleted) {
-
-		setTaskId(taskId);
-		setTaskName(taskName);
-		setTaskCategory(taskCategory);
-		setTaskCreated(createdDt);
-		setTaskUpdated(updatedDt);
-		setTaskLastSync(syncDt);
-		setgCalTaskId(gCalTaskId);
-		setDone(isDone);
-		setDeleted(isDeleted);
-	}
-
-	/**
-	 * Constructor with enumerated type TaskCategory
+	 * Constructor
 	 * 
 	 * @param taskId
 	 * @param taskName
@@ -80,15 +53,13 @@ public class Task {
 	 */
 	public Task(int taskId, String taskName, TaskCategory taskCategory,
 			DateTime createdDt, DateTime updatedDt, DateTime syncDt,
-			String gCalTaskId, boolean isDone, boolean isDeleted) {
-
+			boolean isDone, boolean isDeleted) {
 		setTaskId(taskId);
 		setTaskName(taskName);
 		setTaskCategory(taskCategory);
 		setTaskCreated(createdDt);
 		setTaskUpdated(updatedDt);
 		setTaskLastSync(syncDt);
-		setgCalTaskId(gCalTaskId);
 		setDone(isDone);
 		setDeleted(isDeleted);
 	}
@@ -119,9 +90,6 @@ public class Task {
 		}
 		if (taskLastSync != null) {
 			taskToString += "taskLastSync=" + taskLastSync.toString();
-		}
-		if (gCalTaskId != null) {
-			taskToString += "gCalTaskId=" + gCalTaskId;
 		}
 		if (isDone != null) {
 			taskToString += "isDone=" + isDone.toString();
@@ -179,7 +147,6 @@ public class Task {
 
 	public void setTaskCategory(TaskCategory taskCategory) {
 		this.taskCategory = taskCategory;
-
 	}
 
 	public DateTime getTaskUpdated() {
@@ -222,19 +189,12 @@ public class Task {
 		this.taskCreated = taskCreated;
 	}
 
-	public String getgCalTaskId() {
-		return gCalTaskId;
-	}
-
-	public void setgCalTaskId(String gCalTaskId) {
-		this.gCalTaskId = gCalTaskId;
-	}
-
 	public DateTime getEndDateTime() {
 		return null;
 	}
 
 	public void setEndDateTime(DateTime dateTime) {
+		// do nothing
 	}
 
 	public DateTime getStartDateTime() {
@@ -242,6 +202,31 @@ public class Task {
 	}
 
 	public void setStartDateTime(DateTime dateTime) {
+		// do nothing
+	}
+
+	public String getgCalTaskId() {
+		return null;
+	}
+
+	public void setGcalTaskId(String gCalTaskId) {
+		// do nothing
+	}
+
+	public String getgCalTaskUid() {
+		return null;
+	}
+
+	public void setGcalTaskUid(String gCalTaskUid) {
+		// do nothing
+	}
+
+	public String getGTaskId() {
+		return null;
+	}
+
+	public void setGTaskId(String gTaskId) {
+		// do nothing
 	}
 
 	/**

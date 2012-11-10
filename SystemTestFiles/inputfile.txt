@@ -1,0 +1,5 @@
+home
+add farming
+add dummy 5pm 6pm
+add gong 10pm
+exit

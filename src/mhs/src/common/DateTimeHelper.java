@@ -4,7 +4,27 @@ import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 
+/**
+ * DateTimeHelper
+ * 
+ * Provides DateTime helper functions
+ * 
+ */
 public class DateTimeHelper {
+
+	private static DateTimeHelper instance = null;
+
+	/**
+	 * Getter for DateTimerHelper instance
+	 * 
+	 * @return instance of DateTimeHelper
+	 */
+	public static DateTimeHelper getInstance() {
+		if (instance == null) {
+			instance = new DateTimeHelper();
+		}
+		return instance;
+	}
 
 	private static final String REGEX_SPACE = " ";
 	private static final Logger logger = MhsLogger.getLogger();

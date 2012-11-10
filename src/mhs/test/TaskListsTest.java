@@ -26,7 +26,7 @@ import org.junit.Test;
  * jUnit test for TaskListsTest
  * 
  * @author Timothy Lim Yi Wen A0087048X
- *
+ * 
  */
 public class TaskListsTest {
 
@@ -63,19 +63,19 @@ public class TaskListsTest {
 
 	private void initializeTasks() {
 		task = new TimedTask(1, TEST_TASK_1_NAME, TaskCategory.TIMED,
-				DateTime.now(), DateTime.now(), null, null, null, null, false,
-				false);
+				DateTime.now(), DateTime.now(), null, null, null, null, null,
+				false, false);
 		task2 = new TimedTask(2, TEST_TASK_2_NAME, TaskCategory.TIMED, DateTime
 				.now().plusHours(1), DateTime.now(), null, null, null, null,
-				false, false);
+				null, false, false);
 		task3 = new DeadlineTask(3, TEST_TASK_3_NAME, TaskCategory.DEADLINE,
-				DateTime.now().plusHours(2), null, null, null, null, false,
-				false);
+				DateTime.now().plusHours(2), null, null, null, null, null,
+				false, false);
 		task4 = new DeadlineTask(4, TEST_TASK_4_NAME, TaskCategory.DEADLINE,
-				DateTime.now().plusHours(3), null, null, null, null, false,
-				false);
+				DateTime.now().plusHours(3), null, null, null, null, null,
+				false, false);
 		task5 = new FloatingTask(5, TEST_TASK_5_NAME, TaskCategory.FLOATING,
-				null, null, null, false, false);
+				null, null, null, null, false, false);
 	}
 
 	@Test

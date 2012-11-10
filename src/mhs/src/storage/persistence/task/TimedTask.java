@@ -5,15 +5,16 @@ import mhs.src.common.HtmlCreator;
 
 import org.joda.time.DateTime;
 
-import com.google.gdata.data.calendar.CalendarEventEntry;
+import com.google.api.services.calendar.model.Event;
 
 /**
  * TimedTask
  * 
  * Timed Task object
  * 
- * - inherits from base class Task - Task with startDateTime and endDateTime -
- * syncs with google calendar
+ * - inherits from base class Task<br>
+ * - Task with startDateTime and endDateTime<br>
+ * - syncs with google calendar
  * 
  * @author Timothy Lim Yi Wen A0087048X
  * 
@@ -22,9 +23,11 @@ public class TimedTask extends Task {
 
 	private DateTime startDateTime;
 	private DateTime endDateTime;
+	private String gCalTaskId;
+	private String gCalTaskUid;
 
 	/**
-	 * Constructor with TaskCategory taskCategory
+	 * Full Constructor with TaskCategory taskCategory
 	 * 
 	 * @param taskId
 	 * @param taskName
@@ -41,55 +44,28 @@ public class TimedTask extends Task {
 	public TimedTask(int taskId, String taskName, TaskCategory taskCategory,
 			DateTime startDt, DateTime endDt, DateTime createdDt,
 			DateTime updatedDt, DateTime syncDt, String gCalTaskId,
-			boolean isDone, boolean isDeleted) {
+			String gCalTaskUid, boolean isDone, boolean isDeleted) {
 		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
-				gCalTaskId, isDone, isDeleted);
-		setStartDateTime(startDt);
-		setEndDateTime(endDt);
-
-	}
-
-	/**
-	 * Constructor with String taskCategory
-	 * 
-	 * @param taskId
-	 * @param taskName
-	 * @param taskCategory
-	 * @param startDt
-	 * @param endDt
-	 * @param createdDt
-	 * @param updatedDt
-	 * @param syncDt
-	 * @param gCalTaskId
-	 * @param isDone
-	 * @param isDeleted
-	 */
-	public TimedTask(int taskId, String taskName, String taskCategory,
-
-	DateTime startDt, DateTime endDt, DateTime createdDt, DateTime updatedDt,
-			DateTime syncDt, String gCalTaskId, boolean isDone,
-			boolean isDeleted) {
-		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
-				gCalTaskId, isDone, isDeleted);
+				isDone, isDeleted);
+		setGcalTaskId(gCalTaskId);
+		setGcalTaskUid(gCalTaskUid);
 		setStartDateTime(startDt);
 		setEndDateTime(endDt);
 	}
 
 	/**
-	 * Constructor from Google CalendarEventEntry
+	 * Construct synced TimedTask from Google CalendarEventEntry
 	 * 
 	 * @param taskId
 	 * @param gCalEntry
 	 */
-	public TimedTask(int taskId, CalendarEventEntry gCalEntry,
-			DateTime syncDateTime) {
-		super(taskId, gCalEntry.getTitle().getPlainText(), TaskCategory.TIMED,
-				syncDateTime, syncDateTime, syncDateTime, gCalEntry
-						.getIcalUID(), false, false);
-		setStartDateTime(new DateTime(gCalEntry.getTimes().get(0)
-				.getStartTime().toString()));
-		setEndDateTime(new DateTime(gCalEntry.getTimes().get(0).getEndTime()
-				.toString()));
+	public TimedTask(int taskId, Event gCalEntry, DateTime syncDateTime) {
+		super(taskId, gCalEntry.getSummary(), TaskCategory.TIMED, syncDateTime,
+				syncDateTime, syncDateTime, false, false);
+		setGcalTaskId(gCalEntry.getId());
+		setGcalTaskUid(gCalEntry.getICalUID());
+		setStartDateTime(new DateTime(gCalEntry.getStart().toString()));
+		setEndDateTime(new DateTime(gCalEntry.getEnd().toString()));
 
 	}
 
@@ -107,6 +83,22 @@ public class TimedTask extends Task {
 
 	public void setEndDateTime(DateTime endDateTime) {
 		this.endDateTime = endDateTime;
+	}
+
+	public String getgCalTaskId() {
+		return gCalTaskId;
+	}
+
+	public void setGcalTaskId(String gCalTaskId) {
+		this.gCalTaskId = gCalTaskId;
+	}
+
+	public String getgCalTaskUid() {
+		return gCalTaskUid;
+	}
+
+	public void setGcalTaskUid(String gCalTaskUid) {
+		this.gCalTaskUid = gCalTaskUid;
 	}
 
 	public String toString() {
@@ -166,10 +158,10 @@ public class TimedTask extends Task {
 
 		String boldTaskName = taskName;
 		String htmlString = timeString + ": " + boldTaskName;
-		
 
-		if(isDone()) {
-			htmlString = htmlCreator.color(htmlString + " [completed]", HtmlCreator.LIGHT_GRAY);
+		if (isDone()) {
+			htmlString = htmlCreator.color(htmlString + " [completed]",
+					HtmlCreator.LIGHT_GRAY);
 		}
 
 		return htmlString;

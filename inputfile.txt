@@ -1,3 +1,0 @@
-add hello
-add java 5pm 6pm
-add num 10pm

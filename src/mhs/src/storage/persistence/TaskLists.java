@@ -218,7 +218,7 @@ public class TaskLists {
 		logEnterMethod("getTasks");
 
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		getAllNonDeletedTasks(queriedTaskRecordset);
+		addAllNonDeletedTasksToRecordSet(queriedTaskRecordset);
 		sortTaskList(orderByStartDateTime, queriedTaskRecordset);
 
 		logExitMethod("getTasks");
@@ -230,16 +230,16 @@ public class TaskLists {
 	 * 
 	 * @param queriedTaskRecordset
 	 */
-	private void getAllNonDeletedTasks(List<Task> queriedTaskRecordset) {
+	private void addAllNonDeletedTasksToRecordSet(
+			List<Task> queriedTaskRecordset) {
 		logEnterMethod("getAllNonDeletedTasks");
-
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-			if (entry.getValue().isDeleted()) {
+			Task taskEntry = entry.getValue();
+			if (taskEntry.isDeleted()) {
 				continue;
 			}
-			queriedTaskRecordset.add(entry.getValue().clone());
+			queriedTaskRecordset.add(taskEntry.clone());
 		}
-
 		logExitMethod("getAllNonDeletedTasks");
 	}
 
@@ -259,7 +259,7 @@ public class TaskLists {
 		}
 
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		getAllNonDeletedTasksWithMatchingTaskName(taskName,
+		addAllNonDeletedTasksWithMatchingTaskNameToRecordSet(taskName,
 				queriedTaskRecordset);
 		sortTaskList(orderByStartDateTime, queriedTaskRecordset);
 
@@ -273,16 +273,17 @@ public class TaskLists {
 	 * @param taskName
 	 * @param queriedTaskRecordset
 	 */
-	private void getAllNonDeletedTasksWithMatchingTaskName(String taskName,
-			List<Task> queriedTaskRecordset) {
+	private void addAllNonDeletedTasksWithMatchingTaskNameToRecordSet(
+			String taskName, List<Task> queriedTaskRecordset) {
 		logEnterMethod("getAllNonDeletedTasksWithMatchingTaskName");
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-			if (entry.getValue().isDeleted()) {
+			Task taskEntry = entry.getValue();
+			if (taskEntry.isDeleted()) {
 				continue;
 			}
-			if (entry.getValue().getTaskName().toLowerCase()
+			if (taskEntry.getTaskName().toLowerCase()
 					.contains(taskName.toLowerCase())) {
-				queriedTaskRecordset.add(entry.getValue().clone());
+				queriedTaskRecordset.add(taskEntry.clone());
 			}
 		}
 		logExitMethod("getAllNonDeletedTasksWithMatchingTaskName");
@@ -306,7 +307,7 @@ public class TaskLists {
 		}
 
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		getAllNonDeletedTasksWithTaskCategory(queryTaskCategory,
+		addAllNonDeletedTasksWithTaskCategoryToRecordSet(queryTaskCategory,
 				queriedTaskRecordset);
 		sortTaskList(orderByStartDateTime, queriedTaskRecordset);
 
@@ -320,18 +321,19 @@ public class TaskLists {
 	 * @param queryTaskCategory
 	 * @param queriedTaskRecordset
 	 */
-	private void getAllNonDeletedTasksWithTaskCategory(
+	private void addAllNonDeletedTasksWithTaskCategoryToRecordSet(
 			TaskCategory queryTaskCategory, List<Task> queriedTaskRecordset) {
 		logEnterMethod("getAllNonDeletedTasksWithTaskCategory");
 
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-			if (entry.getValue().isDeleted()) {
+			Task taskEntry = entry.getValue();
+			if (taskEntry.isDeleted()) {
 				continue;
 			}
 
-			TaskCategory taskCategory = entry.getValue().getTaskCategory();
+			TaskCategory taskCategory = taskEntry.getTaskCategory();
 			if (taskCategory.equals(queryTaskCategory)) {
-				queriedTaskRecordset.add(entry.getValue().clone());
+				queriedTaskRecordset.add(taskEntry.clone());
 			}
 		}
 		logExitMethod("getAllNonDeletedTasksWithTaskCategory");
@@ -360,8 +362,8 @@ public class TaskLists {
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
 		Interval dateTimeInterval = getInclusiveDateTimeInterval(startDateTime,
 				endDateTime);
-		getAllTasksWithinInterval(queriedTaskRecordset, dateTimeInterval,
-				includeFloatingTasks);
+		addAllTasksWithinIntervalToRecordSet(queriedTaskRecordset,
+				dateTimeInterval, includeFloatingTasks);
 		sortTaskList(orderByStartDateTime, queriedTaskRecordset);
 
 		logExitMethod("getTasks");
@@ -400,40 +402,55 @@ public class TaskLists {
 	 * @param dateTimeInterval
 	 * @param includeFloatingTasks
 	 */
-	private void getAllTasksWithinInterval(List<Task> queriedTaskRecordset,
-			Interval dateTimeInterval, boolean includeFloatingTasks) {
+	private void addAllTasksWithinIntervalToRecordSet(
+			List<Task> queriedTaskRecordset, Interval dateTimeInterval,
+			boolean includeFloatingTasks) {
 		logEnterMethod("getAllTasksWithinInterval");
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-
 			Task taskEntry = entry.getValue();
-
 			if (taskEntry.isDeleted()) {
 				continue;
 			}
 
-			switch (taskEntry.getTaskCategory()) {
-			case TIMED:
-				if (isWithinInterval(dateTimeInterval,
-						taskEntry.getStartDateTime(),
-						taskEntry.getEndDateTime())) {
-					queriedTaskRecordset.add(entry.getValue().clone());
-				}
-				break;
-			case DEADLINE:
-				if (isWithinInterval(dateTimeInterval,
-						taskEntry.getEndDateTime(), taskEntry.getEndDateTime())) {
-					queriedTaskRecordset.add(taskEntry.clone());
-				}
-				break;
-			case FLOATING:
-				if (includeFloatingTasks) {
-					queriedTaskRecordset.add(entry.getValue().clone());
-				}
-			default:
-				break;
-			}
+			addTaskFormatWithinIntervalToRecordSet(queriedTaskRecordset,
+					dateTimeInterval, includeFloatingTasks, taskEntry);
+
 		}
 		logExitMethod("getAllTasksWithinInterval");
+	}
+
+	/**
+	 * Adds task within interval to recordset based on task format
+	 * 
+	 * @param queriedTaskRecordset
+	 * @param dateTimeInterval
+	 * @param includeFloatingTasks
+	 * @param entry
+	 * @param taskEntry
+	 */
+	private void addTaskFormatWithinIntervalToRecordSet(
+			List<Task> queriedTaskRecordset, Interval dateTimeInterval,
+			boolean includeFloatingTasks, Task taskEntry) {
+		switch (taskEntry.getTaskCategory()) {
+		case TIMED:
+			if (isWithinInterval(dateTimeInterval,
+					taskEntry.getStartDateTime(), taskEntry.getEndDateTime())) {
+				queriedTaskRecordset.add(taskEntry.clone());
+			}
+			break;
+		case DEADLINE:
+			if (isWithinInterval(dateTimeInterval, taskEntry.getEndDateTime(),
+					taskEntry.getEndDateTime())) {
+				queriedTaskRecordset.add(taskEntry.clone());
+			}
+			break;
+		case FLOATING:
+			if (includeFloatingTasks) {
+				queriedTaskRecordset.add(taskEntry.clone());
+			}
+		default:
+			break;
+		}
 	}
 
 	/**
@@ -461,8 +478,8 @@ public class TaskLists {
 		}
 
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		getTasksMatchingParameters(taskName, startDateTime, endDateTime,
-				queriedTaskRecordset);
+		addTasksMatchingParametersToRecordSet(taskName, startDateTime,
+				endDateTime, queriedTaskRecordset);
 		sortTaskList(orderByStartDateTime, queriedTaskRecordset);
 
 		logExitMethod("getTasks");
@@ -479,7 +496,7 @@ public class TaskLists {
 	 * @param includeFloatingTasks
 	 * @param queriedTaskRecordset
 	 */
-	private void getTasksMatchingParameters(String taskName,
+	private void addTasksMatchingParametersToRecordSet(String taskName,
 			DateTime startDateTime, DateTime endDateTime,
 			List<Task> queriedTaskRecordset) {
 		logEnterMethod("getTasksMatchingParameters");
@@ -490,14 +507,14 @@ public class TaskLists {
 				continue;
 			}
 
-			Interval dateTimeInterval = getInclusiveDateTimeInterval(startDateTime,
-					endDateTime);
-
+			Interval dateTimeInterval = getInclusiveDateTimeInterval(
+					startDateTime, endDateTime);
+			// Task name match
 			if (taskEntry.getTaskName().contains(taskName)) {
 				queriedTaskRecordset.add(taskEntry.clone());
 				continue;
 			}
-
+			// Datetime match
 			if (dateTimeInterval.contains(taskEntry.getStartDateTime())
 					|| dateTimeInterval.contains(taskEntry.getEndDateTime())) {
 				queriedTaskRecordset.add(taskEntry.clone());
@@ -535,8 +552,8 @@ public class TaskLists {
 		}
 
 		List<Task> queriedTaskRecordset = new LinkedList<Task>();
-		getTasksMatchingParameters(taskName, taskCategory, startDateTime,
-				endDateTime, queriedTaskRecordset);
+		addTasksMatchingParametersToRecordSet(taskName, taskCategory,
+				startDateTime, endDateTime, queriedTaskRecordset);
 		sortTaskList(orderByStartDateTime, queriedTaskRecordset);
 
 		logExitMethod("getTasks");
@@ -553,7 +570,7 @@ public class TaskLists {
 	 * @param endDateTime
 	 * @param queriedTaskRecordset
 	 */
-	private void getTasksMatchingParameters(String taskName,
+	private void addTasksMatchingParametersToRecordSet(String taskName,
 			TaskCategory taskCategory, DateTime startDateTime,
 			DateTime endDateTime, List<Task> queriedTaskRecordset) {
 		logEnterMethod("getTasksMatchingParameters");
@@ -564,17 +581,20 @@ public class TaskLists {
 				continue;
 			}
 
-			Interval dateTimeInterval = getInclusiveDateTimeInterval(startDateTime,
-					endDateTime);
+			Interval dateTimeInterval = getInclusiveDateTimeInterval(
+					startDateTime, endDateTime);
 
+			// Category match
 			if (taskEntry.getTaskCategory().equals(taskCategory)) {
 				queriedTaskRecordset.add(taskEntry.clone());
 				continue;
 			}
+			// Task name match
 			if (taskEntry.getTaskName().contains(taskName)) {
 				queriedTaskRecordset.add(taskEntry.clone());
 				continue;
 			}
+			// Datetime range match
 			if (dateTimeInterval.contains(taskEntry.getStartDateTime())
 					|| dateTimeInterval.contains(taskEntry.getEndDateTime())) {
 				queriedTaskRecordset.add(taskEntry.clone());
@@ -598,8 +618,8 @@ public class TaskLists {
 			DateTime startDateTime, DateTime endDateTime) {
 		logEnterMethod("isWithinInterval");
 		logExitMethod("isWithinInterval");
-		return dateTimeInterval.overlaps(getInclusiveDateTimeInterval(startDateTime,
-				endDateTime));
+		return dateTimeInterval.overlaps(getInclusiveDateTimeInterval(
+				startDateTime, endDateTime));
 	}
 
 	/**
@@ -651,8 +671,7 @@ public class TaskLists {
 		logEnterMethod("containsTask");
 		boolean containsTask = false;
 		if (taskList.containsKey(taskId)) {
-			logger.exiting(getClass().getName(),
-					new Exception().getStackTrace()[0].getMethodName());
+			logExitMethod("containsTask");
 			containsTask = true;
 		}
 		logExitMethod("containsTask");
@@ -701,10 +720,24 @@ public class TaskLists {
 		return gCalTaskList;
 	}
 
+	/**
+	 * Logger Methods
+	 */
+
+	/**
+	 * Logger Trace Method Entry
+	 * 
+	 * @param methodName
+	 */
 	private void logEnterMethod(String methodName) {
 		logger.entering(getClass().getName(), methodName);
 	}
 
+	/**
+	 * Logger Trace Method Exit
+	 * 
+	 * @param methodName
+	 */
 	private void logExitMethod(String methodName) {
 		logger.exiting(getClass().getName(), methodName);
 	}
