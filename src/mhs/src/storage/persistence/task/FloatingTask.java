@@ -11,31 +11,13 @@ import org.joda.time.DateTime;
  * 
  * Floating Task Object
  * 
- * - Inherits from base class Task
- * - Not synced with google calendar
+ * - Inherits from base class Task - Not synced with google calendar
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
 public class FloatingTask extends Task {
 
-	/**
-	 * Constructor with String taskCategory
-	 * 
-	 * @param taskId
-	 * @param taskName
-	 * @param taskCategory
-	 * @param createdDt
-	 * @param updatedDt
-	 * @param syncDt
-	 * @param isDone
-	 * @param isDeleted
-	 */
-	public FloatingTask(int taskId, String taskName, String taskCategory,
-			DateTime createdDt, DateTime updatedDt, DateTime syncDt,
-			boolean isDone, boolean isDeleted) {
-		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
-				null, isDone, isDeleted);
-	}
+	private String gTaskId;
 
 	/**
 	 * Constructor with TaskCategory taskCategory
@@ -51,24 +33,50 @@ public class FloatingTask extends Task {
 	 */
 	public FloatingTask(int taskId, String taskName, TaskCategory taskCategory,
 			DateTime createdDt, DateTime updatedDt, DateTime syncDt,
-			boolean isDone, boolean isDeleted) {
+			String gTaskId, boolean isDone, boolean isDeleted) {
 		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
-				null, isDone, isDeleted);
+				isDone, isDeleted);
+		this.setGTaskId(gTaskId);
 	}
-	
+
+	/**
+	 * Construct synced floating task with google task 
+	 * 
+	 * @param taskId
+	 * @param googleTask
+	 * @param syncDateTime
+	 */
+	public FloatingTask(int taskId,
+			com.google.api.services.tasks.model.Task googleTask,
+			DateTime syncDateTime) {
+		super(taskId, googleTask.getTitle(), TaskCategory.FLOATING,
+				syncDateTime, syncDateTime, syncDateTime, false, false);
+		setGTaskId(googleTask.getId());
+	}
+
+	public String getGTaskId() {
+		return gTaskId;
+	}
+
+	public void setGTaskId(String gTaskId) {
+		this.gTaskId = gTaskId;
+	}
+
 	/**
 	 * @author John Wong
-	 */	
+	 */
 	public String toHtmlString() {
 		HtmlCreator htmlCreator = new HtmlCreator();
 
 		String boldTaskName = taskName;
 		String htmlString = boldTaskName;
-		
-		if(isDone()) {
-			htmlString = htmlCreator.color(taskName + " [completed]", HtmlCreator.LIGHT_GRAY);
+
+		if (isDone()) {
+			htmlString = htmlCreator.color(taskName + " [completed]",
+					HtmlCreator.LIGHT_GRAY);
 		}
-		
+
 		return htmlString;
 	}
+
 }

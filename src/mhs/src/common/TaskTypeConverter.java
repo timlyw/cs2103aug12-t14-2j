@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import mhs.src.storage.persistence.task.DeadlineTask;
 import mhs.src.storage.persistence.task.FloatingTask;
 import mhs.src.storage.persistence.task.Task;
+import mhs.src.storage.persistence.task.TaskCategory;
 import mhs.src.storage.persistence.task.TimedTask;
 
 import org.joda.time.DateTime;
@@ -24,9 +25,8 @@ import com.google.gson.JsonSerializer;
  * 
  * Json converter for Task objects
  * 
- * - Serializes task to jObject
- * - Deserializes jObject to Task
- * - Support for floating, timed and deadline tasks
+ * - Serializes task to jObject - Deserializes jObject to Task - Support for
+ * floating, timed and deadline tasks
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
@@ -41,6 +41,8 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	private static final String JSON_KEY_TASK_NAME = "taskName";
 	private static final String JSON_KEY_TASK_ID = "taskId";
 	private static final String JSON_KEY_G_CAL_TASK_ID = "gCalTaskId";
+	private static final String JSON_KEY_G_CAL_TASK_UID = "gCalTaskUid";
+	private static final String JSON_KEY_G_TASK_ID = "gTaskId";
 	private static final String JSON_KEY_END_DATE_TIME = "endDateTime";
 	private static final String JSON_KEY_START_DATE_TIME = "startDateTime";
 	private static final String JSON_KEY_TASK_CATEGORY = "taskCategory";
@@ -84,20 +86,27 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	 */
 	private Task convertJObjectToFloatingTask(JsonObject jObject) {
 		logEnterMethod("convertJObjectToFloatingTask");
+		int floatingTaskId = jObject.get(JSON_KEY_TASK_ID).getAsInt();
+		String floatingTaskName = convertJsonElementToString(
+				JSON_KEY_TASK_NAME, jObject);
 		DateTime floatingTasktaskCreated = convertJsonElementToDateTime(
 				JSON_KEY_TASK_CREATED, jObject);
 		DateTime floatingTasktaskUpdated = convertJsonElementToDateTime(
 				JSON_KEY_TASK_UPDATED, jObject);
 		DateTime floatingTasktaskLastSync = convertJsonElementToDateTime(
 				JSON_KEY_TASK_LAST_SYNC, jObject);
+		String floatingTaskGTaskId = convertJsonElementToString(
+				JSON_KEY_G_TASK_ID, jObject);
+		boolean floatingTaskIsDone = jObject.get(JSON_KEY_IS_DONE)
+				.getAsBoolean();
+		boolean floatingTaskIsDeleted = jObject.get(JSON_KEY_IS_DELETED)
+				.getAsBoolean();
+
 		logExitMethod("convertJObjectToFloatingTask");
-		return new FloatingTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(),
-				jObject.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
-						JSON_KEY_TASK_CATEGORY).getAsString(),
-				floatingTasktaskCreated, floatingTasktaskUpdated,
-				floatingTasktaskLastSync, jObject.get(JSON_KEY_IS_DONE)
-						.getAsBoolean(), jObject.get(JSON_KEY_IS_DELETED)
-						.getAsBoolean());
+		return new FloatingTask(floatingTaskId, floatingTaskName,
+				TaskCategory.FLOATING, floatingTasktaskCreated,
+				floatingTasktaskUpdated, floatingTasktaskLastSync,
+				floatingTaskGTaskId, floatingTaskIsDone, floatingTaskIsDeleted);
 	}
 
 	/**
@@ -108,33 +117,34 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	 */
 	private Task convertJObjectToDeadlineTask(JsonObject jObject) {
 		logEnterMethod("convertJObjectToDeadlineTask");
-		String deadlineTaskgCalTaskId;
-		DateTime deadlineTaskendDatetime;
-		DateTime deadlineTasktaskCreated;
-		DateTime deadlineTasktaskUpdated;
-		DateTime deadlineTasktaskLastSync;
 
-		deadlineTasktaskCreated = convertJsonElementToDateTime(
+		int deadlineTaskId = jObject.get(JSON_KEY_TASK_ID).getAsInt();
+		String deadlineTaskName = jObject.get(JSON_KEY_TASK_NAME).getAsString();
+		DateTime deadlineTasktaskCreated = convertJsonElementToDateTime(
 				JSON_KEY_TASK_CREATED, jObject);
-		deadlineTasktaskUpdated = convertJsonElementToDateTime(
+		DateTime deadlineTasktaskUpdated = convertJsonElementToDateTime(
 				JSON_KEY_TASK_UPDATED, jObject);
-		deadlineTasktaskLastSync = convertJsonElementToDateTime(
+		DateTime deadlineTasktaskLastSync = convertJsonElementToDateTime(
 				JSON_KEY_TASK_LAST_SYNC, jObject);
-		deadlineTaskendDatetime = convertJsonElementToDateTime(
+		DateTime deadlineTaskendDatetime = convertJsonElementToDateTime(
 				JSON_KEY_END_DATE_TIME, jObject);
-		deadlineTaskgCalTaskId = convertJsonElementToString(
+		String deadlineTaskgCalTaskId = convertJsonElementToString(
 				JSON_KEY_G_CAL_TASK_ID, jObject);
+		String deadlineTaskgCalTaskUid = convertJsonElementToString(
+				JSON_KEY_G_CAL_TASK_UID, jObject);
+		boolean deadlineTaskIsDone = jObject.get(JSON_KEY_IS_DONE)
+				.getAsBoolean();
+		boolean deadlineTaskIsDeleted = jObject.get(JSON_KEY_IS_DELETED)
+				.getAsBoolean();
 
 		logExitMethod("convertJObjectToDeadlineTask");
 
-		return new DeadlineTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(),
-				jObject.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
-						JSON_KEY_TASK_CATEGORY).getAsString(),
-				deadlineTaskendDatetime, deadlineTasktaskCreated,
-				deadlineTasktaskUpdated, deadlineTasktaskLastSync,
-				deadlineTaskgCalTaskId, jObject.get(JSON_KEY_IS_DONE)
-						.getAsBoolean(), jObject.get(JSON_KEY_IS_DELETED)
-						.getAsBoolean());
+		return new DeadlineTask(deadlineTaskId, deadlineTaskName,
+				TaskCategory.DEADLINE, deadlineTaskendDatetime,
+				deadlineTasktaskCreated, deadlineTasktaskUpdated,
+				deadlineTasktaskLastSync, deadlineTaskgCalTaskId,
+				deadlineTaskgCalTaskUid, deadlineTaskIsDone,
+				deadlineTaskIsDeleted);
 	}
 
 	/**
@@ -145,36 +155,32 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	 */
 	private Task convertJObjectToTimedTask(JsonObject jObject) {
 		logEnterMethod("convertJObjectToTimedTask");
-		String timedTaskgCalTaskId;
-		DateTime timedTaskstartDatetime;
-		DateTime timedTaskendDatetime;
-		DateTime timedTasktaskCreated;
-		DateTime timedTasktaskUpdated;
-		DateTime timedTasktaskLastSync;
-
-		timedTasktaskCreated = convertJsonElementToDateTime(
+		int timedTaskId = jObject.get(JSON_KEY_TASK_ID).getAsInt();
+		String timedTaskName = jObject.get(JSON_KEY_TASK_NAME).getAsString();
+		DateTime timedTasktaskCreated = convertJsonElementToDateTime(
 				JSON_KEY_TASK_CREATED, jObject);
-		timedTasktaskUpdated = convertJsonElementToDateTime(
+		DateTime timedTasktaskUpdated = convertJsonElementToDateTime(
 				JSON_KEY_TASK_UPDATED, jObject);
-		timedTasktaskLastSync = convertJsonElementToDateTime(
+		DateTime timedTasktaskLastSync = convertJsonElementToDateTime(
 				JSON_KEY_TASK_LAST_SYNC, jObject);
-
-		timedTaskstartDatetime = convertJsonElementToDateTime(
+		DateTime timedTaskstartDatetime = convertJsonElementToDateTime(
 				JSON_KEY_START_DATE_TIME, jObject);
-		timedTaskendDatetime = convertJsonElementToDateTime(
+		DateTime timedTaskendDatetime = convertJsonElementToDateTime(
 				JSON_KEY_END_DATE_TIME, jObject);
-		timedTaskgCalTaskId = convertJsonElementToString(
+		String timedTaskgCalTaskId = convertJsonElementToString(
 				JSON_KEY_G_CAL_TASK_ID, jObject);
+		String timedTaskgCalTaskUid = convertJsonElementToString(
+				JSON_KEY_G_CAL_TASK_UID, jObject);
+		boolean timedTaskIsDone = jObject.get(JSON_KEY_IS_DONE).getAsBoolean();
+		boolean timedTaskIsDeleted = jObject.get(JSON_KEY_IS_DELETED)
+				.getAsBoolean();
 
 		logExitMethod("convertJObjectToTimedTask");
-		return new TimedTask(jObject.get(JSON_KEY_TASK_ID).getAsInt(), jObject
-				.get(JSON_KEY_TASK_NAME).getAsString(), jObject.get(
-				JSON_KEY_TASK_CATEGORY).getAsString(), timedTaskstartDatetime,
-				timedTaskendDatetime, timedTasktaskCreated,
-				timedTasktaskUpdated, timedTasktaskLastSync,
-				timedTaskgCalTaskId, jObject.get(JSON_KEY_IS_DONE)
-						.getAsBoolean(), jObject.get(JSON_KEY_IS_DELETED)
-						.getAsBoolean());
+		return new TimedTask(timedTaskId, timedTaskName, TaskCategory.TIMED,
+				timedTaskstartDatetime, timedTaskendDatetime,
+				timedTasktaskCreated, timedTasktaskUpdated,
+				timedTasktaskLastSync, timedTaskgCalTaskId,
+				timedTaskgCalTaskUid, timedTaskIsDone, timedTaskIsDeleted);
 	}
 
 	/**
@@ -220,9 +226,20 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 		return convertedDateTime;
 	}
 
+	/**
+	 * Log Trace Method Entry
+	 * 
+	 * @param methodName
+	 */
 	private void logEnterMethod(String methodName) {
 		logger.entering(getClass().getName(), methodName);
 	}
+
+	/**
+	 * Log Trace Method Entry
+	 * 
+	 * @param methodName
+	 */
 
 	private void logExitMethod(String methodName) {
 		logger.exiting(getClass().getName(), methodName);

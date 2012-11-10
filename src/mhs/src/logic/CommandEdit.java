@@ -194,7 +194,7 @@ public class CommandEdit extends Command {
 		Task timedTask = new TimedTask(taskToEdit.getTaskId(),
 				taskToEdit.getTaskName(), TaskCategory.TIMED,
 				inputCommand.getStartDate(), inputCommand.getEndDate(),
-				DateTime.now(), null, null, null, false, false);
+				DateTime.now(), null, null, null, null, false, false);
 		assert (timedTask != null);
 		logExitMethod("createTimedTaskWithSameName");
 		return timedTask;
@@ -213,7 +213,7 @@ public class CommandEdit extends Command {
 		Task deadlineTask = new DeadlineTask(taskToEdit.getTaskId(),
 				taskToEdit.getTaskName(), TaskCategory.DEADLINE,
 				inputCommand.getStartDate(), DateTime.now(), null, null, null,
-				false, false);
+				null, false, false);
 		assert (deadlineTask != null);
 		logExitMethod("createDeadlineTaskWithSameName");
 		return deadlineTask;
@@ -231,7 +231,7 @@ public class CommandEdit extends Command {
 		logEnterMethod("createFloatingTaskWithSameName");
 		Task floatingTask = new FloatingTask(taskToEdit.getTaskId(),
 				taskToEdit.getTaskName(), TaskCategory.FLOATING,
-				DateTime.now(), null, null, false, false);
+				DateTime.now(), null, null, null, false, false);
 		assert (floatingTask != null);
 		logExitMethod("createFloatingTaskWithSameName");
 		return floatingTask;
@@ -250,7 +250,7 @@ public class CommandEdit extends Command {
 		Task timedTaskToAdd = new TimedTask(taskToEdit.getTaskId(),
 				inputCommand.getEdittedName(), TaskCategory.TIMED,
 				inputCommand.getStartDate(), inputCommand.getEndDate(),
-				DateTime.now(), null, null, null, false, false);
+				DateTime.now(), null, null, null, null, false, false);
 		assert (timedTaskToAdd != null);
 		logExitMethod("createTimedTaskWithNewName");
 		return timedTaskToAdd;
@@ -269,7 +269,7 @@ public class CommandEdit extends Command {
 		Task deadlineTaskToAdd = new DeadlineTask(taskToEdit.getTaskId(),
 				inputCommand.getEdittedName(), TaskCategory.DEADLINE,
 				inputCommand.getStartDate(), DateTime.now(), null, null, null,
-				false, false);
+				null, false, false);
 		assert (deadlineTaskToAdd != null);
 		logExitMethod("createDeadlineTaskWithNewName");
 		return deadlineTaskToAdd;
@@ -287,7 +287,7 @@ public class CommandEdit extends Command {
 		logEnterMethod("createFloatingTaskWithNewName");
 		Task floatingTaskToAdd = new FloatingTask(taskToEdit.getTaskId(),
 				inputCommand.getEdittedName(), TaskCategory.FLOATING,
-				DateTime.now(), null, null, false, false);
+				DateTime.now(), null, null, null, false, false);
 		assert (floatingTaskToAdd != null);
 		logExitMethod("createFloatingTaskWithNewName");
 		return floatingTaskToAdd;

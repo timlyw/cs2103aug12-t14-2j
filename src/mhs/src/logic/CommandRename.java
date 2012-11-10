@@ -184,7 +184,7 @@ public class CommandRename extends Command {
 		Task timedTaskToAdd = new TimedTask(taskToEdit.getTaskId(),
 				inputCommand.getEdittedName(), TaskCategory.TIMED,
 				taskToEdit.getStartDateTime(), taskToEdit.getEndDateTime(),
-				DateTime.now(), null, null, null, false, false);
+				DateTime.now(), null, null, null, null, false, false);
 		assert (timedTaskToAdd != null);
 		logExitMethod("createTimedTaskWithNewName");
 		return timedTaskToAdd;
@@ -203,7 +203,7 @@ public class CommandRename extends Command {
 		Task deadlineTaskToAdd = new DeadlineTask(taskToEdit.getTaskId(),
 				inputCommand.getEdittedName(), TaskCategory.DEADLINE,
 				taskToEdit.getStartDateTime(), DateTime.now(), null, null,
-				null, false, false);
+				null, null, false, false);
 		assert (deadlineTaskToAdd != null);
 		logExitMethod("createDeadlineTaskWithNewName");
 		return deadlineTaskToAdd;
@@ -221,7 +221,7 @@ public class CommandRename extends Command {
 		logEnterMethod("createFloatingTaskWithNewName");
 		Task floatingTaskToAdd = new FloatingTask(taskToEdit.getTaskId(),
 				inputCommand.getEdittedName(), TaskCategory.FLOATING,
-				DateTime.now(), null, null, false, false);
+				DateTime.now(), null, null, null, false, false);
 		assert (floatingTaskToAdd != null);
 		logExitMethod("createFloatingTaskWithNewName");
 		return floatingTaskToAdd;
