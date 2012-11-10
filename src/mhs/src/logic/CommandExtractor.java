@@ -41,7 +41,7 @@ public class CommandExtractor {
 	 * user may enter.
 	 */
 	enum CommandKeyWord {
-		add(COMMAND_ADD), remove(COMMAND_REMOVE), delete(COMMAND_REMOVE), update(COMMAND_EDIT), edit(
+				add(COMMAND_ADD), del(COMMAND_REMOVE), remove(COMMAND_REMOVE), delete(COMMAND_REMOVE), update(COMMAND_EDIT), edit(
 				COMMAND_EDIT), postpone(COMMAND_EDIT), search(COMMAND_SEARCH), find(COMMAND_SEARCH), display(
 				COMMAND_SEARCH), sync(COMMAND_SYNC), undo(COMMAND_UNDO), redo(COMMAND_REDO), rename(
 				COMMAND_RENAME), login(COMMAND_LOGIN), signin(COMMAND_LOGIN), logout(COMMAND_LOGOUT), signout(

@@ -3,6 +3,7 @@ package mhs.src.logic;
 
 import java.util.logging.Logger;
 
+import mhs.src.common.DateTimeHelper;
 import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 
@@ -15,7 +16,6 @@ public class CommandInfo {
 
 	private static final String REGEX_SPACE = " ";
 	private static final String REGEX_DASH = " -";
-	private static final String DATE_TIME_FORMAT_HTML = "dd MMM yyyy, hh mm aa";
 	private static final String DATE_TIME_FORMAT = "dd MMM yyyy HH:mm";
 	private static final String KEYWORD_INDEX = " Index is : ";
 	private static final String KEYWORD_END_DATE = " End Date : ";
@@ -184,6 +184,7 @@ public class CommandInfo {
 	public String toString() {
 		logEnterMethod("toString");
 
+		DateTimeHelper dateTimeFormatter = new DateTimeHelper();
 		String outString = "";
 		if (commandEnum != null)
 			outString = (KEYWORD_COMMAND + commandEnum.name());
@@ -192,11 +193,9 @@ public class CommandInfo {
 		if (edittedName != null)
 			outString += (KEYWORD_EDITTED_NAME + edittedName);
 		if (startDate != null)
-			outString += (KEYWORD_STARTDATE + startDate
-					.toString(DATE_TIME_FORMAT));
+			outString += (KEYWORD_STARTDATE + dateTimeFormatter.formatDateTimeToString(startDate));
 		if (endDate != null)
-			outString += (KEYWORD_END_DATE + endDate
-					.toString(DATE_TIME_FORMAT));
+			outString += (KEYWORD_END_DATE + dateTimeFormatter.formatDateTimeToString(endDate));
 		if (index != 0) {
 			outString += (KEYWORD_INDEX + index);
 		}
@@ -208,6 +207,7 @@ public class CommandInfo {
 		logEnterMethod("toHtmlString");
 		HtmlCreator htmlCreator = new HtmlCreator();
 		String outString = "";
+		DateTimeHelper dateTimeFormatter = new DateTimeHelper();
 		if (commandEnum != null) {
 			switch (commandEnum) {
 			case add:
@@ -302,12 +302,12 @@ public class CommandInfo {
 		if (edittedName != null)
 			outString += (REGEX_SPACE + edittedName);
 		if (startDate != null)
-			outString += (REGEX_SPACE + startDate.toString(DATE_TIME_FORMAT_HTML));
+			outString += (REGEX_SPACE + dateTimeFormatter.formatDateTimeToString(startDate));
 		if (endDate != null) {
 			if (startDate != null) {
 				outString += REGEX_DASH;
 			}
-			outString += (REGEX_SPACE + endDate.toString(DATE_TIME_FORMAT_HTML));
+			outString += (REGEX_SPACE + dateTimeFormatter.formatDateTimeToString(endDate));
 		}
 		logExitMethod("toHtmlString");
 		return (outString);
