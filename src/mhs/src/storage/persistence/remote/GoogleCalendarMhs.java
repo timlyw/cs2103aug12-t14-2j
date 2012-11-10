@@ -50,12 +50,12 @@ public class GoogleCalendarMhs {
 		return retrievedEvent;
 	}
 	
-	public List<Event> retrieveEvents(String minDate, String maxDate) throws IOException {
-		List<Event> defaultList = defaultCalendar.retrieveEvents(minDate, maxDate);
-		List<Event> completedList = completedCalendar.retrieveEvents(minDate, maxDate);
-		defaultList.addAll(completedList);
-		
-		return defaultList;
+	public List<Event> retrieveDefaultEvents(String minDate, String maxDate) throws IOException {
+		return defaultCalendar.retrieveEvents(minDate, maxDate);
+	}
+
+	public List<Event> retrieveCompletedEvents(String minDate, String maxDate) throws IOException {
+		return completedCalendar.retrieveEvents(minDate, maxDate);		
 	}
 	
 	public Event updateEvent(Task updatedTask) throws IOException {
@@ -80,5 +80,9 @@ public class GoogleCalendarMhs {
 	public void deleteEvents(String startTime, String endTime) throws IOException {
 		defaultCalendar.deleteEvents(startTime, endTime);
 		completedCalendar.deleteEvents(startTime, endTime);
+	}
+	
+	public void isEventCompleted() {
+		
 	}
 }
