@@ -3,8 +3,6 @@
 package mhs.src.storage;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Iterator;
@@ -51,6 +49,7 @@ public class Database {
 	static TaskValidator taskValidator;
 	private static TaskRecordFile taskRecordFile;
 	static ConfigFile configFile;
+	static MhsGoogleOAuth2 mhsGoogleOAuth2;
 
 	static DateTime syncStartDateTime;
 	static DateTime syncEndDateTime;
@@ -85,7 +84,6 @@ public class Database {
 
 	private static final String URL_REMOTE_SERVICE_GOOGLE = "http://google.com/";
 	private static final String REGEX_EMAIL_AT_SYMBOL = "@";
-	private static final int ARRAY_LENGTH_EMPTY_SIZE = 0;
 
 	/**
 	 * Database constructor
@@ -107,6 +105,7 @@ public class Database {
 		initializeSyncDateTimes();
 		initalizeDatabase(taskRecordFileName);
 		initializeSyncronize(disableSyncronize);
+		initializeGoogleOAuth2();
 
 		logExitMethod("Database");
 	}
@@ -129,20 +128,8 @@ public class Database {
 	}
 
 	/**
-	 * Initialize Syncronize to start sync between local and remote storage
-	 * 
-	 * Updates remoteSyncEnabled to true if successful
-	 * 
-	 * @param disableSyncronize
-	 * 
-	 * @throws IOException
+	 * Syncronization
 	 */
-	private void initializeSyncronize(boolean disableSyncronize)
-			throws IOException {
-		logEnterMethod("initializeSyncronize");
-		syncronize = new Syncronize(this, disableSyncronize);
-		logExitMethod("initializeSyncronize");
-	}
 
 	/**
 	 * Initialize Sync Date Times Range
@@ -175,6 +162,53 @@ public class Database {
 	}
 
 	/**
+	 * Initializes GoogleOAuth2 and authenticates silently with default user
+	 * 
+	 * @throws Exception
+	 */
+	private void initializeGoogleOAuth2() {
+		try {
+			MhsGoogleOAuth2.getInstance();
+			authenticateOAuth2WithDefaultUser();
+		} catch (Exception e) {
+			// Connectivity Errors
+			syncronize.disableRemoteSync();
+		}
+	}
+
+	/**
+	 * Silently Authenticate OAuth2 With DefaultUser
+	 * 
+	 * @throws Exception
+	 * @throws IOException
+	 */
+	protected void authenticateOAuth2WithDefaultUser() throws IOException,
+			Exception {
+		String defaultUserGoogleAccountName = getConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT);
+		if (defaultUserGoogleAccountName != null) {
+			MhsGoogleOAuth2.setupUserId(defaultUserGoogleAccountName);
+			MhsGoogleOAuth2.authorizeCredentialAndStoreInCredentialStore();
+			saveGoogleAccountInfo(defaultUserGoogleAccountName);
+		}
+	}
+
+	/**
+	 * Initialize Syncronize to start sync between local and remote storage
+	 * 
+	 * Updates remoteSyncEnabled to true if successful
+	 * 
+	 * @param disableSyncronize
+	 * 
+	 * @throws IOException
+	 */
+	private void initializeSyncronize(boolean disableSyncronize)
+			throws IOException {
+		logEnterMethod("initializeSyncronize");
+		syncronize = new Syncronize(this, disableSyncronize);
+		logExitMethod("initializeSyncronize");
+	}
+
+	/**
 	 * Syncronizes Databases
 	 * 
 	 * @throws ServiceException
@@ -204,15 +238,46 @@ public class Database {
 		logExitMethod("syncronizeDatabases");
 	}
 
+	/**
+	 * Checks if internet connection to remote services are active
+	 * 
+	 * @return true if connection if active
+	 */
 	private boolean isRemoteServiceConnectivityActive() {
+		logEnterMethod("isRemoteServiceConnectivityActive");
 		try {
 			URL remoteStorageServiceUrl = new URL(URL_REMOTE_SERVICE_GOOGLE);
 			remoteStorageServiceUrl.openConnection();
-		} catch (MalformedURLException e) {
-		} catch (IOException e) {
+		} catch (Exception e) {
+			logExitMethod("isRemoteServiceConnectivityActive");
 			return false;
 		}
+		logExitMethod("isRemoteServiceConnectivityActive");
 		return true;
+	}
+
+	/**
+	 * Initializes Google Services
+	 * 
+	 * @return true if all services succeed
+	 * @throws AuthenticationException
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
+	boolean initializeGoogleServices() throws AuthenticationException,
+			IOException, ServiceException {
+		logEnterMethod("initializeGoogleServices");
+		if (initializeGoogleCalendarService() && initializeGoogleTaskService()) {
+			logExitMethod("isRemoteServiceConnectivityActive");
+			return true;
+		}
+		logExitMethod("initializeGoogleServices");
+		return false;
+	}
+
+	// TODO Auto-generated method stub
+	boolean initializeGoogleTaskService() {
+		return false;
 	}
 
 	/**
@@ -227,30 +292,110 @@ public class Database {
 			AuthenticationException, ServiceException {
 		logEnterMethod("initializeGoogleCalendarService");
 		String userGoogleAccount = getSavedUserGoogleAccount();
-		String userGoogleAuthToken = getSavedUserGoogleAuthToken();
-		if (userGoogleAccount == null || userGoogleAuthToken == null) {
+		if (userGoogleAccount == null) {
 			logExitMethod("initializeGoogleCalendarService");
 			return false;
 		}
-		googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
-				userGoogleAccount, userGoogleAuthToken);
+		// TODO
+		// googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
+		// userGoogleAccount, userGoogleAuthToken);
 		logExitMethod("initializeGoogleCalendarService");
 		return true;
 	}
 
 	/**
-	 * Get saved user google auth token from Configuration File
+	 * Logs in user google account with user details and starts Syncronize
 	 * 
-	 * @return savedUserGoogleAuthToken or null if it does not exist
+	 * @param userName
+	 *            user google account
+	 * @param userPassword
+	 *            user google account password
+	 * @throws Exception
 	 */
-	private String getSavedUserGoogleAuthToken() {
-		if (!configFile
-				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN)) {
-			return null;
+	public void loginUserGoogleAccount(String userName) throws Exception {
+		logEnterMethod("loginUserGoogleAccount");
+		try {
+			MhsGoogleOAuth2.setupUserId(userName);
+			MhsGoogleOAuth2.authorizeCredentialAndStoreInCredentialStore();
+			saveGoogleAccountInfo(userName);
+		} catch (Exception e) {
+			syncronize.disableRemoteSync();
 		}
-		String savedUserGoogleAuthToken = configFile
-				.getConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN);
-		return savedUserGoogleAuthToken;
+		syncronize.enableRemoteSync();
+		logExitMethod("loginUserGoogleAccount");
+	}
+
+	/**
+	 * Logs user out of Google Account
+	 * 
+	 * @throws IOException
+	 */
+	public void logOutUserGoogleAccount() throws IOException {
+		logEnterMethod("logOutUserGoogleAccount");
+		assert (syncronize != null);
+		syncronize.disableRemoteSync();
+		MhsGoogleOAuth2.deleteCurrentCredential();
+		disableGoogleServices();
+		removeUserLoggedInData();
+		logExitMethod("logOutUserGoogleAccount");
+	}
+
+	protected void removeUserLoggedInData() throws IOException {
+		configFile.removeConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT);
+		configFile.save();
+	}
+
+	protected void disableGoogleServices() {
+		googleCalendar = null;
+	}
+
+	/**
+	 * @return user google account name if it exists or null otherwise
+	 */
+	public String getAuthenticatedUserGoogleAccountName() {
+		logEnterMethod("getAuthenticatedUserGoogleAccountName");
+		logExitMethod("getAuthenticatedUserGoogleAccountName");
+		return MhsGoogleOAuth2.getUserName();
+	}
+
+	/**
+	 * @return user google account name if it exists or null otherwise
+	 */
+	public String getAuthenticatedUserGoogleAccountEmail() {
+		logEnterMethod("getAuthenticatedUserGoogleAccountEmail");
+		logExitMethod("getAuthenticatedUserGoogleAccountEmail");
+		return MhsGoogleOAuth2.getUserEmail();
+	}
+
+	/**
+	 * Checks if Remote Sync (Google Calendar) is currently active
+	 * 
+	 * @return
+	 */
+	public boolean isUserGoogleCalendarAuthenticated() {
+		logEnterMethod("isUserGoogleCalendarAuthenticated");
+		logExitMethod("isUserGoogleCalendarAuthenticated");
+		return isRemoteSyncEnabled;
+	}
+
+	/**
+	 * Saves user Google Calendar Service access token and user google account
+	 * email to config file
+	 * 
+	 * @param googleUserAccountName
+	 * @param googleAuthToken
+	 * 
+	 * @throws IOException
+	 */
+	synchronized void saveGoogleAccountInfo(String googleUserAccountName)
+			throws IOException {
+		logEnterMethod("saveGoogleAccountInfo");
+		if (googleUserAccountName != null) {
+			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT,
+					googleUserAccountName);
+		}
+		configFile.save();
+		logExitMethod("saveGoogleAccountInfo");
 	}
 
 	/**
@@ -269,129 +414,8 @@ public class Database {
 	}
 
 	/**
-	 * Logs in user google account with user details and starts Syncronize
-	 * 
-	 * @param userName
-	 *            user google account
-	 * @param userPassword
-	 *            user google account password
-	 * @throws Exception
+	 * Task CRUD Operations
 	 */
-	public void loginUserGoogleAccount(String userName, String userPassword)
-			throws Exception {
-		logEnterMethod("loginUserGoogleAccount");
-		try {
-			MhsGoogleOAuth2.getInstance();
-			MhsGoogleOAuth2.authorizeCredentialAndStoreInCredentialStore();
-		} catch (Exception e) {
-			syncronize.disableRemoteSync();
-		}
-		logExitMethod("loginUserGoogleAccount");
-	}
-
-	/**
-	 * Authenticate user account with provided user name and password
-	 * 
-	 * @param userName
-	 * @param userPassword
-	 * @return googleAccessToken if authentication is successful
-	 * @throws AuthenticationException
-	 * @throws UnknownHostException
-	 * @throws IOException
-	 * @throws ServiceException
-	 */
-	private String authenticateUserGoogleAccount(String userName,
-			String userPassword) throws AuthenticationException,
-			UnknownHostException, IOException, ServiceException {
-		syncronize.disableRemoteSync();
-		String googleAccessToken = GoogleCalendarMhs.retrieveUserToken(
-				GOOGLE_CALENDAR_APP_NAME, userName, userPassword);
-		googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
-				userName, googleAccessToken);
-		syncronize.enableRemoteSync();
-		return googleAccessToken;
-	}
-
-	/**
-	 * Logs user out of Google Account
-	 * 
-	 * @throws IOException
-	 */
-	public void logOutUserGoogleAccount() throws IOException {
-		logEnterMethod("logOutUserGoogleAccount");
-		assert (syncronize != null);
-
-		syncronize.disableRemoteSync();
-		googleCalendar = null;
-		configFile.removeConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN);
-		configFile.removeConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT);
-		configFile.save();
-		logExitMethod("logOutUserGoogleAccount");
-	}
-
-	/**
-	 * @return user google account name if it exists or null
-	 */
-	public String getUserGoogleAccountName() {
-		logEnterMethod("getUserGoogleAccountName");
-		logExitMethod("getUserGoogleAccountName");
-		if (configFile.hasConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
-			String[] googleUserAccountString = configFile.getConfigParameter(
-					CONFIG_PARAM_GOOGLE_USER_ACCOUNT).split(
-					REGEX_EMAIL_AT_SYMBOL);
-			if (isArrayNonEmpty(googleUserAccountString)) {
-				return googleUserAccountString[0];
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Checks whether non-null array is empty
-	 * 
-	 * @param non
-	 *            -null arrayToCheck
-	 * @return true if array is not empty
-	 */
-	private boolean isArrayNonEmpty(String[] arrayToCheck) {
-		assert (arrayToCheck != null);
-		return arrayToCheck.length > ARRAY_LENGTH_EMPTY_SIZE;
-	}
-
-	/**
-	 * Checks if Remote Sync (Google Calendar) is currently active
-	 * 
-	 * @return
-	 */
-	public boolean isUserGoogleCalendarAuthenticated() {
-		logEnterMethod("isUserGoogleCalendarAuthenticated");
-		logExitMethod("isUserGoogleCalendarAuthenticated");
-		return isRemoteSyncEnabled;
-	}
-
-	/**
-	 * Saves user Google Calendar Service access token and user google account
-	 * email to config file
-	 * 
-	 * @param googleUserAccount
-	 * @param googleAuthToken
-	 * 
-	 * @throws IOException
-	 */
-	synchronized void saveGoogleAccountInfo(String googleUserAccount,
-			String googleAuthToken) throws IOException {
-		logEnterMethod("saveGoogleAccountInfo");
-		if (googleAuthToken != null) {
-			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_AUTH_TOKEN,
-					googleAuthToken);
-		}
-		if (googleUserAccount != null) {
-			configFile.setConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT,
-					googleUserAccount);
-		}
-		configFile.save();
-		logExitMethod("saveGoogleAccountInfo");
-	}
 
 	/**
 	 * Returns single task with specified taskId (deleted tasks queriable)

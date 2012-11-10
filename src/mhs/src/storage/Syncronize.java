@@ -85,7 +85,7 @@ class Syncronize {
 		initializeSyncronizeBackgroundExecutor();
 		initializeTimedPullSyncTasks();
 		initializePushSyncBackgroundTasksList();
-		initializeGoogleCalendarAndSync(disableSyncronize);
+		initializeGoogleCalendarServicesAndSync(disableSyncronize);
 
 		logExitMethod("Syncronize");
 	}
@@ -98,11 +98,16 @@ class Syncronize {
 				THREADS_TO_INITIALIZE_1);
 	}
 
-	private void initializeGoogleCalendarAndSync(boolean disableSyncronize)
-			throws IOException {
+	/**
+	 * Initialize Google Services And Startup Sync
+	 * 
+	 * @param disableSyncronize
+	 * @throws IOException
+	 */
+	private void initializeGoogleCalendarServicesAndSync(
+			boolean disableSyncronize) throws IOException {
 		try {
-			if (this.database.initializeGoogleCalendarService()
-					&& !disableSyncronize) {
+			if (this.database.initializeGoogleServices() && !disableSyncronize) {
 				enableRemoteSync();
 				syncronizeDatabases();
 			} else {
@@ -219,7 +224,7 @@ class Syncronize {
 	/**
 	 * Syncronizes Databases (local storage and google calendar service)
 	 * 
-	 * @return true if successful 
+	 * @return true if successful
 	 */
 	boolean syncronizeDatabases() {
 		logEnterMethod("syncronizeDatabases");
@@ -297,6 +302,10 @@ class Syncronize {
 		}
 		logExitMethod("cancelTimedPullSync");
 	}
+
+	/**
+	 * Sync Task Operations Logic
+	 */
 
 	/**
 	 * Pull Sync remote tasks to local
@@ -453,7 +462,7 @@ class Syncronize {
 					.equals(TaskCategory.FLOATING)) {
 				return;
 			}
-			System.out.println("!"+entry.getValue().getTaskName());
+			System.out.println("!" + entry.getValue().getTaskName());
 			System.out.println(entry.getValue().getTaskUpdated() + " "
 					+ entry.getValue().getTaskLastSync());
 			System.out.println(entry.getValue().getTaskUpdated()

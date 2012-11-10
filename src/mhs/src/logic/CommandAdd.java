@@ -165,7 +165,6 @@ public class CommandAdd extends Command {
 		logExitMethod("executeCommand");
 	}
 
-
 	/**
 	 * Add does not support index commands
 	 */

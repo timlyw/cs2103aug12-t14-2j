@@ -594,7 +594,6 @@ public abstract class Command {
 				resultList = queryTask(lastQueryCommandInfo);
 				break;
 			case QUERY_BY_NAME:
-				System.out.println("testing");
 				resultList = queryTask(lastQueryCommandInfo);
 				break;
 			case QUERY_BY_CATEGORY:
