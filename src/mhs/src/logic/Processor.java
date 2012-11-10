@@ -55,7 +55,7 @@ public class Processor {
 	private static final String MESSAGE_FILE_I_O_ERROR = "File I/O Error";
 	private static final String MESSAGE_INVALID_INDEX = "Invalid Index";
 	private static final String MESSAGE_HI_USERNAME = "Hi %1$s";
-	private static final String MESSAGE_FEEDBACK = "feedback: %1$s";
+	private static final String MESSAGE_FEEDBACK = "%1$s";
 
 	private static final String FILE_FEEDBACK = "SystemTestFiles/feedback-%1$s.html";
 	private static final String FILE_STATE = "SystemTestFiles/state-%1$s.html";

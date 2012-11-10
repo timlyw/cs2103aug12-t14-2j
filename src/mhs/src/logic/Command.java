@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 
 import com.google.gdata.util.ServiceException;
 
+import mhs.src.common.DateTimeHelper;
 import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
@@ -44,6 +45,9 @@ public abstract class Command {
 	private static final int QUERY_BY_CATEGORY = 2;
 	private static final int QUERY_HOME = 3;
 
+	private static final String CONNECTOR_TIMED = " from %1$s to %2$s";
+	private static final String CONNECTOR_DEADLINE = " due %1$s";
+
 	protected boolean isUndoable;
 	protected static List<Task> matchedTasks;
 	protected static Database dataHandler;
@@ -61,6 +65,7 @@ public abstract class Command {
 	protected Task newTask;
 	protected String commandFeedback;
 	protected static String currentState;
+	protected DateTimeHelper dateTimeHelper;
 	protected static int minTaskQuery = 1;
 
 	private static final Logger logger = MhsLogger.getLogger();
@@ -69,6 +74,7 @@ public abstract class Command {
 	 * Default Constructor for Commands
 	 */
 	public Command() {
+		dateTimeHelper = new DateTimeHelper();
 		indexExpected = false;
 		isUndoable = false;
 		htmlCreator = new HtmlCreator();
@@ -608,6 +614,31 @@ public abstract class Command {
 		} catch (IOException e) {
 			return MESSAGE_ERROR_IO;
 		}
+	}
+
+	/**
+	 * Converts Task's date time to pretty string
+	 * 
+	 * @param task
+	 * @return
+	 */
+	protected String getTimeString(Task task) {
+		String timeString = "";
+		System.out.println(" create tim estring ");
+		
+		if (task.isDeadline()) {
+			String dueTime = dateTimeHelper.formatDateTimeToString(task
+					.getStartDateTime());
+			System.out.println("due " +dueTime);
+			timeString = String.format(CONNECTOR_DEADLINE, dueTime);
+		} else if (task.isTimed()) {
+			String startTime = dateTimeHelper.formatDateTimeToString(task
+					.getStartDateTime());
+			String endTime = dateTimeHelper.formatDateTimeToString(task
+					.getEndDateTime());
+			timeString = String.format(CONNECTOR_TIMED, startTime, endTime);
+		}
+		return timeString;
 	}
 
 	/**
