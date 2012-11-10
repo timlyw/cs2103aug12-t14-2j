@@ -86,7 +86,7 @@ public class CommandInfo {
 			DateTime endDateInput, int indexInput) {
 
 		logEnterMethod("CommandInfo");
-		
+		clearParameters();
 		commandEnum = commandInput;
 		taskName = taskNameInput;
 		edittedName = edittedNameInput;
@@ -99,17 +99,27 @@ public class CommandInfo {
 	}
 
 	/**
-	 * Default constructor setting all parameters to null.
+	 * Default constrcutor resetting all parameters.
 	 */
-	public CommandInfo() {
+	public CommandInfo(){
 		logEnterMethod("CommandInfo");
+		clearParameters();
+		logExitMethod("CommandInfo");
+
+	}
+	
+	/**
+	 * Method to set all parameters to null.
+	 */
+	public void clearParameters() {
+		logEnterMethod("clearParameters");
 		commandEnum = null;
 		taskName = null;
 		startDate = null;
 		endDate = null;
 		edittedName = null;
 		index = 0;
-		logExitMethod("CommandInfo");
+		logExitMethod("clearParameters");
 	}
 
 	/**
