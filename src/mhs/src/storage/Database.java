@@ -29,6 +29,7 @@ import mhs.src.storage.persistence.task.TaskCategory;
 import org.joda.time.DateTime;
 
 import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 /**
@@ -877,7 +878,7 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void clearRemoteDatabase() throws IOException, ServiceException {
+	public void clearRemoteDatabase() {
 		logEnterMethod("clearRemoteDatabase");
 		if (isRemoteSyncEnabled) {
 			try {
@@ -886,6 +887,12 @@ public class Database {
 			} catch (UnknownHostException e) {
 				syncronize.disableRemoteSync();
 			} catch (NullPointerException e) {
+				// SilentFailSync Policy
+				logger.log(Level.FINER, e.getMessage());
+			} catch (ResourceNotFoundException e) {
+				// SilentFailSync Policy
+				logger.log(Level.FINER, e.getMessage());
+			} catch (IOException e) {
 				// SilentFailSync Policy
 				logger.log(Level.FINER, e.getMessage());
 			}

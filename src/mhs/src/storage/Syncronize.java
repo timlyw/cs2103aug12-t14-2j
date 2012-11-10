@@ -229,11 +229,11 @@ class Syncronize {
 	boolean syncronizeDatabases() {
 		logEnterMethod("syncronizeDatabases");
 		// checks if google services are instantiated
-//		if (Database.googleCalendar == null || Database.googleTasks == null) {
-//			logger.log(Level.INFO, "Google Services not instantiated");
-//			disableRemoteSync();
-//			return false;
-//		}
+		if (Database.googleCalendar == null || Database.googleTasks == null) {
+			logger.log(Level.INFO, "Google Services not instantiated");
+			disableRemoteSync();
+			return false;
+		}
 		SyncAllTasks syncronizeAllTasks = new SyncAllTasks(this);
 		futureSyncronizeBackgroundTask = syncronizeBackgroundExecutor
 				.submit(syncronizeAllTasks);
@@ -404,7 +404,8 @@ class Syncronize {
 		DateTime syncDateTime = setSyncTime(gCalEntry);
 
 		// add task from google calendar entry
-		if (gCalEntry.getStart().equals(gCalEntry.getEnd())) {
+		if (gCalEntry.getStart().getDateTime().toString()
+				.equals(gCalEntry.getEnd().getDateTime().toString())) {
 			// create new deadline task
 			Task newTask = new DeadlineTask(this.database.getNewTaskId(),
 					gCalEntry, syncDateTime);
@@ -455,16 +456,10 @@ class Syncronize {
 		// push sync tasks from local to google calendar
 		for (Map.Entry<Integer, Task> entry : Database.taskLists.getTaskList()
 				.entrySet()) {
-			System.out.println(entry.getValue().getTaskName());
 			if (entry.getValue().getTaskCategory()
 					.equals(TaskCategory.FLOATING)) {
 				return;
 			}
-			System.out.println("!" + entry.getValue().getTaskName());
-			System.out.println(entry.getValue().getTaskUpdated() + " "
-					+ entry.getValue().getTaskLastSync());
-			System.out.println(entry.getValue().getTaskUpdated()
-					.isAfter(entry.getValue().getTaskLastSync()));
 			pushSyncTask(entry.getValue());
 		}
 		logExitMethod("pushSync");
@@ -535,9 +530,7 @@ class Syncronize {
 			InvalidTaskFormatException {
 		logEnterMethod("pushSyncNewTask");
 		// adds event to google calendar
-		System.out.println(localTask);
 		Event addedGCalEvent = Database.googleCalendar.createEvent(localTask);
-		System.out.println(addedGCalEvent);
 		updateSyncTask(localTask, addedGCalEvent);
 		logExitMethod("pushSyncNewTask");
 	}
@@ -565,6 +558,14 @@ class Syncronize {
 		logExitMethod("pushSyncExistingTask");
 	}
 
+	private void updateSyncTaskTimes(Task localSyncTaskToUpdate, Event gCalEntry)
+			throws IOException {
+		DateTime syncDateTime = setSyncTime(gCalEntry);
+		localSyncTaskToUpdate.setGcalTaskId(gCalEntry.getId());
+		localSyncTaskToUpdate.setGcalTaskUid(gCalEntry.getICalUID());
+		localSyncTaskToUpdate.setTaskLastSync(syncDateTime);
+	}
+
 	/**
 	 * Updates local synced task with newer Calendar Event
 	 * 
@@ -588,8 +589,10 @@ class Syncronize {
 		}
 
 		DateTime syncDateTime = setSyncTime(gCalEntry);
+
 		localSyncTaskToUpdate = updateLocalSyncTask(localSyncTaskToUpdate,
 				gCalEntry, syncDateTime);
+
 		Database.taskLists.updateTaskInTaskLists(localSyncTaskToUpdate);
 		Database.saveTaskRecordFile();
 		logExitMethod("updateSyncTask");
@@ -602,20 +605,23 @@ class Syncronize {
 	 * @param localSyncTaskToUpdate
 	 * @param gCalEntry
 	 * @param syncDateTime
+	 * @throws IOException
 	 */
 	private Task updateLocalSyncTask(Task localSyncTaskToUpdate,
-			Event gCalEntry, DateTime syncDateTime) {
+			Event gCalEntry, DateTime syncDateTime) throws IOException {
 		logEnterMethod("updateLocalSyncTask");
+		Task updatedTask;
 		// Update Task Type
-		if (gCalEntry.getStart().equals(gCalEntry.getEnd())) {
-			localSyncTaskToUpdate = new DeadlineTask(
-					localSyncTaskToUpdate.getTaskId(), gCalEntry, syncDateTime);
+		if (gCalEntry.getStart().getDateTime().toString()
+				.equals(gCalEntry.getEnd().getDateTime().toString())) {
+			updatedTask = new DeadlineTask(localSyncTaskToUpdate.getTaskId(),
+					gCalEntry, syncDateTime);
 		} else {
-			localSyncTaskToUpdate = new TimedTask(
-					localSyncTaskToUpdate.getTaskId(), gCalEntry, syncDateTime);
+			updatedTask = new TimedTask(localSyncTaskToUpdate.getTaskId(),
+					gCalEntry, syncDateTime);
 		}
 		logExitMethod("updateLocalSyncTask");
-		return localSyncTaskToUpdate;
+		return updatedTask;
 	}
 
 	/**
