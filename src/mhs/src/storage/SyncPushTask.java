@@ -14,6 +14,14 @@ import mhs.src.common.exceptions.TaskNotFoundException;
 import mhs.src.storage.Syncronize;
 import mhs.src.storage.persistence.task.Task;
 
+/**
+ * SyncPushTask
+ * 
+ * Sync Task Operation to push sync single task
+ * 
+ * @author Timothy Lim Yi Wen A0087048X
+ *
+ */
 public class SyncPushTask implements Callable<Boolean> {
 	private Task localTaskToSync;
 	private Syncronize syncronize;
@@ -49,12 +57,25 @@ public class SyncPushTask implements Callable<Boolean> {
 		return true;
 	}
 
-	void logExitMethod(String methodName) {
-		logger.exiting(getClass().getName(), methodName);
-	}
+	/**
+	 * Log Methods
+	 */
 
+	/**
+	 * Log trace entry method
+	 * 
+	 * @param methodName
+	 */
 	void logEnterMethod(String methodName) {
 		logger.entering(getClass().getName(), methodName);
 	}
 
+	/**
+	 * Log trace exit method
+	 * 
+	 * @param methodName
+	 */
+	void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
+	}
 }

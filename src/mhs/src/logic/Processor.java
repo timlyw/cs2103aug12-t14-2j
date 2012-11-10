@@ -206,7 +206,7 @@ public class Processor {
 	 */
 	private String displayTextIfLoggedIn() {
 		String userGreetString;
-		userGreetString = dataHandler.getUserGoogleAccountName();
+		userGreetString = dataHandler.getAuthenticatedUserGoogleAccountName();
 		userGreetString = String.format(MESSAGE_HI_USERNAME, userGreetString);
 		userGreetString = htmlCreator.makeBold(userGreetString);
 		return userGreetString;
@@ -562,7 +562,7 @@ public class Processor {
 		logEnterMethod("authenticateUser");
 		String output;
 		try {
-			dataHandler.loginUserGoogleAccount(userName, password);
+			dataHandler.loginUserGoogleAccount(userName);
 			userIsLoggedIn = true;
 			output = MESSAGE_LOGIN_SUCCESS;
 		} catch (AuthenticationException e) {
