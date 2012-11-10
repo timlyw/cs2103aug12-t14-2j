@@ -16,7 +16,6 @@ public class CommandInfo {
 
 	private static final String REGEX_SPACE = " ";
 	private static final String REGEX_DASH = " -";
-	private static final String DATE_TIME_FORMAT = "dd MMM yyyy HH:mm";
 	private static final String KEYWORD_INDEX = " Index is : ";
 	private static final String KEYWORD_END_DATE = " End Date : ";
 	private static final String KEYWORD_STARTDATE = " Start Date : ";
@@ -87,6 +86,7 @@ public class CommandInfo {
 			DateTime endDateInput, int indexInput) {
 
 		logEnterMethod("CommandInfo");
+		
 		commandEnum = commandInput;
 		taskName = taskNameInput;
 		edittedName = edittedNameInput;
@@ -193,9 +193,11 @@ public class CommandInfo {
 		if (edittedName != null)
 			outString += (KEYWORD_EDITTED_NAME + edittedName);
 		if (startDate != null)
-			outString += (KEYWORD_STARTDATE + dateTimeFormatter.formatDateTimeToString(startDate));
+			outString += (KEYWORD_STARTDATE + dateTimeFormatter
+					.formatDateTimeToString(startDate));
 		if (endDate != null)
-			outString += (KEYWORD_END_DATE + dateTimeFormatter.formatDateTimeToString(endDate));
+			outString += (KEYWORD_END_DATE + dateTimeFormatter
+					.formatDateTimeToString(endDate));
 		if (index != 0) {
 			outString += (KEYWORD_INDEX + index);
 		}
@@ -213,9 +215,9 @@ public class CommandInfo {
 			case add:
 				if (taskName == null && edittedName == null
 						&& startDate == null && endDate == null) {
-					outString = "Enter "
+					outString = "Fill these up "
 							+ htmlCreator.color("task name", "red") + " and "
-							+ htmlCreator.color("task details", "green");
+							+ htmlCreator.color("time if needed :)", "green");
 				} else
 					outString = COMMAND_FEEDBACK_ADD;
 				break;
@@ -225,7 +227,8 @@ public class CommandInfo {
 					outString = "Enter "
 							+ htmlCreator.color("task name / index", "red")
 							+ " followed by "
-							+ htmlCreator.color("task details", "green")
+							+ htmlCreator.color(
+									"new task name or new date time", "red")
 							+ " to be changed.";
 				} else
 					outString = COMMAND_FEEDBACK_EDIT;
@@ -243,18 +246,22 @@ public class CommandInfo {
 				outString = COMMAND_FEEDBACK_TIMED;
 				break;
 			case rename:
-				if(taskName == null && edittedName == null && startDate == null && endDate == null){
-					outString = "Enter " + htmlCreator.color("task name / index", "red") + " and " + htmlCreator.color("editted name", "green");
-				}
-				else
-				outString = COMMAND_FEEDBACK_RENAME;
+				if (taskName == null && edittedName == null
+						&& startDate == null && endDate == null) {
+					outString = "Enter "
+							+ htmlCreator.color("task name / index", "red")
+							+ " and "
+							+ htmlCreator.color("editted name", "green");
+				} else
+					outString = COMMAND_FEEDBACK_RENAME;
 				break;
 			case remove:
-				if(taskName == null && edittedName == null && startDate == null && endDate == null){
-					outString = "Enter " + htmlCreator.color("task name / index", "red");
-				}
-				else
-				outString = COMMAND_FEEDBACK_REMOVE;
+				if (taskName == null && edittedName == null
+						&& startDate == null && endDate == null) {
+					outString = "Enter "
+							+ htmlCreator.color("task name / index", "red");
+				} else
+					outString = COMMAND_FEEDBACK_REMOVE;
 				break;
 			case sync:
 				outString = COMMAND_FEEDBACK_SYNC;
@@ -269,25 +276,29 @@ public class CommandInfo {
 				outString = COMMAND_FEEDBACK_EXIT;
 				break;
 			case mark:
-				if(taskName == null && edittedName == null && startDate == null && endDate == null){
-					outString = "Enter " + htmlCreator.color("task name / index", "red");
-				}
-				else
-				outString = COMMAND_FEEDBACK_MARK;
+				if (taskName == null && edittedName == null
+						&& startDate == null && endDate == null) {
+					outString = "Enter "
+							+ htmlCreator.color("task name / index", "red");
+				} else
+					outString = COMMAND_FEEDBACK_MARK;
 				break;
 			case unmark:
-				if(taskName == null && edittedName == null && startDate == null && endDate == null){
-					outString = "Enter " + htmlCreator.color("task name / index", "red");
-				}
-				else
-				outString = COMMAND_FEEDBACK_UNMARK;
+				if (taskName == null && edittedName == null
+						&& startDate == null && endDate == null) {
+					outString = "Enter "
+							+ htmlCreator.color("task name / index", "red");
+				} else
+					outString = COMMAND_FEEDBACK_UNMARK;
 				break;
 			case search:
-				if(taskName == null && edittedName == null && startDate == null && endDate == null){
-					outString = "Enter " + htmlCreator.color("task name", "blue") + " or " + htmlCreator.color("date range", "blue");
-				}
-				else
-				outString = COMMAND_FEEDBACK_SEARCH;
+				if (taskName == null && edittedName == null
+						&& startDate == null && endDate == null) {
+					outString = "Enter "
+							+ htmlCreator.color("task name", "blue") + " or "
+							+ htmlCreator.color("date range", "blue");
+				} else
+					outString = COMMAND_FEEDBACK_SEARCH;
 				break;
 			default:
 				outString = (commandEnum.name());
@@ -302,12 +313,14 @@ public class CommandInfo {
 		if (edittedName != null)
 			outString += (REGEX_SPACE + edittedName);
 		if (startDate != null)
-			outString += (REGEX_SPACE + dateTimeFormatter.formatDateTimeToString(startDate));
+			outString += (REGEX_SPACE + dateTimeFormatter
+					.formatDateTimeToString(startDate));
 		if (endDate != null) {
 			if (startDate != null) {
 				outString += REGEX_DASH;
 			}
-			outString += (REGEX_SPACE + dateTimeFormatter.formatDateTimeToString(endDate));
+			outString += (REGEX_SPACE + dateTimeFormatter
+					.formatDateTimeToString(endDate));
 		}
 		logExitMethod("toHtmlString");
 		return (outString);
@@ -396,9 +409,8 @@ public class CommandInfo {
 	private void printErrorEndDate(CommandInfo commandInfo1,
 			CommandInfo commandInfo2) {
 		logEnterMethod("printErrorEndDate");
-		System.out.println(ERROR_END_DATE
-				+ commandInfo1.endDate.toString() + REGEX_SPACE
-				+ commandInfo2.endDate.toString());
+		System.out.println(ERROR_END_DATE + commandInfo1.endDate.toString()
+				+ REGEX_SPACE + commandInfo2.endDate.toString());
 		logExitMethod("printErrorEndDate");
 
 	}
@@ -440,9 +452,8 @@ public class CommandInfo {
 	private void printErrorStartDate(CommandInfo commandInfo1,
 			CommandInfo commandInfo2) {
 		logEnterMethod("printErrorStartDate");
-		System.out.println(ERROR_START_DATE
-				+ commandInfo1.startDate.toString() + REGEX_SPACE
-				+ commandInfo2.startDate.toString());
+		System.out.println(ERROR_START_DATE + commandInfo1.startDate.toString()
+				+ REGEX_SPACE + commandInfo2.startDate.toString());
 		logExitMethod("printErrorStartDate");
 	}
 
@@ -521,9 +532,8 @@ public class CommandInfo {
 	private void printErrorEdittedName(CommandInfo commandInfo1,
 			CommandInfo commandInfo2) {
 		logEnterMethod("printErrorEdittedName");
-		System.out.println(ERROR_EDITTED_NAME
-				+ commandInfo1.edittedName + REGEX_SPACE
-				+ commandInfo2.edittedName);
+		System.out.println(ERROR_EDITTED_NAME + commandInfo1.edittedName
+				+ REGEX_SPACE + commandInfo2.edittedName);
 		logExitMethod("printErrorEdittedName");
 
 	}

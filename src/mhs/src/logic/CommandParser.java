@@ -90,9 +90,9 @@ public class CommandParser {
 			return null;
 		}
 		parseString = setEnvironment(parseString);
+		parseString = setNameInQuotationMarks(parseString);
 		setCommand(parseString);
 		getIndexAtFirstLocation(parseString);
-		parseString = setNameInQuotationMarks(parseString);
 		setTime(parseString);
 		setDate(parseString);
 		setIndex(parseString);
