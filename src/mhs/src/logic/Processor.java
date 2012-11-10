@@ -7,6 +7,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import org.joda.time.LocalDate;
+
 import mhs.src.common.FileHandler;
 import mhs.src.common.MhsLogger;
 import mhs.src.storage.Database;
@@ -27,6 +29,8 @@ import com.google.gdata.util.ServiceException;
  */
 public class Processor {
 
+	private static final String TEST_FILE_CLOSE_HTML = "</body></html>";
+	private static final String TEST_FILE_START_HTML = "<html><body>";
 	private static final String MESSAGE_LOGOUT_FAIL = "Some error occurred during logout!";
 	private static final String MESSAGE_LOGOUT_SUCCESS = "You have successfully logged out !";
 	private static final String MESSAGE_LOGOUT_FAIL_NOT_LOGGED_IN = "You are not logged in! Cannot logout";
@@ -50,6 +54,9 @@ public class Processor {
 	private static final String MESSAGE_INVALID_INDEX = "Invalid Index";
 	private static final String MESSAGE_HI_USERNAME = "Hi %1$s";
 	private static final String MESSAGE_FEEDBACK = "feedback: %1$s";
+
+	private static final String FILE_FEEDBACK = "SystemTestFiles/feedback(%1$s).txt";
+	private static final String FILE_STATE = "SystemTestFiles/state(%1$s).txt";
 
 	private static final int HELP_ADD = 1;
 	private static final int HELP_EDIT = 2;
@@ -145,9 +152,19 @@ public class Processor {
 		commandParser = CommandParser.getCommandParser();
 		commandCreator = CommandCreator.getCommandCreator();
 		userCommand = new CommandInfo();
-		// Creates test output files
-		feedbackFile = new FileHandler("feedbackoutput.txt");
-		stateFile = new FileHandler("stateoutput.txt");
+		initiateFile();
+	}
+
+	/**
+	 * Initates out files for system testing
+	 */
+	private void initiateFile() {
+		feedbackFile = new FileHandler(FILE_FEEDBACK);
+		stateFile = new FileHandler(FILE_STATE);
+		feedbackFile.writeToFile(String.format(TEST_FILE_START_HTML,
+				LocalDate.now()));
+		stateFile.writeToFile(String.format(TEST_FILE_START_HTML,
+				LocalDate.now()));
 	}
 
 	/**
@@ -335,8 +352,8 @@ public class Processor {
 	 */
 	private void writeToFileIfInDebugMode() {
 		if (DEBUG) {
-			feedbackFile.writeToFile(commandFeedback);
-			stateFile.writeToFile(currentState);
+			feedbackFile.writeToFile(commandFeedback + HtmlCreator.NEW_LINE);
+			stateFile.writeToFile(currentState + HtmlCreator.NEW_LINE);
 		}
 	}
 
@@ -406,7 +423,7 @@ public class Processor {
 			if (isHelpIndexExpected) {
 				helpByIndex(userCommand);
 			} else {
-				commandByIndexOnly(userCommand);
+				executeNonIndexCommand(userCommand);
 			}
 		} else {
 			disableHelpIndex();
@@ -440,31 +457,47 @@ public class Processor {
 	private void executeNonTaskBasedCommand(CommandInfo userCommand)
 			throws ServiceException {
 		logEnterMethod("executeNonTaskBasedCommand");
-		String userOutputString;
 		switch (userCommand.getCommandEnum()) {
 		case sync:
 			syncGcal(userCommand);
 			break;
 		case login:
-			userOutputString = loginUser();
-			currentState = userOutputString;
+			currentState = loginUser();
 			break;
 		case logout:
-			userOutputString = logoutUser();
-			currentState = userOutputString;
+			currentState = logoutUser();
 			break;
 		case exit:
-			System.exit(0);
+			exitProgram();
 			break;
 		case help:
 			showHelp();
 			break;
 		default:
+			System.out.println("test here");
 			isCommandQueried = true;
-			commandByIndexOnly(userCommand);
+			executeNonIndexCommand(userCommand);
 			break;
 		}
 		logExitMethod("executeNonTaskBasedCommand");
+	}
+
+	/**
+	 * Closes the program. Writes closing HTML tags if in DEBUG mode
+	 */
+	private void exitProgram() {
+		if (DEBUG) {
+			closeFileHtml();
+		}
+		System.exit(0);
+	}
+
+	/**
+	 * Adds closing HTML tags to file.
+	 */
+	private void closeFileHtml() {
+		feedbackFile.writeToFile(TEST_FILE_CLOSE_HTML);
+		stateFile.writeToFile(TEST_FILE_CLOSE_HTML);
 	}
 
 	/**
@@ -472,7 +505,7 @@ public class Processor {
 	 * 
 	 * @param userCommand
 	 */
-	private void commandByIndexOnly(CommandInfo userCommand) {
+	private void executeNonIndexCommand(CommandInfo userCommand) {
 		logEnterMethod("commandByIndexOnly");
 		commandCreator.createCommand(userCommand);
 		commandFeedback = commandCreator.getFeedback();

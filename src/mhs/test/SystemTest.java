@@ -13,6 +13,7 @@ import org.junit.Test;
 
 public class SystemTest {
 
+	private static final String TEST_DATABASE_JSON = "testDatabase.json";
 	private Processor processor;
 
 	@BeforeClass
@@ -33,17 +34,18 @@ public class SystemTest {
 
 	@Test
 	public void testExecuteCommand() {
-		processor = Processor.getProcessor("testDatabase.json");
-		System.out.println("Created");
+		processor = Processor.getProcessor(TEST_DATABASE_JSON);
+		processor.setLineLimit(20);
 		processor.setDebugMode();
 		processor.clearDatabase();
 		startTests();
 	}
 
 	private void startTests() {
-		/*BufferedReader readFile;
+
+		BufferedReader readFile;
 		try {
-			readFile = new BufferedReader(new FileReader("inputfile.txt"));
+			readFile = new BufferedReader(new FileReader("SystemTestFiles/inputfile.txt"));
 			String currentLine;
 			while ((currentLine = readFile.readLine()) != null) {
 				processor.setCommand(currentLine);
@@ -51,8 +53,7 @@ public class SystemTest {
 			}
 		} catch (Exception e) {
 			System.out.println("Error");
-		}*/
-		processor.setCommand("home");
-		processor.executeCommand();
+		}
+
 	}
 }

@@ -162,6 +162,7 @@ public class CommandAdd extends Command {
 			}
 		}
 		commandFeedback = outputString;
+		System.out.println("test 9" + commandFeedback);
 		logExitMethod("executeCommand");
 	}
 
