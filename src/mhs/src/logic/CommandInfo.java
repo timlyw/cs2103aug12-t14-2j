@@ -564,8 +564,11 @@ public class CommandInfo {
 	 */
 	private void printErrorTaskName(CommandInfo commandInfo1,
 			CommandInfo commandInfo2) {
+		logEnterMethod("printErrorTaskName");
 		System.out.println(ERROR_TASK_NAME + commandInfo1.taskName
 				+ REGEX_SPACE + commandInfo2.taskName);
+		logExitMethod("printErrorTaskName");
+
 	}
 
 	/**
