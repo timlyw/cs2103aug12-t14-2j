@@ -125,10 +125,10 @@ public class NameExtractor {
 			}
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
-			return null;
+			return nameList;
 		} catch (ArrayIndexOutOfBoundsException e) {
 			logger.log(Level.FINER, e.getMessage());
-			return null;
+			return nameList;
 		}
 		logExitMethod("extractName");
 		return nameList;

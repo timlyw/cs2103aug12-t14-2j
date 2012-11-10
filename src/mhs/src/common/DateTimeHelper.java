@@ -87,7 +87,7 @@ public class DateTimeHelper {
 				outString += "Sat";
 			}
 			if (formatDate.getDayOfWeek() == 7) {
-				outString += "Sub";
+				outString += "Sun";
 			}
 		}
 		logExitMethod("formatDateToString");
