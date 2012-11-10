@@ -3,7 +3,6 @@
 package mhs.src.storage;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Iterator;
@@ -322,6 +321,7 @@ public class Database {
 		} catch (Exception e) {
 			syncronize.disableRemoteSync();
 		}
+		syncronize.enableRemoteSync();
 		logExitMethod("loginUserGoogleAccount");
 	}
 
