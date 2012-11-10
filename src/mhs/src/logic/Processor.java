@@ -225,7 +225,7 @@ public class Processor {
 	 */
 	private String displayTextIfLoggedIn() {
 		String userGreetString;
-		userGreetString = dataHandler.getAuthenticatedUserGoogleAccountName();
+		userGreetString = dataHandler.getSavedUserGoogleAccountName();
 		userGreetString = String.format(MESSAGE_HI_USERNAME, userGreetString);
 		userGreetString = htmlCreator.makeBold(userGreetString);
 		return userGreetString;

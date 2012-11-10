@@ -29,6 +29,7 @@ import mhs.src.storage.persistence.task.TaskCategory;
 import org.joda.time.DateTime;
 
 import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 /**
@@ -107,8 +108,8 @@ public class Database {
 
 		initializeSyncDateTimes();
 		initalizeDatabase(taskRecordFileName);
-		initializeSyncronize(disableSyncronize);
 		initializeGoogleOAuth2();
+		initializeSyncronize(disableSyncronize);
 
 		logExitMethod("Database");
 	}
@@ -127,7 +128,6 @@ public class Database {
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
 		taskLists = new TaskLists(taskRecordFile.getTaskList());
 		logExitMethod("initalizeDatabase");
-
 	}
 
 	/**
@@ -287,7 +287,7 @@ public class Database {
 	 * @throws NoActiveCredentialException
 	 */
 	boolean initializeGoogleTaskService() throws NoActiveCredentialException {
-		String userGoogleAccount = getSavedUserGoogleAccount();
+		String userGoogleAccount = getSavedUserGoogleAccountName();
 		if (userGoogleAccount == null) {
 			logger.log(Level.FINER, "User not authenticated with google.");
 			logExitMethod("initializeGoogleCalendarService");
@@ -314,7 +314,7 @@ public class Database {
 			AuthenticationException, ServiceException,
 			NoActiveCredentialException {
 		logEnterMethod("initializeGoogleCalendarService");
-		String userGoogleAccount = getSavedUserGoogleAccount();
+		String userGoogleAccount = getSavedUserGoogleAccountName();
 		if (userGoogleAccount == null) {
 			logExitMethod("initializeGoogleCalendarService");
 			return false;
@@ -429,7 +429,7 @@ public class Database {
 	 * 
 	 * @return getSavedUserGoogleAccount or null if it does not exist
 	 */
-	private String getSavedUserGoogleAccount() {
+	public String getSavedUserGoogleAccountName() {
 		if (!configFile
 				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
 			return null;
@@ -878,7 +878,7 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void clearRemoteDatabase() throws IOException, ServiceException {
+	public void clearRemoteDatabase() {
 		logEnterMethod("clearRemoteDatabase");
 		if (isRemoteSyncEnabled) {
 			try {
@@ -887,6 +887,12 @@ public class Database {
 			} catch (UnknownHostException e) {
 				syncronize.disableRemoteSync();
 			} catch (NullPointerException e) {
+				// SilentFailSync Policy
+				logger.log(Level.FINER, e.getMessage());
+			} catch (ResourceNotFoundException e) {
+				// SilentFailSync Policy
+				logger.log(Level.FINER, e.getMessage());
+			} catch (IOException e) {
 				// SilentFailSync Policy
 				logger.log(Level.FINER, e.getMessage());
 			}

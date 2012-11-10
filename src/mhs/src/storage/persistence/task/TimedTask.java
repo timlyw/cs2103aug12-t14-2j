@@ -1,7 +1,10 @@
 //@author A0087048X
 package mhs.src.storage.persistence.task;
 
+import java.util.logging.Logger;
+
 import mhs.src.common.HtmlCreator;
+import mhs.src.common.MhsLogger;
 
 import org.joda.time.DateTime;
 
@@ -26,6 +29,8 @@ public class TimedTask extends Task {
 	private String gCalTaskId;
 	private String gCalTaskUid;
 
+	static final Logger logger = MhsLogger.getLogger();
+
 	/**
 	 * Full Constructor with TaskCategory taskCategory
 	 * 
@@ -38,6 +43,7 @@ public class TimedTask extends Task {
 	 * @param updatedDt
 	 * @param syncDt
 	 * @param gCalTaskId
+	 * @param gCalTaskUid
 	 * @param isDone
 	 * @param isDeleted
 	 */
@@ -47,10 +53,13 @@ public class TimedTask extends Task {
 			String gCalTaskUid, boolean isDone, boolean isDeleted) {
 		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
 				isDone, isDeleted);
+		logEnterMethod("TimedTask");
 		setGcalTaskId(gCalTaskId);
 		setGcalTaskUid(gCalTaskUid);
 		setStartDateTime(startDt);
 		setEndDateTime(endDt);
+		logExitMethod("TimedTask");
+
 	}
 
 	/**
@@ -62,11 +71,14 @@ public class TimedTask extends Task {
 	public TimedTask(int taskId, Event gCalEntry, DateTime syncDateTime) {
 		super(taskId, gCalEntry.getSummary(), TaskCategory.TIMED, syncDateTime,
 				syncDateTime, syncDateTime, false, false);
-		setGcalTaskId(gCalEntry.getId());
-		setGcalTaskUid(gCalEntry.getICalUID());
-		setStartDateTime(new DateTime(gCalEntry.getStart().toString()));
-		setEndDateTime(new DateTime(gCalEntry.getEnd().toString()));
-
+		logEnterMethod("TimedTask");
+		this.gCalTaskId = gCalEntry.getId().toString();
+		this.gCalTaskUid = gCalEntry.getICalUID().toString();
+		this.startDateTime = new DateTime(gCalEntry.getStart().getDateTime()
+				.getValue());
+		this.endDateTime = new DateTime(gCalEntry.getEnd().getDateTime()
+				.getValue());
+		logExitMethod("TimedTask");
 	}
 
 	public DateTime getStartDateTime() {
@@ -102,6 +114,7 @@ public class TimedTask extends Task {
 	}
 
 	public String toString() {
+		logEnterMethod("toString");
 		String taskToString = "";
 		if (taskId != null) {
 			taskToString += "taskId=" + taskId;
@@ -130,13 +143,39 @@ public class TimedTask extends Task {
 		if (gCalTaskId != null) {
 			taskToString += "gCalTaskId=" + gCalTaskId;
 		}
+		if (gCalTaskUid != null) {
+			taskToString += "gCalTaskUid=" + gCalTaskUid;
+		}
 		if (isDone != null) {
 			taskToString += "isDone=" + isDone.toString();
 		}
 		if (isDeleted != null) {
 			taskToString += "isDeleted=" + isDeleted.toString();
 		}
+		logExitMethod("toString");
 		return taskToString;
+	}
+
+	/**
+	 * Logger Methods
+	 */
+
+	/**
+	 * Logger trace method entry
+	 * 
+	 * @param methodName
+	 */
+	void logEnterMethod(String methodName) {
+		logger.entering(getClass().getName(), methodName);
+	}
+
+	/**
+	 * Logger trace method exit
+	 * 
+	 * @param methodName
+	 */
+	void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
 	}
 
 	/**
