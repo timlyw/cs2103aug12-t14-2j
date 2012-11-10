@@ -2,6 +2,7 @@ package mhs.src.storage.persistence.remote;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,7 +27,8 @@ import com.google.api.services.oauth2.model.Userinfo;
 /**
  * MhsGoogleOAuth2
  * 
- * Google API Authentication via OAuth2 with refresh mechanism for MHS access
+ * Google API Authentication via OAuth2 with refresh mechanism for MHS access.
+ * Allows single active credential.
  * 
  * Functionality:
  * 
@@ -47,19 +49,26 @@ import com.google.api.services.oauth2.model.Userinfo;
  */
 public class MhsGoogleOAuth2 {
 
+	private static final String GOOGLE_USER_INFO_EMAIL = "email";
+	private static final String GOOGLE_USER_INFO_GIVEN_NAME = "given_name";
 	private static final String EXCEPTION_MESSAGE_NO_VALID_CREDENTIAL = "No valid credential. Call authorizeCredentialAndStoreInCredentialStore to setup credential.";
+
 	// Configurables
 	private static final String FILE_PATH_CREDENTIALS_OAUTH2 = ".credentials/oauth2.json";
 	private static final String CLIENT_SECRET = "7it1jgxKg8RVFc0f8YuBsU5j";
 	private static final String CLIENT_ID = "975927934512.apps.googleusercontent.com";
 	private static final String SCOPE_GOOGLEAPIS_COM_AUTH_TASKS = "https://www.googleapis.com/auth/tasks";
 	private static final String SCOPE_GOOGLEAPIS_COM_AUTH_CALENDAR = "https://www.googleapis.com/auth/calendar";
-	private static final List<String> OAUTH_2_SCOPES = Arrays
-			.asList(SCOPE_GOOGLEAPIS_COM_AUTH_TASKS,
-					SCOPE_GOOGLEAPIS_COM_AUTH_CALENDAR);
+	private static final String SCOPE_GOOGLEAPIS_COM_AUTH_USER_INFO_PROFILE = "https://www.googleapis.com/auth/userinfo.profile";
+	private static final String SCOPE_GOOGLEAPIS_COM_AUTH_USER_INFO_EMAIL = "https://www.googleapis.com/auth/userinfo.email";
+	private static final List<String> OAUTH_2_SCOPES = Arrays.asList(
+			SCOPE_GOOGLEAPIS_COM_AUTH_TASKS,
+			SCOPE_GOOGLEAPIS_COM_AUTH_CALENDAR,
+			SCOPE_GOOGLEAPIS_COM_AUTH_USER_INFO_PROFILE,
+			SCOPE_GOOGLEAPIS_COM_AUTH_USER_INFO_EMAIL);
 
 	// Constants
-	private static final String GOOGLE_OAUTH2_DEFAULT_USER_ID = "default_mhs_user";
+	private static final String GOOGLE_OAUTH2_DEFAULT_USER_ID = "cs2103mhs@gmail.com";
 	private static final String GOOGLE_OAUTH2_APPLICATION_NAME = "MHS/0.5";
 	private static final String GOOGLE_OAUTH2_APPROVAL_PROMPT_METHOD_FORCE = "force";
 	private static final String GOOGLE_OAUTH2_ACCESS_TYPE_OFFLINE = "offline";
@@ -76,7 +85,7 @@ public class MhsGoogleOAuth2 {
 	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	private static final Logger logger = MhsLogger.getLogger();
 
-	private static String GOOGLE_OAUTH2_USER_ID = GOOGLE_OAUTH2_DEFAULT_USER_ID;
+	private static String GOOGLE_CURRENT_OAUTH2_USER_ID = GOOGLE_OAUTH2_DEFAULT_USER_ID;
 
 	public static MhsGoogleOAuth2 getInstance() throws IOException {
 		if (instance == null) {
@@ -90,19 +99,14 @@ public class MhsGoogleOAuth2 {
 	 * 
 	 * Authorizes credential and sets up Oauth2 instance
 	 * 
-	 * @throws IOException
+	 * @throws IOExceptionsyn
 	 */
 	public MhsGoogleOAuth2() throws IOException {
 		logEnterMethod("OAuth2");
 		setupCredentialStore();
-//		try {
-//			authorizeCredentialAndStoreInCredentialStore();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.log(Level.WARNING, e.getMessage());
-//		}
 		logExitMethod("OAuth2");
 	}
+
 
 	/**
 	 * Setup User Id for Credential retrieval
@@ -110,12 +114,12 @@ public class MhsGoogleOAuth2 {
 	 * @param userId
 	 *            or null for default user
 	 */
-	public void setupUserId(String userId) {
+	public static void setupUserId(String userId) {
 		logEnterMethod("setupUserId");
 		if (userId != null) {
-			GOOGLE_OAUTH2_USER_ID = userId;
+			GOOGLE_CURRENT_OAUTH2_USER_ID = userId;
 		} else {
-			GOOGLE_OAUTH2_USER_ID = GOOGLE_OAUTH2_DEFAULT_USER_ID;
+			GOOGLE_CURRENT_OAUTH2_USER_ID = GOOGLE_OAUTH2_DEFAULT_USER_ID;
 		}
 		logExitMethod("setupUserId");
 	}
@@ -143,12 +147,24 @@ public class MhsGoogleOAuth2 {
 				.setAccessType(GOOGLE_OAUTH2_ACCESS_TYPE_OFFLINE)
 				.setApprovalPrompt(GOOGLE_OAUTH2_APPROVAL_PROMPT_METHOD_FORCE)
 				.setCredentialStore(credentialStore).build();
+
 		Credential authorizationCodeInstalledApp = new AuthorizationCodeInstalledApp(
 				flow, new LocalServerReceiver())
-				.authorize(GOOGLE_OAUTH2_USER_ID);
+				.authorize(GOOGLE_CURRENT_OAUTH2_USER_ID);
 
 		logExitMethod("authorizeCredential");
 		return authorizationCodeInstalledApp;
+	}
+
+	/**
+	 * Deletes current user credential
+	 * 
+	 * @param userId
+	 * @throws IOException
+	 */
+	public static void deleteCurrentCredential() throws IOException {
+		credentialStore.delete(GOOGLE_CURRENT_OAUTH2_USER_ID, credential);
+		credential = null;
 	}
 
 	/**
@@ -203,7 +219,7 @@ public class MhsGoogleOAuth2 {
 			throws Exception, IOException {
 		logEnterMethod("authorizeCredentialAndStoreInCredentialStore");
 		credential = authorizeCredential();
-		credentialStore.store(GOOGLE_OAUTH2_USER_ID, credential);
+		credentialStore.store(GOOGLE_CURRENT_OAUTH2_USER_ID, credential);
 		buildOAuth2();
 		logUserAndTokenInfo();
 		logExitMethod("authorizeCredentialAndStoreInCredentialStore");
@@ -246,9 +262,14 @@ public class MhsGoogleOAuth2 {
 	 * Getter for Credential instance
 	 * 
 	 * @return Credential
+	 * @throws NoActiveCredentialException
 	 */
-	public static Credential getCredential() {
+	public static Credential getCredential() throws NoActiveCredentialException {
 		logEnterMethod("Credential");
+		if (credential == null) {
+			throw new NoActiveCredentialException(
+					EXCEPTION_MESSAGE_NO_VALID_CREDENTIAL);
+		}
 		logExitMethod("Credential");
 		return credential;
 	}
@@ -257,10 +278,15 @@ public class MhsGoogleOAuth2 {
 	 * Getter for access token
 	 * 
 	 * @return accessToken
+	 * @throws NoActiveCredentialException
 	 */
-	public static String getAccessToken() {
+	public static String getAccessToken() throws NoActiveCredentialException {
 		logEnterMethod("getAccessToken");
 		logExitMethod("getAccessToken");
+		if (credential == null) {
+			throw new NoActiveCredentialException(
+					EXCEPTION_MESSAGE_NO_VALID_CREDENTIAL);
+		}
 		return credential.getAccessToken();
 	}
 
@@ -280,6 +306,57 @@ public class MhsGoogleOAuth2 {
 		Userinfo userinfo = oAuth2.userinfo().get().execute();
 		logExitMethod("userInfo");
 		return userinfo.toPrettyString();
+	}
+
+	/**
+	 * Gets user email from authenticated info
+	 * 
+	 * @return user email or null if not available
+	 * @throws IOException
+	 */
+	public static String getUserEmail() {
+		logEnterMethod("getuserEmail");
+		if (oAuth2 == null) {
+			return null;
+		}
+		String userEmail = null;
+		try {
+			Userinfo userinfo = oAuth2.userinfo().get().execute();
+			userEmail = userinfo.get(GOOGLE_USER_INFO_EMAIL).toString();
+		} catch (IOException e) {
+			return userEmail;
+		}
+		logExitMethod("getuserEmail");
+		return userEmail;
+	}
+
+	/**
+	 * Gets user name from authenticated info
+	 * 
+	 * @return user name from google account or null if not available
+	 * @throws IOException
+	 */
+	public static String getUserName() {
+		logEnterMethod("getuserName");
+		if (oAuth2 == null) {
+			return null;
+		}
+		String userName = null;
+		try {
+			Userinfo userinfo = oAuth2.userinfo().get().execute();
+			userName = userinfo.get(GOOGLE_USER_INFO_GIVEN_NAME).toString();
+		} catch (IOException e) {
+			return userName;
+		}
+		logExitMethod("getuserName");
+		return userName;
+	}
+
+	public static boolean isAuthenticated() {
+		if (credential != null) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
