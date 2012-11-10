@@ -28,6 +28,7 @@ public class FloatingTask extends Task {
 	 * @param createdDt
 	 * @param updatedDt
 	 * @param syncDt
+	 * @param gTaskId
 	 * @param isDone
 	 * @param isDeleted
 	 */
@@ -40,7 +41,7 @@ public class FloatingTask extends Task {
 	}
 
 	/**
-	 * Construct synced floating task with google task 
+	 * Construct synced floating task with google task
 	 * 
 	 * @param taskId
 	 * @param googleTask
@@ -60,6 +61,39 @@ public class FloatingTask extends Task {
 
 	public void setGTaskId(String gTaskId) {
 		this.gTaskId = gTaskId;
+	}
+
+	public String toString() {
+		String taskToString = "";
+		if (taskId != null) {
+			taskToString += "taskId=" + taskId;
+		}
+		if (taskName != null) {
+			taskToString += "taskName=" + taskName;
+		}
+		if (taskCategory != null) {
+			taskToString += "taskCategory=" + taskCategory.getValue();
+		}
+		if (gTaskId != null) {
+			taskToString += "gTaskId=" + gTaskId;
+			;
+		}
+		if (taskCreated != null) {
+			taskToString += "taskCreated=" + taskCreated.toString();
+		}
+		if (taskUpdated != null) {
+			taskToString += "taskUpdated=" + taskUpdated.toString();
+		}
+		if (taskLastSync != null) {
+			taskToString += "taskLastSync=" + taskLastSync.toString();
+		}
+		if (isDone != null) {
+			taskToString += "isDone=" + isDone.toString();
+		}
+		if (isDeleted != null) {
+			taskToString += "isDeleted=" + isDeleted.toString();
+		}
+		return taskToString;
 	}
 
 	/**

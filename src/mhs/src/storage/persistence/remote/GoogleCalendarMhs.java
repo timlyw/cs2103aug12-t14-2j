@@ -33,9 +33,9 @@ public class GoogleCalendarMhs {
 		String endTime = newTask.getEndDateTime().toString();
 		Event createdEvent = null;
 		if(newTask.isDone()) {
-			completedCalendar.createEvent(title, startTime, endTime);
+			createdEvent = completedCalendar.createEvent(title, startTime, endTime);
 		} else {
-			defaultCalendar.createEvent(title, startTime, endTime);
+			createdEvent = defaultCalendar.createEvent(title, startTime, endTime);
 		}
 		
 		return createdEvent;
