@@ -60,13 +60,11 @@ public class GoogleCalendarMhs {
 	
 	public Event updateEvent(Task updatedTask) throws IOException {
 		String eventId = updatedTask.getgCalTaskId();
-		String title = updatedTask.getTaskName();
-		String startTime = updatedTask.getStartDateTime().toString();
-		String endTime = updatedTask.getEndDateTime().toString();
 		
-		Event updatedEvent = defaultCalendar.updateEvent(eventId, title, startTime, endTime);
-		return updatedEvent;
+		deleteEvent(eventId);
+		return createEvent(updatedTask);
 	}
+	
 	
 	public void deleteEvent(String eventId) throws IOException {
 		defaultCalendar.deleteEvent(eventId);
