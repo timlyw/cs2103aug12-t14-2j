@@ -766,8 +766,7 @@ public class DatabaseTest {
 	 */
 	private void getCleanDatabaseWithSync() throws Exception {
 
-		database.loginUserGoogleAccount(GOOGLE_TEST_ACCOUNT_NAME,
-				GOOGLE_TEST_ACCOUNT_PASSWORD);
+		database.loginUserGoogleAccount(GOOGLE_TEST_ACCOUNT_NAME);
 
 		// Test whether isUserGoogleCalendarAuthenticated reflects correct
 		// status

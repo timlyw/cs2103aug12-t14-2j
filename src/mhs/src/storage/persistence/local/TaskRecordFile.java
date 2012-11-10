@@ -27,11 +27,12 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+
 /**
- * TaskRecordFile 
+ * TaskRecordFile
  * 
  * Handles File I/O operations for tasks in json file
- *  
+ * 
  * @author Timothy Lim Yi Wen A0087048X
  */
 
@@ -61,15 +62,13 @@ public class TaskRecordFile {
 	 * @throws IOException
 	 */
 	public TaskRecordFile() throws IOException {
-		logger.entering(getClass().getName(),
-				new Exception().getStackTrace()[0].getMethodName());
+		logEnterMethod("TaskRecordFile");
 
 		RECORD_FILE_NAME = DEFAULT_TASK_RECORD_FILENAME;
 		initializeTaskList();
 		initalizeRecordFile();
 
-		logger.exiting(getClass().getName(),
-				new Exception().getStackTrace()[0].getMethodName());
+		logExitMethod("TaskRecordFile");
 	}
 
 	/**
@@ -210,16 +209,28 @@ public class TaskRecordFile {
 			// File corrupted
 			logger.log(Level.INFO, "Json file corrupted.");
 		} finally {
-			if (Jarray != null) {
-				for (JsonElement obj : Jarray) {
-					if (obj != null) {
-						Task newTask = gson.fromJson(obj, Task.class);
-						taskList.put(newTask.getTaskId(), newTask);
-					}
-				}
-			}
+			addTasksToTaskListFromJarray(Jarray);
 		}
 		logExitMethod("loadTaskListFromJarray");
+	}
+
+	/**
+	 * Add tasks to task list from Jarray
+	 * 
+	 * @param Jarray
+	 */
+	private void addTasksToTaskListFromJarray(JsonArray Jarray) {
+		logExitMethod("addTasksToTaskListFromJarray");
+		if (Jarray == null) {
+			return;
+		}
+		for (JsonElement obj : Jarray) {
+			if (obj != null) {
+				Task newTask = gson.fromJson(obj, Task.class);
+				taskList.put(newTask.getTaskId(), newTask);
+			}
+		}
+		logExitMethod("addTasksToTaskListFromJarray");
 	}
 
 	/**
@@ -281,8 +292,8 @@ public class TaskRecordFile {
 		jsonWriter.beginArray();
 
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
-			gson.toJson(entry.getValue(), entry.getValue().getClass(),
-					jsonWriter);
+			Task taskToWrite = entry.getValue();
+			gson.toJson(taskToWrite, taskToWrite.getClass(), jsonWriter);
 		}
 
 		jsonWriter.endArray();
@@ -300,10 +311,24 @@ public class TaskRecordFile {
 		return taskList;
 	}
 
+	/**
+	 * Log Methods
+	 */
+
+	/**
+	 * Log Trace Entry Method
+	 * 
+	 * @param methodName
+	 */
 	private void logEnterMethod(String methodName) {
 		logger.entering(getClass().getName(), methodName);
 	}
 
+	/**
+	 * Log Trace Exit Method
+	 * 
+	 * @param methodName
+	 */
 	private void logExitMethod(String methodName) {
 		logger.exiting(getClass().getName(), methodName);
 	}
