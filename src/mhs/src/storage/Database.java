@@ -15,11 +15,13 @@ import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.InvalidTaskFormatException;
+import mhs.src.common.exceptions.NoActiveCredentialException;
 import mhs.src.common.exceptions.TaskNotFoundException;
 import mhs.src.storage.persistence.TaskLists;
 import mhs.src.storage.persistence.local.ConfigFile;
 import mhs.src.storage.persistence.local.TaskRecordFile;
 import mhs.src.storage.persistence.remote.GoogleCalendarMhs;
+import mhs.src.storage.persistence.remote.GoogleTasks;
 import mhs.src.storage.persistence.remote.MhsGoogleOAuth2;
 import mhs.src.storage.persistence.task.Task;
 import mhs.src.storage.persistence.task.TaskCategory;
@@ -43,6 +45,7 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
+	static GoogleTasks googleTasks;
 	static GoogleCalendarMhs googleCalendar;
 	static TaskLists taskLists;
 	static Syncronize syncronize;
@@ -212,21 +215,21 @@ public class Database {
 	 * Syncronizes Databases
 	 * 
 	 * @throws ServiceException
-	 * @throws UnknownHostException
-	 * 
+	 * @throws NoActiveCredentialException
 	 * @throws IOException
 	 */
-	public void syncronizeDatabases() throws UnknownHostException,
-			ServiceException {
+	public void syncronizeDatabases() throws ServiceException, IOException,
+			NoActiveCredentialException {
 		logEnterMethod("syncronizeDatabases");
 		logger.log(Level.INFO, "Syncronizing Databases");
+
 		if (!isRemoteServiceConnectivityActive()) {
+			syncronize.disableRemoteSync();
 			throw new UnknownHostException(
 					EXCEPTION_MESSAGE_NO_CONNECTIVITY_WITH_REMOTE_STORAGE);
 		}
 		if (!isRemoteSyncEnabled) {
-			throw new ServiceException(
-					EXCEPTION_MESSAGE_REMOTE_SYNC_NOT_ENABLED);
+			initializeGoogleServices();
 		}
 		boolean isSyncronizeSchedulingSuccessful = syncronize
 				.syncronizeDatabases();
@@ -263,11 +266,13 @@ public class Database {
 	 * @throws AuthenticationException
 	 * @throws IOException
 	 * @throws ServiceException
+	 * @throws NoActiveCredentialException
 	 */
 	boolean initializeGoogleServices() throws AuthenticationException,
-			IOException, ServiceException {
+			IOException, ServiceException, NoActiveCredentialException {
 		logEnterMethod("initializeGoogleServices");
 		if (initializeGoogleCalendarService() && initializeGoogleTaskService()) {
+			logger.log(Level.INFO, "Google Services instantiated");
 			logExitMethod("isRemoteServiceConnectivityActive");
 			return true;
 		}
@@ -275,9 +280,25 @@ public class Database {
 		return false;
 	}
 
-	// TODO Auto-generated method stub
-	boolean initializeGoogleTaskService() {
-		return false;
+	/**
+	 * Initialize Google Tasks with saved Google Information
+	 * 
+	 * @return
+	 * @throws NoActiveCredentialException
+	 */
+	boolean initializeGoogleTaskService() throws NoActiveCredentialException {
+		String userGoogleAccount = getSavedUserGoogleAccount();
+		if (userGoogleAccount == null) {
+			logger.log(Level.FINER, "User not authenticated with google.");
+			logExitMethod("initializeGoogleCalendarService");
+			return false;
+		}
+		googleTasks = new GoogleTasks(MhsGoogleOAuth2.getHttpTransport(),
+				MhsGoogleOAuth2.getJsonFactory(),
+				MhsGoogleOAuth2.getCredential());
+		assert (googleTasks != null);
+		logExitMethod("initializeGoogleCalendarService");
+		return true;
 	}
 
 	/**
@@ -287,18 +308,23 @@ public class Database {
 	 * @throws AuthenticationException
 	 * @throws ServiceException
 	 * @return true google calendar service is successfully initialized
+	 * @throws NoActiveCredentialException
 	 */
 	boolean initializeGoogleCalendarService() throws IOException,
-			AuthenticationException, ServiceException {
+			AuthenticationException, ServiceException,
+			NoActiveCredentialException {
 		logEnterMethod("initializeGoogleCalendarService");
 		String userGoogleAccount = getSavedUserGoogleAccount();
 		if (userGoogleAccount == null) {
 			logExitMethod("initializeGoogleCalendarService");
 			return false;
 		}
-		// TODO
-		// googleCalendar = new GoogleCalendarMhs(GOOGLE_CALENDAR_APP_NAME,
-		// userGoogleAccount, userGoogleAuthToken);
+		googleCalendar = new GoogleCalendarMhs(
+				MhsGoogleOAuth2.getHttpTransport(),
+				MhsGoogleOAuth2.getJsonFactory(),
+				MhsGoogleOAuth2.getCredential());
+
+		assert (googleCalendar != null);
 		logExitMethod("initializeGoogleCalendarService");
 		return true;
 	}
@@ -625,7 +651,9 @@ public class Database {
 		taskToAdd.setTaskCreated(UpdateTime);
 		taskToAdd.setTaskUpdated(UpdateTime);
 		taskToAdd.setTaskLastSync(null);
-		taskToAdd.setgCalTaskId(null);
+		taskToAdd.setGTaskId(null);
+		taskToAdd.setGcalTaskUid(null);
+		taskToAdd.setGcalTaskUid(null);
 	}
 
 	/**
@@ -729,7 +757,7 @@ public class Database {
 	private void preserveTaskNonEditableFields(Task updatedTaskToSave)
 			throws TaskNotFoundException {
 		Task currentTask = query(updatedTaskToSave.getTaskId());
-		updatedTaskToSave.setgCalTaskId(currentTask.getgCalTaskId());
+		updatedTaskToSave.setGcalTaskId(currentTask.getgCalTaskId());
 		updatedTaskToSave.setTaskCreated(currentTask.getTaskCreated());
 		updatedTaskToSave.setTaskLastSync(currentTask.getTaskLastSync());
 	}
@@ -858,7 +886,7 @@ public class Database {
 						.toString(), DateTime.now().plusYears(1).toString());
 			} catch (UnknownHostException e) {
 				syncronize.disableRemoteSync();
-			} catch (NullPointerException | ServiceException e) {
+			} catch (NullPointerException e) {
 				// SilentFailSync Policy
 				logger.log(Level.FINER, e.getMessage());
 			}

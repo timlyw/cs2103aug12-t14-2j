@@ -12,6 +12,7 @@ import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.DatabaseAlreadyInstantiatedException;
 import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
+import mhs.src.common.exceptions.NoActiveCredentialException;
 import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseFactory;
 
@@ -633,6 +634,12 @@ public class Processor {
 			} catch (UnknownHostException e) {
 				outputString = MESSAGE_NO_INTERNET;
 			} catch (ServiceException e) {
+				outputString = MESSAGE_NO_INTERNET;
+			} catch (IOException e) {
+				//TODO
+				outputString = MESSAGE_NO_INTERNET;
+			} catch (NoActiveCredentialException e) {
+				//TODO
 				outputString = MESSAGE_NO_INTERNET;
 			}
 			commandFeedback = outputString;

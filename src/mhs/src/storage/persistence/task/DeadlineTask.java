@@ -6,45 +6,25 @@ import mhs.src.common.HtmlCreator;
 
 import org.joda.time.DateTime;
 
-import com.google.gdata.data.calendar.CalendarEventEntry;
+import com.google.api.services.calendar.model.Event;
 
 /**
  * DeadlineTask
  * 
  * Deadline Task Object
  * 
- * - Inherits from base class Task - Task with an endDateTime - Syncs with
- * google calendar
+ * - Inherits from base class Task<br>
+ * - Task with an endDateTime<br>
+ * - Syncs with google calendar
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
 
 public class DeadlineTask extends Task {
 
+	private String gCalTaskId;
+	private String gCalTaskUid;
 	private DateTime endDateTime;
-
-	/**
-	 * Constructor with String taskCategory
-	 * 
-	 * @param taskId
-	 * @param taskName
-	 * @param taskCategory
-	 * @param endDt
-	 * @param createdDt
-	 * @param updatedDt
-	 * @param syncDt
-	 * @param gCalTaskId
-	 * @param isDone
-	 * @param isDeleted
-	 */
-	public DeadlineTask(int taskId, String taskName, String taskCategory,
-			DateTime endDt, DateTime createdDt, DateTime updatedDt,
-			DateTime syncDt, String gCalTaskId, boolean isDone,
-			boolean isDeleted) {
-		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
-				gCalTaskId, isDone, isDeleted);
-		setEndDateTime(endDt);
-	}
 
 	/**
 	 * Constructor with TaskCategory taskCategory
@@ -62,26 +42,27 @@ public class DeadlineTask extends Task {
 	 */
 	public DeadlineTask(int taskId, String taskName, TaskCategory taskCategory,
 			DateTime endDt, DateTime createdDt, DateTime updatedDt,
-			DateTime syncDt, String gCalTaskId, boolean isDone,
-			boolean isDeleted) {
+			DateTime syncDt, String gCalTaskId, String gCalTaskUid,
+			boolean isDone, boolean isDeleted) {
 		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
-				gCalTaskId, isDone, isDeleted);
+				isDone, isDeleted);
+		setGcalTaskId(gCalTaskId);
+		setGcalTaskUid(gCalTaskUid);
 		setEndDateTime(endDt);
 	}
 
 	/**
-	 * Constructor from Google CalendarEventEntry
+	 * Construct synced DeadlineTask from Google CalendarEventEntry
 	 * 
 	 * @param taskId
 	 * @param gCalEntry
 	 */
-	public DeadlineTask(int taskId, CalendarEventEntry gCalEntry,
-			DateTime syncDateTime) {
-		super(taskId, gCalEntry.getTitle().getPlainText(),
-				TaskCategory.DEADLINE, syncDateTime, syncDateTime,
-				syncDateTime, gCalEntry.getIcalUID(), false, false);
-		setEndDateTime(new DateTime(gCalEntry.getTimes().get(0).getEndTime()
-				.toString()));
+	public DeadlineTask(int taskId, Event gCalEntry, DateTime syncDateTime) {
+		super(taskId, gCalEntry.getSummary(), TaskCategory.DEADLINE,
+				syncDateTime, syncDateTime, syncDateTime, false, false);
+		setGcalTaskId(gCalEntry.getId());
+		setGcalTaskUid(gCalEntry.getICalUID());
+		setEndDateTime(new DateTime(gCalEntry.getEnd().toString()));
 	}
 
 	/**
@@ -91,15 +72,28 @@ public class DeadlineTask extends Task {
 		return endDateTime;
 	}
 
-	public void setStartDateTime(DateTime endDateTime) {
-	}
-
 	public DateTime getEndDateTime() {
 		return endDateTime;
 	}
 
 	public void setEndDateTime(DateTime endDateTime) {
 		this.endDateTime = endDateTime;
+	}
+
+	public String getgCalTaskId() {
+		return gCalTaskId;
+	}
+
+	public void setGcalTaskId(String gCalTaskId) {
+		this.gCalTaskId = gCalTaskId;
+	}
+
+	public String getgCalTaskUid() {
+		return gCalTaskUid;
+	}
+
+	public void setGcalTaskUid(String gCalTaskUid) {
+		this.gCalTaskUid = gCalTaskUid;
 	}
 
 	public String toString() {
@@ -149,9 +143,10 @@ public class DeadlineTask extends Task {
 
 		String boldTaskName = taskName;
 		String htmlString = timeString + ": " + boldTaskName;
-		
-		if(isDone()) {
-			htmlString = htmlCreator.color(htmlString + " [completed]", HtmlCreator.LIGHT_GRAY);
+
+		if (isDone()) {
+			htmlString = htmlCreator.color(htmlString + " [completed]",
+					HtmlCreator.LIGHT_GRAY);
 		}
 
 		return htmlString;
@@ -170,6 +165,5 @@ public class DeadlineTask extends Task {
 
 		return timeString;
 	}
-	
-	
+
 }

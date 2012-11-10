@@ -45,6 +45,9 @@ public class GoogleCalendar {
 	}
 	
 	public Event retrieveEvent(String eventId) throws IOException {
+		if(eventId == null) {
+			return null;
+		}
 		Event retrievedEvent = calService.events().get(calendarId, eventId).execute();
 		return retrievedEvent;
 	}
