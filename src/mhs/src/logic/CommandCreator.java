@@ -17,8 +17,8 @@ import java.util.Stack;
  */
 public class CommandCreator {
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command";
-	private static final String MESSAGE_NOTHING_TO_UNDO = "Nothing to undo";
-	private static final String MESSAGE_NOTHING_TO_REDO = "Nothing to redo";
+	// private static final String MESSAGE_NOTHING_TO_UNDO = "Nothing to undo";
+	// private static final String MESSAGE_NOTHING_TO_REDO = "Nothing to redo";
 
 	private static CommandCreator commandCreator;
 	private Command currentCommand;
@@ -49,26 +49,58 @@ public class CommandCreator {
 	 * @param userCommand
 	 * @return output String
 	 */
-	public String createCommand(CommandInfo userCommand) {
+	public void createCommand(CommandInfo userCommand) {
 		logEnterMethod("createCommand");
-		String userOutputString = new String();
 		assert (userCommand != null);
+		executeByTypeOfCommand(userCommand);
+		storeCurrentCommand();
+		logExitMethod("CommandCreator");
+	}
+
+	/**
+	 * Checks whether command is index/non index based and accordingly creates
+	 * it.
+	 * 
+	 * @param userCommand
+	 */
+	private void executeByTypeOfCommand(CommandInfo userCommand) {
 		if (userCommand.getCommandEnum() != null) {
 			if (userCommand.getIndex() != 0) {
-				userOutputString = executeCommandByIndex(userCommand);
+				executeCommandByIndex(userCommand);
 			} else {
-				userOutputString = executeCommand(userCommand);
-				// Add to undo stack if undoable
+				executeCommand(userCommand);
 			}
 		} else {
-			previousCommand.executeByIndex(userCommand.getIndex() - 1);
-			currentState = previousCommand.getCurrentState();
-			commandFeedback = previousCommand.getCommandFeedback();
-			pushToUndoStack(previousCommand);
+			executeByIndexOnly(userCommand);
 		}
+	}
+
+	/**
+	 * Store current command
+	 */
+	private void storeCurrentCommand() {
 		previousCommand = currentCommand;
-		logExitMethod("CommandCreator");
-		return userOutputString;
+	}
+
+	/**
+	 * Execute command by index only
+	 * 
+	 * @param userCommand
+	 */
+	private void executeByIndexOnly(CommandInfo userCommand) {
+		previousCommand.executeByIndex(userCommand.getIndex() - 1);
+		updateDisplay(previousCommand);
+		pushToUndoStack(previousCommand);
+	}
+
+	/**
+	 * Updates Display
+	 * 
+	 * @param inputcommand
+	 */
+	private void updateDisplay(Command inputcommand) {
+		currentState = inputcommand.getCurrentState();
+		commandFeedback = inputcommand.getCommandFeedback();
 	}
 
 	/**
@@ -79,7 +111,7 @@ public class CommandCreator {
 	 * @return output String
 	 */
 	private String executeCommand(CommandInfo userCommand) {
-		logger.entering(getClass().getName(), this.getClass().getName());
+		logEnterMethod("executeMethod");
 		String userOutputString = new String();
 		switch (userCommand.getCommandEnum()) {
 		case add:
@@ -115,10 +147,10 @@ public class CommandCreator {
 			currentCommand.executeCommand();
 			break;
 		case undo:
-			userOutputString = undoLastCommand();
+			undoLastCommand();
 			break;
 		case redo:
-			userOutputString = redoLastCommand();
+			redoLastCommand();
 			break;
 		case mark:
 			currentCommand = new CommandMark(userCommand);
@@ -144,21 +176,25 @@ public class CommandCreator {
 		}
 		updateDisplayIndex(userCommand);
 		pushToUndoStack(currentCommand);
-		currentState = currentCommand.getCurrentState();
-		commandFeedback = currentCommand.getCommandFeedback();
-		logger.exiting(getClass().getName(), this.getClass().getName());
+		updateDisplay(currentCommand);
+		logExitMethod("executeCommand");
 		return userOutputString;
 	}
 
-	private String redoLastCommand() {
-		String userOutputString = new String();
+	/**
+	 * Redo the last command
+	 * 
+	 * @return
+	 */
+	private void redoLastCommand() {
+		logEnterMethod("redoLastCommand");
 		if (redoListCommands.isEmpty()) {
-			userOutputString = MESSAGE_NOTHING_TO_REDO;
+			// MESSAGE_NOTHING_TO_REDO;
 		} else {
 			Command redoCommand = redoListCommands.pop();
 			redoCommand.redo();
 		}
-		return userOutputString;
+		logExitMethod("redoLastCommand");
 	}
 
 	/**
@@ -195,18 +231,16 @@ public class CommandCreator {
 	 * 
 	 * @return
 	 */
-	private String undoLastCommand() {
+	private void undoLastCommand() {
 		logEnterMethod("undoLastCommand");
-		String userOutputString;
 		if (undoListCommands.isEmpty()) {
-			userOutputString = MESSAGE_NOTHING_TO_UNDO;
+			// MESSAGE_NOTHING_TO_UNDO;
 		} else {
 			Command undoCommand = undoListCommands.pop();
 			redoListCommands.push(undoCommand);
-			userOutputString = undoCommand.undo();
+			undoCommand.undo();
 		}
 		logExitMethod("undoLastCommand");
-		return userOutputString;
 	}
 
 	/**
@@ -219,8 +253,7 @@ public class CommandCreator {
 	private String executeCommandByIndex(CommandInfo userCommand) {
 		logEnterMethod("executeCommandByIndex");
 		String userOutputString = new String();
-		int local_index = userCommand.getIndex();
-		int index = local_index - 1;
+		int index = userCommand.getIndex() - 1;
 		switch (userCommand.getCommandEnum()) {
 		case add:
 			currentCommand = new CommandAdd();
@@ -251,16 +284,25 @@ public class CommandCreator {
 			break;
 		}
 		pushToUndoStack(currentCommand);
-		currentState = currentCommand.getCurrentState();
-		commandFeedback = currentCommand.getCommandFeedback();
+		updateDisplay(currentCommand);
 		logExitMethod("executeCommandByIndex");
 		return userOutputString;
 	}
 
+	/**
+	 * Return current state
+	 * 
+	 * @return
+	 */
 	public String getState() {
 		return currentState;
 	}
 
+	/**
+	 * Return Feedback string
+	 * 
+	 * @return
+	 */
 	public String getFeedback() {
 		return commandFeedback;
 	}
