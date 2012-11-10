@@ -206,6 +206,11 @@ public class Database {
 		logExitMethod("syncronizeDatabases");
 	}
 
+	/**
+	 * Checks if internet connection to remote services are active
+	 *  
+	 * @return true if connection if active
+	 */
 	private boolean isRemoteServiceConnectivityActive() {
 		try {
 			URL remoteStorageServiceUrl = new URL(URL_REMOTE_SERVICE_GOOGLE);
@@ -284,7 +289,7 @@ public class Database {
 		logEnterMethod("loginUserGoogleAccount");
 		try {
 			MhsGoogleOAuth2.getInstance();
-			MhsGoogleOAuth2.authorizeCredentialAndStoreInCredentialStore();
+			MhsGoogleOAuth2.authorizeCredentialAndStoreInCredentialStore();			
 		} catch (Exception e) {
 			syncronize.disableRemoteSync();
 		}
