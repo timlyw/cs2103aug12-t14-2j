@@ -35,17 +35,24 @@ public class SystemTest {
 	@Test
 	public void testExecuteCommand() {
 		processor = Processor.getProcessor(TEST_DATABASE_JSON);
-		processor.setLineLimit(20);
 		processor.setDebugMode();
 		processor.clearDatabase();
+		initializeLists();
+		processor.setLineLimit(20);
 		startTests();
+	}
+
+	private void initializeLists() {
+		processor.setCommand("home");
+		processor.executeCommand();
 	}
 
 	private void startTests() {
 
 		BufferedReader readFile;
 		try {
-			readFile = new BufferedReader(new FileReader("SystemTestFiles/inputfile.txt"));
+			readFile = new BufferedReader(new FileReader(
+					"SystemTestFiles/inputfile.txt"));
 			String currentLine;
 			while ((currentLine = readFile.readLine()) != null) {
 				processor.setCommand(currentLine);

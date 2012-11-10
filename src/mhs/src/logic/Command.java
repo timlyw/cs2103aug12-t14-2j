@@ -567,7 +567,6 @@ public abstract class Command {
 	 * @return
 	 */
 	public String getCommandFeedback() {
-		System.out.println("test 10" + commandFeedback);
 		return commandFeedback;
 	}
 
@@ -578,7 +577,6 @@ public abstract class Command {
 	 */
 	public String getCurrentState() {
 		String state = refreshLastState();
-		System.out.println("test 11" + state);
 		return state;
 	}
 
@@ -588,7 +586,6 @@ public abstract class Command {
 	 * @return
 	 */
 	protected static String refreshLastState() {
-		System.out.println("refresh state");
 		String lastStateString = new String();
 		List<Task> resultList;
 		try {
@@ -597,7 +594,6 @@ public abstract class Command {
 				resultList = queryTask(lastQueryCommandInfo);
 				break;
 			case QUERY_BY_NAME:
-				System.out.println("testing");
 				resultList = queryTask(lastQueryCommandInfo);
 				break;
 			case QUERY_BY_CATEGORY:
