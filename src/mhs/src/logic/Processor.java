@@ -7,15 +7,15 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import org.joda.time.LocalDate;
-
 import mhs.src.common.FileHandler;
-import mhs.src.common.MhsLogger;
-import mhs.src.storage.Database;
-import mhs.src.storage.DatabaseFactory;
 import mhs.src.common.HtmlCreator;
+import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.DatabaseAlreadyInstantiatedException;
 import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
+import mhs.src.storage.Database;
+import mhs.src.storage.DatabaseFactory;
+
+import org.joda.time.DateTime;
 
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
@@ -29,6 +29,7 @@ import com.google.gdata.util.ServiceException;
  */
 public class Processor {
 
+	private static final String DATE_TIME_FORMAT = "dd-MM-yy HH-mm";
 	private static final String TEST_FILE_CLOSE_HTML = "</body></html>";
 	private static final String TEST_FILE_START_HTML = "<html><body>";
 	private static final String MESSAGE_LOGOUT_FAIL = "Some error occurred during logout!";
@@ -55,8 +56,8 @@ public class Processor {
 	private static final String MESSAGE_HI_USERNAME = "Hi %1$s";
 	private static final String MESSAGE_FEEDBACK = "feedback: %1$s";
 
-	private static final String FILE_FEEDBACK = "SystemTestFiles/feedback(%1$s).txt";
-	private static final String FILE_STATE = "SystemTestFiles/state(%1$s).txt";
+	private static final String FILE_FEEDBACK = "SystemTestFiles/feedback-%1$s.html";
+	private static final String FILE_STATE = "SystemTestFiles/state-%1$s.html";
 
 	private static final int HELP_ADD = 1;
 	private static final int HELP_EDIT = 2;
@@ -159,12 +160,12 @@ public class Processor {
 	 * Initates out files for system testing
 	 */
 	private void initiateFile() {
-		feedbackFile = new FileHandler(FILE_FEEDBACK);
-		stateFile = new FileHandler(FILE_STATE);
-		feedbackFile.writeToFile(String.format(TEST_FILE_START_HTML,
-				LocalDate.now()));
-		stateFile.writeToFile(String.format(TEST_FILE_START_HTML,
-				LocalDate.now()));
+		feedbackFile = new FileHandler(String.format(FILE_FEEDBACK, DateTime
+				.now().toString(DATE_TIME_FORMAT)));
+		stateFile = new FileHandler(String.format(FILE_STATE, DateTime.now()
+				.toString(DATE_TIME_FORMAT)));
+		feedbackFile.writeToFile(TEST_FILE_START_HTML);
+		stateFile.writeToFile(TEST_FILE_START_HTML);
 	}
 
 	/**
@@ -474,7 +475,6 @@ public class Processor {
 			showHelp();
 			break;
 		default:
-			System.out.println("test here");
 			isCommandQueried = true;
 			executeNonIndexCommand(userCommand);
 			break;

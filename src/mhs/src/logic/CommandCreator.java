@@ -68,7 +68,6 @@ public class CommandCreator {
 			if (userCommand.getIndex() != 0) {
 				executeCommandByIndex(userCommand);
 			} else {
-				System.out.println("test 4");
 				executeCommand(userCommand);
 			}
 		} else {
@@ -100,14 +99,8 @@ public class CommandCreator {
 	 * @param inputcommand
 	 */
 	private void updateDisplay(Command inputcommand) {
-		System.out.println("test 7");
-		System.out.println("in " + inputcommand.getCurrentState());
-
-		System.out.println("in command " + inputcommand);
 		currentState = inputcommand.getCurrentState();
-		System.out.println("test 7.5");
 		commandFeedback = inputcommand.getCommandFeedback();
-		System.out.println("test 8");
 	}
 
 	/**
@@ -122,10 +115,8 @@ public class CommandCreator {
 		String userOutputString = new String();
 		switch (userCommand.getCommandEnum()) {
 		case add:
-			System.out.println("test 5");
 			currentCommand = new CommandAdd(userCommand);
 			currentCommand.executeCommand();
-			System.out.println("test 6");
 			break;
 		case remove:
 			currentCommand = new CommandRemove(userCommand);
