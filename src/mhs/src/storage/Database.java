@@ -15,7 +15,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import mhs.src.common.DateTimeHelper;
 import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.InvalidTaskFormatException;
 import mhs.src.common.exceptions.TaskNotFoundException;
@@ -51,7 +50,6 @@ public class Database {
 	static Syncronize syncronize;
 	static TaskValidator taskValidator;
 	private static TaskRecordFile taskRecordFile;
-	static DateTimeHelper dateTimeHelper;
 	static ConfigFile configFile;
 
 	static DateTime syncStartDateTime;
