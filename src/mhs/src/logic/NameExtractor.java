@@ -23,7 +23,8 @@ public class NameExtractor {
 	private static final String REGEX_QUOTATION = "\"";
 
 	/**
-	 * These are the enum that are keywords relating to date/time that should not be used in name parsing.
+	 * These are the enum that are keywords relating to date/time that should
+	 * not be used in name parsing.
 	 */
 	private enum SpecialKeyWords {
 		at, by, from, to, on;
@@ -42,8 +43,8 @@ public class NameExtractor {
 		nameList = new LinkedList<String>();
 		counter = 0;
 
-		logExitMethod("NameExtractor");	
-		}
+		logExitMethod("NameExtractor");
+	}
 
 	public static NameExtractor getNameExtractor() {
 		if (nameExtractor == null) {
@@ -63,38 +64,38 @@ public class NameExtractor {
 	public boolean checkNameFormat(String parseString) {
 		logEnterMethod("checkNameFormat");
 
+		if (parseString == null) {
+			return false;
+		}
 		DateExtractor dateExtractor = DateExtractor.getDateExtractor();
 		TimeExtractor timeExtractor = TimeExtractor.getTimeExtractor();
-		CommandExtractor commandExtractor = CommandExtractor
-				.getCommandExtractor();
-		assert (parseString != null);
-		if (!(timeExtractor.checkTimeFormat(parseString)
-				|| dateExtractor.checkDateFormat(parseString) || commandExtractor
-					.isCommand(parseString))) {
+		if (!(timeExtractor.checkTimeFormat(parseString) || dateExtractor
+				.checkDateFormat(parseString))) {
 			if (!isSpecialKeyWord(parseString)) {
-				logger.exiting(getClass().getName(), this.getClass().getName());
+				logExitMethod("checkNameFormat");
 				return true;
 			}
 		}
-		logExitMethod("checkNameFormat");	
+		logExitMethod("checkNameFormat");
 		return false;
 
 	}
 
 	/**
 	 * This is a method to check if a string is a special key word .
+	 * 
 	 * @param printString
 	 * @return
 	 */
 	private boolean isSpecialKeyWord(String printString) {
 		logEnterMethod("isSpecialKeyWord");
 		for (SpecialKeyWords k : SpecialKeyWords.values()) {
-			if (printString.equals(k.name())) {
-				logger.exiting(getClass().getName(), this.getClass().getName());
+			if (printString.equalsIgnoreCase(k.name())) {
+				logExitMethod("isSpecialKeyWord");
 				return true;
 			}
 		}
-		logExitMethod("isSpecialKeyWord");	
+		logExitMethod("isSpecialKeyWord");
 		return false;
 	}
 
@@ -106,43 +107,78 @@ public class NameExtractor {
 	 * 
 	 * @return Returns a string with the full task name.
 	 */
-	public Queue<String> processName(String parseString) {
-		logEnterMethod("processName");
-		assert (parseString != null);
+	public Queue<String> extractName(String parseString) {
+		logEnterMethod("extractName");
+		if (parseString == null) {
+			return null;
+		}
 		try {
 			String[] processArray = parseString.split(REGEX_WHITE_SPACE);
-			Queue<String> nameQueue = new LinkedList<String>();
-
 			for (counter = 0; counter < processArray.length; counter++) {
-
+				if (isCommandAtFirstLocation(processArray)) {
+					counter++;
+				}
 				if (checkNameFormat(processArray[counter])) {
-					nameQueue = setUpNameQueue(processArray);
-					String name = "";
-					while (!nameQueue.isEmpty()) {
-						String command = nameQueue.poll();
-						name += command + REGEX_BLANK;
-					}
+					String name = processName(processArray);
 					addNameToList(name);
 				}
-
 			}
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return null;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			logger.log(Level.FINER, e.getMessage());
+			return null;
 		}
-		logExitMethod("processName");	
+		logExitMethod("extractName");
 		return nameList;
 	}
 
 	/**
-	 * Method to format the name and add it to the list. 
+	 * Method to process the name from the array.
+	 * 
+	 * @param processArray
+	 *            Array to be parsed.
+	 * 
+	 * @return Returns the first name in the array.
+	 */
+	private String processName(String[] processArray) {
+		logEnterMethod("processName");
+		Queue<String> nameQueue;
+		nameQueue = setUpNameQueue(processArray);
+		String name = "";
+		while (!nameQueue.isEmpty()) {
+			String command = nameQueue.poll();
+			name += command + REGEX_BLANK;
+		}
+		logExitMethod("processName");
+		return name;
+	}
+
+	/**
+	 * Method to check if the first location is a command.
+	 * 
+	 * @param processArray
+	 * @return
+	 */
+	private boolean isCommandAtFirstLocation(String[] processArray) {
+		logEnterMethod("isCommandAtFirstLocation");
+		logExitMethod("isCommandAtFirstLocation");
+		return CommandExtractor.getCommandExtractor().checkCommand(
+				processArray[0])
+				&& counter == 0;
+	}
+
+	/**
+	 * Method to format the name and add it to the list.
+	 * 
 	 * @param name
 	 */
 	private void addNameToList(String name) {
 		logEnterMethod("addNameToList");
 		name = name.trim();
 		nameList.add(name);
-		logExitMethod("addNameToList");	
+		logExitMethod("addNameToList");
 	}
 
 	/**
@@ -153,9 +189,12 @@ public class NameExtractor {
 	 * 
 	 * @return Returns the string with everything within quotations removed
 	 */
-	public String processQuotationMarks(String parseString) {
-		logEnterMethod("processQuotationMarks");
-		assert (parseString != null);
+	public String extractNameInQuotationMarks(String parseString) {
+		logEnterMethod("extractNameInQuotationMarks");
+
+		if (parseString == null) {
+			return null;
+		}
 		String name = "";
 		nameList = new LinkedList<String>();
 		if (hasQuotations(parseString)) {
@@ -171,40 +210,39 @@ public class NameExtractor {
 				}
 			}
 		}
-		try {
-			parseString = parseString.trim();
-		} catch (NullPointerException e) {
-			logger.log(Level.FINER, e.getMessage());
-			return parseString;
-		}
-		logExitMethod("processQuotationMarks");	
+
+		logExitMethod("extractNameInQuotationMarks");
 		return parseString;
 	}
 
 	/**
 	 * Method to set the name that is within quotation marks.
 	 * 
-	 * @param name This is the name within quotation marks.
+	 * @param name
+	 *            This is the name within quotation marks.
 	 */
 	private void setNameInQuotationMarks(String name) {
 		logEnterMethod("setNameInQuotationMarks");
 		name = name.replace(REGEX_QUOTATION, "");
 		addNameToList(name);
-		logExitMethod("setNameInQuotationMarks");	
+		logExitMethod("setNameInQuotationMarks");
 	}
 
 	/**
-	 * Method to remove the string within quotation marks from the main string to be parsed. 
+	 * Method to remove the string within quotation marks from the main string
+	 * to be parsed.
 	 * 
-	 * @param printString This is the string to be parsed.
-	 * @param name This is the name within quotation marks.
+	 * @param printString
+	 *            This is the string to be parsed.
+	 * @param name
+	 *            This is the name within quotation marks.
 	 * 
-	 * @return Returns the printString with the name removed. 
+	 * @return Returns the printString with the name removed.
 	 */
 	private String removeNameInQuotationMarks(String printString, String name) {
 		logEnterMethod("removeNameInQuotationMarks");
 		printString = printString.replace(name, "");
-		logExitMethod("removeNameInQuotationMarks");	
+		logExitMethod("removeNameInQuotationMarks");
 		return printString;
 	}
 
@@ -220,13 +258,13 @@ public class NameExtractor {
 	private Queue<String> setUpNameQueue(String[] processArray) {
 		logEnterMethod("setUpNameQueue");
 		int j;
-		
+
 		Queue<String> commandQueue = new LinkedList<String>();
 		for (j = counter; j < processArray.length; j++) {
 
 			j = addSpecialKeyWordsToQueue(processArray, j, commandQueue);
-			j = addIndexToQueue(processArray, j, commandQueue );
-			
+			j = addIndexToQueue(processArray, j, commandQueue);
+
 			if (checkNameFormat(processArray[j])) {
 				commandQueue.add(processArray[j]);
 			} else {
@@ -234,21 +272,24 @@ public class NameExtractor {
 			}
 		}
 		counter = j - 1;
-		logExitMethod("setUpNameQueue");	
+		logExitMethod("setUpNameQueue");
 		return commandQueue;
 	}
 
 	/**
 	 * Method to handle the case in which a number is added to the name.
 	 * 
-	 * @param processArray The array of strings that is being processed.
-	 * @param j The index of where the array is now. 
-	 * @param commandQueue The queue of names.
+	 * @param processArray
+	 *            The array of strings that is being processed.
+	 * @param j
+	 *            The index of where the array is now.
+	 * @param commandQueue
+	 *            The queue of names.
 	 * 
-	 * @return Returns the new index of the processArray. 
+	 * @return Returns the new index of the processArray.
 	 */
 	private int addIndexToQueue(String[] processArray, int j,
-			Queue<String> commandQueue ){
+			Queue<String> commandQueue) {
 		logEnterMethod("setUpNameQueue");
 		DateExtractor dateExtractor = DateExtractor.getDateExtractor();
 		if (isInteger(processArray[j])) {
@@ -257,33 +298,36 @@ public class NameExtractor {
 					commandQueue.add(processArray[j]);
 					j++;
 				}
-				
+
 			} catch (ArrayIndexOutOfBoundsException e) {
 				logger.log(Level.FINER, e.getMessage());
 				commandQueue.add(processArray[j]);
 			}
 		}
-		logExitMethod("setUpNameQueue");	
+		logExitMethod("setUpNameQueue");
 
 		return j;
 	}
-	
+
 	/**
-	 * Method to handle the case where special key words are included in the name. 
-	 *  
-	 * @param processArray The array of strings that is being processed.
-	 * @param j The index of where the array is now. 
-	 * @param commandQueue The queue of names.
+	 * Method to handle the case where special key words are included in the
+	 * name.
 	 * 
-	 * @return Returns the new index of the processArray. 
+	 * @param processArray
+	 *            The array of strings that is being processed.
+	 * @param j
+	 *            The index of where the array is now.
+	 * @param commandQueue
+	 *            The queue of names.
+	 * 
+	 * @return Returns the new index of the processArray.
 	 */
 	private int addSpecialKeyWordsToQueue(String[] processArray, int j,
 			Queue<String> commandQueue) {
 		logEnterMethod("addSpecialKeyWordsToQueue");
 
 		for (SpecialKeyWords k : SpecialKeyWords.values()) {
-			if (processArray[j].equalsIgnoreCase(k.name())
-					&& !processArray[j].equalsIgnoreCase(k.to.name())) {
+			if (isSpecialKeyWordExcludingTo(processArray, j, k)) {
 				try {
 					if (checkNameFormat(processArray[j + 1])) {
 						commandQueue.add(processArray[j]);
@@ -295,8 +339,24 @@ public class NameExtractor {
 				}
 			}
 		}
-		logExitMethod("addSpecialKeyWordsToQueue");	
+		logExitMethod("addSpecialKeyWordsToQueue");
 		return j;
+	}
+
+	/**
+	 * Check if the the string is a special key word excluding to.
+	 * 
+	 * @param processArray
+	 * @param j
+	 * @param k
+	 * @return
+	 */
+	private boolean isSpecialKeyWordExcludingTo(String[] processArray, int j,
+			SpecialKeyWords k) {
+		logEnterMethod("isSpecialKeyWordExcludingTo");
+		logExitMethod("isSpecialKeyWordExcludingTo");
+		return processArray[j].equalsIgnoreCase(k.name())
+				&& !processArray[j].equalsIgnoreCase(SpecialKeyWords.to.name());
 	}
 
 	/**
@@ -311,10 +371,10 @@ public class NameExtractor {
 		logEnterMethod("isInteger");
 		try {
 			Integer.parseInt(printString);
-			logExitMethod("isInteger");	
+			logExitMethod("isInteger");
 			return true;
 		} catch (NumberFormatException e) {
-			logExitMethod("isInteger");	
+			logExitMethod("isInteger");
 			return false;
 		}
 	}
@@ -334,14 +394,14 @@ public class NameExtractor {
 			Matcher matcher = Pattern.compile(REGEX_QUOTATION_MARKS).matcher(
 					printString);
 			if (matcher.find()) {
-				logExitMethod("hasQuotations");	
+				logExitMethod("hasQuotations");
 				return true;
 			}
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return false;
 		}
-		logExitMethod("hasQuotations");	
+		logExitMethod("hasQuotations");
 		return false;
 	}
 

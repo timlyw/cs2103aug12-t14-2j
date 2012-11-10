@@ -147,50 +147,15 @@ public class DateExtractor {
 	 * 
 	 * @return Returns a local date type with the day,month, year set.
 	 */
-	public Queue<LocalDate> processDate(String parseString) {
+	public Queue<LocalDate> extractDate(String parseString) {
 
-		logEnterMethod("processDate");
-		assert (parseString != null);
-		String dateCommand;
+		logEnterMethod("extractDate");
+		if (parseString == null) {
+			return null;
+		}
 		String[] processArray = setEnvironment(parseString);
 		try {
-			for (counter = 0; counter < processArray.length; counter++) {
-				resetDateParameterFlags();
-
-				if (checkDateFormat(processArray[counter])) {
-					dateQueue = setUpDateQueue(processArray);
-
-					validateDateQueueParameters();
-					if (!dateQueue.isEmpty()) {
-						while (!dateQueue.isEmpty()) {
-							dateCommand = dateQueue.poll();
-							uniqueDateFlag = false;
-							if (isInteger(dateCommand)) {
-								setIntegerDate(dateCommand);
-							}
-
-							else if (isDateStandardFormat(dateCommand)
-									&& !dateFlag) {
-								setFullDateFormat(dateCommand);
-							}
-
-							else if (isDateWithMonthSpelled(dateCommand)
-									&& !monthFlag) {
-								setStringMonth(dateCommand);
-							}
-
-							else if (isDayOfWeek(dateCommand) && !dayFlag) {
-								setStringDay(dateCommand);
-							}
-
-							else if (isUniqueDateType(dateCommand)) {
-								setUniqueDate(dateCommand);
-							}
-						}
-						addDateToDateList();
-					}
-				}
-			}
+			processDate(processArray);
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return dateList;
@@ -198,9 +163,64 @@ public class DateExtractor {
 			logger.log(Level.FINER, e.getMessage());
 			return dateList;
 		}
-		logExitMethod("processDate");
+		logExitMethod("extractDate");
 		return dateList;
 
+	}
+
+	/**
+	 * Method to process the array and set the date values in it. 
+	 * @param processArray
+	 */
+	private void processDate(String[] processArray) {
+		logEnterMethod("processDate");
+		String dateCommand;
+		for (counter = 0; counter < processArray.length; counter++) {
+			resetDateParameterFlags();
+
+			if (checkDateFormat(processArray[counter])) {
+				dateQueue = setUpDateQueue(processArray);
+
+				validateDateQueueParameters();
+				if (!dateQueue.isEmpty()) {
+					while (!dateQueue.isEmpty()) {
+						dateCommand = dateQueue.poll();
+						uniqueDateFlag = false;
+						extractDateFromQueue(dateCommand);
+					}
+					addDateToDateList();
+				}
+			}
+		}
+		logExitMethod("processDate");
+	}
+
+	/**
+	 * Method to extract the date from a queue.
+	 * @param dateCommand
+	 */
+	private void extractDateFromQueue(String dateCommand) {
+		logEnterMethod("extractDateFromQueue");
+		if (isInteger(dateCommand)) {
+			setIntegerDate(dateCommand);
+		}
+
+		else if (isDateStandardFormat(dateCommand) && !dateFlag) {
+			setFullDateFormat(dateCommand);
+		}
+
+		else if (isDateWithMonthSpelled(dateCommand) && !monthFlag) {
+			setStringMonth(dateCommand);
+		}
+
+		else if (isDayOfWeek(dateCommand) && !dayFlag) {
+			setStringDay(dateCommand);
+		}
+
+		else if (isUniqueDateType(dateCommand)) {
+			setUniqueDate(dateCommand);
+		}
+		logExitMethod("extractDateFromQueue");
 	}
 
 	/**
@@ -209,7 +229,7 @@ public class DateExtractor {
 	private void addDateToDateList() {
 		logEnterMethod("addDateToDateList");
 		if (!uniqueDateFlag) {
-			if (!dayFlag && monthFlag) {
+			if (!dayFlag) {
 				setDateRange();
 			}
 
@@ -423,6 +443,7 @@ public class DateExtractor {
 
 		else if (!dayFlag && !monthFlag && yearFlag) {
 			setOneYearPeriod();
+
 		}
 
 		addDateRangesToList();
@@ -451,7 +472,7 @@ public class DateExtractor {
 	private void setOneYearPeriod() {
 		logEnterMethod("setOneYearPeriod");
 		startDate = new LocalDate(year, 1, 1);
-		endDate = startDate.plusYears(1);
+		endDate = startDate.plusYears(1).minusDays(1);
 		logExitMethod("setOneYearPeriod");
 	}
 
@@ -520,6 +541,7 @@ public class DateExtractor {
 
 	/**
 	 * Method to check if dateCommand is "this weekend".
+	 * 
 	 * @param dateCommand
 	 * @return
 	 */
@@ -532,6 +554,7 @@ public class DateExtractor {
 
 	/**
 	 * Method to check if dateCommand is "this year".
+	 * 
 	 * @param dateCommand
 	 * @return
 	 */
@@ -544,6 +567,7 @@ public class DateExtractor {
 
 	/**
 	 * Method to check if dateCommand is " this month".
+	 * 
 	 * @param dateCommand
 	 * @return
 	 */
@@ -554,9 +578,9 @@ public class DateExtractor {
 				+ REGEX_SPACE + UniqueDateTypeKeyWord.month.name());
 	}
 
-
 	/**
 	 * Method to check if dateCommand is "this year".
+	 * 
 	 * @param dateCommand
 	 * @return
 	 */
@@ -569,6 +593,7 @@ public class DateExtractor {
 
 	/**
 	 * Method to check if dateCommand is "tomorrow".
+	 * 
 	 * @param dateCommand
 	 * @return
 	 */
@@ -581,6 +606,7 @@ public class DateExtractor {
 
 	/**
 	 * Method to check if dateCommand is "today".
+	 * 
 	 * @param dateCommand
 	 * @return
 	 */
@@ -771,20 +797,23 @@ public class DateExtractor {
 	/**
 	 * Method to set a day in the next week.
 	 * 
-	 * @param parameters Current day of the week.
+	 * @param parameters
+	 *            Current day of the week.
 	 * 
 	 * @return Returns the day of the month
 	 */
 	private int setDayInNextWeek(int parameters) {
 		logEnterMethod("setDayInNextWeek");
 		logExitMethod("setDayInNextWeek");
-		return NUMBER_OF_DAYS_IN_A_WEEK - now.getDayOfWeek() + parameters + now
-				.getDayOfMonth();	}
+		return NUMBER_OF_DAYS_IN_A_WEEK - now.getDayOfWeek() + parameters
+				+ now.getDayOfMonth();
+	}
 
 	/**
 	 * Method to set a day in the same week.
 	 * 
-	 * @param parameters Current day of the week.
+	 * @param parameters
+	 *            Current day of the week.
 	 * 
 	 * @return Returns the day of the month.
 	 */
@@ -808,7 +837,7 @@ public class DateExtractor {
 		int dayOfWeek = 0;
 
 		for (DayKeyWord d : DayKeyWord.values()) {
-			if (command.equals(d.name())) {
+			if (command.equalsIgnoreCase(d.name())) {
 				dayOfWeek = d.dayOfWeek;
 			}
 		}
@@ -828,8 +857,8 @@ public class DateExtractor {
 	private int getMontParameters(String command) {
 		logEnterMethod("getMontParameters");
 		for (MonthKeyWord m : MonthKeyWord.values()) {
-			if (command.equals(m.name())) {
-				logger.exiting(getClass().getName(), this.getClass().getName());
+			if (command.equalsIgnoreCase(m.name())) {
+				logExitMethod("getMontParameters");
 				return m.monthOfYear;
 			}
 		}
@@ -876,7 +905,7 @@ public class DateExtractor {
 	private boolean isNumberOfDaysInMonth(int number) {
 		logEnterMethod("isNumberOfDaysInMonth");
 		if (number > 0 && number < 32) {
-			logger.exiting(getClass().getName(), this.getClass().getName());
+			logExitMethod("isNumberOfDaysInMonth");
 			return true;
 		}
 		logExitMethod("isNumberOfDaysInMonth");
@@ -895,7 +924,7 @@ public class DateExtractor {
 	private boolean isMonthFormatInt(int number) {
 		logEnterMethod("isMonthFormatInt");
 		if (number > 0 && number < 13) {
-			logger.exiting(getClass().getName(), this.getClass().getName());
+			logExitMethod("isMonthFormatInt");
 			return true;
 		}
 		logExitMethod("isMonthFormatInt");
@@ -914,7 +943,7 @@ public class DateExtractor {
 		logEnterMethod("isYearFormat");
 		int year = now.getYear();
 		if (number >= year && number < 9999) {
-			logger.exiting(getClass().getName(), this.getClass().getName());
+			logExitMethod("isYearFormat");
 			return true;
 		}
 		logExitMethod("isYearFormat");
@@ -1006,7 +1035,7 @@ public class DateExtractor {
 	private boolean isDayOfWeek(String printString) {
 		logEnterMethod("isDayOfWeek");
 		for (DayKeyWord d : DayKeyWord.values()) {
-			if (printString.equals(d.name())) {
+			if (printString.equalsIgnoreCase(d.name())) {
 				logExitMethod("isDayOfWeek");
 				return true;
 			}
@@ -1027,7 +1056,7 @@ public class DateExtractor {
 	private boolean isDateWithMonthSpelled(String printString) {
 		logEnterMethod("isDateWithMonthSpelled");
 		for (MonthKeyWord m : MonthKeyWord.values()) {
-			if (printString.equals(m.name())) {
+			if (printString.equalsIgnoreCase(m.name())) {
 				logExitMethod("isDateWithMonthSpelled");
 				return true;
 			}

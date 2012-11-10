@@ -85,10 +85,11 @@ public class CommandParser {
 	 */
 	public CommandInfo getParsedCommand(String parseString) {
 		logEnterMethod("getParsedCommand");
-
-		assert (parseString != null);
+		
+		if(parseString == null){
+			return null;
+		}
 		parseString = setEnvironment(parseString);
-
 		setCommand(parseString);
 		getIndexAtFirstLocation(parseString);
 		parseString = setNameInQuotationMarks(parseString);
@@ -100,7 +101,6 @@ public class CommandParser {
 		logExitMethod("getParsedCommand");
 		return setUpCommandObject(command, taskName, edittedName, startDate,
 				startTime, endDate, endTime, index);
-
 	}
 
 	/**
@@ -142,17 +142,8 @@ public class CommandParser {
 
 			if (processArray.length > 1) {
 
-				if (command.equals(COMMAND_REMOVE)
-						|| command.equals(COMMAND_EDIT)
-						|| command.equals(COMMAND_MARK)
-						|| command.equals(COMMAND_RENAME)
-						|| command.equals(COMMAND_UNMARK)) {
-					if (taskName == null) {
-						if (isInteger(processArray[1])) {
-							index = Integer.parseInt(processArray[1]);
-							taskNameFlag = true;
-						}
-					}
+				if (isIndexExpectedWithCommand()) {
+					setIndexAtSecondLocation(processArray);
 
 				}
 			}
@@ -165,6 +156,39 @@ public class CommandParser {
 		}
 
 		logExitMethod("setIndex");
+	}
+
+	/**
+	 * Method to set the index at the second location of the array.
+	 * 
+	 * @param processArray
+	 */
+	private void setIndexAtSecondLocation(String[] processArray) {
+		logEnterMethod("setIndexAtSecondLocation");
+		assert(processArray.length >1);
+		if (taskName == null) {
+			if (isInteger(processArray[1])) {
+				index = Integer.parseInt(processArray[1]);
+				taskNameFlag = true;
+			}
+		}
+		logExitMethod("setIndexAtSecondLocation");
+
+	}
+
+	/**
+	 * Method to check if the command matches a command which expects an index.
+	 * @return
+	 */
+	private boolean isIndexExpectedWithCommand() {
+		logEnterMethod("isIndexExpectedWithCommand");
+		logExitMethod("isIndexExpectedWithCommand");
+		return command.equalsIgnoreCase(COMMAND_REMOVE)
+				|| command.equalsIgnoreCase(COMMAND_EDIT)
+				|| command.equalsIgnoreCase(COMMAND_MARK)
+				|| command.equalsIgnoreCase(COMMAND_RENAME)
+				|| command.equalsIgnoreCase(COMMAND_UNMARK);
+		
 	}
 
 	/**
@@ -252,26 +276,36 @@ public class CommandParser {
 	private void setDate(String parseString) {
 		logEnterMethod("setDate");
 		Queue<LocalDate> dateList;
-		dateList = dateParser.processDate(parseString);
+		dateList = dateParser.extractDate(parseString);
 		try {
 			if (dateList.isEmpty()) {
 				logExitMethod("setDate");
 				return;
 			}
-			while (!dateList.isEmpty()) {
-				if (!dateFlag) {
-					startDate = dateList.poll();
-					dateFlag = true;
-				} else if (dateFlag) {
-					endDate = dateList.poll();
-					break;
-				}
-			}
+			setDateInQueue(dateList);
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return;
 		}
 		logExitMethod("setDate");
+	}
+
+	/**
+	 * Method to set a date in the LocalDate queue.
+	 * @param dateList
+	 */
+	private void setDateInQueue(Queue<LocalDate> dateList) {
+		logEnterMethod("setDateInQueue");
+		while (!dateList.isEmpty()) {
+			if (!dateFlag) {
+				startDate = dateList.poll();
+				dateFlag = true;
+			} else if (dateFlag) {
+				endDate = dateList.poll();
+				break;
+			}
+		}
+		logExitMethod("setDateInQueue");
 	}
 
 	/**
@@ -283,11 +317,21 @@ public class CommandParser {
 	private void setTime(String parseString) {
 		logEnterMethod("setTime");
 		Queue<LocalTime> timeList;
-		timeList = timeParser.processTime(parseString);
+		timeList = timeParser.extractTime(parseString);
 		if (timeList.isEmpty()) {
 			logExitMethod("setTime");
 			return;
 		}
+		setTimeInQueue(timeList);
+		logExitMethod("setTime");
+	}
+
+	/**
+	 * Method to set the time in a LocalTime queue.
+	 * @param timeList
+	 */
+	private void setTimeInQueue(Queue<LocalTime> timeList) {
+		logEnterMethod("setTimeInQueue");
 		while (!timeList.isEmpty()) {
 			if (!timeFlag) {
 				startTime = timeList.poll();
@@ -296,7 +340,7 @@ public class CommandParser {
 				endTime = timeList.poll();
 			}
 		}
-		logExitMethod("setTime");
+		logExitMethod("setTimeInQueue");
 	}
 
 	/**
@@ -308,25 +352,35 @@ public class CommandParser {
 	private void setName(String parseString) {
 		logEnterMethod("setName");
 		Queue<String> nameList;
-		nameList = nameParser.processName(parseString);
+		nameList = nameParser.extractName(parseString);
 		try {
 			if (nameList.isEmpty()) {
 				logExitMethod("setName");
 				return;
 			}
-			for (int i = 0; i < 2; i++) {
-				if (!taskNameFlag) {
-					taskName = nameList.poll();
-					taskNameFlag = true;
-				} else if (taskNameFlag && !nameList.isEmpty()) {
-					edittedName = nameList.poll();
-				}
-			}
+			setNameInQueue(nameList);
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
 			return;
 		}
 		logExitMethod("setName");
+	}
+
+	/**
+	 * Method to set the name in a string queue.
+	 * @param nameList
+	 */
+	private void setNameInQueue(Queue<String> nameList) {
+		logEnterMethod("setNameInQueue");
+		for (int i = 0; i < 2; i++) {
+			if (!taskNameFlag) {
+				taskName = nameList.poll();
+				taskNameFlag = true;
+			} else if (taskNameFlag && !nameList.isEmpty()) {
+				edittedName = nameList.poll();
+			}
+		}
+		logExitMethod("setNameInQueue");
 	}
 
 	/**
@@ -337,7 +391,7 @@ public class CommandParser {
 	 */
 	private void setCommand(String parseString) {
 		logEnterMethod("setCommand");
-		command = commandExtractor.setCommand(parseString);
+		command = commandExtractor.extractCommand(parseString);
 		logExitMethod("setCommand");
 
 	}
@@ -353,7 +407,7 @@ public class CommandParser {
 	 */
 	private String setNameInQuotationMarks(String process) {
 		logEnterMethod("setNameInQuotationMarks");
-		process = nameParser.processQuotationMarks(process);
+		process = nameParser.extractNameInQuotationMarks(process);
 		logExitMethod("setNameInQuotationMarks");
 		return process;
 
