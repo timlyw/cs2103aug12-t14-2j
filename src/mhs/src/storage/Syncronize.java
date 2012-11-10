@@ -5,6 +5,7 @@ package mhs.src.storage;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
@@ -322,9 +323,7 @@ class Syncronize {
 
 		List<Event> googleCalendarEvents;
 		try {
-			googleCalendarEvents = Database.googleCalendar.retrieveEvents(
-					Database.syncStartDateTime.toString(),
-					Database.syncEndDateTime.toString());
+			googleCalendarEvents = retrieveGoogleCalendarEvents();
 			Iterator<Event> iterator = googleCalendarEvents.iterator();
 			// pull sync remote tasks
 			while (iterator.hasNext()) {
@@ -343,6 +342,53 @@ class Syncronize {
 			e.printStackTrace();
 		}
 		logExitMethod("pullSync");
+	}
+
+	/**
+	 * Retrieve Google Calendar Events
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws ResourceNotFoundException
+	 */
+	private List<Event> retrieveGoogleCalendarEvents()
+			throws ResourceNotFoundException, IOException {
+		Map<String, Event> googleCalendarEvents = new LinkedHashMap<>();
+		List<Event> googleDefaultEvents = Database.googleCalendar
+				.retrieveDefaultEvents(Database.syncStartDateTime.toString(),
+						Database.syncEndDateTime.toString());
+		List<Event> googleCompleted = Database.googleCalendar
+				.retrieveCompletedEvents(Database.syncStartDateTime.toString(),
+						Database.syncEndDateTime.toString());
+		// Default Events
+		Iterator<Event> googleDefaultEventListIterator = googleDefaultEvents
+				.iterator();
+		while (googleDefaultEventListIterator.hasNext()) {
+			Event googleEventToAddToList = googleDefaultEventListIterator
+					.next();
+			googleCalendarEvents.put(googleEventToAddToList.getId(),
+					googleEventToAddToList);
+		}
+		// Completed events
+		Iterator<Event> googleCompletedEventListIterator = googleCompleted
+				.iterator();
+		while (googleCompletedEventListIterator.hasNext()) {
+			Event googleEventToAddToList = googleCompletedEventListIterator
+					.next();
+			// duplicate
+			if (googleCalendarEvents
+					.containsKey(googleEventToAddToList.getId())) {
+				Event completedEventToCompare = googleCalendarEvents
+						.get(googleEventToAddToList.getId());
+				if (completedEventToCompare.getUpdated().getValue() > googleEventToAddToList
+						.getUpdated().getValue()) {
+					continue;
+				}
+			}
+			googleCalendarEvents.put(googleEventToAddToList.getId(),
+					googleEventToAddToList);
+		}
+		return null;
 	}
 
 	/**
