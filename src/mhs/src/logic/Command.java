@@ -5,16 +5,33 @@ package mhs.src.logic;
 import java.io.IOException;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Logger;
+
 import org.joda.time.DateTime;
+
+import com.google.gdata.util.ServiceException;
+
 import mhs.src.common.HtmlCreator;
+import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
+import mhs.src.common.exceptions.InvalidTaskFormatException;
+import mhs.src.common.exceptions.TaskNotFoundException;
 import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseFactory;
 import mhs.src.storage.persistence.task.Task;
 import mhs.src.storage.persistence.task.TaskCategory;
 
+/**
+ * Parent class of all task based commands
+ * 
+ * @author Shekhar
+ * 
+ */
 public abstract class Command {
 
+	private static final String MESSAGE_ERROR_IO = "Read/Write error";
+	private static final String MESSAGE_DATABASE_FACTORY_NOT_INITIALIZED = "Database Factory not instantiated";
+	private static final String MESSAGE_DATABASE_ILLEGAL_ARGUMENT = "Databse given wrong arguments";
 	protected static final String MESSAGE_UNDO_FAIL = "Undo Failed";
 	protected static final String MESSAGE_UNDO_CONFIRM = "Undo Successful";
 	protected static final String MESSAGE_CANNOT_UNDO = "Sorry Cannot Undo last command";
@@ -46,81 +63,141 @@ public abstract class Command {
 	protected static String currentState;
 	protected static int minTaskQuery = 1;
 
+	private static final Logger logger = MhsLogger.getLogger();
+
+	/**
+	 * Default Constructor for Commands
+	 */
 	public Command() {
 		indexExpected = false;
 		isUndoable = false;
 		htmlCreator = new HtmlCreator();
 		lastTask = new Task();
 		newTask = new Task();
+		instantiateDatabase();
+	}
+
+	/**
+	 * Creates an instance of database
+	 */
+	private void instantiateDatabase() {
 		try {
 			dataHandler = DatabaseFactory.getDatabaseInstance();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			commandFeedback = MESSAGE_DATABASE_ILLEGAL_ARGUMENT;
 		} catch (DatabaseFactoryNotInstantiatedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			commandFeedback = MESSAGE_DATABASE_FACTORY_NOT_INITIALIZED;
 		}
 	}
 
+	/**
+	 * Abstract method, to execute given command
+	 */
 	abstract public void executeCommand();
+
+	/**
+	 * Abstract method to execute by index
+	 * 
+	 * @param index
+	 */
+	abstract public void executeByIndex(int index);
+
+	/**
+	 * Abstract method to execute By Index and Type
+	 * 
+	 * @param index
+	 */
+	abstract public void executeByIndexAndType(int index);
 
 	/**
 	 * adds previously deleted task
 	 */
 	public String undo() {
+		logEnterMethod("undo");
 		String outputString = new String();
 		if (isUndoable()) {
-			try {
-				if (lastTask == null) {
-					dataHandler.delete(newTask.getTaskId());
-				} else if (newTask == null) {
-					lastTask = dataHandler.add(lastTask);
-				} else {
-					dataHandler.update(lastTask);
-				}
-				isUndoable = false;
-				outputString = MESSAGE_UNDO_CONFIRM;
-			} catch (Exception e) {
-				outputString = MESSAGE_UNDO_FAIL;
-			}
+			outputString = performUndo();
 		} else {
 			outputString = MESSAGE_CANNOT_UNDO;
 		}
 		commandFeedback = outputString;
+		logExitMethod("undo");
 		return outputString;
 	}
 
-	public String redo() {
-		String outputString = new String();
+	/**
+	 * Executes undo
+	 * 
+	 * @return
+	 */
+	private String performUndo() {
+		String outputString;
 		try {
 			if (lastTask == null) {
-				dataHandler.add(newTask);
+				dataHandler.delete(newTask.getTaskId());
 			} else if (newTask == null) {
-				dataHandler.delete(lastTask.getTaskId());
+				lastTask = dataHandler.add(lastTask);
 			} else {
-				dataHandler.update(newTask);
+				dataHandler.update(lastTask);
 			}
-			isUndoable = true;
+			isUndoable = false;
+			outputString = MESSAGE_UNDO_CONFIRM;
+		} catch (Exception e) {
+			outputString = MESSAGE_UNDO_FAIL;
+		}
+		return outputString;
+	}
+
+	/**
+	 * Executes Redo
+	 * 
+	 * @return
+	 */
+	public String redo() {
+		logEnterMethod("redo");
+		String outputString = new String();
+		try {
+			executeRedo();
 			outputString = MESSAGE_UNDO_CONFIRM;
 		} catch (Exception e) {
 			outputString = MESSAGE_UNDO_FAIL;
 		}
 
 		commandFeedback = outputString;
+		logExitMethod("redo");
 		return outputString;
 	}
 
+	/**
+	 * Performs the redo
+	 * 
+	 * @throws InvalidTaskFormatException
+	 * @throws IOException
+	 * @throws TaskNotFoundException
+	 * @throws ServiceException
+	 */
+	private void executeRedo() throws InvalidTaskFormatException, IOException,
+			TaskNotFoundException, ServiceException {
+		if (lastTask == null) {
+			dataHandler.add(newTask);
+		} else if (newTask == null) {
+			dataHandler.delete(lastTask.getTaskId());
+		} else {
+			dataHandler.update(newTask);
+		}
+		isUndoable = true;
+	}
+
+	/**
+	 * Checks if the commands is undoable
+	 * 
+	 * @return
+	 */
 	public boolean isUndoable() {
 		return isUndoable;
 	}
 
-	abstract public void executeByIndex(int index);
-
-	abstract public void executeByIndexAndType(int index);
-
 	/**
-	 * Queries task based on task name/start time/end time
+	 * Queries task in database
 	 * 
 	 * @param inputCommand
 	 * @return List of matched tasks
@@ -128,17 +205,41 @@ public abstract class Command {
 	 */
 	protected static List<Task> queryTask(CommandInfo inputCommand)
 			throws IOException {
+		if (inputCommand == null) {
+			return null;
+		}
 		boolean name, startDate, endDate;
 		lastQueryType = QUERY_BY_COMMANDINFO;
 		List<Task> queryResultList;
 		name = isTaskNameInitialized(inputCommand);
 		startDate = isStartDateInitialized(inputCommand);
 		endDate = isEndDateInitialized(inputCommand);
+		queryResultList = queryByParams(inputCommand, name, startDate, endDate);
+		if (queryResultList.size() > minTaskQuery) {
+			lastQueryCommandInfo = inputCommand;
+		}
+		return queryResultList;
+	}
+
+	/**
+	 * Queries task based on name & startDate & end date
+	 * 
+	 * @param inputCommand
+	 * @param name
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 * @throws IOException
+	 */
+	private static List<Task> queryByParams(CommandInfo inputCommand,
+			boolean name, boolean startDate, boolean endDate)
+			throws IOException {
+		List<Task> queryResultList;
 		if (name && startDate && endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					inputCommand.getStartDate(), inputCommand.getEndDate(),
 					true);
-		} else if (startDate && endDate && !name) {
+		} else if (!name && startDate && endDate) {
 			queryResultList = dataHandler.query(inputCommand.getStartDate(),
 					inputCommand.getEndDate(), false, true);
 		} else if (name && !startDate && !endDate) {
@@ -155,12 +256,15 @@ public abstract class Command {
 		} else {
 			queryResultList = dataHandler.query(true);
 		}
-		if (queryResultList.size() > minTaskQuery) {
-			lastQueryCommandInfo = inputCommand;
-		}
 		return queryResultList;
 	}
 
+	/**
+	 * Checks if CommandInfo contains end date
+	 * 
+	 * @param inputCommand
+	 * @return
+	 */
 	private static boolean isEndDateInitialized(CommandInfo inputCommand) {
 		boolean endDate;
 		if (inputCommand.getEndDate() == null) {
@@ -171,6 +275,12 @@ public abstract class Command {
 		return endDate;
 	}
 
+	/**
+	 * Checks if Command Info contains start date
+	 * 
+	 * @param inputCommand
+	 * @return
+	 */
 	private static boolean isStartDateInitialized(CommandInfo inputCommand) {
 		boolean startDate;
 		if (inputCommand.getStartDate() == null) {
@@ -181,6 +291,12 @@ public abstract class Command {
 		return startDate;
 	}
 
+	/**
+	 * Checks if command info contains name
+	 * 
+	 * @param inputCommand
+	 * @return
+	 */
 	private static boolean isTaskNameInitialized(CommandInfo inputCommand) {
 		boolean name;
 		if (inputCommand.getTaskName() == null) {
@@ -216,6 +332,13 @@ public abstract class Command {
 		return queryResultList;
 	}
 
+	/**
+	 * Query By Task Category
+	 * 
+	 * @param taskCategory
+	 * @return
+	 * @throws IOException
+	 */
 	protected static List<Task> queryTaskByCategory(TaskCategory taskCategory)
 			throws IOException {
 		List<Task> queryResultList;
@@ -239,6 +362,12 @@ public abstract class Command {
 		return queryResultList;
 	}
 
+	/**
+	 * Query Home
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
 	protected static List<Task> queryHome() throws IOException {
 		List<Task> queryResultList;
 		lastQueryType = QUERY_HOME;
@@ -248,7 +377,6 @@ public abstract class Command {
 	}
 
 	/*
-	 * 
 	 * Displays list of all kinds of tasks
 	 */
 	protected static String displayListOfTasks(List<Task> resultList) {
@@ -257,6 +385,9 @@ public abstract class Command {
 		return outputString;
 	}
 
+	/**
+	 * Display next page
+	 */
 	public static void displayNext() {
 		if (lastIndexDisplayed + 1 < matchedTasks.size()) {
 			indexDisplayedStack.add(firstIndexDisplayed);
@@ -264,6 +395,9 @@ public abstract class Command {
 		}
 	}
 
+	/**
+	 * Display previous page
+	 */
 	public static void displayPrev() {
 		if (indexDisplayedStack.empty()) {
 			firstIndexDisplayed = 0;
@@ -272,12 +406,22 @@ public abstract class Command {
 		firstIndexDisplayed = indexDisplayedStack.pop();
 	}
 
+	/**
+	 * Reset Display Index i.e send to first page
+	 */
 	public static void resetDisplayIndex() {
 		firstIndexDisplayed = 0;
 		indexDisplayedStack.clear();
 		firstTimeDisplay = true;
 	}
 
+	/**
+	 * Convert List into Pretty HTML List
+	 * 
+	 * @param taskList
+	 * @param limit
+	 * @return
+	 */
 	public static String createTaskListHtml(List<Task> taskList, int limit) {
 		String taskListHtml = "";
 
@@ -407,6 +551,11 @@ public abstract class Command {
 		return date.toString("dd MMM yy");
 	}
 
+	/**
+	 * Sets line limit of display
+	 * 
+	 * @param limit
+	 */
 	public static void setLineLimit(int limit) {
 		lineLimit = limit;
 		currentState = refreshLastState();
@@ -421,11 +570,21 @@ public abstract class Command {
 		return commandFeedback;
 	}
 
+	/**
+	 * Returns the Screen State
+	 * 
+	 * @return
+	 */
 	public String getCurrentState() {
 		String state = refreshLastState();
 		return state;
 	}
 
+	/**
+	 * Refresh Last list
+	 * 
+	 * @return
+	 */
 	protected static String refreshLastState() {
 		String lastStateString = new String();
 		List<Task> resultList;
@@ -448,8 +607,26 @@ public abstract class Command {
 			lastStateString = displayListOfTasks(resultList);
 			return lastStateString;
 		} catch (IOException e) {
-			return "Read/Write error";
+			return MESSAGE_ERROR_IO;
 		}
+	}
+
+	/**
+	 * Logger enter method
+	 * 
+	 * @param methodName
+	 */
+	private void logEnterMethod(String methodName) {
+		logger.entering(getClass().getName(), methodName);
+	}
+
+	/**
+	 * Logger exit method
+	 * 
+	 * @param methodName
+	 */
+	private void logExitMethod(String methodName) {
+		logger.exiting(getClass().getName(), methodName);
 	}
 
 }
