@@ -328,20 +328,25 @@ class Syncronize {
 			googleCalendarEvents = retrieveGoogleCalendarEvents(
 					Database.syncStartDateTime.toString(),
 					Database.syncEndDateTime.toString());
+
+			System.out.println(Database.syncStartDateTime.toString());
+			System.out.println(Database.syncEndDateTime.toString());
+
 			// pull sync remote tasks
 			for (Map.Entry<String, Event> entry : googleCalendarEvents
 					.entrySet()) {
+				System.out.println(entry.getValue());
 				pullSyncTask(entry.getValue());
-				if(!Database.googleCalendar.isDeleted(entry.getValue())){
-					System.out.println(entry.getValue().getSummary());
-				}
 			}
 		} catch (UnknownHostException e) {
 			logger.log(Level.FINER, e.getMessage());
+			e.printStackTrace();
 			throw e;
 		} catch (NullPointerException e) {
+			e.printStackTrace();
 			logger.log(Level.FINER, e.getMessage());
 		} catch (IOException e) {
+			e.printStackTrace();
 			logger.log(Level.FINER, e.getMessage());
 		} catch (ResourceNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -361,22 +366,39 @@ class Syncronize {
 			String startDateTime, String endDateTime)
 			throws ResourceNotFoundException, IOException {
 		Map<String, Event> googleCalendarEvents = new LinkedHashMap<>();
+
 		List<Event> googleDefaultEvents = Database.googleCalendar
-				.retrieveDefaultEvents(startDateTime, endDateTime);
-		List<Event> googleCompleted = Database.googleCalendar
-				.retrieveCompletedEvents(startDateTime, endDateTime);
-		// Default Events
-		Iterator<Event> googleDefaultEventListIterator = googleDefaultEvents
-				.iterator();
-		while (googleDefaultEventListIterator.hasNext()) {
-			Event googleEventToAddToList = googleDefaultEventListIterator
-					.next();
-			System.out.println(googleEventToAddToList);
-			googleCalendarEvents.put(googleEventToAddToList.getId(),
-					googleEventToAddToList);
+				.retrieveDefaultEvents(startDateTime, endDateTime, false);
+		List<Event> googleDeletedDefaultEvents = Database.googleCalendar
+				.retrieveDefaultEvents(startDateTime, endDateTime, true);
+		List<Event> googleCompletedEvents = Database.googleCalendar
+				.retrieveCompletedEvents(startDateTime, endDateTime, false);
+		List<Event> googleDeletedCompletedEvents = Database.googleCalendar
+				.retrieveCompletedEvents(startDateTime, endDateTime, true);
+
+		loadGoogleCalendarEventsFromList(googleCalendarEvents,
+				googleDefaultEvents);
+
+		loadGoogleCalendarEventsWithDuplicates(googleCalendarEvents,
+				googleCompletedEvents);
+
+		loadGoogleCalendarEventsFromList(googleCalendarEvents,
+				googleDeletedDefaultEvents);
+
+		loadGoogleCalendarEventsFromList(googleCalendarEvents,
+				googleDeletedCompletedEvents);
+
+		return googleCalendarEvents;
+	}
+
+	protected void loadGoogleCalendarEventsWithDuplicates(
+			Map<String, Event> googleCalendarEvents,
+			List<Event> googleEventList) {
+		if(googleEventList == null){
+			return;
 		}
 		// Completed events
-		Iterator<Event> googleCompletedEventListIterator = googleCompleted
+		Iterator<Event> googleCompletedEventListIterator = googleEventList
 				.iterator();
 		while (googleCompletedEventListIterator.hasNext()) {
 			Event googleEventToAddToList = googleCompletedEventListIterator
@@ -394,6 +416,43 @@ class Syncronize {
 			googleCalendarEvents.put(googleEventToAddToList.getId(),
 					googleEventToAddToList);
 		}
+	}
+
+	protected void loadGoogleCalendarEventsFromList(
+			Map<String, Event> googleCalendarEvents,
+			List<Event> googleEventList) {
+		if(googleEventList == null){
+			return;
+		}
+		// Default Events
+		Iterator<Event> googleDefaultEventListIterator = googleEventList
+				.iterator();
+		while (googleDefaultEventListIterator.hasNext()) {
+			Event googleEventToAddToList = googleDefaultEventListIterator
+					.next();
+			googleCalendarEvents.put(googleEventToAddToList.getId(),
+					googleEventToAddToList);
+		}
+	}
+
+	/**
+	 * Retrieve Google Calendar Events
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws ResourceNotFoundException
+	 */
+	private Map<String, Event> retrieveGoogleCalendarDeletedEvents(
+			String startDateTime, String endDateTime)
+			throws ResourceNotFoundException, IOException {
+		Map<String, Event> googleCalendarEvents = new LinkedHashMap<>();
+		List<Event> googleDefaultEvents = Database.googleCalendar
+				.retrieveDefaultEvents(startDateTime, endDateTime, true);
+		List<Event> googleCompleted = Database.googleCalendar
+				.retrieveCompletedEvents(startDateTime, endDateTime, true);
+		loadGoogleCalendarEventsFromList(googleCalendarEvents,
+				googleDefaultEvents);
+		loadGoogleCalendarEventsWithDuplicates(googleCalendarEvents, googleCompleted);
 		return googleCalendarEvents;
 	}
 
