@@ -14,6 +14,7 @@ import mhs.src.userinterface.UiController;
 
 public class Mhs {
 	public static void main(String[] args) {
-		System.out.println("test");
+		UiController uiController = new UiController();
+		uiController.showUserInterface();
 	}
 }
