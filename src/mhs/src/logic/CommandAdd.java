@@ -25,7 +25,7 @@ public class CommandAdd extends Command {
 	private static final String MESSAGE_TASK_NOT_ADDED = "Error occured. Task not Added.";
 	private static final String MESSAGE_ADD_INDEX_CANNOT = "Add does not support index commands.";
 
-	private static final String CONFIRM_TASK_ADDED = "A %1$s task - '%2$s' was successfully added.";
+	private static final String CONFIRM_TASK_ADDED = "I have added '%1$s' %2$s";
 
 	private static final int FLOATING = 0;
 	private static final int DEADLINE = 1;
@@ -152,9 +152,11 @@ public class CommandAdd extends Command {
 				lastTask = null;
 				newTask = addedTask;
 				isUndoable = true;
+				System.out.println("time string");
+				String timeString = this.getTimeString(addedTask);
+				System.out.println(timeString);
 				outputString = String.format(CONFIRM_TASK_ADDED,
-						taskToAddTask.getTaskCategory(),
-						taskToAddTask.getTaskName());
+						taskToAddTask.getTaskName(), timeString);
 			} catch (IOException e) {
 				outputString = MESSAGE_TASK_NOT_ADDED;
 			} catch (Exception e) {

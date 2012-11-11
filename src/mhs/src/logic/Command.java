@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 
 import com.google.gdata.util.ServiceException;
 
+import mhs.src.common.DateTimeHelper;
 import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
@@ -44,6 +45,9 @@ public abstract class Command {
 	private static final int QUERY_BY_CATEGORY = 2;
 	private static final int QUERY_HOME = 3;
 
+	private static final String CONNECTOR_TIMED = " from %1$s to %2$s";
+	private static final String CONNECTOR_DEADLINE = " due %1$s";
+
 	protected boolean isUndoable;
 	protected static List<Task> matchedTasks;
 	protected static Database dataHandler;
@@ -61,6 +65,7 @@ public abstract class Command {
 	protected Task newTask;
 	protected String commandFeedback;
 	protected static String currentState;
+	protected DateTimeHelper dateTimeHelper;
 	protected static int minTaskQuery = 1;
 
 	private static final Logger logger = MhsLogger.getLogger();
@@ -69,6 +74,7 @@ public abstract class Command {
 	 * Default Constructor for Commands
 	 */
 	public Command() {
+		dateTimeHelper = new DateTimeHelper();
 		indexExpected = false;
 		isUndoable = false;
 		htmlCreator = new HtmlCreator();
@@ -423,87 +429,49 @@ public abstract class Command {
 	 * @return
 	 */
 	public static String createTaskListHtml(List<Task> taskList, int limit) {
-		String taskListHtml = "";
-
 		if (taskList.size() == 0) {
 			return "No tasks to display";
 		}
+		limit = setBounds(limit, taskList);
+		String taskListHtml = getTasksHtml(taskList, limit);
+		forwardToCurrentTime(taskList);
+		String pagination = createPagination(taskList);
+		taskListHtml += HtmlCreator.NEW_LINE;
+		taskListHtml += pagination;
 
-		if (limit < 0) {
-			limit = 1;
-		}
-
-		if (firstIndexDisplayed > taskList.size()) {
-			firstIndexDisplayed = taskList.size() - 1;
-		}
-
+		firstTimeDisplay = false;
+		return taskListHtml;
+	}
+	
+	private static String getTasksHtml(List<Task> taskList, int limit) {
+		String taskListHtml = "";
 		int lineCount = 0;
 		DateTime prevTaskDateTime = null;
-
-		if (firstTimeDisplay) {
-			while (true) {
-				if (firstIndexDisplayed > taskList.size()) {
-					firstIndexDisplayed = taskList.size() - 2;
-					break;
-				}
-				Task task = taskList.get(firstIndexDisplayed);
-				if (task.isFloating()) {
-					break;
-				} else if (task.isDeadline()
-						&& task.getEndDateTime().getMillis() > DateTime.now()
-								.getMillis()) {
-					break;
-				} else if (task.isTimed()
-						&& task.getEndDateTime().getMillis() > DateTime.now()
-								.getMillis()) {
-					break;
-				}
-				firstIndexDisplayed++;
-			}
-		}
-
 		for (int i = firstIndexDisplayed; i < taskList.size()
 				&& lineCount < limit; i++) {
 			Task task = taskList.get(i);
-			DateTime currTaskDateTime = null;
-
-			if (task.isTimed()) {
-				currTaskDateTime = task.getStartDateTime();
-			} else if (task.isDeadline()) {
-				currTaskDateTime = task.getEndDateTime();
-			} else if (task.isFloating()) {
-				if (i == firstIndexDisplayed) {
-					String floatingHtml = htmlCreator.largeFont("TASKS");
-					taskListHtml += htmlCreator.color(floatingHtml,
-							HtmlCreator.LIGHT_BLUE) + HtmlCreator.NEW_LINE;
-				}
-
-				currTaskDateTime = null;
-			} else {
-				continue;
-			}
-
-			if (!dateIsEqual(prevTaskDateTime, currTaskDateTime)
-					&& currTaskDateTime != null) {
-				if (i > firstIndexDisplayed) {
-					taskListHtml += HtmlCreator.NEW_LINE;
-				}
-				String dateString = getDateString(currTaskDateTime);
-				dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
-				dateString = htmlCreator.largeFont(dateString);
-				taskListHtml += dateString + HtmlCreator.NEW_LINE;
-			}
-
+			DateTime currTaskDateTime = getCurrTaskDateTime(task);
+			taskListHtml += getFloatingHeader(task, currTaskDateTime, i);
+			taskListHtml += getDateHeader(prevTaskDateTime, currTaskDateTime, i);
+			
 			prevTaskDateTime = currTaskDateTime;
-			String indexString = htmlCreator.color(Integer.toString(i + 1)
-					+ ". ", HtmlCreator.GRAY);
+			String indexString = createIndexString(i);
 			taskListHtml += indexString + task.toHtmlString()
 					+ HtmlCreator.NEW_LINE;
 			lastIndexDisplayed = i;
 
 			lineCount = HtmlCreator.countNewLine(taskListHtml);
 		}
-
+		return taskListHtml;
+	}
+	
+	private static String createIndexString(int index) {
+		String indexString = htmlCreator.color(Integer.toString(index + 1)
+				+ ". ", HtmlCreator.GRAY);
+		return indexString;
+	}
+	
+	private static String createPagination(List<Task> taskList) {
 		String pageInstruction = "";
 		if (lastIndexDisplayed + 1 < taskList.size()) {
 			pageInstruction = "n: next page";
@@ -520,11 +488,82 @@ public abstract class Command {
 				+ Integer.toString(lastIndexDisplayed + 1) + " of "
 				+ Integer.toString(taskList.size()) + "] " + pageInstruction;
 		pagination = htmlCreator.color(pagination, HtmlCreator.GRAY);
-		taskListHtml += HtmlCreator.NEW_LINE;
-		taskListHtml += pagination;
-
-		firstTimeDisplay = false;
+		return pagination;
+	}
+	
+	private static String getDateHeader(DateTime prevTaskDateTime, DateTime currTaskDateTime, int index) {
+		String dateHeader = "";
+		if (!dateIsEqual(prevTaskDateTime, currTaskDateTime)
+				&& currTaskDateTime != null) {
+			if (index > firstIndexDisplayed) {
+				dateHeader += HtmlCreator.NEW_LINE;
+			}
+			String dateString = getDateString(currTaskDateTime);
+			dateString = htmlCreator.color(dateString, HtmlCreator.BLUE);
+			dateString = htmlCreator.largeFont(dateString);
+			dateHeader += dateString + HtmlCreator.NEW_LINE;
+		}
+		
+		return dateHeader;
+	}
+	
+	private static DateTime getCurrTaskDateTime(Task task) {
+		DateTime currTaskDateTime = null;
+		if (task.isTimed()) {
+			currTaskDateTime = task.getStartDateTime();
+		} else if (task.isDeadline()) {
+			currTaskDateTime = task.getEndDateTime();
+		} else if (task.isFloating()) {
+			currTaskDateTime = null;
+		} 
+		
+		return currTaskDateTime;
+	}
+	
+	private static String getFloatingHeader(Task task, DateTime currTaskDateTime, int index) {
+		String taskListHtml = "";
+		if (task.isFloating() && index == firstIndexDisplayed) {
+			String floatingHtml = htmlCreator.largeFont("TASKS");
+			taskListHtml += htmlCreator.color(floatingHtml,
+			HtmlCreator.LIGHT_BLUE) + HtmlCreator.NEW_LINE;
+		}
+		
 		return taskListHtml;
+	}
+	
+	private static void forwardToCurrentTime(List<Task> taskList) {
+		if (firstTimeDisplay) {
+			while (true) {
+				if (firstIndexDisplayed > taskList.size()) {
+					firstIndexDisplayed = taskList.size() - 2;
+					break;
+				}
+				Task task = taskList.get(firstIndexDisplayed);
+				if (task.isFloating()) {
+					break;
+				} else if (isPastToday(task.getEndDateTime())) {
+					break;
+				}
+				firstIndexDisplayed++;
+			}
+		}
+	}
+	
+	private static boolean isPastToday(DateTime date1) {
+		long todayMillis = DateTime.now().getMillis() - DateTime.now().getMillisOfDay();
+		return date1.getMillis() > todayMillis;
+	}
+	
+	private static int setBounds(int limit, List<Task> taskList) {
+		if (limit < 0) {
+			limit = 1;
+		}
+
+		if (firstIndexDisplayed > taskList.size()) {
+			firstIndexDisplayed = taskList.size() - 1;
+		}
+		
+		return limit;
 	}
 
 	private static boolean dateIsEqual(DateTime date1, DateTime date2) {
@@ -608,6 +647,31 @@ public abstract class Command {
 		} catch (IOException e) {
 			return MESSAGE_ERROR_IO;
 		}
+	}
+
+	/**
+	 * Converts Task's date time to pretty string
+	 * 
+	 * @param task
+	 * @return
+	 */
+	protected String getTimeString(Task task) {
+		String timeString = "";
+		System.out.println(" create tim estring ");
+		
+		if (task.isDeadline()) {
+			String dueTime = dateTimeHelper.formatDateTimeToString(task
+					.getStartDateTime());
+			System.out.println("due " +dueTime);
+			timeString = String.format(CONNECTOR_DEADLINE, dueTime);
+		} else if (task.isTimed()) {
+			String startTime = dateTimeHelper.formatDateTimeToString(task
+					.getStartDateTime());
+			String endTime = dateTimeHelper.formatDateTimeToString(task
+					.getEndDateTime());
+			timeString = String.format(CONNECTOR_TIMED, startTime, endTime);
+		}
+		return timeString;
 	}
 
 	/**

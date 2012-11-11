@@ -47,7 +47,6 @@ public class Task {
 	 * @param createdDt
 	 * @param updatedDt
 	 * @param syncDt
-	 * @param gCalTaskId
 	 * @param isDone
 	 * @param isDeleted
 	 */

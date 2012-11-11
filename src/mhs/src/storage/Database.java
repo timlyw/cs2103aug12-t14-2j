@@ -29,6 +29,7 @@ import mhs.src.storage.persistence.task.TaskCategory;
 import org.joda.time.DateTime;
 
 import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 /**
@@ -107,8 +108,8 @@ public class Database {
 
 		initializeSyncDateTimes();
 		initalizeDatabase(taskRecordFileName);
-		initializeSyncronize(disableSyncronize);
 		initializeGoogleOAuth2();
+		initializeSyncronize(disableSyncronize);
 
 		logExitMethod("Database");
 	}
@@ -127,7 +128,6 @@ public class Database {
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
 		taskLists = new TaskLists(taskRecordFile.getTaskList());
 		logExitMethod("initalizeDatabase");
-
 	}
 
 	/**
@@ -139,19 +139,9 @@ public class Database {
 	 */
 	private void initializeSyncDateTimes() {
 		logEnterMethod("initializeSyncDateTimes");
-		setSyncStartDateTime(SYNC_END_DATE_TIME_MONTHS_FROM_NOW);
-		setSyncEndDateTime(SYNC_START_DATE_TIME_MONTHS_BEFORE_NOW);
+		setSyncStartDateTime(SYNC_START_DATE_TIME_MONTHS_BEFORE_NOW);
+		setSyncEndDateTime(SYNC_END_DATE_TIME_MONTHS_FROM_NOW);
 		logExitMethod("initializeSyncDateTimes");
-	}
-
-	/**
-	 * Set Sync End DateTime
-	 * 
-	 * @param monthsBeforeNow
-	 */
-	private void setSyncEndDateTime(int monthsBeforeNow) {
-		syncEndDateTime = DateTime.now().plusMonths(monthsBeforeNow)
-				.toDateMidnight().toDateTime();
 	}
 
 	/**
@@ -159,8 +149,20 @@ public class Database {
 	 * 
 	 * @param monthsBeforeNow
 	 */
-	private void setSyncStartDateTime(int monthsAfterNow) {
-		syncStartDateTime = DateTime.now().minusMonths(monthsAfterNow)
+	private void setSyncStartDateTime(int monthsBeforeNow) {
+		new DateTime();
+		syncStartDateTime = DateTime.now().minusMonths(monthsBeforeNow)
+				.toDateMidnight().toDateTime();
+	}
+
+	/**
+	 * Set Sync End DateTime
+	 * 
+	 * @param monthsBeforeNow
+	 */
+	private void setSyncEndDateTime(int monthsAfterNow) {
+		new DateTime();
+		syncEndDateTime = DateTime.now().plusMonths(monthsAfterNow)
 				.toDateMidnight().toDateTime();
 	}
 
@@ -175,7 +177,6 @@ public class Database {
 			authenticateOAuth2WithDefaultUser();
 		} catch (Exception e) {
 			// Connectivity Errors
-			syncronize.disableRemoteSync();
 		}
 	}
 
@@ -221,8 +222,6 @@ public class Database {
 	public void syncronizeDatabases() throws ServiceException, IOException,
 			NoActiveCredentialException {
 		logEnterMethod("syncronizeDatabases");
-		logger.log(Level.INFO, "Syncronizing Databases");
-
 		if (!isRemoteServiceConnectivityActive()) {
 			syncronize.disableRemoteSync();
 			throw new UnknownHostException(
@@ -273,7 +272,7 @@ public class Database {
 		logEnterMethod("initializeGoogleServices");
 		if (initializeGoogleCalendarService() && initializeGoogleTaskService()) {
 			logger.log(Level.INFO, "Google Services instantiated");
-			logExitMethod("isRemoteServiceConnectivityActive");
+			logExitMethod("initializeGoogleServices");
 			return true;
 		}
 		logExitMethod("initializeGoogleServices");
@@ -287,7 +286,7 @@ public class Database {
 	 * @throws NoActiveCredentialException
 	 */
 	boolean initializeGoogleTaskService() throws NoActiveCredentialException {
-		String userGoogleAccount = getSavedUserGoogleAccount();
+		String userGoogleAccount = getSavedUserGoogleAccountName();
 		if (userGoogleAccount == null) {
 			logger.log(Level.FINER, "User not authenticated with google.");
 			logExitMethod("initializeGoogleCalendarService");
@@ -314,7 +313,7 @@ public class Database {
 			AuthenticationException, ServiceException,
 			NoActiveCredentialException {
 		logEnterMethod("initializeGoogleCalendarService");
-		String userGoogleAccount = getSavedUserGoogleAccount();
+		String userGoogleAccount = getSavedUserGoogleAccountName();
 		if (userGoogleAccount == null) {
 			logExitMethod("initializeGoogleCalendarService");
 			return false;
@@ -429,7 +428,7 @@ public class Database {
 	 * 
 	 * @return getSavedUserGoogleAccount or null if it does not exist
 	 */
-	private String getSavedUserGoogleAccount() {
+	public String getSavedUserGoogleAccountName() {
 		if (!configFile
 				.hasNonEmptyConfigParameter(CONFIG_PARAM_GOOGLE_USER_ACCOUNT)) {
 			return null;
@@ -878,14 +877,12 @@ public class Database {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	public void clearRemoteDatabase() throws IOException, ServiceException {
+	public void clearRemoteDatabase() {
 		logEnterMethod("clearRemoteDatabase");
 		if (isRemoteSyncEnabled) {
 			try {
 				googleCalendar.deleteEvents(DateTime.now().minusYears(1)
 						.toString(), DateTime.now().plusYears(1).toString());
-			} catch (UnknownHostException e) {
-				syncronize.disableRemoteSync();
 			} catch (NullPointerException e) {
 				// SilentFailSync Policy
 				logger.log(Level.FINER, e.getMessage());
