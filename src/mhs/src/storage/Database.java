@@ -323,6 +323,7 @@ public class Database {
 		logExitMethod("initializeGoogleCalendarService");
 		return true;
 	}
+	
 
 	/**
 	 * Logs in user google account with user details and starts Syncronize
@@ -346,6 +347,7 @@ public class Database {
 			initializeGoogleServices();
 		}
 		syncronize.enableRemoteSync();
+		syncronize.syncronizeDatabases();
 		logExitMethod("loginUserGoogleAccount");
 	}
 
