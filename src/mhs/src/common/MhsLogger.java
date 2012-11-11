@@ -15,16 +15,16 @@ import java.util.logging.Logger;
  * 
  * Settings:
  * 
- * LEVEL_LOG_CONSOLE_LEVEL : Adjusts level of logging to output to console 
- * LEVEL_LOG_LEVEL		   : Adjusts level of logging to log to file
+ * LEVEL_LOG_CONSOLE_LEVEL : Adjusts level of logging to output to console
+ * LEVEL_LOG_LEVEL : Adjusts level of logging to log to file
  * 
  * @author Timothy Lim Yi Wen A0087048X
  * 
  */
 public class MhsLogger {
 
-	private static final Level LEVEL_LOG_CONSOLE_LEVEL = Level.ALL;
-	private static final Level LEVEL_LOG_LEVEL = Level.INFO;
+	private static final Level LEVEL_LOG_CONSOLE_LEVEL = Level.INFO;
+	private static final Level LEVEL_LOG_LEVEL = Level.ALL;
 
 	private static final String MHS_LOG_FILE = "MHS.log";
 	private static final String LOGGER_NAME = "log_file";
