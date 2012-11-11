@@ -3,6 +3,8 @@ package mhs.src.storage.persistence.remote;
 import java.io.IOException;
 import java.util.List;
 
+import org.joda.time.DateTime;
+
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -57,11 +59,8 @@ public class GoogleTasks {
 			throws IOException, ResourceNotFoundException {
 		Task taskToBeUpdated = retrieveTask(taskId);
 		taskToBeUpdated.setTitle(title);
-		if (completed) {
-			taskToBeUpdated.setStatus(STATUS_COMPLETED);
-		} else {
-			taskToBeUpdated.setStatus(STATUS_NEEDS_ACTION);
-		}
+		setCompleted(taskToBeUpdated, completed);
+		
 		return taskService.tasks().update(taskListId, taskId, taskToBeUpdated)
 				.execute();
 	}
