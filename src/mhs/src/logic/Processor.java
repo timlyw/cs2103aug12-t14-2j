@@ -42,11 +42,9 @@ public class Processor {
 	private static final String MESSAGE_NO_INTERNET = "No internet connection available.";
 	private static final String MESSAGE_LOGIN_FAIL = "Login unsuccessful! Please check username and password.";
 	private static final String MESSAGE_LOGIN_SUCCESS = "You have successfully logged in! Your tasks will now be synced with Google Calender.";
-	private static final String MESSAGE_PASSWORD_FEEDBACK = "Please ensure that CAPS lock is not on..";
 	private static final String MESSAGE_ERROR = "Some Error Occurred";
 	private static final String MESSAGE_NO_PARAMS = "No Params specified";
 	private static final String MESSAGE_NULL_INPUT = "Null Input";
-	private static final String MESSAGE_ENTER_PASSWORD = "Enter password";
 	private static final String COMMAND_HOME = "home";
 	private static final String MESSAGE_DEFAULT_LOGIN_DISPLAY_TEXT = "Please login";
 	private static final String MESSAGE_DATABASE_FACTORY_NOT_INSTANTIATED = "Database Factory not instantiated";
@@ -78,7 +76,6 @@ public class Processor {
 	private boolean usernameIsExpected = false;
 	private boolean isPasswordExpected = false;
 	private String username;
-	private String password;
 	private boolean userIsLoggedIn;
 
 	private FileHandler feedbackFile;
@@ -339,8 +336,6 @@ public class Processor {
 		try {
 			if (usernameIsExpected) {
 				setUsername();
-			} else if (isPasswordExpected) {
-				setPassword();
 			} else {
 				parseAndExecute();
 			}
@@ -376,35 +371,12 @@ public class Processor {
 	}
 
 	/**
-	 * If input Type is password, it tries to authenticate user
-	 * 
-	 * @throws IOException
-	 * @throws ServiceException
-	 */
-	private void setPassword() throws IOException, ServiceException {
-		logEnterMethod("setPassword");
-		String screenOutput;
-		password = userInputString;
-		isPasswordExpected = false;
-		try {
-			screenOutput = authenticateUser(username, password);
-		} catch (AuthenticationException e) {
-			screenOutput = "Login failed! Check username and password.";
-		}
-		currentState = screenOutput;
-		logExitMethod("setPassword");
-	}
-
-	/**
 	 * Stores username
 	 */
 	private void setUsername() {
-		String screenOutput;
 		username = userInputString;
 		usernameIsExpected = false;
-		isPasswordExpected = true;
-		screenOutput = MESSAGE_ENTER_PASSWORD;
-		currentState = screenOutput;
+		authenticateUser(username);
 	}
 
 	/**
@@ -572,13 +544,9 @@ public class Processor {
 	 */
 	public void setCommand(String command) {
 		userInputString = command;
-		if (!isPasswordExpected) {
-			CommandInfo tempCommand = commandParser.getParsedCommand(command);
-			String feedbackString = tempCommand.toHtmlString();
-			commandFeedback = String.format(MESSAGE_FEEDBACK, feedbackString);
-		} else {
-			commandFeedback = MESSAGE_PASSWORD_FEEDBACK;
-		}
+		CommandInfo tempCommand = commandParser.getParsedCommand(command);
+		String feedbackString = tempCommand.toHtmlString();
+		commandFeedback = String.format(MESSAGE_FEEDBACK, feedbackString);
 		updateStateListeners();
 	}
 
@@ -591,8 +559,7 @@ public class Processor {
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	private String authenticateUser(String userName, String password)
-			throws IOException, ServiceException {
+	private String authenticateUser(String userName) {
 		logEnterMethod("authenticateUser");
 		String output;
 		try {
@@ -606,9 +573,7 @@ public class Processor {
 		} catch (ServiceException e) {
 			output = MESSAGE_LOGIN_FAIL;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			output = MESSAGE_LOGIN_FAIL;
-			e.printStackTrace();
 		}
 		logExitMethod("authenticateUser");
 		return output;
@@ -636,10 +601,10 @@ public class Processor {
 			} catch (ServiceException e) {
 				outputString = MESSAGE_NO_INTERNET;
 			} catch (IOException e) {
-				//TODO
+				// TODO
 				outputString = MESSAGE_NO_INTERNET;
 			} catch (NoActiveCredentialException e) {
-				//TODO
+				// TODO
 				outputString = MESSAGE_NO_INTERNET;
 			}
 			commandFeedback = outputString;

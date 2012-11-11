@@ -28,7 +28,7 @@ import mhs.src.storage.persistence.task.TimedTask;
 public class CommandEdit extends Command {
 
 	private static final String MESSAGE_TASK_NOT_EDITED = "Error occured. Task not Edited.";
-	private static final String CONFIRM_TASK_EDITED = "Edited Task - '%1$s' to '%2$s' - %3$s";
+	private static final String CONFIRM_TASK_EDITED = "I have edited '%1$s' to '%2$s' %3$s";
 
 	private static final int FLOATING = 0;
 	private static final int DEADLINE = 1;
@@ -89,9 +89,10 @@ public class CommandEdit extends Command {
 			newTask = createEditedTask(tempCommandInfo, lastTask);
 			try {
 				editTask(newTask);
+				String timeString = this.getTimeString(newTask);
 				outputString = String.format(CONFIRM_TASK_EDITED,
 						lastTask.getTaskName(), newTask.getTaskName(),
-						newTask.getTaskCategory());
+						timeString);
 			} catch (Exception e) {
 				outputString = MESSAGE_TASK_NOT_EDITED;
 			}
@@ -337,9 +338,9 @@ public class CommandEdit extends Command {
 		Task newTask = createEditedTask(tempCommandInfo, lastTask);
 		try {
 			editTask(newTask);
+			String timeString = this.getTimeString(newTask);
 			outputString = String.format(CONFIRM_TASK_EDITED,
-					givenTask.getTaskName(), newTask.getTaskName(),
-					newTask.getTaskCategory());
+					givenTask.getTaskName(), newTask.getTaskName(), timeString);
 			indexExpected = false;
 		} catch (Exception e) {
 			outputString = MESSAGE_TASK_NOT_EDITED;
