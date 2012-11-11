@@ -22,15 +22,13 @@ import org.joda.time.Interval;
  * 
  * Abstracts operations on the taskLists containing different views of tasks:
  * 
- * 1. taskList - by taskId
+ * 1. taskList 		- by taskId<br>
+ * 2. gCalTaskList  - by gCalTaskId (Google Calendar)<br>
+ * 3. gTaskList 	- by gTaskId	(Google Tasks)<br>
  * 
- * 2. gCalTaskList - by gCalTaskId
- * 
- * Functionality
- * 
- * - logic for CRUD on tasks in all task lists
- * 
- * - getters for taskLists
+ * Functionality<br>
+ * - logic for CRUD on tasks in all task lists<br>
+ * - getters for taskLists<br>
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
@@ -692,7 +690,7 @@ public class TaskLists {
 	private void orderTaskRecordSetByStartDateTime(
 			List<Task> queriedTaskRecordset) {
 		logEnterMethod("orderTaskRecordSetByStartDateTime");
-		TaskStartDateTimeComparator taskStartDateTimeComparator = new TaskStartDateTimeComparator();
+		MhsTaskOrderingComparator taskStartDateTimeComparator = new MhsTaskOrderingComparator();
 		Collections.sort(queriedTaskRecordset, taskStartDateTimeComparator);
 		logExitMethod("orderTaskRecordSetByStartDateTime");
 	}
