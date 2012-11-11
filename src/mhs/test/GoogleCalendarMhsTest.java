@@ -13,5 +13,4 @@ package mhs.test;
  */
 
 public class GoogleCalendarMhsTest {
-	
 }

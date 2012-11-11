@@ -310,6 +310,7 @@ public class UiController {
 	private void updateFeedbackText() {
 		startLog("updateFeedbackText");
 		String feedbackText = processor.getCommandFeedback();
+		
 		if (feedbackText != null) {
 			mhsFrame.setFeedbackText(feedbackText);
 		}

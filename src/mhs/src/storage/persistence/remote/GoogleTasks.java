@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
+import com.google.api.client.util.Data;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.Task;
 import com.google.gdata.util.ResourceNotFoundException;
@@ -68,6 +69,7 @@ public class GoogleTasks {
 			task.setStatus(STATUS_COMPLETED);
 		} else {
 			task.setStatus(STATUS_NEEDS_ACTION);
+			task.setCompleted(Data.NULL_DATE_TIME);
 		}
 	}
 }
