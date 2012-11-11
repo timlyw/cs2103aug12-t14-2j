@@ -29,7 +29,7 @@ public class CommandRename extends Command {
 
 	private static final String MESSAGE_NO_EDITED_NAME = "No new name specified.";
 	private static final String MESSAGE_TASK_NOT_RENAMED = "Error occured. Task not Re-named.";
-	private static final String CONFIRM_TASK_RENAMED = "Renamed Task - '%1$s' to '%2$s'";
+	private static final String CONFIRM_TASK_RENAMED = "I have renamed '%1$s' to '%2$s'";
 
 	private CommandInfo tempCommandInfo;
 
@@ -226,7 +226,6 @@ public class CommandRename extends Command {
 		logExitMethod("createFloatingTaskWithNewName");
 		return floatingTaskToAdd;
 	}
-
 
 	/**
 	 * Execute rename by index when last rename query returned multiple matches.

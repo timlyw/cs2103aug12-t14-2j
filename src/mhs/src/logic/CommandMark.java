@@ -22,7 +22,7 @@ import mhs.src.storage.persistence.task.Task;
 public class CommandMark extends Command {
 
 	private static final String MESSAGE_TASK_NOT_MARKED = "Error occured. Task not marked.";
-	private static final String CONFIRM_TASK_MARKED = "Marked Task - '%1$s' as DONE";
+	private static final String CONFIRM_TASK_MARKED = "Good Job. I have marked '%1$s' as DONE";
 
 	private static final Logger logger = MhsLogger.getLogger();
 
