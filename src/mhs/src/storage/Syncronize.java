@@ -142,9 +142,9 @@ class Syncronize {
 	}
 
 	/**
-	 * Get unique id for SyncTaskQueueUID
+	 * Get unique id for SyncTaskQueueUID for keeping track of background tasks
 	 * 
-	 * @return
+	 * @return random uid string
 	 */
 	synchronized private String getSyncTaskQueueUid() {
 		return UUID.randomUUID().toString();
@@ -196,7 +196,6 @@ class Syncronize {
 		if (futureSyncronizeBackgroundTask == null) {
 			return;
 		}
-
 		logger.log(Level.INFO, "Waiting for background task to complete.");
 		futureSyncronizeBackgroundTask.get(maxExecutionTimeInSeconds,
 				TimeUnit.SECONDS);
@@ -222,14 +221,13 @@ class Syncronize {
 	}
 
 	/**
-	 * Syncronizes Databases (local storage and google calendar service)
+	 * Syncronizes Databases (local storage and google services)
 	 * 
 	 * @return true if successful
 	 */
 	boolean syncronizeDatabases() {
 		logEnterMethod("syncronizeDatabases");
 		logger.log(Level.INFO, "Syncronizing Databases");
-		// checks if google services are instantiated
 		if (!Database.isGoogleServicesInstantiated()) {
 			logger.log(Level.INFO, "Google Services not instantiated");
 			disableRemoteSync();
@@ -328,6 +326,10 @@ class Syncronize {
 	}
 
 	/**
+	 * Google Calendar Pull Sync
+	 */
+
+	/**
 	 * Pull Sync Google Calendar Events
 	 * 
 	 * @throws ResourceNotFoundException
@@ -340,97 +342,29 @@ class Syncronize {
 			TaskNotFoundException, InvalidTaskFormatException {
 		logEnterMethod("pullSyncGoogleCalendarEvents");
 
-		Map<String, Event> googleCalendarEvents;
-		googleCalendarEvents = retrieveGoogleCalendarEvents(
-				Database.syncStartDateTime.toString(),
-				Database.syncEndDateTime.toString());
-
-		for (Map.Entry<String, Event> entry : googleCalendarEvents.entrySet()) {
-			pullSyncGoogleCalendarTask(entry.getValue());
-		}
+		Map<String, Event> allGoogleCalendarEvents = getAllGoogleCalendarEvents();
+		pullSyncEventsInGoogleCalendarEventList(allGoogleCalendarEvents);
 
 		logExitMethod("pullSyncGoogleCalendarEvents");
 	}
 
 	/**
-	 * Pull Sync Google Tasks
+	 * Returns all google calendar events within Database specified Sync start
+	 * and end datetimes
 	 * 
-	 * @throws IOException
+	 * @return
 	 * @throws ResourceNotFoundException
-	 * @throws TaskNotFoundException
-	 * @throws InvalidTaskFormatException
+	 * @throws IOException
 	 */
-	protected void pullSyncGoogleTasksTasks() throws IOException,
-			ResourceNotFoundException, TaskNotFoundException,
-			InvalidTaskFormatException {
-		logExitMethod("pullSyncGoogleTasksTasks");
-
-		List<com.google.api.services.tasks.model.Task> googleTasksTaskList = Database.googleTasks
-				.retrieveTasks();
-		Iterator<com.google.api.services.tasks.model.Task> googleCompletedEventListIterator = googleTasksTaskList
-				.iterator();
-
-		while (googleCompletedEventListIterator.hasNext()) {
-			com.google.api.services.tasks.model.Task googleTaskToPull = googleCompletedEventListIterator
-					.next();
-			pullSyncGoogleTask(googleTaskToPull);
-		}
-		logExitMethod("pullSyncGoogleTasksTasks");
+	protected Map<String, Event> getAllGoogleCalendarEvents()
+			throws ResourceNotFoundException, IOException {
+		return retrieveGoogleCalendarEvents(
+				Database.syncStartDateTime.toString(),
+				Database.syncEndDateTime.toString());
 	}
 
 	/**
-	 * Pull Sync Google Task
-	 * 
-	 * @param googleTaskToPull
-	 * @throws ResourceNotFoundException
-	 * @throws IOException
-	 * @throws TaskNotFoundException
-	 * @throws InvalidTaskFormatException
-	 */
-	private void pullSyncGoogleTask(
-			com.google.api.services.tasks.model.Task googleTaskToPull)
-			throws ResourceNotFoundException, IOException,
-			TaskNotFoundException, InvalidTaskFormatException {
-
-		if (Database.taskLists.containsGoogleTaskSyncTask(googleTaskToPull
-				.getId())) {
-
-			Task localTask = Database.taskLists
-					.getGoogleTaskSyncTask(googleTaskToPull.getId());
-
-			// pull sync deleted event
-			if (Database.googleTasks.isDeleted(googleTaskToPull)) {
-				if (!localTask.isDeleted()) {
-					logger.log(Level.INFO, "Deleting cancelled task : "
-							+ googleTaskToPull.getTitle());
-					// TODO
-					this.database.removeRecord(localTask);
-					// delete local task
-					// this.database.deleteTaskInTaskList(localTask);
-				}
-				return;
-			}
-
-			// pull sync newer task
-			if (localTask.getTaskLastSync().isBefore(
-					new DateTime(googleTaskToPull.getUpdated().getValue()))) {
-				logger.log(Level.INFO,
-						"pulling newer task : " + localTask.getTaskName());
-				pullSyncExistingGoogleTaskSyncedTask(googleTaskToPull,
-						localTask);
-			}
-		} else {
-			if (!Database.googleTasks.isDeleted(googleTaskToPull)) {
-				logger.log(Level.INFO,
-						"pulling new task : " + googleTaskToPull.getTitle());
-				pullSyncNewGoogleTaskTask(googleTaskToPull);
-			}
-		}
-		logExitMethod("pullSyncTask");
-	}
-
-	/**
-	 * Retrieve Google Calendar Events
+	 * Retrieve Google Calendar Events from calendars
 	 * 
 	 * @return
 	 * @throws IOException
@@ -439,57 +373,152 @@ class Syncronize {
 	private Map<String, Event> retrieveGoogleCalendarEvents(
 			String startDateTime, String endDateTime)
 			throws ResourceNotFoundException, IOException {
-		Map<String, Event> googleCalendarEvents = new LinkedHashMap<>();
 
-		List<Event> googleDefaultEvents = Database.googleCalendar
-				.retrieveDefaultEvents(startDateTime, endDateTime, false);
-		List<Event> googleDeletedDefaultEvents = Database.googleCalendar
-				.retrieveDefaultEvents(startDateTime, endDateTime, true);
-		List<Event> googleCompletedEvents = Database.googleCalendar
-				.retrieveCompletedEvents(startDateTime, endDateTime, false);
-		List<Event> googleDeletedCompletedEvents = Database.googleCalendar
-				.retrieveCompletedEvents(startDateTime, endDateTime, true);
+		Map<String, Event> allGoogleCalendarEventsList = new LinkedHashMap<>();
 
-		loadGoogleCalendarEventsFromList(googleCalendarEvents,
-				googleDefaultEvents);
+		loadAllGoogleCalendarEventsListWithDefaultEvents(startDateTime,
+				endDateTime, allGoogleCalendarEventsList);
+		loadAllGoogleCalendarEventsListWithCompletedEvents(startDateTime,
+				endDateTime, allGoogleCalendarEventsList);
+		loadAllGoogleCalendarEventsListWithDeletedDefaultEvents(startDateTime,
+				endDateTime, allGoogleCalendarEventsList);
+		loadAllGoogleCalendarEventsListWithDeletedCompletedEvents(
+				startDateTime, endDateTime, allGoogleCalendarEventsList);
 
-		loadGoogleCalendarEventsWithDuplicates(googleCalendarEvents,
-				googleCompletedEvents);
-
-		loadGoogleCalendarEventsFromList(googleCalendarEvents,
-				googleDeletedDefaultEvents);
-
-		loadGoogleCalendarEventsFromList(googleCalendarEvents,
-				googleDeletedCompletedEvents);
-
-		return googleCalendarEvents;
+		return allGoogleCalendarEventsList;
 	}
 
-	protected void loadGoogleCalendarEventsWithDuplicates(
+	/**
+	 * Load All Google Calendar Events List With Default Events
+	 * 
+	 * @param startDateTime
+	 * @param endDateTime
+	 * @param allGoogleCalendarEventsList
+	 * @throws IOException
+	 * @throws ResourceNotFoundException
+	 */
+	protected void loadAllGoogleCalendarEventsListWithDefaultEvents(
+			String startDateTime, String endDateTime,
+			Map<String, Event> allGoogleCalendarEventsList) throws IOException,
+			ResourceNotFoundException {
+		List<Event> googleDefaultEvents = Database.googleCalendar
+				.retrieveDefaultEvents(startDateTime, endDateTime, false);
+		loadGoogleCalendarEventsFromList(allGoogleCalendarEventsList,
+				googleDefaultEvents);
+	}
+
+	/**
+	 * Load All Google Calendar Events List With Completed Events
+	 * 
+	 * @param startDateTime
+	 * @param endDateTime
+	 * @param allGoogleCalendarEventsList
+	 * @throws IOException
+	 * @throws ResourceNotFoundException
+	 */
+	protected void loadAllGoogleCalendarEventsListWithCompletedEvents(
+			String startDateTime, String endDateTime,
+			Map<String, Event> allGoogleCalendarEventsList) throws IOException,
+			ResourceNotFoundException {
+		List<Event> googleCompletedEvents = Database.googleCalendar
+				.retrieveCompletedEvents(startDateTime, endDateTime, false);
+		loadGoogleCalendarEventListWithoutDuplicates(
+				allGoogleCalendarEventsList, googleCompletedEvents);
+	}
+
+	/**
+	 * Load All Google Calendar Events List With Deleted Default Events
+	 * 
+	 * @param startDateTime
+	 * @param endDateTime
+	 * @param allGoogleCalendarEventsList
+	 * @throws IOException
+	 * @throws ResourceNotFoundException
+	 */
+	protected void loadAllGoogleCalendarEventsListWithDeletedDefaultEvents(
+			String startDateTime, String endDateTime,
+			Map<String, Event> allGoogleCalendarEventsList) throws IOException,
+			ResourceNotFoundException {
+		List<Event> googleDeletedDefaultEvents = Database.googleCalendar
+				.retrieveDefaultEvents(startDateTime, endDateTime, true);
+		loadGoogleCalendarEventsFromList(allGoogleCalendarEventsList,
+				googleDeletedDefaultEvents);
+	}
+
+	/**
+	 * Load All Google Calendar Events List With Deleted Completed Events
+	 * 
+	 * @param startDateTime
+	 * @param endDateTime
+	 * @param allGoogleCalendarEventsList
+	 * @throws IOException
+	 * @throws ResourceNotFoundException
+	 */
+	protected void loadAllGoogleCalendarEventsListWithDeletedCompletedEvents(
+			String startDateTime, String endDateTime,
+			Map<String, Event> allGoogleCalendarEventsList) throws IOException,
+			ResourceNotFoundException {
+		List<Event> googleDeletedCompletedEvents = Database.googleCalendar
+				.retrieveCompletedEvents(startDateTime, endDateTime, true);
+		loadGoogleCalendarEventsFromList(allGoogleCalendarEventsList,
+				googleDeletedCompletedEvents);
+	}
+
+	/**
+	 * Loads Google Calendar EventList Without Duplicates, if duplicates occur,
+	 * most recent Event is placed
+	 * 
+	 * @param googleCalendarEventsToLoad
+	 * @param googleEventList
+	 */
+	protected void loadGoogleCalendarEventListWithoutDuplicates(
 			Map<String, Event> googleCalendarEventsToLoad,
 			List<Event> googleEventList) {
 		if (googleEventList == null) {
 			return;
 		}
-		// Completed events
-		Iterator<Event> googleCompletedEventListIterator = googleEventList
-				.iterator();
-		while (googleCompletedEventListIterator.hasNext()) {
-			Event googleEventToAddToList = googleCompletedEventListIterator
-					.next();
-			// duplicate
-			if (googleCalendarEventsToLoad.containsKey(googleEventToAddToList
-					.getId())) {
+		Iterator<Event> googleEventListIterator = googleEventList.iterator();
+		while (googleEventListIterator.hasNext()) {
+			Event googleEventToAddToList = googleEventListIterator.next();
+			if (isDuplicateEvent(googleCalendarEventsToLoad,
+					googleEventToAddToList)) {
 				Event completedEventToCompare = googleCalendarEventsToLoad
 						.get(googleEventToAddToList.getId());
-				if (completedEventToCompare.getUpdated().getValue() > googleEventToAddToList
-						.getUpdated().getValue()) {
+				if (isEventToAddNewer(googleEventToAddToList,
+						completedEventToCompare)) {
 					continue;
 				}
 			}
 			googleCalendarEventsToLoad.put(googleEventToAddToList.getId(),
 					googleEventToAddToList);
 		}
+	}
+
+	/**
+	 * Returns true if event to add is newer
+	 * 
+	 * @param googleEventToAddToList
+	 * @param completedEventToCompare
+	 * @return
+	 */
+	protected boolean isEventToAddNewer(Event googleEventToAddToList,
+			Event completedEventToCompare) {
+		return completedEventToCompare.getUpdated().getValue() > googleEventToAddToList
+				.getUpdated().getValue();
+	}
+
+	/**
+	 * Returns true if event is duplicate in list
+	 * 
+	 * @param googleCalendarEventsToLoad
+	 * @param googleEventToAddToList
+	 * @return
+	 */
+	protected boolean isDuplicateEvent(
+			Map<String, Event> googleCalendarEventsToLoad,
+			Event googleEventToAddToList) {
+		return googleCalendarEventsToLoad.containsKey(googleEventToAddToList
+				.getId());
 	}
 
 	/**
@@ -504,12 +533,9 @@ class Syncronize {
 		if (googleEventList == null) {
 			return;
 		}
-		// Default Events
-		Iterator<Event> googleDefaultEventListIterator = googleEventList
-				.iterator();
-		while (googleDefaultEventListIterator.hasNext()) {
-			Event googleEventToAddToList = googleDefaultEventListIterator
-					.next();
+		Iterator<Event> googleEventListIterator = googleEventList.iterator();
+		while (googleEventListIterator.hasNext()) {
+			Event googleEventToAddToList = googleEventListIterator.next();
 			googleCalendarEventsToLoad.put(googleEventToAddToList.getId(),
 					googleEventToAddToList);
 		}
@@ -526,61 +552,119 @@ class Syncronize {
 	private void pullSyncGoogleCalendarTask(Event gCalEntry)
 			throws TaskNotFoundException, InvalidTaskFormatException,
 			IOException {
-		logEnterMethod("pullSyncTask");
-		if (Database.taskLists
-				.containsGoogleCalendarSyncTask(gCalEntry.getId())) {
-
-			Task localTask = Database.taskLists
-					.getGoogleCalendarSyncTask(gCalEntry.getId());
-
-			// pull sync deleted event
-			if (Database.googleCalendar.isDeleted(gCalEntry)) {
-				if (!localTask.isDeleted()) {
-					logger.log(Level.INFO, "Deleting cancelled task : "
-							+ gCalEntry.getSummary());
-					// TODO
-					this.database.removeRecord(localTask);
-					// delete local task
-					// this.database.deleteTaskInTaskList(localTask);
-				}
-				return;
-			}
-
-			// pull sync newer task
-			if (localTask.getTaskLastSync().isBefore(
-					new DateTime(gCalEntry.getUpdated().getValue()))) {
-				logger.log(Level.INFO,
-						"pulling newer event : " + localTask.getTaskName());
-				pullSyncExistingGoogleCalendarSyncedTask(gCalEntry, localTask);
-			}
+		logEnterMethod("pullSyncGoogleCalendarTask");
+		if (hasGoogleCalendarSyncTask(gCalEntry)) {
+			performGoogleCalendarPullSyncForExistingSyncTask(gCalEntry);
 		} else {
-			// Skip deleted events
-			if (Database.googleCalendar.isDeleted(gCalEntry)) {
-				return;
-			}
-			logger.log(Level.INFO,
-					"pulling new event : " + gCalEntry.getSummary());
-			pullSyncNewTask(gCalEntry);
+			performGoogleCalendarPullSyncForNewTask(gCalEntry);
 		}
-		logExitMethod("pullSyncTask");
+		logExitMethod("pullSyncGoogleCalendarTask");
 	}
 
 	/**
+	 * Perform Pull Sync For Existing Google Calendar Task
 	 * 
-	 * @param googleTaskToPull
+	 * @param gCalEntry
+	 * @throws TaskNotFoundException
+	 * @throws InvalidTaskFormatException
+	 * @throws IOException
 	 */
-	private void pullSyncNewGoogleTaskTask(
-			com.google.api.services.tasks.model.Task googleTaskToPull) {
-		logEnterMethod("pullSyncNewGoogleTaskTask");
-		DateTime syncDateTime = setSyncTime(googleTaskToPull);
-		logger.log(Level.INFO, "Adding new pull sync google task..."
-				+ googleTaskToPull.getTitle());
-		Task newTask = new FloatingTask(this.database.getNewTaskId(),
-				googleTaskToPull, syncDateTime);
-		logger.log(Level.INFO, "Added new pull sync google task : "
-				+ googleTaskToPull.getTitle());
-		Database.taskLists.updateTaskInTaskLists(newTask);
-		logExitMethod("pullSyncNewGoogleTaskTask");
+	protected void performGoogleCalendarPullSyncForExistingSyncTask(
+			Event gCalEntry) throws TaskNotFoundException,
+			InvalidTaskFormatException, IOException {
+		logEnterMethod("performPullSyncForExistingGoogleCalendarTask");
+
+		Task localTask = Database.taskLists.getGoogleCalendarSyncTask(gCalEntry
+				.getId());
+
+		if (Database.googleCalendar.isDeleted(gCalEntry)) {
+			performGoogleCalendarPullSyncForDeletedLocalSyncTask(gCalEntry,
+					localTask);
+			return;
+		}
+
+		if (isGoogleCalendarEventNewerThanLocalSyncTask(gCalEntry, localTask)) {
+			logger.log(Level.INFO,
+					"pulling newer event : " + localTask.getTaskName());
+			performGoogleCalendarPullSyncforExistingGoogleCalendarSyncTask(
+					gCalEntry, localTask);
+		}
+		logExitMethod("performPullSyncForExistingGoogleCalendarTask");
+	}
+
+	/**
+	 * Perform Google Calendar Pull Sync For Deleted Local Sync Task
+	 * 
+	 * @param gCalEntry
+	 * @param localTask
+	 * @throws TaskNotFoundException
+	 */
+	protected void performGoogleCalendarPullSyncForDeletedLocalSyncTask(
+			Event gCalEntry, Task localTask) throws TaskNotFoundException {
+		if (!localTask.isDeleted()) {
+			logger.log(Level.INFO,
+					"Deleting cancelled task : " + gCalEntry.getSummary());
+			this.database.removeRecord(localTask);
+		}
+	}
+
+	/**
+	 * Perform Google Calendar Pull Sync For New Task
+	 * 
+	 * @param gCalEntry
+	 * @throws UnknownHostException
+	 */
+	protected void performGoogleCalendarPullSyncForNewTask(Event gCalEntry)
+			throws UnknownHostException {
+		// Skip deleted events
+		if (Database.googleCalendar.isDeleted(gCalEntry)) {
+			return;
+		}
+		logger.log(Level.INFO, "pulling new event : " + gCalEntry.getSummary());
+		pullSyncNewTask(gCalEntry);
+	}
+
+	/**
+	 * Syncs existing local task with updated remote task Call pullSyncTask as
+	 * it contains sync validation logic.
+	 * 
+	 * @param gCalEntry
+	 * @param localTaskEntry
+	 * @throws InvalidTaskFormatException
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 * @throws Exception
+	 */
+	private void performGoogleCalendarPullSyncforExistingGoogleCalendarSyncTask(
+			Event gCalEntry, Task localTaskEntry) throws TaskNotFoundException,
+			InvalidTaskFormatException, IOException {
+		logEnterMethod("pullSyncExistingTask");
+		updateSyncTask(localTaskEntry, gCalEntry);
+		logExitMethod("pullSyncExistingTask");
+	}
+
+	/**
+	 * Checks if Google Calendar Event is Newer Than Local Sync Task
+	 * 
+	 * @param gCalEntry
+	 * @param localTask
+	 * @return
+	 */
+	protected boolean isGoogleCalendarEventNewerThanLocalSyncTask(
+			Event gCalEntry, Task localTask) {
+		return localTask.getTaskLastSync().isBefore(
+				new DateTime(gCalEntry.getUpdated().getValue()));
+	}
+
+	/**
+	 * Checks if local Google Calendar Sync Task exists
+	 * 
+	 * @param gCalEntry
+	 * @return
+	 */
+	protected boolean hasGoogleCalendarSyncTask(Event gCalEntry) {
+		return Database.taskLists.containsGoogleCalendarSyncTask(gCalEntry
+				.getId());
 	}
 
 	/**
@@ -595,8 +679,7 @@ class Syncronize {
 		DateTime syncDateTime = setSyncTime(gCalEntry);
 
 		// add task from google calendar entry
-		if (gCalEntry.getStart().getDateTime().toString()
-				.equals(gCalEntry.getEnd().getDateTime().toString())) {
+		if (isGoogleEventWithoutDuration(gCalEntry)) {
 			// create new deadline task
 			Task newTask = new DeadlineTask(this.database.getNewTaskId(),
 					gCalEntry, syncDateTime);
@@ -612,7 +695,162 @@ class Syncronize {
 	}
 
 	/**
-	 * Pull Sync
+	 * Pull Sync Google Tasks
+	 * 
+	 * @throws IOException
+	 * @throws ResourceNotFoundException
+	 * @throws TaskNotFoundException
+	 * @throws InvalidTaskFormatException
+	 */
+	protected void pullSyncGoogleTasksTasks() throws IOException,
+			ResourceNotFoundException, TaskNotFoundException,
+			InvalidTaskFormatException {
+		logExitMethod("pullSyncGoogleTasksTasks");
+		List<com.google.api.services.tasks.model.Task> googleTasksTaskList = getGoogleTaskListToPullSync();
+		performPullSyncOnGoogleTasksInTaskList(googleTasksTaskList);
+		logExitMethod("pullSyncGoogleTasksTasks");
+	}
+
+	/**
+	 * Pull sync events in specified GoogleCalendarEvent list
+	 * 
+	 * @param googleCalendarEventsListToPullSync
+	 * @throws TaskNotFoundException
+	 * @throws InvalidTaskFormatException
+	 * @throws IOException
+	 */
+	private void pullSyncEventsInGoogleCalendarEventList(
+			Map<String, Event> googleCalendarEventsListToPullSync)
+			throws TaskNotFoundException, InvalidTaskFormatException,
+			IOException {
+		for (Map.Entry<String, Event> entry : googleCalendarEventsListToPullSync
+				.entrySet()) {
+			pullSyncGoogleCalendarTask(entry.getValue());
+		}
+	}
+
+	/**
+	 * Returns GoogleTaskList containing all remote Google Tasks for pull sync
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws ResourceNotFoundException
+	 */
+	private List<com.google.api.services.tasks.model.Task> getGoogleTaskListToPullSync()
+			throws IOException, ResourceNotFoundException {
+		return Database.googleTasks.retrieveTasks();
+	}
+
+	/**
+	 * Perform Pull Sync on all tasks in GoogleTasks Task list
+	 * 
+	 * @param googleTasksTaskList
+	 * @throws ResourceNotFoundException
+	 * @throws IOException
+	 * @throws TaskNotFoundException
+	 * @throws InvalidTaskFormatException
+	 */
+	private void performPullSyncOnGoogleTasksInTaskList(
+			List<com.google.api.services.tasks.model.Task> googleTasksTaskList)
+			throws ResourceNotFoundException, IOException,
+			TaskNotFoundException, InvalidTaskFormatException {
+		Iterator<com.google.api.services.tasks.model.Task> googleCompletedEventListIterator = googleTasksTaskList
+				.iterator();
+		while (googleCompletedEventListIterator.hasNext()) {
+			com.google.api.services.tasks.model.Task googleTaskToPull = googleCompletedEventListIterator
+					.next();
+			pullSyncGoogleTask(googleTaskToPull);
+		}
+	}
+
+	/**
+	 * Pull Sync Google Task
+	 * 
+	 * @param googleTaskToPull
+	 * @throws ResourceNotFoundException
+	 * @throws IOException
+	 * @throws TaskNotFoundException
+	 * @throws InvalidTaskFormatException
+	 */
+	private void pullSyncGoogleTask(
+			com.google.api.services.tasks.model.Task googleTaskToPull)
+			throws ResourceNotFoundException, IOException,
+			TaskNotFoundException, InvalidTaskFormatException {
+		logExitMethod("pullSyncGoogleTask");
+		if (hasLocalGoogleSyncTask(googleTaskToPull)) {
+			performGoogleTaskPullSyncOnExistingLocalSyncTask(googleTaskToPull);
+		} else {
+			performNewGoogleTaskPullSync(googleTaskToPull);
+		}
+		logExitMethod("pullSyncGoogleTask");
+	}
+
+	/**
+	 * Perform Google Task Pull Sync On Existing Local Sync Task
+	 * 
+	 * @param googleTaskToPull
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 * @throws ResourceNotFoundException
+	 * @throws InvalidTaskFormatException
+	 */
+	private void performGoogleTaskPullSyncOnExistingLocalSyncTask(
+			com.google.api.services.tasks.model.Task googleTaskToPull)
+			throws TaskNotFoundException, IOException,
+			ResourceNotFoundException, InvalidTaskFormatException {
+		logEnterMethod("performGoogleTaskPullSyncOnExistingLocalSyncTask");
+		Task localTask = Database.taskLists
+				.getGoogleTaskSyncTask(googleTaskToPull.getId());
+
+		if (Database.googleTasks.isDeleted(googleTaskToPull)) {
+			performPullSyncForDeletedGoogleTask(googleTaskToPull, localTask);
+			logExitMethod("performGoogleTaskPullSyncOnExistingLocalSyncTask");
+			return;
+		}
+
+		if (isGoogleTaskNewerThanLocalSyncTask(googleTaskToPull, localTask)) {
+			performPullSyncForExistingGoogleTaskSyncTask(googleTaskToPull,
+					localTask);
+		}
+		logExitMethod("performGoogleTaskPullSyncOnExistingLocalSyncTask");
+	}
+
+	/**
+	 * Perform Pull Sync for Deleted Google Task
+	 * 
+	 * @param googleTaskToPull
+	 * @param localTask
+	 * @throws TaskNotFoundException
+	 */
+	private void performPullSyncForDeletedGoogleTask(
+			com.google.api.services.tasks.model.Task googleTaskToPull,
+			Task localTask) throws TaskNotFoundException {
+		if (!localTask.isDeleted()) {
+			logger.log(Level.INFO, "Deleting cancelled task : "
+					+ googleTaskToPull.getTitle());
+			this.database.removeRecord(localTask);
+		}
+	}
+
+	/**
+	 * Perform New Google Task Pull Sync
+	 * 
+	 * @param googleTaskToPull
+	 * @throws IOException
+	 * @throws ResourceNotFoundException
+	 */
+	private void performNewGoogleTaskPullSync(
+			com.google.api.services.tasks.model.Task googleTaskToPull)
+			throws IOException, ResourceNotFoundException {
+		logExitMethod("performNewGoogleTaskPullSync");
+		if (!Database.googleTasks.isDeleted(googleTaskToPull)) {
+			performPullSyncForNewGoogleTaskLocalSyncTask(googleTaskToPull);
+		}
+		logExitMethod("performNewGoogleTaskPullSync");
+	}
+
+	/**
+	 * Pull Sync for existing google task sync task
 	 * 
 	 * @param googleTaskToPull
 	 * @param localTask
@@ -620,33 +858,61 @@ class Syncronize {
 	 * @throws TaskNotFoundException
 	 * @throws InvalidTaskFormatException
 	 */
-	private void pullSyncExistingGoogleTaskSyncedTask(
+	private void performPullSyncForExistingGoogleTaskSyncTask(
 			com.google.api.services.tasks.model.Task googleTaskToPull,
 			Task localTask) throws IOException, TaskNotFoundException,
 			InvalidTaskFormatException {
 		logEnterMethod("pullSyncExistingTask");
+		logger.log(Level.INFO,
+				"pulling newer task : " + localTask.getTaskName());
 		updateSyncTask(localTask, googleTaskToPull);
 		logExitMethod("pullSyncExistingTask");
 	}
 
 	/**
-	 * Syncs existing local task with updated remote task Call pullSyncTask as
-	 * it contains sync validation logic.
+	 * Pull Sync for New Google Task Task
 	 * 
-	 * @param gCalEntry
-	 * @param localTaskEntry
-	 * @throws InvalidTaskFormatException
-	 * @throws TaskNotFoundException
-	 * @throws IOException
-	 * @throws Exception
+	 * @param googleTaskToPull
 	 */
-	private void pullSyncExistingGoogleCalendarSyncedTask(Event gCalEntry,
-			Task localTaskEntry) throws TaskNotFoundException,
-			InvalidTaskFormatException, IOException {
-		logEnterMethod("pullSyncExistingTask");
-		updateSyncTask(localTaskEntry, gCalEntry);
-		logExitMethod("pullSyncExistingTask");
+	private void performPullSyncForNewGoogleTaskLocalSyncTask(
+			com.google.api.services.tasks.model.Task googleTaskToPull) {
+		logEnterMethod("pullSyncNewGoogleTaskTask");
+		DateTime syncDateTime = setSyncTime(googleTaskToPull);
+		logger.log(Level.INFO, "Adding new pull sync google task..."
+				+ googleTaskToPull.getTitle());
+		Task newTask = new FloatingTask(this.database.getNewTaskId(),
+				googleTaskToPull, syncDateTime);
+		logger.log(Level.INFO, "Added new pull sync google task : "
+				+ googleTaskToPull.getTitle());
+		Database.taskLists.updateTaskInTaskLists(newTask);
+		logExitMethod("pullSyncNewGoogleTaskTask");
 	}
+
+	/*
+	 * Checks if Google Task is newer than synced local task
+	 */
+	private boolean isGoogleTaskNewerThanLocalSyncTask(
+			com.google.api.services.tasks.model.Task googleTaskToPull,
+			Task localTask) {
+		return localTask.getTaskLastSync().isBefore(
+				new DateTime(googleTaskToPull.getUpdated().getValue()));
+	}
+
+	/**
+	 * Returns true if Google Task has a corresponding local task to sync with
+	 * 
+	 * @param googleTaskToPull
+	 * @return
+	 */
+	private boolean hasLocalGoogleSyncTask(
+			com.google.api.services.tasks.model.Task googleTaskToPull) {
+		return Database.taskLists.containsGoogleTaskSyncTask(googleTaskToPull
+				.getId());
+	}
+
+	/**
+	 * Push Sync Logic
+	 */
 
 	/**
 	 * Pushes local Deadline and Timed tasks to remote Syncs deleted local
@@ -691,38 +957,51 @@ class Syncronize {
 		}
 	}
 
+	/**
+	 * Push sync logic for floating task
+	 * 
+	 * @param localTask
+	 * @throws NullPointerException
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws TaskNotFoundException
+	 * @throws InvalidTaskFormatException
+	 */
 	protected void pushSyncFloatingTask(Task localTask)
 			throws NullPointerException, IOException, ServiceException,
 			TaskNotFoundException, InvalidTaskFormatException {
 		logExitMethod("pushSyncFloatingTask");
 		// push unsynced tasks
 		if (TaskValidator.isUnsyncedTask(localTask)) {
-			logger.log(Level.INFO, "Pushing new floating sync task : "
-					+ localTask.getTaskName());
 			pushSyncNewFloatingTask(localTask);
 		} else {
-			// remove deleted sync task
-			if (localTask.isDeleted()) {
-				logger.log(
-						Level.INFO,
-						"Removing deleted synced floating task : "
-								+ localTask.getTaskName());
-				deleteExistingFloatingSyncTask(localTask);
-			} else {
-				// push updated sync tasks
-				if (localTask.getTaskUpdated().isAfter(
-						localTask.getTaskLastSync())) {
-					logger.log(Level.INFO, "Pushing updated floating task : "
-							+ localTask.getTaskName());
-					pushSyncExistingFloatingSyncTask(localTask);
-				}
-			}
+			performPushSyncForExistingFloatingTask(localTask);
 		}
 		logExitMethod("pushSyncFloatingTask");
 	}
 
+	/**
+	 * Perform Push Sync For Existing Floating Task
+	 * 
+	 * @param localTask
+	 */
+	protected void performPushSyncForExistingFloatingTask(Task localTask) {
+		if (localTask.isDeleted()) {
+			deleteExistingFloatingSyncTask(localTask);
+		} else {
+			pushUpdatedFloatingSyncTask(localTask);
+		}
+	}
+
+	/**
+	 * Delete Existing Floating Sync Task
+	 * 
+	 * @param localTask
+	 */
 	protected void deleteExistingFloatingSyncTask(Task localTask) {
 		logExitMethod("deleteExistingFloatingSyncTask");
+		logger.log(Level.INFO, "Removing deleted synced floating task : "
+				+ localTask.getTaskName());
 		try {
 			Database.googleTasks.deleteTask(localTask.getGTaskId());
 		} catch (NullPointerException e) {
@@ -738,35 +1017,81 @@ class Syncronize {
 		logExitMethod("deleteExistingFloatingSyncTask");
 	}
 
+	/**
+	 * Push Updated Floating Sync Task
+	 * 
+	 * @param localTask
+	 */
+	protected void pushUpdatedFloatingSyncTask(Task localTask) {
+		// push updated sync tasks
+		if (localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync())) {
+			logger.log(Level.INFO, "Pushing updated floating task : "
+					+ localTask.getTaskName());
+			pushSyncExistingFloatingSyncTask(localTask);
+		}
+	}
+
+	/**
+	 * Push Sync logic for Timed/Deadline Task
+	 * 
+	 * @param localTask
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws TaskNotFoundException
+	 * @throws InvalidTaskFormatException
+	 */
 	protected void pushSyncTimedAndDeadlineTask(Task localTask)
 			throws IOException, ServiceException, TaskNotFoundException,
 			InvalidTaskFormatException {
 		logEnterMethod("pushSyncTimedAndDeadlineTask");
-		// push unsynced tasks
 		if (TaskValidator.isUnsyncedTask(localTask)) {
-			logger.log(Level.INFO,
-					"Pushing new sync task : " + localTask.getTaskName());
-			pushSyncNewTimedAndDeadlineTask(localTask);
+			performPushSyncForUnsyncedTimedAndDeadlineTask(localTask);
 		} else {
-			// remove deleted sync task
-			if (localTask.isDeleted()) {
-				logger.log(Level.INFO, "Removing deleted synced task : "
-						+ localTask.getTaskName());
-				deleteExistingTimedAndDeadlineSyncTask(localTask);
-			} else {
-				// push updated sync tasks
-				if (localTask.getTaskUpdated().isAfter(
-						localTask.getTaskLastSync())) {
-					logger.log(Level.INFO, "Pushing updated task : "
-							+ localTask.getTaskName());
-					pushSyncExistingTimedAndDeadlineTask(localTask);
-				}
-			}
+			performPushSyncForSyncedTimedAndDeadlineTask(localTask);
 		}
 		logExitMethod("pushSyncTimedAndDeadlineTask");
 	}
 
+	/**
+	 * Perform Push Sync For Unsynced Timed/Deadline Task
+	 * 
+	 * @param localTask
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws TaskNotFoundException
+	 * @throws InvalidTaskFormatException
+	 */
+	protected void performPushSyncForUnsyncedTimedAndDeadlineTask(Task localTask)
+			throws IOException, ServiceException, TaskNotFoundException,
+			InvalidTaskFormatException {
+		logger.log(Level.INFO,
+				"Pushing new sync task : " + localTask.getTaskName());
+		pushSyncNewTimedAndDeadlineTask(localTask);
+	}
+
+	/**
+	 * Perform Push Sync For Synced Timed And Deadline Task
+	 * 
+	 * @param localTask
+	 */
+	protected void performPushSyncForSyncedTimedAndDeadlineTask(Task localTask) {
+		if (localTask.isDeleted()) {
+			deleteExistingTimedAndDeadlineSyncTask(localTask);
+		} else {
+			if (localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync())) {
+				pushSyncExistingTimedAndDeadlineTask(localTask);
+			}
+		}
+	}
+
+	/**
+	 * Delete Existing Timed And Deadline Sync Task
+	 * 
+	 * @param localTask
+	 */
 	protected void deleteExistingTimedAndDeadlineSyncTask(Task localTask) {
+		logger.log(Level.INFO,
+				"Removing deleted synced task : " + localTask.getTaskName());
 		try {
 			Database.googleCalendar.deleteEvent(localTask.getgCalTaskId());
 		} catch (NullPointerException e) {
@@ -796,9 +1121,19 @@ class Syncronize {
 		logExitMethod("pushSyncNewTask");
 	}
 
+	/**
+	 * Push Sync New Floating Task
+	 * 
+	 * @param localTask
+	 * @throws IOException
+	 * @throws TaskNotFoundException
+	 * @throws InvalidTaskFormatException
+	 */
 	private void pushSyncNewFloatingTask(Task localTask) throws IOException,
 			TaskNotFoundException, InvalidTaskFormatException {
 		logEnterMethod("pushSyncNewFloatingTask");
+		logger.log(Level.INFO,
+				"Pushing new floating sync task : " + localTask.getTaskName());
 		// adds event to google tasks
 		com.google.api.services.tasks.model.Task addedGTask = Database.googleTasks
 				.createTask(localTask.getTaskName(), localTask.isDone());
@@ -806,6 +1141,11 @@ class Syncronize {
 		logExitMethod("pushSyncNewFloatingTask");
 	}
 
+	/**
+	 * Push Sync Existing Floating Sync Task
+	 * 
+	 * @param localTask
+	 */
 	private void pushSyncExistingFloatingSyncTask(Task localTask) {
 		logEnterMethod("pushSyncExistingFloatingSyncTask");
 		// update remote task
@@ -842,6 +1182,8 @@ class Syncronize {
 	 */
 	private void pushSyncExistingTimedAndDeadlineTask(Task localTask) {
 		logEnterMethod("pushSyncExistingTask");
+		logger.log(Level.INFO,
+				"Pushing updated task : " + localTask.getTaskName());
 		// update remote task
 		Event updatedGcalEvent;
 		try {
@@ -885,10 +1227,8 @@ class Syncronize {
 		}
 
 		DateTime syncDateTime = setSyncTime(gCalEntry);
-
-		localSyncTaskToUpdate = updateLocalSyncTask(localSyncTaskToUpdate,
-				gCalEntry, syncDateTime);
-
+		localSyncTaskToUpdate = getUpdatedSyncTaskFromGoogleEvent(
+				localSyncTaskToUpdate, gCalEntry, syncDateTime);
 		Database.taskLists.updateTaskInTaskLists(localSyncTaskToUpdate);
 		Database.saveTaskRecordFile();
 		logExitMethod("updateSyncTask");
@@ -920,24 +1260,24 @@ class Syncronize {
 					Database.EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		}
 		DateTime syncDateTime = setSyncTime(addedGTask);
-		localSyncTaskToUpdate = updateLocalSyncTask(localSyncTaskToUpdate,
-				addedGTask, syncDateTime);
-
+		localSyncTaskToUpdate = getUpdatedSyncTaskFromGoogleTask(
+				localSyncTaskToUpdate, addedGTask, syncDateTime);
 		Database.taskLists.updateTaskInTaskLists(localSyncTaskToUpdate);
 		Database.saveTaskRecordFile();
+
 		logExitMethod("updateSyncTask");
 		return localSyncTaskToUpdate;
 	}
 
 	/**
-	 * Updates local sync task with Google Task
+	 * Returns updated sync task from Google Task
 	 * 
 	 * @param localSyncTaskToUpdate
 	 * @param addedGTask
 	 * @param syncDateTime
 	 * @return Updated SyncTask
 	 */
-	protected Task updateLocalSyncTask(Task localSyncTaskToUpdate,
+	private Task getUpdatedSyncTaskFromGoogleTask(Task localSyncTaskToUpdate,
 			com.google.api.services.tasks.model.Task addedGTask,
 			DateTime syncDateTime) {
 		logEnterMethod("updateLocalSyncTask");
@@ -948,20 +1288,18 @@ class Syncronize {
 	}
 
 	/**
-	 * Updates local sync task with Google Event
+	 * Returns updated sync task from Google Event
 	 * 
 	 * @param localSyncTaskToUpdate
 	 * @param gCalEntry
 	 * @param syncDateTime
 	 * @throws IOException
 	 */
-	private Task updateLocalSyncTask(Task localSyncTaskToUpdate,
+	private Task getUpdatedSyncTaskFromGoogleEvent(Task localSyncTaskToUpdate,
 			Event gCalEntry, DateTime syncDateTime) throws IOException {
 		logEnterMethod("updateLocalSyncTask");
 		Task updatedTask;
-		// Update Task Type
-		if (gCalEntry.getStart().getDateTime().toString()
-				.equals(gCalEntry.getEnd().getDateTime().toString())) {
+		if (isGoogleEventWithoutDuration(gCalEntry)) {
 			updatedTask = new DeadlineTask(localSyncTaskToUpdate.getTaskId(),
 					gCalEntry, syncDateTime);
 		} else {
@@ -970,6 +1308,17 @@ class Syncronize {
 		}
 		logExitMethod("updateLocalSyncTask");
 		return updatedTask;
+	}
+
+	/**
+	 * Returns true if Google Event has no duration
+	 * 
+	 * @param gCalEntry
+	 * @return
+	 */
+	protected boolean isGoogleEventWithoutDuration(Event gCalEntry) {
+		return gCalEntry.getStart().getDateTime().toString()
+				.equals(gCalEntry.getEnd().getDateTime().toString());
 	}
 
 	/**
