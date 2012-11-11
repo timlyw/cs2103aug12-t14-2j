@@ -6,6 +6,8 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.gdata.util.ResourceNotFoundException;
+
 import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.InvalidTaskFormatException;
 import mhs.src.common.exceptions.TaskNotFoundException;
@@ -47,6 +49,9 @@ public class SyncPullSyncTimed extends TimerTask {
 			logger.log(Level.FINER, e.getMessage());
 		} catch (IOException e) {
 			logger.log(Level.FINER, e.getMessage());
+		} catch (ResourceNotFoundException e) {
+			logger.log(Level.FINER, e.getMessage());
+			e.printStackTrace();
 		}
 		logExitMethod("run");
 	}
