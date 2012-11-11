@@ -403,8 +403,10 @@ class Syncronize {
 				if (!localTask.isDeleted()) {
 					logger.log(Level.INFO, "Deleting cancelled task : "
 							+ googleTaskToPull.getTitle());
+					// TODO
+					this.database.removeRecord(localTask);
 					// delete local task
-					this.database.deleteTaskInTaskList(localTask);
+					// this.database.deleteTaskInTaskList(localTask);
 				}
 				return;
 			}
@@ -536,8 +538,10 @@ class Syncronize {
 				if (!localTask.isDeleted()) {
 					logger.log(Level.INFO, "Deleting cancelled task : "
 							+ gCalEntry.getSummary());
+					// TODO
+					this.database.removeRecord(localTask);
 					// delete local task
-					this.database.deleteTaskInTaskList(localTask);
+					// this.database.deleteTaskInTaskList(localTask);
 				}
 				return;
 			}

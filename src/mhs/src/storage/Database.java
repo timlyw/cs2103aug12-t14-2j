@@ -840,7 +840,7 @@ public class Database {
 	 * @param taskId
 	 * @throws TaskNotFoundException
 	 */
-	private void removeRecord(Task taskToRemove) throws TaskNotFoundException {
+	public void removeRecord(Task taskToRemove) throws TaskNotFoundException {
 		logEnterMethod("removeRecord");
 		assert (taskToRemove != null);
 		assert (taskLists != null);
