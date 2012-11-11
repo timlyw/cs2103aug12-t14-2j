@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -396,9 +395,6 @@ class Syncronize {
 		if (Database.taskLists.containsGoogleTaskSyncTask(googleTaskToPull
 				.getId())) {
 
-			System.out
-					.println("!Contained" + googleTaskToPull.toPrettyString());
-
 			Task localTask = Database.taskLists
 					.getGoogleTaskSyncTask(googleTaskToPull.getId());
 
@@ -413,11 +409,6 @@ class Syncronize {
 				return;
 			}
 
-			System.out.println(localTask.getTaskLastSync());
-			System.out.println(new DateTime(googleTaskToPull.getUpdated()
-					.getValue()));
-			System.out.println(localTask.getTaskLastSync().isBefore(
-					new DateTime(googleTaskToPull.getUpdated().getValue())));
 			// pull sync newer task
 			if (localTask.getTaskLastSync().isBefore(
 					new DateTime(googleTaskToPull.getUpdated().getValue()))) {
@@ -985,6 +976,12 @@ class Syncronize {
 		return syncDateTime;
 	}
 
+	/**
+	 * Set sync time for Google Task
+	 * 
+	 * @param addedGTask
+	 * @return Sync DateTIme
+	 */
 	private DateTime setSyncTime(
 			com.google.api.services.tasks.model.Task addedGTask) {
 		logEnterMethod("setSyncTime");
