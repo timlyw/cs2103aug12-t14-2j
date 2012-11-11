@@ -23,7 +23,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentListener;
@@ -44,9 +43,6 @@ import mhs.src.common.MhsLogger;
  */
 
 public class MhsFrame extends JFrame {
-
-	// enumeration of the input formats available
-	private static enum INPUT_TYPE {PLAIN_TEXT, PASSWORD};
 	
 	// this variable is required by JFrame
 	private static final long serialVersionUID = 1L;
@@ -120,14 +116,8 @@ public class MhsFrame extends JFrame {
 	// input area for plain text
 	private final JTextField plainTextBox = new JTextField();
 	
-	// input area for password
-	private final JPasswordField passwordBox = new JPasswordField();
-	
 	// used to format text for display and feedback
 	private final HtmlCreator htmlCreator = new HtmlCreator();
-	
-	// keep track of current input type
-	private INPUT_TYPE inputType = null;
 	
 	// used to keep track if input is enabled
 	private boolean isInputDisabled = false;
@@ -190,14 +180,7 @@ public class MhsFrame extends JFrame {
 	 * @return current user command
 	 */
 	public String getCommand() {
-		String command;
-		if(inputType == INPUT_TYPE.PLAIN_TEXT) {
-			command = plainTextBox.getText();
-		} else {
-			char[] password = passwordBox.getPassword();
-			command = new String(password);
-		}
-		return command;
+		return plainTextBox.getText();
 	}
 	
 	/**
@@ -207,7 +190,6 @@ public class MhsFrame extends JFrame {
 	 */
 	public void addInputChangedListener(DocumentListener inputListener) {
 		plainTextBox.getDocument().addDocumentListener(inputListener);
-		passwordBox.getDocument().addDocumentListener(inputListener);
 	}
 	
 	public void addTrayListener(MouseListener trayListener) {
@@ -221,7 +203,6 @@ public class MhsFrame extends JFrame {
 	 */
 	public void addInputKeyListener(KeyListener keyListener) {
 		plainTextBox.addKeyListener(keyListener);
-		passwordBox.addKeyListener(keyListener);
 	}
 	
 	/**
@@ -230,7 +211,6 @@ public class MhsFrame extends JFrame {
 	public void clearInput() {
 		isInputDisabled = true;
 		plainTextBox.setText(BLANK);
-		passwordBox.setText(BLANK);
 		isInputDisabled = false;
 	}
 	
@@ -261,32 +241,10 @@ public class MhsFrame extends JFrame {
 	}
 	
 	/**
-	 * set input format type to plain text
-	 */
-	public void setInputToPlainText() {
-		plainTextBox.setVisible(true);
-		inputType = INPUT_TYPE.PLAIN_TEXT;
-		selectInputBox();
-	}
-	
-	/**
-	 * set input format type to password (user input will be replaced with dots)
-	 */
-	public void setInputToPassword() {
-		plainTextBox.setVisible(false);
-		inputType = INPUT_TYPE.PASSWORD;
-		selectInputBox();
-	}
-	
-	/**
 	 * select input box based on current input format
 	 */
 	public void selectInputBox() {
-		if(inputType == INPUT_TYPE.PLAIN_TEXT) {
-			selectPlainTextBox();
-		} else {
-			selectPasswordBox();
-		}
+		plainTextBox.requestFocus();	
 	}
 	
 	public void setSize(int width, int height, boolean maximized) {
@@ -319,10 +277,6 @@ public class MhsFrame extends JFrame {
 		return plainTextBox.getParent().getParent() == framePanel;
 	}
 	
-	public boolean passwordBoxInitialized() {
-		return passwordBox.getParent().getParent() == framePanel;
-	}
-	
 	
 	/**
 	 * private constructor to initialize an instance of MhsFrame
@@ -331,20 +285,6 @@ public class MhsFrame extends JFrame {
 		super(FRAME_TITLE);
 		initFrame();
 		//this.setUndecorated(true);
-	}
-	
-	/**
-	 * select plain text box for typing
-	 */
-	private void selectPlainTextBox() {
-		plainTextBox.requestFocus();	
-	}
-	
-	/**
-	 * select password box for typing
-	 */
-	private void selectPasswordBox() {
-		passwordBox.requestFocus();
 	}
 	
 	/**
@@ -523,22 +463,6 @@ public class MhsFrame extends JFrame {
 	private void initInputBox() {
 		addPlainTextBoxToFramePanel();
 		formatPlainTextBox();
-		addPasswordBoxToFramePanel();
-		formatPasswordBox();
-		setInputToPlainText();
-	}
-
-	/**
-	 * add the passwordBox to framePanel
-	 */
-	private void addPasswordBoxToFramePanel() {
-		GridBagConstraints constraints = getDefaultConstraints(
-				INPUT_BOX_POSITION_Y, INPUT_BOX_WEIGHT_Y, INPUT_BOX_HEIGHT);
-
-		Box inputBoxContainer = createContainer(passwordBox,
-				DEFAULT_PADDING_WIDTH, INPUT_BOX_TOP_PADDING,
-				INPUT_BOX_BOTTOM_PADDING);
-		framePanel.add(inputBoxContainer, constraints);
 	}
 	
 	/**
@@ -549,16 +473,6 @@ public class MhsFrame extends JFrame {
 		EmptyBorder paddingBorder = createPaddingBorder(DEFAULT_PADDING_WIDTH,
 				DEFAULT_PADDING_WIDTH, DEFAULT_PADDING_WIDTH);
 		plainTextBox.setBorder(paddingBorder);
-	}
-	
-	/**
-	 * format font and margins of passwordBox
-	 */
-	private void formatPasswordBox() {
-		passwordBox.setFont(INPUT_BOX_FONT);
-		EmptyBorder paddingBorder = createPaddingBorder(DEFAULT_PADDING_WIDTH,
-				DEFAULT_PADDING_WIDTH, DEFAULT_PADDING_WIDTH);
-		passwordBox.setBorder(paddingBorder);
 	}
 
 	/**

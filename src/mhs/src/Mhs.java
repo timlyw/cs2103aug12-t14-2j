@@ -2,11 +2,6 @@
 
 package mhs.src;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-
 import mhs.src.userinterface.UiController;
 
 /**
@@ -19,7 +14,6 @@ import mhs.src.userinterface.UiController;
 
 public class Mhs {
 	public static void main(String[] args) {
-		UiController uiController = new UiController();
-		uiController.showUserInterface();
+		System.out.println("test");
 	}
 }
