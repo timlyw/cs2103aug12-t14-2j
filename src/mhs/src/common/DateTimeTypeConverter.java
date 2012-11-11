@@ -37,6 +37,8 @@ public class DateTimeTypeConverter implements JsonSerializer<DateTime>,
 	public JsonElement serialize(DateTime src, Type srcType,
 			JsonSerializationContext context) {
 		logEnterMethod("serialize");
+		assert(src != null);
+		assert(srcType != null);
 		logExitMethod("serialize");
 		return new JsonPrimitive(src.toString());
 	}
@@ -45,6 +47,7 @@ public class DateTimeTypeConverter implements JsonSerializer<DateTime>,
 	public DateTime deserialize(JsonElement json, Type type,
 			JsonDeserializationContext context) throws JsonParseException {
 		logEnterMethod("deserialize");
+		assert(json != null);
 		logExitMethod("deserialize");
 		return new DateTime(json.getAsString());
 	}

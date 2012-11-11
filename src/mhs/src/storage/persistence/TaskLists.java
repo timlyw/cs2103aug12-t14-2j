@@ -125,7 +125,7 @@ public class TaskLists {
 	 * 
 	 * @param taskToUpdateInTaskLists
 	 */
-	public void updateTaskInTaskLists(Task taskToUpdateInTaskLists) {
+	public synchronized void updateTaskInTaskLists(Task taskToUpdateInTaskLists) {
 		logEnterMethod("updateTaskInTaskLists");
 
 		if (taskToUpdateInTaskLists == null) {

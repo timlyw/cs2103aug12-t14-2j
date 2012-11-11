@@ -20,7 +20,7 @@ import mhs.src.storage.persistence.task.Task;
  * Sync Task Operation to push sync single task
  * 
  * @author Timothy Lim Yi Wen A0087048X
- *
+ * 
  */
 public class SyncPushTask implements Callable<Boolean> {
 	private Task localTaskToSync;
