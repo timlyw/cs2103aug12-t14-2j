@@ -34,6 +34,9 @@ public class Processor {
 	private static final String DATE_TIME_FORMAT = "dd-MM-yy HH-mm";
 	private static final String TEST_FILE_CLOSE_HTML = "</body></html>";
 	private static final String TEST_FILE_START_HTML = "<html><body>";
+
+	private static final String COMMAND_HOME = "home";
+	
 	private static final String MESSAGE_LOGOUT_FAIL = "Some error occurred during logout!";
 	private static final String MESSAGE_LOGOUT_SUCCESS = "You have successfully logged out !";
 	private static final String MESSAGE_LOGOUT_FAIL_NOT_LOGGED_IN = "You are not logged in! Cannot logout";
@@ -46,7 +49,6 @@ public class Processor {
 	private static final String MESSAGE_ERROR = "Some Error Occurred";
 	private static final String MESSAGE_NO_PARAMS = "No Params specified";
 	private static final String MESSAGE_NULL_INPUT = "Null Input";
-	private static final String COMMAND_HOME = "home";
 	private static final String MESSAGE_BLANK = "";
 	private static final String MESSAGE_DATABASE_FACTORY_NOT_INSTANTIATED = "Database Factory not instantiated";
 	private static final String MESSAGE_DATABASE_GIVEN_WRONG_ARGUMENTS = "Database given wrong arguments";
@@ -75,7 +77,6 @@ public class Processor {
 	private CommandCreator commandCreator;
 
 	private boolean usernameIsExpected = false;
-	private boolean isPasswordExpected = false;
 	private String username;
 	private boolean isUserLoggedIn;
 
