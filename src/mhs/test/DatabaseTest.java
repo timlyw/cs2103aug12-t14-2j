@@ -38,7 +38,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.google.api.services.calendar.model.Event;
-import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
@@ -70,9 +69,7 @@ public class DatabaseTest {
 	private static final String TEST_TASK_3_NAME = "task 3 - assignment due";
 	private static final String TEST_TASK_4_NAME = "task 4 - project due";
 	private static final String TEST_TASK_5_NAME = "task 5 - play more games";
-	private static final String GOOGLE_APP_NAME = "My Hot Secretary";
 	private static final String GOOGLE_TEST_ACCOUNT_NAME = "cs2103mhs@gmail.com";
-	private static final String GOOGLE_TEST_ACCOUNT_PASSWORD = "myhotsec2103";
 
 	// Exception Messages
 	private static final String EXCEPTION_MESSAGE_INVALID_TASK_FORMAT = "Invalid Task Format!";

@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -75,12 +74,8 @@ public class Database {
 
 	// Config parameters
 	private static final String CONFIG_PARAM_GOOGLE_USER_ACCOUNT = "GOOGLE_USER_ACCOUNT";
-	private static final String CONFIG_PARAM_GOOGLE_AUTH_TOKEN = "GOOGLE_AUTH_TOKEN";
-
-	private static final String GOOGLE_CALENDAR_APP_NAME = "My Hot Secretary";
 
 	private static final String EXCEPTION_MESSAGE_SYNCRONIZATION_WITH_REMOTE_STORAGE_FAILED = "Syncronization with remote storage failed.";
-	private static final String EXCEPTION_MESSAGE_REMOTE_SYNC_NOT_ENABLED = "Remote Sync Not Enabled.";
 	private static final String EXCEPTION_MESSAGE_NO_CONNECTIVITY_WITH_REMOTE_STORAGE = "No Connection with Remote Storage.";
 
 	private static final int SYNC_FORCE_PUSH_UPDATED_DATE_TIME_AHEAD_VALUE = 1;
@@ -88,7 +83,6 @@ public class Database {
 	private static final int SYNC_END_DATE_TIME_MONTHS_FROM_NOW = 12;
 
 	private static final String URL_REMOTE_SERVICE_GOOGLE = "http://google.com/";
-	private static final String REGEX_EMAIL_AT_SYMBOL = "@";
 
 	/**
 	 * Database constructor
