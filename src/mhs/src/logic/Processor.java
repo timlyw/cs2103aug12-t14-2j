@@ -30,6 +30,7 @@ import com.google.gdata.util.ServiceException;
  */
 public class Processor {
 
+	private static final String TASK_RECORD_FILE_NAME = "taskRecordFile.json";
 	private static final String DATE_TIME_FORMAT = "dd-MM-yy HH-mm";
 	private static final String TEST_FILE_CLOSE_HTML = "</body></html>";
 	private static final String TEST_FILE_START_HTML = "<html><body>";
@@ -46,7 +47,7 @@ public class Processor {
 	private static final String MESSAGE_NO_PARAMS = "No Params specified";
 	private static final String MESSAGE_NULL_INPUT = "Null Input";
 	private static final String COMMAND_HOME = "home";
-	private static final String MESSAGE_DEFAULT_LOGIN_DISPLAY_TEXT = "Please login";
+	private static final String MESSAGE_BLANK = "";
 	private static final String MESSAGE_DATABASE_FACTORY_NOT_INSTANTIATED = "Database Factory not instantiated";
 	private static final String MESSAGE_DATABASE_GIVEN_WRONG_ARGUMENTS = "Database given wrong arguments";
 	private static final String MESSAGE_DATABASE_NOT_INSTANTIATED = "Database not instantiated";
@@ -76,7 +77,7 @@ public class Processor {
 	private boolean usernameIsExpected = false;
 	private boolean isPasswordExpected = false;
 	private String username;
-	private boolean userIsLoggedIn;
+	private boolean isUserLoggedIn;
 
 	private FileHandler feedbackFile;
 	private FileHandler stateFile;
@@ -102,7 +103,7 @@ public class Processor {
 	private Processor() {
 		logEnterMethod("Processor");
 		initializeDatabse();
-		userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
+		isUserLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
 		commandParser = CommandParser.getCommandParser();
 		commandCreator = CommandCreator.getCommandCreator();
 		userCommand = new CommandInfo();
@@ -114,7 +115,7 @@ public class Processor {
 	 */
 	private void initializeDatabse() {
 		try {
-			DatabaseFactory.initializeDatabaseFactory("taskRecordFile.json",
+			DatabaseFactory.initializeDatabaseFactory(TASK_RECORD_FILE_NAME,
 					false);
 			dataHandler = DatabaseFactory.getDatabaseInstance();
 		} catch (IOException e1) {
@@ -143,21 +144,21 @@ public class Processor {
 	/**
 	 * Processor for System Tests.
 	 * 
-	 * @param testDb
+	 * @param testDbFileName
 	 */
-	private Processor(String testDb) {
-		initializeDatabaseTestMode(testDb);
-		userIsLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
+	private Processor(String testDbFileName) {
+		initializeDatabaseTestMode(testDbFileName);
+		isUserLoggedIn = dataHandler.isUserGoogleCalendarAuthenticated();
 		commandParser = CommandParser.getCommandParser();
 		commandCreator = CommandCreator.getCommandCreator();
 		userCommand = new CommandInfo();
-		initiateFile();
+		initiateTestFiles();
 	}
 
 	/**
-	 * Initates out files for system testing
+	 * Initiates out files for system testing
 	 */
-	private void initiateFile() {
+	private void initiateTestFiles() {
 		feedbackFile = new FileHandler(String.format(FILE_FEEDBACK, DateTime
 				.now().toString(DATE_TIME_FORMAT)));
 		stateFile = new FileHandler(String.format(FILE_STATE, DateTime.now()
@@ -169,11 +170,11 @@ public class Processor {
 	/**
 	 * Initializes Database for System Testing.
 	 * 
-	 * @param testDb
+	 * @param testDbFileName
 	 */
-	private void initializeDatabaseTestMode(String testDb) {
+	private void initializeDatabaseTestMode(String testDbFileName) {
 		try {
-			DatabaseFactory.initializeDatabaseFactory(testDb, false);
+			DatabaseFactory.initializeDatabaseFactory(testDbFileName, false);
 			dataHandler = DatabaseFactory.getDatabaseInstance();
 		} catch (IOException e1) {
 			commandFeedback = MESSAGE_FILE_I_O_ERROR;
@@ -209,7 +210,7 @@ public class Processor {
 			boldTitle = displayTextIfLoggedIn();
 		} else {
 			boldTitle = htmlCreator
-					.makeBold(MESSAGE_DEFAULT_LOGIN_DISPLAY_TEXT);
+					.makeBold(MESSAGE_BLANK);
 		}
 		logExitMethod("getLoginDisplayFieldText");
 		return boldTitle;
@@ -279,18 +280,7 @@ public class Processor {
 	public String getCommandFeedback() {
 		return commandFeedback;
 	}
-
-	/**
-	 * Informs the UI, that the next text should be encrypted.
-	 * 
-	 * @return
-	 */
-	public boolean passwordExpected() {
-		logEnterMethod("passwordExpected");
-		logExitMethod("passwordExpected");
-		return isPasswordExpected;
-	}
-
+	
 	/**
 	 * Returns the user the Current State, to be displayed in the state box.
 	 * 
@@ -564,7 +554,7 @@ public class Processor {
 		String output;
 		try {
 			dataHandler.loginUserGoogleAccount(userName);
-			userIsLoggedIn = true;
+			isUserLoggedIn = true;
 			output = MESSAGE_LOGIN_SUCCESS;
 		} catch (AuthenticationException e) {
 			output = MESSAGE_LOGIN_FAIL;
@@ -589,7 +579,7 @@ public class Processor {
 	private String syncGcal(CommandInfo inputCommand) throws ServiceException {
 		logEnterMethod("syncGcal");
 		String outputString = new String();
-		if (!userIsLoggedIn) {
+		if (!isUserLoggedIn) {
 			outputString = loginUser();
 			currentState = outputString;
 		} else {
@@ -622,7 +612,7 @@ public class Processor {
 	private String loginUser() {
 		logEnterMethod("loginUser");
 		String outputString;
-		if (!userIsLoggedIn) {
+		if (!isUserLoggedIn) {
 			outputString = MESSAGE_SYNC_NOT_LOGGED_IN;
 			usernameIsExpected = true;
 		} else {
@@ -641,12 +631,12 @@ public class Processor {
 	private String logoutUser() {
 		logger.entering(getClass().getName(), this.getClass().getName());
 		String outputString;
-		if (!userIsLoggedIn) {
+		if (!isUserLoggedIn) {
 			outputString = MESSAGE_LOGOUT_FAIL_NOT_LOGGED_IN;
 		} else {
 			try {
 				dataHandler.logOutUserGoogleAccount();
-				userIsLoggedIn = false;
+				isUserLoggedIn = false;
 				outputString = MESSAGE_LOGOUT_SUCCESS;
 			} catch (IOException e) {
 				outputString = MESSAGE_LOGOUT_FAIL;
