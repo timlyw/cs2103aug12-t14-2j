@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
@@ -93,8 +92,8 @@ public class TaskLists {
 	private void createTaskLists() {
 		logExitMethod("createTaskLists");
 
-		taskList = new ConcurrentHashMap<Integer, Task>();
-		gCalTaskList = new ConcurrentHashMap<String, Task>();
+		taskList = new LinkedHashMap<Integer, Task>();
+		gCalTaskList = new LinkedHashMap<String, Task>();
 
 		logExitMethod("createTaskLists");
 	}
