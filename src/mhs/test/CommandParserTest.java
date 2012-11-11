@@ -347,7 +347,7 @@ public class CommandParserTest {
 		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
 
 		testCommand = commandParser
-				.getParsedCommand("\"watch day after tomorrow\" ");
+				.getParsedCommand("add \"watch day after tomorrow\" ");
 		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.add,
 				"watch day after tomorrow", null, null, null, 0);
 		assertTrue(testCommand.isEqual(expectedCommand, testCommand));

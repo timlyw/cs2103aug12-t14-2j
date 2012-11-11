@@ -71,6 +71,8 @@ public class TimeExtractor {
 		if (parseString == null) {
 			return null;
 		}
+		setTime = null;
+		timeQueue = new LinkedList<LocalTime>();
 		try {
 			timeQueue = new LinkedList<LocalTime>();
 			String[] processArray = parseString.split(REGEX_WHITE_SPACE);

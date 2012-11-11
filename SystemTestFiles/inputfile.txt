@@ -1,5 +1,102 @@
 home
-add farming
-add dummy 5pm 6pm
-add gong 10pm
+add task 10pm
+add task 10 pm
+add task 17pm
+add task 5 12aM
+add runnung to vivo -1 12PM
+add 5pm today meeting 2103
+<add 10 nov task 10pm to 5pm 12sep>
+<!-- run edit find to 3pm 12313 nov>
+add floating deadline timed
+-1-1-1-1-1
+ 
+add "jUmp rope" tomOrrow to tHis monTh
+add "<day after tomorrow>"
+add 15:30 test at lt3 monday
+add 00:00 test at lt 4 tuesday
+add 000 : 000 tesst at lt5 wedsday
+12:30 test on thursday at lt 4
+add task 1
+task 2
+task 3
+task 4 4 2012
+task 5 friday 
+task 6 sat
+task 7 SuN
+task 8 this weekend
+task 9 this weEk
+task 10 this year
+running from 8pm to 11pm today to tomorrow
+
+search
+delete 5
+delete 2
+delete asdasdasda
+delete test lt 4
+delete delete delete
+undo
+redo
+undo
+undo
+redo
+find tomorrow
+delete 2
+edit 5 to sunday 8pm 
+edit task 10 to jump road jump up and down
+edit task 9 changeMistake 12PM
+oct
+nov
+delete 2
+add meeting 1 5pm
+add meeting 2 tomorrow
+nov
+mark 5
+mark 7
+undo undo undo
+redo
+login
+login
+logout
+logout
+cs1234@hotmail.com
+sync
+redo
+undo
+p
+p
+n
+n
+n
+n
+5
+search
+search tomorrow
+flating
+floating
+deadline
+timed
+edit 4 to fly 3pm weDs
+sync
+sync
+sync
+find
+delete 3
+redo
+undo
+add assignment 10 nov 3pm to 5pm 7 nov
+undo
+delete assignment
+redo
+undo
+undo
+delete 2
+home
+home
+undo
+p
+p
+n
+delete 3000
+delete 3000000
+delete 3000000;
 exit
