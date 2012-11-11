@@ -758,6 +758,7 @@ public class Database {
 	private void preserveTaskNonEditableFields(Task updatedTaskToSave)
 			throws TaskNotFoundException {
 		Task currentTask = query(updatedTaskToSave.getTaskId());
+		updatedTaskToSave.setGTaskId(currentTask.getGTaskId());
 		updatedTaskToSave.setGcalTaskId(currentTask.getgCalTaskId());
 		updatedTaskToSave.setTaskCreated(currentTask.getTaskCreated());
 		updatedTaskToSave.setTaskLastSync(currentTask.getTaskLastSync());
