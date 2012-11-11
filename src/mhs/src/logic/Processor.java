@@ -376,7 +376,7 @@ public class Processor {
 	private void setUsername() {
 		username = userInputString;
 		usernameIsExpected = false;
-		authenticateUser(username);
+		currentState = authenticateUser(username);
 	}
 
 	/**
@@ -601,10 +601,8 @@ public class Processor {
 			} catch (ServiceException e) {
 				outputString = MESSAGE_NO_INTERNET;
 			} catch (IOException e) {
-				// TODO
 				outputString = MESSAGE_NO_INTERNET;
 			} catch (NoActiveCredentialException e) {
-				// TODO
 				outputString = MESSAGE_NO_INTERNET;
 			}
 			commandFeedback = outputString;
