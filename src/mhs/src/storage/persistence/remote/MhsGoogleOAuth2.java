@@ -1,8 +1,8 @@
+//@author A0087048X
 package mhs.src.storage.persistence.remote;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -30,21 +30,14 @@ import com.google.api.services.oauth2.model.Userinfo;
  * Google API Authentication via OAuth2 with refresh mechanism for MHS access.
  * Allows single active credential.
  * 
- * Functionality:
+ * Functionality: Google Authenticator via browser<br>
+ * Credential Storage and creator<br>
+ * Instance Creator for:<br>
+ * 1. Oauth2<br>
+ * 2. httpTransport<br>
+ * 3. jsonFactory<br>
  * 
- * - Google Authenticator via browser
- * 
- * - Credential Storage and creator
- * 
- * - Instance Creator for:
- * 
- * 1. Oauth2
- * 
- * 2. httpTransport
- * 
- * 3. jsonFactory
- * 
- * @author timlyw@google.com
+ * @author Timothy Lim Yi Wen A0087048X
  * 
  */
 public class MhsGoogleOAuth2 {
@@ -106,7 +99,6 @@ public class MhsGoogleOAuth2 {
 		setupCredentialStore();
 		logExitMethod("OAuth2");
 	}
-
 
 	/**
 	 * Setup User Id for Credential retrieval

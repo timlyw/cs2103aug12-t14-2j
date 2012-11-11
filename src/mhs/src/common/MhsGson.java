@@ -11,12 +11,10 @@ import org.joda.time.DateTime;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-
 /**
- * MhsGson 
+ * MhsGson
  * 
- * Creates singleton Gson built with MHS specific settings for use in
- * MHS
+ * Creates singleton Gson built with MHS specific settings for use in MHS
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
