@@ -60,7 +60,7 @@ public class DatabaseTest {
 	Task task4;
 	Task task5;
 
-	private static final int MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS = 60;
+	private static final int MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS = 300;
 	private static final String TEST_TASK_1_NAME = "task 1 - a meeting";
 	private static final String TEST_TASK_2_NAME = "task 2 - a project meeting";
 	private static final String TEST_TASK_3_NAME = "task 3 - assignment due";
@@ -595,7 +595,7 @@ public class DatabaseTest {
 
 		assertTrue(database.isUserGoogleCalendarAuthenticated());
 
-		System.out.println("Push Sync Newer Task");
+		System.out.println("Push Sync New Task");
 		testPushSyncNewTask(gCal);
 		System.out.println("Push sync existing task");
 		testPushSyncExistingTask(gCal);
@@ -616,7 +616,7 @@ public class DatabaseTest {
 	 * @throws TimeoutException
 	 * @throws ExecutionException
 	 * @throws InterruptedException
-	 * @throws NoActiveCredentialException 
+	 * @throws NoActiveCredentialException
 	 */
 	private void testPullSyncNewerTask(GoogleCalendarMhs gCal,
 			Event createdEvent) throws IOException, ServiceException,
@@ -660,14 +660,15 @@ public class DatabaseTest {
 	 * @throws TimeoutException
 	 * @throws ExecutionException
 	 * @throws InterruptedException
-	 * @throws NoActiveCredentialException 
+	 * @throws NoActiveCredentialException
 	 */
 	private Event testPullSyncNewTask(GoogleCalendarMhs gCal)
 			throws IOException, ServiceException, UnknownHostException,
-			InterruptedException, ExecutionException, TimeoutException, NoActiveCredentialException {
+			InterruptedException, ExecutionException, TimeoutException,
+			NoActiveCredentialException {
 		// Test pull new task sync
 		Event createdEvent = gCal.createEvent(task3);
-
+		
 		database.syncronizeDatabases();
 		database.waitForAllBackgroundTasks(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
 
@@ -677,11 +678,12 @@ public class DatabaseTest {
 			Task matchedTask = iterator.next();
 			System.out.println(matchedTask.toString());
 		}
+		
+		System.out.println(gCal.retrieveEvent(createdEvent.getId()));
 
 		queryList = database.query(task3.getTaskName(), false);
 		assertEquals(1, queryList.size());
-		assertEquals(createdEvent.getICalUID(), queryList.get(0)
-				.getgCalTaskId());
+		assertEquals(createdEvent.getId(), queryList.get(0).getgCalTaskId());
 		return createdEvent;
 	}
 
@@ -727,8 +729,8 @@ public class DatabaseTest {
 		database.waitForAllBackgroundTasks(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
 		// Test push new task sync
 		queryList = database.query(false);
-
 		assertEquals(2, queryList.size());
+
 		assertTrue(gCal.retrieveEvent(queryList.get(0).getgCalTaskId()) != null);
 		assertTrue(gCal.retrieveEvent(queryList.get(1).getgCalTaskId()) != null);
 	}
@@ -747,7 +749,6 @@ public class DatabaseTest {
 			NoActiveCredentialException {
 		// we use a separate GoogleCalendar to query events (need to pullEvents
 		// manually)
-		// TODO
 		GoogleCalendarMhs gCal = new GoogleCalendarMhs(
 				MhsGoogleOAuth2.getHttpTransport(),
 				MhsGoogleOAuth2.getJsonFactory(),

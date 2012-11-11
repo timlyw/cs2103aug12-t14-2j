@@ -9,6 +9,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.Task;
+import com.google.gdata.util.ResourceNotFoundException;
 
 
 public class GoogleTasks {
@@ -32,7 +33,7 @@ public class GoogleTasks {
 		taskListId = DEFAULT_TASK_LIST_ID;
 	}
 	
-	public List<Task> retrieveTasks() throws IOException {
+	public List<Task> retrieveTasks() throws IOException, ResourceNotFoundException {
 		com.google.api.services.tasks.model.Tasks retrievedTaskList = taskService.tasks().list(taskListId).execute();
 		return retrievedTaskList.getItems();
 	}
@@ -45,19 +46,19 @@ public class GoogleTasks {
 		return createdTask;
 	}
 
-	public void updateTask(String taskId, String title, boolean completed) throws IOException {
+	public void updateTask(String taskId, String title, boolean completed) throws IOException, ResourceNotFoundException {
 		Task taskToBeUpdated = retrieveTask(taskId);
 		taskToBeUpdated.setTitle(title);
 		setCompleted(taskToBeUpdated, completed);
 		taskService.tasks().update(taskListId, taskId, taskToBeUpdated).execute();
 	}
 	
-	public Task retrieveTask(String taskId) throws IOException {
+	public Task retrieveTask(String taskId) throws IOException, ResourceNotFoundException {
 		Task task = taskService.tasks().get(taskListId, taskId).execute();
 		return task;
 	}
 	
-	public void deleteTask(String taskId) throws IOException {
+	public void deleteTask(String taskId) throws IOException, ResourceNotFoundException {
 		
 		taskService.tasks().delete(taskListId, taskId).execute();
 	}

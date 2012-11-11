@@ -21,7 +21,7 @@ import com.google.gdata.util.ServiceException;
 public class CommandUnmark extends Command {
 
 	private static final String MESSAGE_TASK_NOT_UNMARKED = "Error occured. Task not un-marked.";
-	private static final String CONFIRM_TASK_UNMARKED = "Marked Task - '%1$s' as PENDING";
+	private static final String CONFIRM_TASK_UNMARKED = "I marked '%1$s' to PENDING";
 
 	private static final Logger logger = MhsLogger.getLogger();
 
