@@ -348,8 +348,19 @@ public class Database {
 		} catch (Exception e) {
 			syncronize.disableRemoteSync();
 		}
+		if (!isGoogleServicesInstantiated()) {
+			initializeGoogleServices();
+		}
 		syncronize.enableRemoteSync();
 		logExitMethod("loginUserGoogleAccount");
+	}
+
+	/**
+	 * Checks if Google Services are Instantiated
+	 * @return
+	 */
+	protected static boolean isGoogleServicesInstantiated() {
+		return googleCalendar != null && googleTasks != null;
 	}
 
 	/**
@@ -883,15 +894,41 @@ public class Database {
 	public void clearRemoteDatabase() {
 		logEnterMethod("clearRemoteDatabase");
 		if (isRemoteSyncEnabled) {
-			try {
-				googleCalendar.deleteEvents(DateTime.now().minusYears(1)
-						.toString(), DateTime.now().plusYears(1).toString());
-			} catch (NullPointerException e) {
-				// SilentFailSync Policy
-				logger.log(Level.FINER, e.getMessage());
-			}
+			clearGoogleCalendar();
+			clearGoogleTasks();
 		}
 		logExitMethod("clearRemoteDatabase");
+	}
+
+	private void clearGoogleTasks() {
+		List<com.google.api.services.tasks.model.Task> googleTaskList;
+		try {
+			googleTaskList = googleTasks.retrieveTasks();
+			if (googleTaskList == null) {
+				return;
+			}
+			Iterator<com.google.api.services.tasks.model.Task> googleTaskListIterator = googleTaskList
+					.iterator();
+			while (googleTaskListIterator.hasNext()) {
+				com.google.api.services.tasks.model.Task googleTaskToDelete = googleTaskListIterator
+						.next();
+				googleTasks.deleteTask(googleTaskToDelete.getId());
+			}
+		} catch (ResourceNotFoundException | IOException e) {
+			// SilentFailSync Policy
+			logger.log(Level.FINER, e.getMessage());
+		}
+	}
+
+	protected void clearGoogleCalendar() {
+		try {
+			googleCalendar.deleteEvents(
+					DateTime.now().minusYears(1).toString(), DateTime.now()
+							.plusYears(1).toString());
+		} catch (NullPointerException e) {
+			// SilentFailSync Policy
+			logger.log(Level.FINER, e.getMessage());
+		}
 	}
 
 	/**

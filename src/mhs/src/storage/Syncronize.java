@@ -230,7 +230,7 @@ class Syncronize {
 		logEnterMethod("syncronizeDatabases");
 		logger.log(Level.INFO, "Syncronizing Databases");
 		// checks if google services are instantiated
-		if (Database.googleCalendar == null || Database.googleTasks == null) {
+		if (!Database.isGoogleServicesInstantiated()) {
 			logger.log(Level.INFO, "Google Services not instantiated");
 			disableRemoteSync();
 			return false;
@@ -569,7 +569,6 @@ class Syncronize {
 			com.google.api.services.tasks.model.Task googleTaskToPull) {
 		logEnterMethod("pullSyncNewGoogleTaskTask");
 		DateTime syncDateTime = setSyncTime(googleTaskToPull);
-		// TODO
 		logger.log(Level.INFO, "Adding new pull sync google task..."
 				+ googleTaskToPull.getTitle());
 		Task newTask = new FloatingTask(this.database.getNewTaskId(),
