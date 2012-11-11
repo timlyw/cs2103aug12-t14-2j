@@ -27,9 +27,8 @@ import com.google.gson.stream.JsonReader;
 /**
  * ConfigFile
  * 
- * Handles File I/O operations for persistent user configuration in json file.
- * 
- * - Supports Query, Set configuration parameters
+ * Handles File I/O operations for persistent user configuration in json file.<br>
+ * - Supports Query, Set configuration parameters<br>
  * 
  * @author Timothy Lim Yi Wen A0087048X
  * 

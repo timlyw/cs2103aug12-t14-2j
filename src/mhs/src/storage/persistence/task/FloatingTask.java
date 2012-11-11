@@ -3,7 +3,6 @@
 package mhs.src.storage.persistence.task;
 
 import mhs.src.common.HtmlCreator;
-import mhs.src.storage.persistence.remote.GoogleTasks;
 
 import org.joda.time.DateTime;
 
@@ -12,7 +11,8 @@ import org.joda.time.DateTime;
  * 
  * Floating Task Object
  * 
- * - Inherits from base class Task - Not synced with google calendar
+ * - Inherits from base class Task<br>
+ * - Not synced with google calendar
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */

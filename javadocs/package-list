@@ -1,6 +1,11 @@
 mhs.src
 mhs.src.common
+mhs.src.common.exceptions
 mhs.src.logic
 mhs.src.storage
-mhs.src.ui
+mhs.src.storage.persistence
+mhs.src.storage.persistence.local
+mhs.src.storage.persistence.remote
+mhs.src.storage.persistence.task
+mhs.src.userinterface
 mhs.test
