@@ -139,19 +139,9 @@ public class Database {
 	 */
 	private void initializeSyncDateTimes() {
 		logEnterMethod("initializeSyncDateTimes");
-		setSyncStartDateTime(SYNC_END_DATE_TIME_MONTHS_FROM_NOW);
-		setSyncEndDateTime(SYNC_START_DATE_TIME_MONTHS_BEFORE_NOW);
+		setSyncStartDateTime(SYNC_START_DATE_TIME_MONTHS_BEFORE_NOW);
+		setSyncEndDateTime(SYNC_END_DATE_TIME_MONTHS_FROM_NOW);
 		logExitMethod("initializeSyncDateTimes");
-	}
-
-	/**
-	 * Set Sync End DateTime
-	 * 
-	 * @param monthsBeforeNow
-	 */
-	private void setSyncEndDateTime(int monthsBeforeNow) {
-		syncEndDateTime = DateTime.now().plusMonths(monthsBeforeNow)
-				.toDateMidnight().toDateTime();
 	}
 
 	/**
@@ -159,8 +149,20 @@ public class Database {
 	 * 
 	 * @param monthsBeforeNow
 	 */
-	private void setSyncStartDateTime(int monthsAfterNow) {
-		syncStartDateTime = DateTime.now().minusMonths(monthsAfterNow)
+	private void setSyncStartDateTime(int monthsBeforeNow) {
+		new DateTime();
+		syncStartDateTime = DateTime.now().minusMonths(monthsBeforeNow)
+				.toDateMidnight().toDateTime();
+	}
+
+	/**
+	 * Set Sync End DateTime
+	 * 
+	 * @param monthsBeforeNow
+	 */
+	private void setSyncEndDateTime(int monthsAfterNow) {
+		new DateTime();
+		syncEndDateTime = DateTime.now().plusMonths(monthsAfterNow)
 				.toDateMidnight().toDateTime();
 	}
 
@@ -175,7 +177,6 @@ public class Database {
 			authenticateOAuth2WithDefaultUser();
 		} catch (Exception e) {
 			// Connectivity Errors
-			syncronize.disableRemoteSync();
 		}
 	}
 
@@ -221,8 +222,6 @@ public class Database {
 	public void syncronizeDatabases() throws ServiceException, IOException,
 			NoActiveCredentialException {
 		logEnterMethod("syncronizeDatabases");
-		logger.log(Level.INFO, "Syncronizing Databases");
-
 		if (!isRemoteServiceConnectivityActive()) {
 			syncronize.disableRemoteSync();
 			throw new UnknownHostException(
@@ -273,7 +272,7 @@ public class Database {
 		logEnterMethod("initializeGoogleServices");
 		if (initializeGoogleCalendarService() && initializeGoogleTaskService()) {
 			logger.log(Level.INFO, "Google Services instantiated");
-			logExitMethod("isRemoteServiceConnectivityActive");
+			logExitMethod("initializeGoogleServices");
 			return true;
 		}
 		logExitMethod("initializeGoogleServices");
@@ -884,15 +883,7 @@ public class Database {
 			try {
 				googleCalendar.deleteEvents(DateTime.now().minusYears(1)
 						.toString(), DateTime.now().plusYears(1).toString());
-			} catch (UnknownHostException e) {
-				syncronize.disableRemoteSync();
 			} catch (NullPointerException e) {
-				// SilentFailSync Policy
-				logger.log(Level.FINER, e.getMessage());
-			} catch (ResourceNotFoundException e) {
-				// SilentFailSync Policy
-				logger.log(Level.FINER, e.getMessage());
-			} catch (IOException e) {
 				// SilentFailSync Policy
 				logger.log(Level.FINER, e.getMessage());
 			}

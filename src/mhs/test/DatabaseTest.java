@@ -599,7 +599,7 @@ public class DatabaseTest {
 		testPushSyncNewTask(gCal);
 		System.out.println("Push sync existing task");
 		testPushSyncExistingTask(gCal);
-		System.out.println("Pull sync newer task");
+		System.out.println("Pull sync new task");
 		Event createdEvent = testPullSyncNewTask(gCal);
 		System.out.println("Pull sync newer task");
 		testPullSyncNewerTask(gCal, createdEvent);
@@ -668,7 +668,7 @@ public class DatabaseTest {
 			NoActiveCredentialException {
 		// Test pull new task sync
 		Event createdEvent = gCal.createEvent(task3);
-
+		
 		database.syncronizeDatabases();
 		database.waitForAllBackgroundTasks(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
 
@@ -678,6 +678,8 @@ public class DatabaseTest {
 			Task matchedTask = iterator.next();
 			System.out.println(matchedTask.toString());
 		}
+		
+		System.out.println(gCal.retrieveEvent(createdEvent.getId()));
 
 		queryList = database.query(task3.getTaskName(), false);
 		assertEquals(1, queryList.size());
