@@ -14,22 +14,30 @@ import org.joda.time.DateTime;
  */
 public class CommandInfo {
 
-	private static final String COLOR_BLUE = "blue";
+	//colors used in html strings
+	private static final String COLOR_BLUE = "blue";	
+	private static final String COLOR_GREEN = "green";
+	private static final String COLOR_RED = "red";
+
+	//Strings needed for sentance stucture
 	private static final String STRING_OR = " or ";
+	private static final String STRING_TO_BE_CHANGED = " to be changed.";
+	private static final String STRING_AND = " and ";
+	private static final String STRING_FOLLOWED_BY = " followed by ";
+	private static final String STRING_ENTER = "Enter ";
+
+	//Strings for feedback on the parameters needed
 	private static final String FEEDBACK_DATE_RANGE = "date range";
 	private static final String FEEDBACK_EDITTED_NAME = "editted name";
-	private static final String STRING_TO_BE_CHANGED = " to be changed.";
 	private static final String FEEDBACK_EDIT_PARAMETERS = "new task name or new date time";
-	private static final String STRING_FOLLOWED_BY = " followed by ";
-	private static final String COLOR_GREEN = "green";
 	private static final String FEEDBACK_TIME_OPTIONAL = "time if needed :)";
 	private static final String FEEDBACK_TASKNAME = "task name";
-	private static final String STRING_AND = " and ";
-	private static final String COLOR_RED = "red";
 	private static final String FEEDBACK_TASKNAME_INDEX = "task name / index";
-	private static final String STRING_ENTER = "Enter ";
+	
+	//regex for characters
 	private static final String REGEX_SPACE = " ";
 	private static final String REGEX_DASH = " -";
+	
 	private static final String KEYWORD_INDEX = " Index is : ";
 	private static final String KEYWORD_END_DATE = " End Date : ";
 	private static final String KEYWORD_STARTDATE = " Start Date : ";
