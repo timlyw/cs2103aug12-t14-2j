@@ -46,11 +46,11 @@ public class GoogleTasks {
 		return createdTask;
 	}
 
-	public void updateTask(String taskId, String title, boolean completed) throws IOException, ResourceNotFoundException {
+	public Task updateTask(String taskId, String title, boolean completed) throws IOException, ResourceNotFoundException {
 		Task taskToBeUpdated = retrieveTask(taskId);
 		taskToBeUpdated.setTitle(title);
 		setCompleted(taskToBeUpdated, completed);
-		taskService.tasks().update(taskListId, taskId, taskToBeUpdated).execute();
+		return taskService.tasks().update(taskListId, taskId, taskToBeUpdated).execute();
 	}
 	
 	public Task retrieveTask(String taskId) throws IOException, ResourceNotFoundException {
