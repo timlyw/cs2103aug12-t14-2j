@@ -32,7 +32,6 @@ import org.joda.time.DateTime;
 
 import com.google.api.services.calendar.model.Event;
 import com.google.gdata.util.AuthenticationException;
-import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 /**
@@ -43,10 +42,13 @@ import com.google.gdata.util.ServiceException;
  * 
  * Functions:
  * 
- * - Pull-Push Sync to syncronize local storage and Google Calendar Service<br>
- * - Timed Pull Sync to run at set interval<br>
- * - Pull Sync for single CRUD operation<br>
- * - Push Sync for single CRUD operation<br>
+ * - Pull-Push Sync to syncronize local storage and Google Calendar Service
+ * 
+ * - Timed Pull Sync to run at set interval
+ * 
+ * - Pull Sync for single CRUD operation
+ * 
+ * - Push Sync for single CRUD operation
  * 
  * @author Timothy Lim Yi Wen A0087048X
  */
@@ -229,11 +231,11 @@ class Syncronize {
 	boolean syncronizeDatabases() {
 		logEnterMethod("syncronizeDatabases");
 		// checks if google services are instantiated
-//		if (Database.googleCalendar == null || Database.googleTasks == null) {
-//			logger.log(Level.INFO, "Google Services not instantiated");
-//			disableRemoteSync();
-//			return false;
-//		}
+		if (Database.googleCalendar == null || Database.googleTasks == null) {
+			logger.log(Level.INFO, "Google Services not instantiated");
+			disableRemoteSync();
+			return false;
+		}
 		SyncAllTasks syncronizeAllTasks = new SyncAllTasks(this);
 		futureSyncronizeBackgroundTask = syncronizeBackgroundExecutor
 				.submit(syncronizeAllTasks);
@@ -322,7 +324,7 @@ class Syncronize {
 
 		List<Event> googleCalendarEvents;
 		try {
-			googleCalendarEvents = Database.googleCalendar.retrieveEvents(
+			googleCalendarEvents = Database.googleCalendar.retrieveDefaultEvents(
 					Database.syncStartDateTime.toString(),
 					Database.syncEndDateTime.toString());
 			Iterator<Event> iterator = googleCalendarEvents.iterator();
@@ -338,9 +340,6 @@ class Syncronize {
 			logger.log(Level.FINER, e.getMessage());
 		} catch (IOException e) {
 			logger.log(Level.FINER, e.getMessage());
-		} catch (ResourceNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		logExitMethod("pullSync");
 	}
@@ -536,7 +535,7 @@ class Syncronize {
 		logEnterMethod("pushSyncNewTask");
 		// adds event to google calendar
 		System.out.println(localTask);
-		Event addedGCalEvent = Database.googleCalendar.createEvent(localTask);
+		Event addedGCalEvent = Database.googleCalendar.createEvent(localTask);		
 		System.out.println(addedGCalEvent);
 		updateSyncTask(localTask, addedGCalEvent);
 		logExitMethod("pushSyncNewTask");

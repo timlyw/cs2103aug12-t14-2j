@@ -95,6 +95,7 @@ public class CommandExtractor {
 	 */
 	public boolean checkCommand(String parseString) {
 		logEnterMethod("isCommand");
+		commandString = null;
 		if(parseString == null){
 			return false;
 		}

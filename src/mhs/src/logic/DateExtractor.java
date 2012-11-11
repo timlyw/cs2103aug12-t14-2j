@@ -115,6 +115,7 @@ public class DateExtractor {
 		year = now.getYear();
 		startDate = new LocalDate();
 		endDate = new LocalDate();
+	
 		DEFAULT_FORMATTER = new SimpleDateFormat(DATE_FORMAT);
 		counter = 0;
 
@@ -163,6 +164,7 @@ public class DateExtractor {
 			logger.log(Level.FINER, e.getMessage());
 			return dateList;
 		}
+		System.out.println(dateList.toString());
 		logExitMethod("extractDate");
 		return dateList;
 
@@ -412,6 +414,9 @@ public class DateExtractor {
 	 */
 	private String[] setEnvironment(String parseString) {
 		logEnterMethod("setEnvironment");
+		day = now.getDayOfMonth();
+		month = now.getMonthOfYear();
+		year = now.getYear();
 		dateQueue = new LinkedList<String>();
 		dateList = new LinkedList<LocalDate>();
 		startDate = null;
@@ -770,8 +775,6 @@ public class DateExtractor {
 	 */
 	private void setDay(int parameters) {
 		logEnterMethod("setDay");
-		System.out.println(parameters);
-		System.out.println(now.getDayOfWeek());
 		if (parameters > now.getDayOfWeek()) {
 			day = setDayInSameWeek(parameters);
 			System.out.println(parameters + " " + day);
