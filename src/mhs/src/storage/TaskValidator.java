@@ -96,9 +96,15 @@ class TaskValidator {
 	static boolean isUnsyncedTask(Task localTask) {
 		logEnterMethod("isUnsyncedTask");
 		assert (localTask != null);
-		logExitMethod("isUnsyncedTask");
-		return localTask.getgCalTaskId() == null
-				|| localTask.getTaskLastSync() == null;
+		if (localTask.isFloating()) {
+			logExitMethod("isUnsyncedTask");
+			return localTask.getGTaskId() == null
+					|| localTask.getTaskLastSync() == null;
+		} else {
+			logExitMethod("isUnsyncedTask");
+			return localTask.getgCalTaskId() == null
+					|| localTask.getTaskLastSync() == null;
+		}
 	}
 
 	static boolean isSyncedTask(Task localTask) {

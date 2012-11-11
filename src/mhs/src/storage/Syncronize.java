@@ -560,13 +560,8 @@ class Syncronize {
 		logEnterMethod("pushSync");
 		logger.log(Level.INFO, "Push Sync Tasks");
 		// push sync tasks from local to google calendar
-		System.out.println("!!!" + Database.taskLists.getTaskList().size());
 		for (Map.Entry<Integer, Task> entry : Database.taskLists.getTaskList()
 				.entrySet()) {
-			if (entry.getValue().getTaskCategory()
-					.equals(TaskCategory.FLOATING)) {
-				return;
-			}
 			pushSyncTask(entry.getValue());
 		}
 		logExitMethod("pushSync");
@@ -585,39 +580,48 @@ class Syncronize {
 	void pushSyncTask(Task localTask) throws NullPointerException, IOException,
 			TaskNotFoundException, InvalidTaskFormatException, ServiceException {
 		logEnterMethod("pushSyncTask");
-		// skip floating tasks
-		if (localTask.getTaskCategory().equals(TaskCategory.FLOATING)) {
-			logExitMethod("pushSyncTask");
-			return;
+		if (localTask.isFloating()) {
+			pushSyncFloatingTask();
+		} else {
+			pushSyncTimedAndDeadlineTask(localTask);
 		}
-		// remove deleted task
-		if (localTask.isDeleted()) {
-			logger.log(Level.INFO, "Removing deleted synced task : "
-					+ localTask.getTaskName());
-			try {
-				Database.googleCalendar.deleteEvent(localTask.getgCalTaskId());
-			} catch (NullPointerException e) {
-				logger.log(Level.FINER, e.getMessage());
-			}
-			logExitMethod("pushSyncTask");
-			return;
-		}
+		pushSyncFloatingTask();
+	}
 
-		// add unsynced tasks
+	protected void pushSyncFloatingTask() {
+		logExitMethod("pushSyncTask");
+	}
+
+	protected void pushSyncTimedAndDeadlineTask(Task localTask)
+			throws IOException, ServiceException, TaskNotFoundException,
+			InvalidTaskFormatException {
+		// push unsynced tasks
 		if (TaskValidator.isUnsyncedTask(localTask)) {
 			logger.log(Level.INFO,
 					"Pushing new sync task : " + localTask.getTaskName());
 			pushSyncNewTask(localTask);
 		} else {
-			// add updated tasks
-			if (localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync())) {
-				logger.log(Level.INFO,
-						"Pushing updated task : " + localTask.getTaskName());
-				pushSyncExistingTask(localTask);
+			// remove deleted sync task
+			if (localTask.isDeleted()) {
+				logger.log(Level.INFO, "Removing deleted synced task : "
+						+ localTask.getTaskName());
+				try {
+					Database.googleCalendar.deleteEvent(localTask
+							.getgCalTaskId());
+				} catch (NullPointerException e) {
+					logger.log(Level.FINER, e.getMessage());
+				}
+				pushSyncFloatingTask();
+			} else {
+				// push updated sync tasks
+				if (localTask.getTaskUpdated().isAfter(
+						localTask.getTaskLastSync())) {
+					logger.log(Level.INFO, "Pushing updated task : "
+							+ localTask.getTaskName());
+					pushSyncExistingTask(localTask);
+				}
 			}
 		}
-
-		logExitMethod("pushSyncTask");
 	}
 
 	/**
