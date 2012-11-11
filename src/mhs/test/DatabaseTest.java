@@ -643,7 +643,7 @@ public class DatabaseTest {
 		// Check that task is updated and not created
 		assertEquals(1, queryList.size());
 		// Check that local task is updated
-		assertEquals(updatedCreatedEvent.getICalUID(), queryList.get(0)
+		assertEquals(updatedCreatedEvent.getId(), queryList.get(0)
 				.getgCalTaskId());
 		assertEquals(updatedCreatedEvent.getSummary(), queryList.get(0)
 				.getTaskName());
@@ -668,7 +668,7 @@ public class DatabaseTest {
 			NoActiveCredentialException {
 		// Test pull new task sync
 		Event createdEvent = gCal.createEvent(task3);
-		
+
 		database.syncronizeDatabases();
 		database.waitForAllBackgroundTasks(MAX_TIMEOUT_BACKGROUND_SYNC_TIME_IN_SECONDS);
 
@@ -678,7 +678,7 @@ public class DatabaseTest {
 			Task matchedTask = iterator.next();
 			System.out.println(matchedTask.toString());
 		}
-		
+
 		System.out.println(gCal.retrieveEvent(createdEvent.getId()));
 
 		queryList = database.query(task3.getTaskName(), false);

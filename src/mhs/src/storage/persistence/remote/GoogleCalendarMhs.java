@@ -58,14 +58,24 @@ public class GoogleCalendarMhs {
 		return retrievedEvent;
 	}
 
-	public List<Event> retrieveDefaultEvents(String minDate, String maxDate)
-			throws IOException, ResourceNotFoundException {
-		return defaultCalendar.retrieveEvents(minDate, maxDate);
+	public List<Event> retrieveDefaultEvents(String minDate, String maxDate,
+			boolean getDeletedEventsOnly) throws IOException,
+			ResourceNotFoundException {
+		if(getDeletedEventsOnly){
+			return defaultCalendar.retrieveDeletedEvents(minDate, maxDate);
+		}else{
+			return defaultCalendar.retrieveEvents(minDate, maxDate);
+		}
 	}
 
-	public List<Event> retrieveCompletedEvents(String minDate, String maxDate)
-			throws IOException, ResourceNotFoundException {
-		return completedCalendar.retrieveEvents(minDate, maxDate);
+	public List<Event> retrieveCompletedEvents(String minDate, String maxDate,
+			boolean getDeletedEventsOnly) throws IOException,
+			ResourceNotFoundException {
+		if(getDeletedEventsOnly){
+			return completedCalendar.retrieveDeletedEvents(minDate, maxDate);
+		}else{
+			return completedCalendar.retrieveEvents(minDate, maxDate);
+		}
 	}
 
 	public Event updateEvent(Task updatedTask) throws IOException,
