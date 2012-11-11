@@ -164,7 +164,6 @@ public class DateExtractor {
 			logger.log(Level.FINER, e.getMessage());
 			return dateList;
 		}
-		System.out.println(dateList.toString());
 		logExitMethod("extractDate");
 		return dateList;
 
@@ -777,7 +776,6 @@ public class DateExtractor {
 		logEnterMethod("setDay");
 		if (parameters > now.getDayOfWeek()) {
 			day = setDayInSameWeek(parameters);
-			System.out.println(parameters + " " + day);
 		} else if (parameters < now.getDayOfWeek()) {
 			day = setDayInNextWeek(parameters);
 		} else if (parameters == now.getDayOfWeek()) {

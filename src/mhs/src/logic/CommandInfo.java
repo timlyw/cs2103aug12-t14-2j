@@ -14,6 +14,19 @@ import org.joda.time.DateTime;
  */
 public class CommandInfo {
 
+	private static final String STRING_OR = " or ";
+	private static final String FEEDBACK_DATE_RANGE = "date range";
+	private static final String FEEDBACK_EDITTED_NAME = "editted name";
+	private static final String STRING_TO_BE_CHANGED = " to be changed.";
+	private static final String FEEDBACK_EDIT_PARAMETERS = "new task name or new date time";
+	private static final String STRING_FOLLOWED_BY = " followed by ";
+	private static final String COLOR_GREEN = "green";
+	private static final String FEEDBACK_TIME_OPTIONAL = "time if needed :)";
+	private static final String FEEDBACK_TASKNAME = "task name";
+	private static final String STRING_AND = " and ";
+	private static final String COLOR_RED = "red";
+	private static final String FEEDBACK_TASKNAME_INDEX = "task name / index";
+	private static final String STRING_ENTER = "Enter ";
 	private static final String REGEX_SPACE = " ";
 	private static final String REGEX_DASH = " -";
 	private static final String KEYWORD_INDEX = " Index is : ";
@@ -220,102 +233,7 @@ public class CommandInfo {
 		HtmlCreator htmlCreator = new HtmlCreator();
 		String outString = "";
 		DateTimeHelper dateTimeFormatter = new DateTimeHelper();
-		if (commandEnum != null) {
-			switch (commandEnum) {
-			case add:
-				if (taskName == null && edittedName == null
-						&& startDate == null && endDate == null) {
-					outString = "Fill these up "
-							+ htmlCreator.color("task name", "red") + " and "
-							+ htmlCreator.color("time if needed :)", "green");
-				} else
-					outString = COMMAND_FEEDBACK_ADD;
-				break;
-			case edit:
-				if (taskName == null && edittedName == null
-						&& startDate == null && endDate == null) {
-					outString = "Enter "
-							+ htmlCreator.color("task name / index", "red")
-							+ " followed by "
-							+ htmlCreator.color(
-									"new task name or new date time", "red")
-							+ " to be changed.";
-				} else
-					outString = COMMAND_FEEDBACK_EDIT;
-				break;
-			case home:
-				outString = COMMAND_FEEDBACK_HOME;
-				break;
-			case floating:
-				outString = COMMAND_FEEDBACK_FLOATING;
-				break;
-			case deadline:
-				outString = COMMAND_FEEDBACK_DEADLINE;
-				break;
-			case timed:
-				outString = COMMAND_FEEDBACK_TIMED;
-				break;
-			case rename:
-				if (taskName == null && edittedName == null
-						&& startDate == null && endDate == null) {
-					outString = "Enter "
-							+ htmlCreator.color("task name / index", "red")
-							+ " and "
-							+ htmlCreator.color("editted name", "green");
-				} else
-					outString = COMMAND_FEEDBACK_RENAME;
-				break;
-			case remove:
-				if (taskName == null && edittedName == null
-						&& startDate == null && endDate == null) {
-					outString = "Enter "
-							+ htmlCreator.color("task name / index", "red");
-				} else
-					outString = COMMAND_FEEDBACK_REMOVE;
-				break;
-			case sync:
-				outString = COMMAND_FEEDBACK_SYNC;
-				break;
-			case login:
-				outString = COMMAND_FEEDBACK_LOGIN;
-				break;
-			case logout:
-				outString = COMMAND_FEEDBACK_LOGOUT;
-				break;
-			case exit:
-				outString = COMMAND_FEEDBACK_EXIT;
-				break;
-			case mark:
-				if (taskName == null && edittedName == null
-						&& startDate == null && endDate == null) {
-					outString = "Enter "
-							+ htmlCreator.color("task name / index", "red");
-				} else
-					outString = COMMAND_FEEDBACK_MARK;
-				break;
-			case unmark:
-				if (taskName == null && edittedName == null
-						&& startDate == null && endDate == null) {
-					outString = "Enter "
-							+ htmlCreator.color("task name / index", "red");
-				} else
-					outString = COMMAND_FEEDBACK_UNMARK;
-				break;
-			case search:
-				if (taskName == null && edittedName == null
-						&& startDate == null && endDate == null) {
-					outString = "Enter "
-							+ htmlCreator.color("task name", "blue") + " or "
-							+ htmlCreator.color("date range", "blue");
-				} else
-					outString = COMMAND_FEEDBACK_SEARCH;
-				break;
-			default:
-				outString = (commandEnum.name());
-				break;
-			}
-
-		}
+		outString = getCommandEnumFeedback(htmlCreator, outString);
 		if (index != 0)
 			outString += (" at index" + (index));
 		if (taskName != null)
@@ -334,6 +252,225 @@ public class CommandInfo {
 		}
 		logExitMethod("toHtmlString");
 		return (outString);
+	}
+
+	private String getCommandEnumFeedback(HtmlCreator htmlCreator,
+			String outString) {
+		if (commandEnum != null) {
+			switch (commandEnum) {
+			case add:
+				outString = getAddFeedback(htmlCreator);
+				break;
+			case edit:
+				outString = getEditFeedback(htmlCreator);
+				break;
+			case home:
+				outString = getFeedbackHome();
+				break;
+			case floating:
+				outString = getFeedBackFloating();
+				break;
+			case deadline:
+				outString = getFeedBackDeadline();
+				break;
+			case timed:
+				outString = getFeedbackTimed();
+				break;
+			case rename:
+				outString = getRenameFeedback(htmlCreator);
+				break;
+			case remove:
+				outString = getRemoveFeedback(htmlCreator);
+				break;
+			case sync:
+				outString = getFeedbackSync();
+				break;
+			case login:
+				outString = getFeedbackLogin();
+				break;
+			case logout:
+				outString = getFeedbackLogout();
+				break;
+			case exit:
+				outString = getFeedBackExit();
+				break;
+			case mark:
+				outString = getMarkFeedback(htmlCreator);
+				break;
+			case unmark:
+				outString = getUnmarkFeedBack(htmlCreator);
+				break;
+			case search:
+				outString = getSearchFeedback(htmlCreator);
+				break;
+			default:
+				outString = (commandEnum.name());
+				break;
+			}
+
+		}
+		return outString;
+	}
+
+	private String getSearchFeedback(HtmlCreator htmlCreator) {
+		String outString;
+		if (taskName == null && edittedName == null
+				&& startDate == null && endDate == null) {
+			outString = getSearchParametersFeedback(htmlCreator);
+		} else
+			outString = COMMAND_FEEDBACK_SEARCH;
+		return outString;
+	}
+
+	private String getSearchParametersFeedback(HtmlCreator htmlCreator) {
+		String outString;
+		outString = STRING_ENTER
+				+ htmlCreator.color(FEEDBACK_TASKNAME, "blue") + STRING_OR
+				+ htmlCreator.color(FEEDBACK_DATE_RANGE, "blue");
+		return outString;
+	}
+
+	private String getUnmarkFeedBack(HtmlCreator htmlCreator) {
+		String outString;
+		if (taskName == null && edittedName == null
+				&& startDate == null && endDate == null) {
+			outString = getRemoveParametersFeedBack(htmlCreator);
+		} else
+			outString = COMMAND_FEEDBACK_UNMARK;
+		return outString;
+	}
+
+	private String getMarkFeedback(HtmlCreator htmlCreator) {
+		String outString;
+		if (taskName == null && edittedName == null
+				&& startDate == null && endDate == null) {
+			outString = getRemoveParametersFeedBack(htmlCreator);
+		} else
+			outString = COMMAND_FEEDBACK_MARK;
+		return outString;
+	}
+
+	private String getFeedBackExit() {
+		String outString;
+		outString = COMMAND_FEEDBACK_EXIT;
+		return outString;
+	}
+
+	private String getFeedbackLogout() {
+		String outString;
+		outString = COMMAND_FEEDBACK_LOGOUT;
+		return outString;
+	}
+
+	private String getFeedbackLogin() {
+		String outString;
+		outString = COMMAND_FEEDBACK_LOGIN;
+		return outString;
+	}
+
+	private String getFeedbackSync() {
+		String outString;
+		outString = COMMAND_FEEDBACK_SYNC;
+		return outString;
+	}
+
+	private String getRemoveFeedback(HtmlCreator htmlCreator) {
+		String outString;
+		if (taskName == null && edittedName == null
+				&& startDate == null && endDate == null) {
+			outString = getRemoveParametersFeedBack(htmlCreator);
+		} else
+			outString = COMMAND_FEEDBACK_REMOVE;
+		return outString;
+	}
+
+	private String getRemoveParametersFeedBack(HtmlCreator htmlCreator) {
+		String outString;
+		outString = STRING_ENTER
+				+ htmlCreator.color(FEEDBACK_TASKNAME_INDEX, COLOR_RED);
+		return outString;
+	}
+
+	private String getRenameFeedback(HtmlCreator htmlCreator) {
+		String outString;
+		if (taskName == null && edittedName == null
+				&& startDate == null && endDate == null) {
+			outString = getRenameParametersFeedback(htmlCreator);
+		} else
+			outString = COMMAND_FEEDBACK_RENAME;
+		return outString;
+	}
+
+	private String getRenameParametersFeedback(HtmlCreator htmlCreator) {
+		String outString;
+		outString = STRING_ENTER
+				+ htmlCreator.color(FEEDBACK_TASKNAME_INDEX, COLOR_RED)
+				+ STRING_AND
+				+ htmlCreator.color(FEEDBACK_EDITTED_NAME, COLOR_GREEN);
+		return outString;
+	}
+
+	private String getFeedbackTimed() {
+		String outString;
+		outString = COMMAND_FEEDBACK_TIMED;
+		return outString;
+	}
+
+	private String getFeedBackDeadline() {
+		String outString;
+		outString = COMMAND_FEEDBACK_DEADLINE;
+		return outString;
+	}
+
+	private String getFeedBackFloating() {
+		String outString;
+		outString = COMMAND_FEEDBACK_FLOATING;
+		return outString;
+	}
+
+	private String getFeedbackHome() {
+		String outString;
+		outString = COMMAND_FEEDBACK_HOME;
+		return outString;
+	}
+
+	private String getAddFeedback(HtmlCreator htmlCreator) {
+		String outString;
+		if (taskName == null && edittedName == null
+				&& startDate == null && endDate == null) {
+			outString = getAddParametersFeedback(htmlCreator);
+		} else
+			outString = COMMAND_FEEDBACK_ADD;
+		return outString;
+	}
+
+	private String getAddParametersFeedback(HtmlCreator htmlCreator) {
+		String outString;
+		outString = STRING_ENTER
+				+ htmlCreator.color(FEEDBACK_TASKNAME, COLOR_RED) + STRING_AND
+				+ htmlCreator.color(FEEDBACK_TIME_OPTIONAL, COLOR_GREEN);
+		return outString;
+	}
+
+	private String getEditFeedback(HtmlCreator htmlCreator) {
+		String outString;
+		if (taskName == null && edittedName == null
+				&& startDate == null && endDate == null) {
+			outString = getEditParametersFeedback(htmlCreator);
+		} else
+			outString = COMMAND_FEEDBACK_EDIT;
+		return outString;
+	}
+
+	private String getEditParametersFeedback(HtmlCreator htmlCreator) {
+		String outString;
+		outString = STRING_ENTER
+				+ htmlCreator.color(FEEDBACK_TASKNAME_INDEX, COLOR_RED)
+				+ STRING_FOLLOWED_BY
+				+ htmlCreator.color(
+						FEEDBACK_EDIT_PARAMETERS, COLOR_RED)
+				+ STRING_TO_BE_CHANGED;
+		return outString;
 	}
 
 	/**
