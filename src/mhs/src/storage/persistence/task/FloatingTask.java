@@ -3,6 +3,7 @@
 package mhs.src.storage.persistence.task;
 
 import mhs.src.common.HtmlCreator;
+import mhs.src.storage.persistence.remote.GoogleTasks;
 
 import org.joda.time.DateTime;
 
@@ -52,6 +53,8 @@ public class FloatingTask extends Task {
 			DateTime syncDateTime) {
 		super(taskId, googleTask.getTitle(), TaskCategory.FLOATING,
 				syncDateTime, syncDateTime, syncDateTime, false, false);
+		setDeleted(googleTask.getDeleted() != null);
+		setDone(googleTask.getCompleted() != null);
 		setGTaskId(googleTask.getId());
 	}
 
