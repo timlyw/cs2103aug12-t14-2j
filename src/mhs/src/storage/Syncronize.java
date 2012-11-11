@@ -722,14 +722,12 @@ class Syncronize {
 		try {
 			Database.googleTasks.deleteTask(localTask.getGTaskId());
 		} catch (NullPointerException e) {
-			e.printStackTrace();
 			logger.log(Level.FINER, e.getMessage());
+			e.printStackTrace();
 		} catch (ResourceNotFoundException e) {
-			// TODO Auto-generated catch block
 			logger.log(Level.FINER, e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			logger.log(Level.FINER, e.getMessage());
 			e.printStackTrace();
 		}
@@ -893,6 +891,16 @@ class Syncronize {
 		return localSyncTaskToUpdate;
 	}
 
+	/**
+	 * Update Sync Task with Google Task and Syncs Times
+	 * 
+	 * @param localSyncTaskToUpdate
+	 * @param addedGTask
+	 * @return
+	 * @throws IOException
+	 * @throws TaskNotFoundException
+	 * @throws InvalidTaskFormatException
+	 */
 	private Task updateSyncTask(Task localSyncTaskToUpdate,
 			com.google.api.services.tasks.model.Task addedGTask)
 			throws IOException, TaskNotFoundException,
@@ -907,7 +915,6 @@ class Syncronize {
 			throw new InvalidTaskFormatException(
 					Database.EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		}
-		System.out.println("Update Sync Task");
 		DateTime syncDateTime = setSyncTime(addedGTask);
 		localSyncTaskToUpdate = updateLocalSyncTask(localSyncTaskToUpdate,
 				addedGTask, syncDateTime);
@@ -918,18 +925,26 @@ class Syncronize {
 		return localSyncTaskToUpdate;
 	}
 
+	/**
+	 * Updates local sync task with Google Task
+	 * 
+	 * @param localSyncTaskToUpdate
+	 * @param addedGTask
+	 * @param syncDateTime
+	 * @return Updated SyncTask
+	 */
 	protected Task updateLocalSyncTask(Task localSyncTaskToUpdate,
 			com.google.api.services.tasks.model.Task addedGTask,
 			DateTime syncDateTime) {
 		logEnterMethod("updateLocalSyncTask");
-		localSyncTaskToUpdate.setGTaskId(addedGTask.getId());
-		localSyncTaskToUpdate.setTaskLastSync(syncDateTime);
+		Task updatedlocalSyncTask = new FloatingTask(
+				localSyncTaskToUpdate.getTaskId(), addedGTask, syncDateTime);
 		logEnterMethod("updateLocalSyncTask");
-		return localSyncTaskToUpdate;
+		return updatedlocalSyncTask;
 	}
 
 	/**
-	 * Updates local sync task
+	 * Updates local sync task with Google Event
 	 * 
 	 * @param localSyncTaskToUpdate
 	 * @param gCalEntry

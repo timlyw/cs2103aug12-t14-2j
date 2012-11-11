@@ -357,6 +357,7 @@ public class Database {
 
 	/**
 	 * Checks if Google Services are Instantiated
+	 * 
 	 * @return
 	 */
 	protected static boolean isGoogleServicesInstantiated() {
@@ -843,13 +844,11 @@ public class Database {
 		logEnterMethod("removeRecord");
 		assert (taskToRemove != null);
 		assert (taskLists != null);
-
 		if (!taskLists.containsTask(taskToRemove.getTaskId())) {
 			throw new TaskNotFoundException(
 					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
 		taskLists.removeTaskInTaskLists(taskToRemove);
-
 		logExitMethod("removeRecord");
 	}
 
