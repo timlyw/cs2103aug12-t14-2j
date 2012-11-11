@@ -2,6 +2,7 @@
 
 package mhs.src.logic;
 
+
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -13,6 +14,8 @@ import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.DatabaseAlreadyInstantiatedException;
 import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
 import mhs.src.common.exceptions.NoActiveCredentialException;
+import mhs.src.logic.command.Command;
+import mhs.src.logic.parser.CommandParser;
 import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseFactory;
 

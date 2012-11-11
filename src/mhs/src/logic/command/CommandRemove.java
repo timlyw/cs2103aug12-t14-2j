@@ -1,6 +1,6 @@
 //@author A0088669A
 
-package mhs.src.logic;
+package mhs.src.logic.command;
 
 import java.io.IOException;
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.TaskNotFoundException;
+import mhs.src.logic.CommandInfo;
 import mhs.src.storage.persistence.task.Task;
 
 /**

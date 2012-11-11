@@ -1,6 +1,6 @@
 //@author A0088669A
 
-package mhs.src.logic;
+package mhs.src.logic.command;
 
 import org.joda.time.DateTime;
 
@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.InvalidTaskFormatException;
 import mhs.src.common.exceptions.TaskNotFoundException;
+import mhs.src.logic.CommandInfo;
 import mhs.src.storage.persistence.task.DeadlineTask;
 import mhs.src.storage.persistence.task.FloatingTask;
 import mhs.src.storage.persistence.task.Task;

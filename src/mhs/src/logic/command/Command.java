@@ -1,6 +1,6 @@
 //@author A0088669A
 
-package mhs.src.logic;
+package mhs.src.logic.command;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,6 +17,7 @@ import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.DatabaseFactoryNotInstantiatedException;
 import mhs.src.common.exceptions.InvalidTaskFormatException;
 import mhs.src.common.exceptions.TaskNotFoundException;
+import mhs.src.logic.CommandInfo;
 import mhs.src.storage.Database;
 import mhs.src.storage.DatabaseFactory;
 import mhs.src.storage.persistence.task.Task;
@@ -49,7 +50,7 @@ public abstract class Command {
 	private static final String CONNECTOR_DEADLINE = " due %1$s";
 
 	protected boolean isUndoable;
-	protected static List<Task> matchedTasks;
+	public static List<Task> matchedTasks;
 	protected static Database dataHandler;
 	protected boolean indexExpected;
 	protected static HtmlCreator htmlCreator;
@@ -624,7 +625,7 @@ public abstract class Command {
 	 * 
 	 * @return
 	 */
-	protected static String refreshLastState() {
+	public static String refreshLastState() {
 		String lastStateString = new String();
 		List<Task> resultList;
 		try {

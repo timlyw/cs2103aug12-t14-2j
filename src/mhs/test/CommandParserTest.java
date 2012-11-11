@@ -6,12 +6,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import mhs.src.logic.CommandExtractor;
 import mhs.src.logic.CommandInfo;
-import mhs.src.logic.CommandParser;
-import mhs.src.logic.DateExtractor;
-import mhs.src.logic.NameExtractor;
-import mhs.src.logic.TimeExtractor;
+import mhs.src.logic.parser.CommandExtractor;
+import mhs.src.logic.parser.CommandParser;
+import mhs.src.logic.parser.DateExtractor;
+import mhs.src.logic.parser.NameExtractor;
+import mhs.src.logic.parser.TimeExtractor;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
