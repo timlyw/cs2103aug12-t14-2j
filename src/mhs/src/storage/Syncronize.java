@@ -229,6 +229,7 @@ class Syncronize {
 	 */
 	boolean syncronizeDatabases() {
 		logEnterMethod("syncronizeDatabases");
+		logger.log(Level.INFO, "Syncronizing Databases");
 		// checks if google services are instantiated
 		if (Database.googleCalendar == null || Database.googleTasks == null) {
 			logger.log(Level.INFO, "Google Services not instantiated");
@@ -320,15 +321,20 @@ class Syncronize {
 	void pullSync() throws UnknownHostException, TaskNotFoundException,
 			InvalidTaskFormatException {
 		logEnterMethod("pullSync");
+		logger.log(Level.INFO, "Pull Sync Tasks");
 
-		List<Event> googleCalendarEvents;
+		Map<String, Event> googleCalendarEvents;
 		try {
-			googleCalendarEvents = retrieveGoogleCalendarEvents();
-			Iterator<Event> iterator = googleCalendarEvents.iterator();
+			googleCalendarEvents = retrieveGoogleCalendarEvents(
+					Database.syncStartDateTime.toString(),
+					Database.syncEndDateTime.toString());
 			// pull sync remote tasks
-			while (iterator.hasNext()) {
-				Event gCalEntry = iterator.next();
-				pullSyncTask(gCalEntry);
+			for (Map.Entry<String, Event> entry : googleCalendarEvents
+					.entrySet()) {
+				pullSyncTask(entry.getValue());
+				if(!Database.googleCalendar.isDeleted(entry.getValue())){
+					System.out.println(entry.getValue().getSummary());
+				}
 			}
 		} catch (UnknownHostException e) {
 			logger.log(Level.FINER, e.getMessage());
@@ -351,21 +357,21 @@ class Syncronize {
 	 * @throws IOException
 	 * @throws ResourceNotFoundException
 	 */
-	private List<Event> retrieveGoogleCalendarEvents()
+	private Map<String, Event> retrieveGoogleCalendarEvents(
+			String startDateTime, String endDateTime)
 			throws ResourceNotFoundException, IOException {
 		Map<String, Event> googleCalendarEvents = new LinkedHashMap<>();
 		List<Event> googleDefaultEvents = Database.googleCalendar
-				.retrieveDefaultEvents(Database.syncStartDateTime.toString(),
-						Database.syncEndDateTime.toString());
+				.retrieveDefaultEvents(startDateTime, endDateTime);
 		List<Event> googleCompleted = Database.googleCalendar
-				.retrieveCompletedEvents(Database.syncStartDateTime.toString(),
-						Database.syncEndDateTime.toString());
+				.retrieveCompletedEvents(startDateTime, endDateTime);
 		// Default Events
 		Iterator<Event> googleDefaultEventListIterator = googleDefaultEvents
 				.iterator();
 		while (googleDefaultEventListIterator.hasNext()) {
 			Event googleEventToAddToList = googleDefaultEventListIterator
 					.next();
+			System.out.println(googleEventToAddToList);
 			googleCalendarEvents.put(googleEventToAddToList.getId(),
 					googleEventToAddToList);
 		}
@@ -388,7 +394,7 @@ class Syncronize {
 			googleCalendarEvents.put(googleEventToAddToList.getId(),
 					googleEventToAddToList);
 		}
-		return null;
+		return googleCalendarEvents;
 	}
 
 	/**
@@ -402,7 +408,6 @@ class Syncronize {
 	private void pullSyncTask(Event gCalEntry) throws TaskNotFoundException,
 			InvalidTaskFormatException, IOException {
 		logEnterMethod("pullSyncTask");
-
 		if (Database.taskLists.containsSyncTask(gCalEntry.getICalUID())) {
 
 			Task localTask = Database.taskLists.getSyncTask(gCalEntry
@@ -593,14 +598,25 @@ class Syncronize {
 	 * @throws TaskNotFoundException
 	 * @throws Exception
 	 */
-	private void pushSyncExistingTask(Task localTask)
-			throws NullPointerException, IOException, ServiceException,
-			TaskNotFoundException, InvalidTaskFormatException {
+	private void pushSyncExistingTask(Task localTask) {
 		logEnterMethod("pushSyncExistingTask");
 		// update remote task
-		Event updatedGcalEvent = Database.googleCalendar.updateEvent(localTask
-				.clone());
-		updateSyncTask(localTask, updatedGcalEvent);
+		Event updatedGcalEvent;
+		try {
+			updatedGcalEvent = Database.googleCalendar.updateEvent(localTask
+					.clone());
+
+			updateSyncTask(localTask, updatedGcalEvent);
+		} catch (ResourceNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TaskNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidTaskFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		logExitMethod("pushSyncExistingTask");
 	}
 
