@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
@@ -92,8 +93,8 @@ public class TaskLists {
 	private void createTaskLists() {
 		logExitMethod("createTaskLists");
 
-		taskList = new LinkedHashMap<Integer, Task>();
-		gCalTaskList = new LinkedHashMap<String, Task>();
+		taskList = new ConcurrentHashMap<Integer, Task>();
+		gCalTaskList = new ConcurrentHashMap<String, Task>();
 
 		logExitMethod("createTaskLists");
 	}
@@ -110,12 +111,16 @@ public class TaskLists {
 
 		for (Map.Entry<Integer, Task> entry : taskListToInitialize.entrySet()) {
 			Task taskToAdd = entry.getValue();
-			taskList.put(taskToAdd.getTaskId(), taskToAdd);
-			if (taskToAdd.getgCalTaskId() != null) {
-				gCalTaskList.put(taskToAdd.getgCalTaskId(), taskToAdd);
-			}
+			putTaskInTaskLists(taskToAdd);
 		}
 		logExitMethod("loadTaskListsFromTaskListToInitialize");
+	}
+
+	protected void putTaskInTaskLists(Task taskToPut) {
+		taskList.put(taskToPut.getTaskId(), taskToPut);
+		if (taskToPut.getgCalTaskId() != null) {
+			gCalTaskList.put(taskToPut.getgCalTaskId(), taskToPut);
+		}
 	}
 
 	// Task List task CRUD Methods
@@ -134,13 +139,7 @@ public class TaskLists {
 					PARAMETER_TASK_TO_UPDATE_IN_TASK_LISTS));
 		}
 
-		taskList.put(taskToUpdateInTaskLists.getTaskId(),
-				taskToUpdateInTaskLists);
-
-		if (taskToUpdateInTaskLists.getgCalTaskId() != null) {
-			gCalTaskList.put(taskToUpdateInTaskLists.getgCalTaskId(),
-					taskToUpdateInTaskLists);
-		}
+		putTaskInTaskLists(taskToUpdateInTaskLists);
 		logExitMethod("updateTaskInTaskLists");
 	}
 
@@ -158,10 +157,14 @@ public class TaskLists {
 					PARAMETER_TASK_TO_REMOVE_FROM_TASK_LISTS));
 		}
 
-		taskList.remove(taskToRemoveFromTaskLists.getTaskId());
-		gCalTaskList.remove(taskToRemoveFromTaskLists.getgCalTaskId());
+		removeTaskFromTaskLists(taskToRemoveFromTaskLists);
 
 		logExitMethod("removeTaskInTaskLists");
+	}
+
+	protected void removeTaskFromTaskLists(Task taskToRemoveFromTaskLists) {
+		taskList.remove(taskToRemoveFromTaskLists.getTaskId());
+		gCalTaskList.remove(taskToRemoveFromTaskLists.getgCalTaskId());
 	}
 
 	// Task Query Methods

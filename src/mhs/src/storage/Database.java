@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -127,6 +128,7 @@ public class Database {
 		configFile = new ConfigFile();
 		taskRecordFile = new TaskRecordFile(taskRecordFileName);
 		taskLists = new TaskLists(taskRecordFile.getTaskList());
+
 		logExitMethod("initalizeDatabase");
 	}
 
