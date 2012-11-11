@@ -37,6 +37,7 @@ public class DeadlineTask extends Task {
 	 * @param updatedDt
 	 * @param syncDt
 	 * @param gCalTaskId
+	 * @param gCalTaskUid
 	 * @param isDone
 	 * @param isDeleted
 	 */
@@ -62,7 +63,7 @@ public class DeadlineTask extends Task {
 				syncDateTime, syncDateTime, syncDateTime, false, false);
 		setGcalTaskId(gCalEntry.getId());
 		setGcalTaskUid(gCalEntry.getICalUID());
-		setEndDateTime(new DateTime(gCalEntry.getEnd().toString()));
+		setEndDateTime(new DateTime(gCalEntry.getEnd().getDateTime().getValue()));
 	}
 
 	/**
@@ -121,6 +122,9 @@ public class DeadlineTask extends Task {
 		}
 		if (gCalTaskId != null) {
 			taskToString += "gCalTaskId=" + gCalTaskId;
+		}
+		if (gCalTaskUid != null) {
+			taskToString += "gCalTaskUid=" + gCalTaskUid;
 		}
 		if (isDone != null) {
 			taskToString += "isDone=" + isDone.toString();
