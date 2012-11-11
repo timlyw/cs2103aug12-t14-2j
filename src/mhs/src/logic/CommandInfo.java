@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
  */
 public class CommandInfo {
 
+	private static final String COLOR_BLUE = "blue";
 	private static final String STRING_OR = " or ";
 	private static final String FEEDBACK_DATE_RANGE = "date range";
 	private static final String FEEDBACK_EDITTED_NAME = "editted name";
@@ -75,6 +76,7 @@ public class CommandInfo {
 	private int index;
 
 	private static final Logger logger = MhsLogger.getLogger();
+	private static HtmlCreator htmlCreator = new HtmlCreator();
 
 	/**
 	 * This is the constructor to set up the command object.
@@ -202,7 +204,7 @@ public class CommandInfo {
 	}
 
 	/**
-	 * ToString function to see all the parameters initialized.
+	 * ToString function to see all the parameters initialised.
 	 */
 	public String toString() {
 		logEnterMethod("toString");
@@ -228,21 +230,28 @@ public class CommandInfo {
 		return outString;
 	}
 
+	/**
+	 * ToString function to display for command feedback
+	 * @return
+	 */
 	public String toHtmlString() {
 		logEnterMethod("toHtmlString");
-		HtmlCreator htmlCreator = new HtmlCreator();
 		String outString = "";
 		DateTimeHelper dateTimeFormatter = new DateTimeHelper();
-		outString = getCommandEnumFeedback(htmlCreator, outString);
-		if (index != 0)
+		outString = getCommandEnumFeedback();
+		if (index != 0){
 			outString += (" at index" + (index));
-		if (taskName != null)
+		}
+		if (taskName != null){
 			outString += (REGEX_SPACE + taskName);
-		if (edittedName != null)
+		}
+		if (edittedName != null){
 			outString += (REGEX_SPACE + edittedName);
-		if (startDate != null)
+		}
+		if (startDate != null){
 			outString += (REGEX_SPACE + dateTimeFormatter
 					.formatDateTimeToString(startDate));
+		}
 		if (endDate != null) {
 			if (startDate != null) {
 				outString += REGEX_DASH;
@@ -254,15 +263,21 @@ public class CommandInfo {
 		return (outString);
 	}
 
-	private String getCommandEnumFeedback(HtmlCreator htmlCreator,
-			String outString) {
+	/**
+	 * Method to get the command feedback for commands
+	 * @param outString
+	 * @return Returns a html string.
+	 */
+	private String getCommandEnumFeedback() {
+		logEnterMethod("getCommandEnumFeedback");
+		String outString = "";
 		if (commandEnum != null) {
 			switch (commandEnum) {
 			case add:
-				outString = getAddFeedback(htmlCreator);
+				outString = getAddFeedback();
 				break;
 			case edit:
-				outString = getEditFeedback(htmlCreator);
+				outString = getEditFeedback();
 				break;
 			case home:
 				outString = getFeedbackHome();
@@ -277,10 +292,10 @@ public class CommandInfo {
 				outString = getFeedbackTimed();
 				break;
 			case rename:
-				outString = getRenameFeedback(htmlCreator);
+				outString = getRenameFeedback();
 				break;
 			case remove:
-				outString = getRemoveFeedback(htmlCreator);
+				outString = getRemoveFeedback();
 				break;
 			case sync:
 				outString = getFeedbackSync();
@@ -295,174 +310,293 @@ public class CommandInfo {
 				outString = getFeedBackExit();
 				break;
 			case mark:
-				outString = getMarkFeedback(htmlCreator);
+				outString = getMarkFeedback();
 				break;
 			case unmark:
-				outString = getUnmarkFeedBack(htmlCreator);
+				outString = getUnmarkFeedBack();
 				break;
 			case search:
-				outString = getSearchFeedback(htmlCreator);
+				outString = getSearchFeedback();
 				break;
 			default:
 				outString = (commandEnum.name());
 				break;
 			}
-
+			logExitMethod("getCommandEnumFeedback");
 		}
 		return outString;
 	}
 
-	private String getSearchFeedback(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for search command.
+	 * @return Returns a html string.
+	 */
+	private String getSearchFeedback() {
+		logEnterMethod("getSearchFeedback");
 		String outString;
 		if (taskName == null && edittedName == null
 				&& startDate == null && endDate == null) {
-			outString = getSearchParametersFeedback(htmlCreator);
+			outString = getSearchParametersFeedback();
 		} else
 			outString = COMMAND_FEEDBACK_SEARCH;
+		logExitMethod("getSearchFeedback");
 		return outString;
 	}
 
-	private String getSearchParametersFeedback(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for parameters needed for searching.
+	 * @return Returns a html string.
+	 */
+	private String getSearchParametersFeedback() {
+		logEnterMethod("getSearchParametersFeedback");
 		String outString;
 		outString = STRING_ENTER
-				+ htmlCreator.color(FEEDBACK_TASKNAME, "blue") + STRING_OR
-				+ htmlCreator.color(FEEDBACK_DATE_RANGE, "blue");
+				+ htmlCreator.color(FEEDBACK_TASKNAME, COLOR_BLUE) + STRING_OR
+				+ htmlCreator.color(FEEDBACK_DATE_RANGE, COLOR_BLUE);
+		logExitMethod("getSearchParametersFeedback");
 		return outString;
 	}
 
-	private String getUnmarkFeedBack(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for unmark command.
+	 * @return Returns a string.
+	 */
+	private String getUnmarkFeedBack() {
+		logEnterMethod("getUnmarkFeedBack");
 		String outString;
 		if (taskName == null && edittedName == null
 				&& startDate == null && endDate == null) {
-			outString = getRemoveParametersFeedBack(htmlCreator);
+			outString = getRemoveParametersFeedBack();
 		} else
 			outString = COMMAND_FEEDBACK_UNMARK;
+		logExitMethod("getUnmarkFeedBack");
 		return outString;
 	}
 
-	private String getMarkFeedback(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for mark command.
+	 * @return Returns a string.
+	 */
+	private String getMarkFeedback() {
+		logEnterMethod("getMarkFeedback");
 		String outString;
 		if (taskName == null && edittedName == null
 				&& startDate == null && endDate == null) {
-			outString = getRemoveParametersFeedBack(htmlCreator);
+			outString = getRemoveParametersFeedBack();
 		} else
 			outString = COMMAND_FEEDBACK_MARK;
+		logExitMethod("getMarkFeedback");
 		return outString;
 	}
 
+	/**
+	 * Method to get feedback for exit command.
+	 * @return Returns a string.
+	 */
 	private String getFeedBackExit() {
+		logEnterMethod("getFeedBackExit");
 		String outString;
 		outString = COMMAND_FEEDBACK_EXIT;
+		logExitMethod("getFeedBackExit");
 		return outString;
 	}
-
+	
+	/**
+	 * Method to get feedback for lgout command.
+	 * @return Returns a string.
+	 */
 	private String getFeedbackLogout() {
+		logEnterMethod("getFeedbackLogout");
 		String outString;
 		outString = COMMAND_FEEDBACK_LOGOUT;
+		logExitMethod("getFeedbackLogout");
 		return outString;
 	}
 
+	/**
+	 * Method to get feedback for login command.
+	 * @return Returns a string.
+	 */
 	private String getFeedbackLogin() {
+		logEnterMethod("getFeedbackLogin");
 		String outString;
 		outString = COMMAND_FEEDBACK_LOGIN;
+		logExitMethod("getFeedbackLogin");
 		return outString;
 	}
 
+	/**
+	 * Method to get feedback for sync command.
+	 * @return Returns a string.
+	 */
 	private String getFeedbackSync() {
+		logEnterMethod("getFeedbackSync");
 		String outString;
 		outString = COMMAND_FEEDBACK_SYNC;
+		logExitMethod("getFeedbackSync");
 		return outString;
 	}
 
-	private String getRemoveFeedback(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for remove command.
+	 * @return Returns a html string.
+	 */
+	private String getRemoveFeedback() {
+		logEnterMethod("getRemoveFeedback");
 		String outString;
 		if (taskName == null && edittedName == null
 				&& startDate == null && endDate == null) {
-			outString = getRemoveParametersFeedBack(htmlCreator);
+			outString = getRemoveParametersFeedBack();
 		} else
 			outString = COMMAND_FEEDBACK_REMOVE;
+		logExitMethod("getRemoveFeedback");
 		return outString;
 	}
 
-	private String getRemoveParametersFeedBack(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for remove command parameters.
+	 * @return Returns a html string.
+	 */
+	private String getRemoveParametersFeedBack() {
+		logEnterMethod("getRemoveParametersFeedBack");
 		String outString;
 		outString = STRING_ENTER
 				+ htmlCreator.color(FEEDBACK_TASKNAME_INDEX, COLOR_RED);
+		logExitMethod("getRemoveParametersFeedBack");
 		return outString;
 	}
 
-	private String getRenameFeedback(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for rename command.
+	 * @return Returns a html string.
+	 */
+	private String getRenameFeedback() {
+		logEnterMethod("getRenameFeedback");
 		String outString;
 		if (taskName == null && edittedName == null
 				&& startDate == null && endDate == null) {
-			outString = getRenameParametersFeedback(htmlCreator);
+			outString = getRenameParametersFeedback();
 		} else
 			outString = COMMAND_FEEDBACK_RENAME;
+		logExitMethod("getRenameFeedback");
 		return outString;
 	}
 
-	private String getRenameParametersFeedback(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for rename command parameters.
+	 * @return Returns a string.
+	 */
+	private String getRenameParametersFeedback() {
+		logEnterMethod("getRenameParametersFeedback");
 		String outString;
 		outString = STRING_ENTER
 				+ htmlCreator.color(FEEDBACK_TASKNAME_INDEX, COLOR_RED)
 				+ STRING_AND
 				+ htmlCreator.color(FEEDBACK_EDITTED_NAME, COLOR_GREEN);
+		logExitMethod("getRenameParametersFeedback");
 		return outString;
 	}
 
+	/**
+	 * Method to get feedback for timed command.
+	 * @return Returns a string.
+	 */
 	private String getFeedbackTimed() {
+		logEnterMethod("getFeedbackTimed");
 		String outString;
 		outString = COMMAND_FEEDBACK_TIMED;
+		logExitMethod("getFeedbackTimed");
 		return outString;
 	}
 
+	/**
+	 * Method to get feedback for deadline command.
+	 * @return Returns a string.
+	 */
 	private String getFeedBackDeadline() {
+		logEnterMethod("getFeedBackDeadline");
 		String outString;
 		outString = COMMAND_FEEDBACK_DEADLINE;
+		logExitMethod("getFeedBackDeadline");
 		return outString;
 	}
 
+	/**
+	 * Method to get feedback for floating command.
+	 * @return Returns a string.
+	 */
 	private String getFeedBackFloating() {
+		logEnterMethod("getFeedBackFloating");
 		String outString;
 		outString = COMMAND_FEEDBACK_FLOATING;
+		logExitMethod("getFeedBackFloating");
 		return outString;
 	}
 
+	/**
+	 * Method to get feedback for home command.
+	 * @return Returns a string.
+	 */
 	private String getFeedbackHome() {
+		logEnterMethod("getFeedbackHome");
 		String outString;
 		outString = COMMAND_FEEDBACK_HOME;
+		logExitMethod("getFeedbackHome");
 		return outString;
 	}
 
-	private String getAddFeedback(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for add command.
+	 * @return Returns a string.
+	 */
+	private String getAddFeedback() {
+		logEnterMethod("getAddFeedback");
 		String outString;
 		if (taskName == null && edittedName == null
 				&& startDate == null && endDate == null) {
-			outString = getAddParametersFeedback(htmlCreator);
+			outString = getAddParametersFeedback();
 		} else
 			outString = COMMAND_FEEDBACK_ADD;
+		logExitMethod("getAddFeedback");
 		return outString;
 	}
 
-	private String getAddParametersFeedback(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for add command parameters.
+	 * @return Returns a string.
+	 */
+	private String getAddParametersFeedback() {
+		logEnterMethod("getAddParametersFeedback");
 		String outString;
 		outString = STRING_ENTER
 				+ htmlCreator.color(FEEDBACK_TASKNAME, COLOR_RED) + STRING_AND
 				+ htmlCreator.color(FEEDBACK_TIME_OPTIONAL, COLOR_GREEN);
+		logExitMethod("getAddParametersFeedback");
 		return outString;
 	}
 
-	private String getEditFeedback(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for edit command.
+	 * @return Returns a string.
+	 */
+	private String getEditFeedback() {
+		logEnterMethod("getEditFeedback");
 		String outString;
 		if (taskName == null && edittedName == null
 				&& startDate == null && endDate == null) {
-			outString = getEditParametersFeedback(htmlCreator);
+			outString = getEditParametersFeedback();
 		} else
 			outString = COMMAND_FEEDBACK_EDIT;
+		logExitMethod("getEditFeedback");
 		return outString;
 	}
 
-	private String getEditParametersFeedback(HtmlCreator htmlCreator) {
+	/**
+	 * Method to get feedback for edit command parameters.
+	 * @return Returns a html string.
+	 */
+	private String getEditParametersFeedback() {
+		logEnterMethod("getEditParametersFeedback");
 		String outString;
 		outString = STRING_ENTER
 				+ htmlCreator.color(FEEDBACK_TASKNAME_INDEX, COLOR_RED)
@@ -470,6 +604,7 @@ public class CommandInfo {
 				+ htmlCreator.color(
 						FEEDBACK_EDIT_PARAMETERS, COLOR_RED)
 				+ STRING_TO_BE_CHANGED;
+		logExitMethod("getEditParametersFeedback");
 		return outString;
 	}
 
