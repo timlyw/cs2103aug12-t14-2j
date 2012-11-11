@@ -324,7 +324,7 @@ class Syncronize {
 
 		List<Event> googleCalendarEvents;
 		try {
-			googleCalendarEvents = Database.googleCalendar.retrieveEvents(
+			googleCalendarEvents = Database.googleCalendar.retrieveDefaultEvents(
 					Database.syncStartDateTime.toString(),
 					Database.syncEndDateTime.toString());
 			Iterator<Event> iterator = googleCalendarEvents.iterator();
