@@ -11,7 +11,6 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
-import com.google.gdata.util.ResourceNotFoundException;
 
 public class GoogleCalendar {
 	Calendar calService = null;
@@ -38,14 +37,14 @@ public class GoogleCalendar {
 		return createdEvent;
 	}
 	
-	public Event updateEvent(String eventId, String title, String startTime, String endTime) throws IOException, ResourceNotFoundException {
+	public Event updateEvent(String eventId, String title, String startTime, String endTime) throws IOException {
 		Event event = constructEvent(title, startTime, endTime);
 		Event updatedEvent = calService.events().update(calendarId, eventId, event).execute();
 		
 		return updatedEvent;
 	}
 	
-	public Event retrieveEvent(String eventId) throws IOException, ResourceNotFoundException {
+	public Event retrieveEvent(String eventId) throws IOException {
 		if(eventId == null) {
 			return null;
 		}
@@ -53,11 +52,11 @@ public class GoogleCalendar {
 		return retrievedEvent;
 	}
 	
-	public void deleteEvent(String eventId) throws IOException, ResourceNotFoundException {
+	public void deleteEvent(String eventId) throws IOException {
 		calService.events().delete(calendarId, eventId).execute();
 	}
 
-	public List<Event> retrieveEvents(String minDate, String maxDate) throws IOException, ResourceNotFoundException {
+	public List<Event> retrieveEvents(String minDate, String maxDate) throws IOException {
 		com.google.api.services.calendar.Calendar.Events.List calList = calService.events().list(calendarId);
 		
 		calList = calList.setShowDeleted(true);
@@ -125,7 +124,7 @@ public class GoogleCalendar {
 		return null;
 	}
 	
-	public void deleteEvents(String startTime, String endTime) throws IOException, ResourceNotFoundException {
+	public void deleteEvents(String startTime, String endTime) throws IOException {
 		List<Event> eventList = retrieveEvents(startTime, endTime);
 		for(int i = 0; i < eventList.size(); i++) {
 			deleteEvent(eventList.get(i).getId());
