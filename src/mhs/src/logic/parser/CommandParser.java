@@ -1,11 +1,12 @@
 //@author A0086805X
-package mhs.src.logic;
+package mhs.src.logic.parser;
 
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import mhs.src.common.MhsLogger;
+import mhs.src.logic.CommandInfo;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
