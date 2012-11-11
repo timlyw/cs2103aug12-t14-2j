@@ -37,9 +37,11 @@ public class GoogleCalendarMhs {
 		String endTime = newTask.getEndDateTime().toString();
 		Event createdEvent = null;
 		if (newTask.isDone()) {
-			completedCalendar.createEvent(title, startTime, endTime);
+			createdEvent = completedCalendar.createEvent(title, startTime,
+					endTime);
 		} else {
-			defaultCalendar.createEvent(title, startTime, endTime);
+			createdEvent = defaultCalendar.createEvent(title, startTime,
+					endTime);
 		}
 
 		return createdEvent;
@@ -74,23 +76,30 @@ public class GoogleCalendarMhs {
 		return createEvent(updatedTask);
 	}
 
-	public void deleteEvent(String eventId) throws IOException,
-			ResourceNotFoundException {
-		defaultCalendar.deleteEvent(eventId);
-		completedCalendar.deleteEvent(eventId);
+	public void deleteEvent(String eventId) {
+		try {
+			defaultCalendar.deleteEvent(eventId);
+			completedCalendar.deleteEvent(eventId);
+		} catch (ResourceNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+		}
 	}
 
 	public boolean isDeleted(Event event) {
 		return defaultCalendar.isDeleted(event);
 	}
 
-	public void deleteEvents(String startTime, String endTime)
-			throws IOException, ResourceNotFoundException {
-		defaultCalendar.deleteEvents(startTime, endTime);
-		completedCalendar.deleteEvents(startTime, endTime);
+	public void deleteEvents(String startTime, String endTime) {
+		try {
+			defaultCalendar.deleteEvents(startTime, endTime);
+			completedCalendar.deleteEvents(startTime, endTime);
+		} catch (ResourceNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+		}
 	}
 
 	public void isEventCompleted() {
 
 	}
+
 }
