@@ -36,12 +36,16 @@ import mhs.src.storage.persistence.local.ConfigFile;
 
 public class UiController {
 
+	private static final int HOT_KEY_LETTER = (int) 'X';
+
+	private static final int HOT_KEY_ALT = JIntellitype.MOD_ALT;
+
 	private static final String MHS_FRAME_MAXIMIZED = "mhsFrameMaximized";
 
 	private static final String MHS_FRAME_HEIGHT = "mhsFrameHeight";
 
 	private static final String MHS_FRAME_WIDTH = "mhsFrameWidth";
-
+	
 	// mhsFrame used to handle user input and display output to user
 	private MhsFrame mhsFrame;
 
@@ -74,15 +78,15 @@ public class UiController {
 		initMhsFrame();
 		initListeners();
 		loadMhsParameters();
-		// initHotKey();
+		//initHotKey();
 		endLog("constructor");
 	}
 
 	private void initHotKey() {
 		// Initialize JIntellitype
 		JIntellitype.getInstance();
-		JIntellitype.getInstance().registerHotKey(1, JIntellitype.MOD_ALT,
-				(int) 'X');
+		JIntellitype.getInstance().registerHotKey(1, HOT_KEY_ALT,
+				HOT_KEY_LETTER);
 		MhsHotKeyListener mhsHotkeyListener = new MhsHotKeyListener();
 		JIntellitype.getInstance().addHotKeyListener(mhsHotkeyListener);
 	}
@@ -282,25 +286,10 @@ public class UiController {
 		endLog("updateProcessorCommand");
 	}
 
-	/**
-	 * set the input format to password or plain text depending on whether
-	 * processor is expecting a password or ordinary commands
-	 */
-	private void updateInputType() {
-		startLog("updatedInputType");
-		if (processor.passwordExpected()) {
-			mhsFrame.setInputToPassword();
-		} else {
-			mhsFrame.setInputToPlainText();
-		}
-		endLog("updateInputType");
-	}
-
 	private void updateMhsFrame() {
 		updateTitleScreen();
 		updateDisplayScreen();
 		updateFeedbackText();
-		updateInputType();
 		updateMhsFrameDimensionst();
 		mhsFrame.repaint();
 	}

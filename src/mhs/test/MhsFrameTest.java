@@ -23,6 +23,5 @@ public class MhsFrameTest {
 		assertTrue(mhsFrame.displayScreenInitialized());
 		assertTrue(mhsFrame.feedbackScreenInitialized());
 		assertTrue(mhsFrame.plainTextBoxInitialized());
-		assertTrue(mhsFrame.passwordBoxInitialized());
 	}
 }
