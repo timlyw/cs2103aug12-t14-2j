@@ -36,8 +36,12 @@ import org.joda.time.Interval;
  */
 public class TaskLists {
 
-	private Map<Integer, Task> taskList; // primary task list with index as key
-	private Map<String, Task> gCalTaskList; // task list with gCalId as key
+	/** Primary task list with index as key */
+	private static Map<Integer, Task> taskList = null;
+	/** task list with gCalId as key */
+	private static Map<String, Task> gCalTaskList = null;
+	/** task list with gTaskId as key */
+	private static Map<String, Task> gTaskList = null;
 
 	private static final Logger logger = MhsLogger.getLogger();
 
@@ -94,6 +98,7 @@ public class TaskLists {
 
 		taskList = new LinkedHashMap<Integer, Task>();
 		gCalTaskList = new LinkedHashMap<String, Task>();
+		gTaskList = new LinkedHashMap<String, Task>();
 
 		logExitMethod("createTaskLists");
 	}
@@ -115,10 +120,22 @@ public class TaskLists {
 		logExitMethod("loadTaskListsFromTaskListToInitialize");
 	}
 
+	/**
+	 * Puts task in task lists according to task type
+	 * 
+	 * Task List - All tasks<br>
+	 * gCalTaskList - Google Calendar Synced Tasks<br>
+	 * gTaskList - Google Tasks Synced Tasks
+	 * 
+	 * @param taskToPut
+	 */
 	protected void putTaskInTaskLists(Task taskToPut) {
 		taskList.put(taskToPut.getTaskId(), taskToPut);
 		if (taskToPut.getgCalTaskId() != null) {
 			gCalTaskList.put(taskToPut.getgCalTaskId(), taskToPut);
+		}
+		if (taskToPut.getGTaskId() != null) {
+			gTaskList.put(taskToPut.getGTaskId(), taskToPut);
 		}
 	}
 
@@ -155,7 +172,6 @@ public class TaskLists {
 					EXCEPTION_MESSAGE_NULL_PARAMETER,
 					PARAMETER_TASK_TO_REMOVE_FROM_TASK_LISTS));
 		}
-
 		removeTaskFromTaskLists(taskToRemoveFromTaskLists);
 
 		logExitMethod("removeTaskInTaskLists");
@@ -164,6 +180,7 @@ public class TaskLists {
 	protected void removeTaskFromTaskLists(Task taskToRemoveFromTaskLists) {
 		taskList.remove(taskToRemoveFromTaskLists.getTaskId());
 		gCalTaskList.remove(taskToRemoveFromTaskLists.getgCalTaskId());
+		gTaskList.remove(taskToRemoveFromTaskLists.getgCalTaskUid());
 	}
 
 	// Task Query Methods
@@ -194,20 +211,47 @@ public class TaskLists {
 	 * @return task with gCalTaskId
 	 * @throws TaskNotFoundException
 	 */
-	public Task getSyncTask(String gCalTaskId) throws TaskNotFoundException {
+	public Task getGoogleCalendarSyncTask(String gCalTaskId)
+			throws TaskNotFoundException {
 		logEnterMethod("getSyncTask");
 
 		if (gCalTaskId == null) {
 			throw new IllegalArgumentException(String.format(
 					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_G_CAL_TASK_ID));
 		}
-		if (!containsSyncTask(gCalTaskId)) {
+		if (!containsGoogleCalendarSyncTask(gCalTaskId)) {
 			throw new TaskNotFoundException(
 					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
 
 		logExitMethod("getSyncTask");
 		return gCalTaskList.get(gCalTaskId).clone();
+	}
+
+	/**
+	 * Gets sync task by gTaskid
+	 * 
+	 * @param gCalTaskId
+	 * @return task with gCalTaskId
+	 * @throws TaskNotFoundException
+	 */
+	/**
+	 */
+	public Task getGoogleTaskSyncTask(String gTaskId)
+			throws TaskNotFoundException {
+		logEnterMethod("getGoogleTaskSyncTask");
+
+		if (gTaskId == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_G_CAL_TASK_ID));
+		}
+		if (!containsGoogleTaskSyncTask(gTaskId)) {
+			throw new TaskNotFoundException(
+					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
+		}
+
+		logExitMethod("getGoogleTaskSyncTask");
+		return gTaskList.get(gTaskId).clone();
 	}
 
 	/**
@@ -660,6 +704,7 @@ public class TaskLists {
 		logEnterMethod("clearTaskLists");
 		taskList.clear();
 		gCalTaskList.clear();
+		gTaskList.clear();
 		logExitMethod("clearTaskLists");
 	}
 
@@ -681,12 +726,12 @@ public class TaskLists {
 	}
 
 	/**
-	 * Checks if Task Lists contains Sync Task
+	 * Checks if Task Lists contains Google Calendar Sync Task
 	 * 
 	 * @param gCalTaskId
 	 * @return true if task specified by gCalTaskId exists
 	 */
-	public boolean containsSyncTask(String gCalTaskId) {
+	public boolean containsGoogleCalendarSyncTask(String gCalTaskId) {
 		logEnterMethod("containsSyncTask");
 		if (gCalTaskId == null) {
 			throw new IllegalArgumentException(String.format(
@@ -701,6 +746,26 @@ public class TaskLists {
 	}
 
 	/**
+	 * Checks if Task Lists contains Google Task Sync Task
+	 * 
+	 * @param gCalTaskId
+	 * @return true if task specified by gCalTaskId exists
+	 */
+	public boolean containsGoogleTaskSyncTask(String gTaskId) {
+		logEnterMethod("containsGoogleTaskSyncTask");
+		if (gTaskId == null) {
+			throw new IllegalArgumentException(String.format(
+					EXCEPTION_MESSAGE_NULL_PARAMETER, PARAMETER_G_CAL_TASK_ID));
+		}
+		boolean containsSyncTask = false;
+		if (gTaskList.containsKey(gTaskId)) {
+			containsSyncTask = true;
+		}
+		logExitMethod("containsGoogleTaskSyncTask");
+		return containsSyncTask;
+	}
+
+	/**
 	 * Getter for task list with taskId as key
 	 * 
 	 * @return taskList
@@ -709,6 +774,17 @@ public class TaskLists {
 		logEnterMethod("getTaskList");
 		logExitMethod("getTaskList");
 		return taskList;
+	}
+
+	/**
+	 * Getter for gTaskList with gTaskId as key
+	 * 
+	 * @return gCalTaskList
+	 */
+	public Map<String, Task> getGTaskList() {
+		logEnterMethod("getTaskList");
+		logExitMethod("getTaskList");
+		return gTaskList;
 	}
 
 	/**
