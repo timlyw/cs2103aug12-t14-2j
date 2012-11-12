@@ -427,8 +427,8 @@ public class DatabaseTest {
 		thrown.expectMessage(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		getCleanDatabaseWithoutSync();
 
-		// Set task with null
-		task.setTaskName(null);
+		// Set task with param null
+		task.setTaskCategory(null);
 		database.add(task);
 	}
 
@@ -479,8 +479,8 @@ public class DatabaseTest {
 		thrown.expectMessage(EXCEPTION_MESSAGE_INVALID_TASK_FORMAT);
 		getCleanDatabaseWithoutSync();
 
-		// Set task with null
-		task.setTaskName(null);
+		// Set task with param null
+		task.setTaskCategory(null);
 		database.add(task);
 	}
 
