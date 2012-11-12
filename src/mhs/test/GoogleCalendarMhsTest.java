@@ -32,6 +32,11 @@ import com.google.api.services.calendar.model.Event;
 public class GoogleCalendarMhsTest {
 	private static final int MAX_DATE_LENGTH_COMPARE = 10;
 	
+	/**
+	 * test retrieval of multiple events
+	 * 
+	 * @throws Exception
+	 */
 	@Test 
 	public void testCrudForMultipleEvents() throws Exception {
 		// initialize login
@@ -39,7 +44,7 @@ public class GoogleCalendarMhsTest {
 		MhsGoogleOAuth2.authorizeCredentialAndStoreInCredentialStore();
 		GoogleCalendarMhs gCal = new GoogleCalendarMhs(MhsGoogleOAuth2.getHttpTransport(), MhsGoogleOAuth2.getJsonFactory(), MhsGoogleOAuth2.getCredential());
 		
-		// test retrieve undeleted events in default calendar
+		// test retrieve events in default calendar
 		String minDate = "2012-11-01T13:00:00+08:00";
 		String maxDate = "2012-11-30T13:00:00+08:00";
 		List<Event> eventList = gCal.retrieveDefaultEvents(minDate, maxDate, false);
@@ -52,7 +57,7 @@ public class GoogleCalendarMhsTest {
 		
 		String title = "CreateGoogleCalendarMhsTest";
 		String startTime = "2012-11-16T13:00:00+08:00";
-		String endTime = "2011-11-16T13:00:00+08:00";
+		String endTime = "2012-11-16T15:00:00+08:00";
 		
 		Task newTask1 = createTask(title, startTime, endTime);
 		Task newTask2 = createTask(title, startTime, endTime);
@@ -63,19 +68,14 @@ public class GoogleCalendarMhsTest {
 		int updatedSize = updatedEventList.size();
 		assertEquals(initialSize + 2, updatedSize);
 		
-		// test retrieve deleted events in default calendar
-		eventList = gCal.retrieveDefaultEvents(minDate, maxDate, true);
-		initialSize = eventList.size();
-		System.out.println("id " + createdEvent1.getId());
-		
 		gCal.deleteEvent(createdEvent1.getId());
 		gCal.deleteEvent(createdEvent2.getId());
-		//updatedEventList = gCal.retrieveDefaultEvents(minDate, maxDate, true);
-		//updatedSize = updatedEventList.size();
-		//assertEquals(initialSize + 2, updatedSize);
-		
 	}
 	
+	/**
+	 * test GoogleCalendarMhs creation, retrieval, updating and deletion for single events
+	 * @throws Exception
+	 */
 	@Test
 	public void testCrudForSingleEvent() throws Exception {
 		// initialize login
@@ -129,11 +129,26 @@ public class GoogleCalendarMhsTest {
 		assertTrue(gCal.isDeleted(retrievedDeletedEvent));
 	}
 	
+	/**
+	 * compare if two date strings are equal
+	 * 
+	 * @param date1
+	 * @param date2
+	 * @return if two date strings are equal
+	 */
 	private boolean dateStringsEqual(String date1, String date2) {
 		String subDate2 = date2.substring(0, MAX_DATE_LENGTH_COMPARE);
 		return date1.contains(subDate2);
 	}
 	
+	/**
+	 * create a basic task instance
+	 * 
+	 * @param title
+	 * @param startTime
+	 * @param endTime
+	 * @return created task instance
+	 */
 	private TimedTask createTask(String title, String startTime, String endTime) {
 		DateTime start = DateTime.parse(startTime);
 		DateTime end = DateTime.parse(endTime);

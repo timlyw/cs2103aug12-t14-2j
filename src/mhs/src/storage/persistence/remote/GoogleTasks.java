@@ -1,3 +1,5 @@
+//@author A0088015
+
 package mhs.src.storage.persistence.remote;
 
 import java.io.IOException;
@@ -10,6 +12,13 @@ import com.google.api.client.util.Data;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.Task;
 import com.google.gdata.util.ResourceNotFoundException;
+
+/**
+ * This class provides the methods to interface with a user's Google Tasks
+ * It supports creation, retrieval, updating and deletion of tasks
+ * 
+ * @author John Wong
+ */
 
 public class GoogleTasks {
 	private static final String STATUS_DELETED = "cancelled";
