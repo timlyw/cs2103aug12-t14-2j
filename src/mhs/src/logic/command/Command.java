@@ -31,15 +31,17 @@ import mhs.src.storage.persistence.task.TaskCategory;
  */
 public abstract class Command {
 
+	protected static HtmlCreator htmlCreator = new HtmlCreator();
 	private static final String MESSAGE_ERROR_IO = "Read/Write error";
 	private static final String MESSAGE_DATABASE_FACTORY_NOT_INITIALIZED = "Database Factory not instantiated";
-	private static final String MESSAGE_DATABASE_ILLEGAL_ARGUMENT = "Databse given wrong arguments";
+	private static final String MESSAGE_DATABASE_ILLEGAL_ARGUMENT = "Database given wrong arguments";
 	protected static final String MESSAGE_UNDO_FAIL = "Undo Failed";
 	protected static final String MESSAGE_UNDO_CONFIRM = "Undo Successful";
 	protected static final String MESSAGE_REDO_FAIL = "Redo Failed";
 	protected static final String MESSAGE_REDO_CONFIRM = "Redo Successful";
 	protected static final String MESSAGE_CANNOT_UNDO = "Sorry Cannot Undo last command";
-	protected static final String MESSAGE_NO_MATCH = "No matching results found";
+	protected static final String MESSAGE_NO_MATCH = htmlCreator.color(
+			"No matching results found!", HtmlCreator.RED);
 	protected static final String MESSAGE_INVALID_INDEX = "Invalid Index.";
 	protected static final String MESSAGE_MULTIPLE_MATCHES = "Multiple matches found.";
 
@@ -55,7 +57,6 @@ public abstract class Command {
 	public static List<Task> matchedTasks;
 	protected static Database dataHandler;
 	protected boolean indexExpected;
-	protected static HtmlCreator htmlCreator;
 	private static Stack<Integer> indexDisplayedStack = new Stack<Integer>();
 	private static boolean firstTimeDisplay = true;
 	private static int firstIndexDisplayed = 0;
