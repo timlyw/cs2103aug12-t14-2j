@@ -87,4 +87,8 @@ public class GoogleTasks {
 			task.setCompleted(Data.NULL_DATE_TIME);
 		}
 	}
+	
+	public boolean isCompleted(Task task) {
+		return task.getStatus().equals(STATUS_COMPLETED);
+	}
 }
