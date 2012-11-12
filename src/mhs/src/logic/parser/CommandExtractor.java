@@ -34,7 +34,8 @@ public class CommandExtractor {
 	private static final String COMMAND_HOME = "home";
 	private static final String COMMAND_EXIT = "exit";
 	private static final String COMMAND_RENAME = "rename";
-	
+	private static final String COMMAND_MINIMIZE = "hide";
+
 	/**
 	 * 
 	 * These are the enum commands that are used and the different keywords the
@@ -48,7 +49,7 @@ public class CommandExtractor {
 				COMMAND_LOGOUT), help(COMMAND_HELP), mark(COMMAND_MARK), check(COMMAND_MARK), unmark(
 				COMMAND_UNMARK), p(COMMAND_PREVIOUS), n(COMMAND_NEXT), floating(COMMAND_FLOATING), deadline(
 				COMMAND_DEADLINE), timed(COMMAND_TIMED), home(COMMAND_HOME), exit(
-				COMMAND_EXIT);
+				COMMAND_EXIT), hide(COMMAND_MINIMIZE);
 
 		
 		private final String command;
@@ -119,7 +120,6 @@ public class CommandExtractor {
 	 */
 	public String extractCommand(String parseString) {
 		logEnterMethod("extractCommand");
-		assert (parseString != null);
 		try {
 			String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 			setCommand(processArray);
@@ -140,6 +140,7 @@ public class CommandExtractor {
 	 * @param processArray
 	 */
 	private void setCommand(String[] processArray) {
+		assert(processArray != null);
 		logEnterMethod("setCommand");
 		if (checkCommand(processArray[0])) {
 			for (CommandKeyWord c : CommandKeyWord.values()) {
