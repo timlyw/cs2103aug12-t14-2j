@@ -168,7 +168,7 @@ public class CommandCreator {
 			Command.displayPrev();
 			break;
 		default:
-			userOutputString = MESSAGE_INVALID_COMMAND;
+			commandFeedback = MESSAGE_INVALID_COMMAND;
 			break;
 		}
 		updateDisplayIndex(userCommand);

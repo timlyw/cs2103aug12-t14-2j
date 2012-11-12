@@ -1809,5 +1809,16 @@
     "taskLastSync": null,
     "isDone": false,
     "isDeleted": false
+  },
+  {
+    "gTaskId": null,
+    "taskId": 152,
+    "taskName": "null",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T13:36:01.836+08:00",
+    "taskUpdated": "2012-11-12T13:37:05.674+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": true
   }
 ]
