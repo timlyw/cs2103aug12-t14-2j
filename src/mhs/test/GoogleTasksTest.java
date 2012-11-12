@@ -1,3 +1,5 @@
+//@author A0088015
+
 package mhs.test;
 
 import java.util.List;
@@ -13,9 +15,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * This class tests the creation, retrival, updating and deletion operations for 
+ * the GoogleTasks class for single and multiple events
+ * 
+ * @author John Wong
+ */
+
 public class GoogleTasksTest {
+	
+	/**
+	 * test the creation, retrieval, updating and deletion operations for a single task
+	 * @throws Exception
+	 */
 	@Test
-	public void testCrudForSingleEvent() throws Exception {
+	public void testCrudForSingleTask() throws Exception {
 		// initialize login
 		MhsGoogleOAuth2.getInstance();
 		MhsGoogleOAuth2.authorizeCredentialAndStoreInCredentialStore();
@@ -44,8 +58,13 @@ public class GoogleTasksTest {
 		gTasks.isDeleted(retrievedUpdatedTask);
 	}
 	
+	/**
+	 * test retrival of multiple tasks
+	 * 
+	 * @throws Exception
+	 */
 	@Test
-	public void testCrudForMultipleEvents() throws Exception {
+	public void testCrudForMultipleTasks() throws Exception {
 		// initialize login
 		MhsGoogleOAuth2.getInstance();
 		MhsGoogleOAuth2.authorizeCredentialAndStoreInCredentialStore();
