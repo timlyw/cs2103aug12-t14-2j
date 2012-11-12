@@ -120,7 +120,6 @@ public class CommandExtractor {
 	 */
 	public String extractCommand(String parseString) {
 		logEnterMethod("extractCommand");
-		assert (parseString != null);
 		try {
 			String[] processArray = parseString.split(REGEX_WHITE_SPACE);
 			setCommand(processArray);
@@ -141,6 +140,7 @@ public class CommandExtractor {
 	 * @param processArray
 	 */
 	private void setCommand(String[] processArray) {
+		assert(processArray != null);
 		logEnterMethod("setCommand");
 		if (checkCommand(processArray[0])) {
 			for (CommandKeyWord c : CommandKeyWord.values()) {
