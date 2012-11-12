@@ -411,7 +411,8 @@ public class CommandValidator {
 				|| commandEnum == CommandInfo.CommandKeyWords.floating
 				|| commandEnum == CommandInfo.CommandKeyWords.deadline
 				|| commandEnum == CommandInfo.CommandKeyWords.timed
-				|| commandEnum == CommandInfo.CommandKeyWords.exit;
+				|| commandEnum == CommandInfo.CommandKeyWords.exit
+				|| commandEnum == CommandInfo.CommandKeyWords.hide;
 	}
 
 	/**
