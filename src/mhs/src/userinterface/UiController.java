@@ -20,11 +20,11 @@ import javax.swing.event.DocumentListener;
 import com.melloware.jintellitype.HotkeyListener;
 import com.melloware.jintellitype.JIntellitype;
 
+import mhs.src.common.ConfigFile;
 import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 import mhs.src.logic.Processor;
 import mhs.src.logic.StateListener;
-import mhs.src.storage.persistence.local.ConfigFile;
 
 /**
  * UiController controls the interaction between MhsFrame and Processor It makes
@@ -78,7 +78,7 @@ public class UiController {
 		initMhsFrame();
 		initListeners();
 		loadMhsParameters();
-		//initHotKey();
+		initHotKey();
 		endLog("constructor");
 	}
 
