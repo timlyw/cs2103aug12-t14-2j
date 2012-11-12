@@ -46,7 +46,6 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
-	private static final int REMOTE_SERVICE_CONNECTION_REACHABLE_TIMEOUT = 30;
 	static GoogleTasks googleTasks;
 	static GoogleCalendarMhs googleCalendar;
 	static TaskLists taskLists;

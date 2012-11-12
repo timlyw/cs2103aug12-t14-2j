@@ -1156,14 +1156,11 @@ class Syncronize {
 					localTask.isDone());
 			updateSyncTask(localTask, updatedGTask);
 		} catch (ResourceNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINER, e.getMessage());
 		} catch (TaskNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINER, e.getMessage());
 		} catch (InvalidTaskFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINER, e.getMessage());
 		}
 		logExitMethod("pushSyncExistingFloatingSyncTask");
 	}
@@ -1192,14 +1189,11 @@ class Syncronize {
 
 			updateSyncTask(localTask, updatedGcalEvent);
 		} catch (ResourceNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINER, e.getMessage());
 		} catch (TaskNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINER, e.getMessage());
 		} catch (InvalidTaskFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.FINER, e.getMessage());
 		}
 		logExitMethod("pushSyncExistingTask");
 	}
