@@ -382,8 +382,9 @@ public abstract class Command {
 	protected static List<Task> queryHome() throws IOException {
 		List<Task> queryResultList;
 		lastQueryType = QUERY_HOME;
-		queryResultList = dataHandler.query(DateTime.now(), DateTime.now()
-				.plusDays(1).toDateMidnight().toDateTime(), true, true);
+		queryResultList = dataHandler.query(DateTime.now().toDateMidnight()
+				.toDateTime(), DateTime.now().plusDays(2).toDateMidnight()
+				.toDateTime(), true, true);
 		return queryResultList;
 	}
 

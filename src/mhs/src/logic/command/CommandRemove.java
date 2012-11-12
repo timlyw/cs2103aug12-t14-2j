@@ -20,7 +20,8 @@ import mhs.src.storage.persistence.task.Task;
 public class CommandRemove extends Command {
 
 	private static final String MESSAGE_TASK_NOT_DELETED = "Error occured. Task not Deleted.";
-	private static final String CONFIRM_TASK_DELETED = "I have deleted - '%1$s'.";
+	private static final String CONFIRM_TASK_DELETED = "I have deleted: %1$s";
+	protected static final String MESSAGE_MULTIPLE_MATCHES_REMOVE = "Multiple matches found.<br/>Enter task index to remove.";
 
 	private Task lastDeletedTask;
 
@@ -70,22 +71,30 @@ public class CommandRemove extends Command {
 		}
 		// if only 1 match is found then delete it
 		else if (matchedTasks.size() == 1) {
-			try {
-				storeLastTask(matchedTasks.get(0));
-				deleteTask(matchedTasks.get(0));
-				outputString = String.format(CONFIRM_TASK_DELETED,
-						lastDeletedTask.getTaskName());
-				commandFeedback = outputString;
-			} catch (Exception e) {
-				commandFeedback = MESSAGE_TASK_NOT_DELETED;
-			}
+			deleteTaskInDatabase();
 		}
 		// if multiple matches are found display the list
 		else {
 			indexExpected = true;
-			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
+			commandFeedback = MESSAGE_MULTIPLE_MATCHES_REMOVE;
 		}
 		logExitMethod("executeCommand");
+	}
+
+	/**
+	 * Deletes task in database. Stores current task for undo.
+	 */
+	private void deleteTaskInDatabase() {
+		String outputString;
+		try {
+			storeLastTask(matchedTasks.get(0));
+			deleteTask(matchedTasks.get(0));
+			outputString = String.format(CONFIRM_TASK_DELETED,
+					lastDeletedTask.getTaskName());
+			commandFeedback = outputString;
+		} catch (Exception e) {
+			commandFeedback = MESSAGE_TASK_NOT_DELETED;
+		}
 	}
 
 	/**

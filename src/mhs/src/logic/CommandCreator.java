@@ -122,6 +122,8 @@ public class CommandCreator {
 	private String executeCommand(CommandInfo userCommand) {
 		logEnterMethod("executeMethod");
 		String userOutputString = new String();
+		updateDisplayIndex(userCommand);
+		
 		switch (userCommand.getCommandEnum()) {
 		case add:
 			executeAdd(userCommand);
@@ -172,7 +174,6 @@ public class CommandCreator {
 			commandFeedback = MESSAGE_INVALID_COMMAND;
 			break;
 		}
-		updateDisplayIndex(userCommand);
 		pushToUndoStack(currentCommand);
 		logExitMethod("executeCommand");
 		return userOutputString;
