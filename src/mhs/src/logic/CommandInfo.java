@@ -72,7 +72,7 @@ public class CommandInfo {
 	 * This is the enum of the different type of commands.
 	 */
 	public static enum CommandKeyWords {
-		add, remove, edit, search, sync, undo, login, logout, rename, redo, mark, help, unmark, previous, next, floating, deadline, timed, home, exit;
+		add, remove, edit, search, sync, undo, login, logout, rename, redo, mark, help, unmark, previous, next, floating, deadline, timed, home, exit, hide;
 	}
 
 	private String taskName;
@@ -264,8 +264,14 @@ public class CommandInfo {
 			if (startDate != null) {
 				outString += REGEX_DASH;
 			}
-			outString += (REGEX_SPACE + dateTimeFormatter
-					.formatDateTimeToString(endDate));
+			if (startDate.toLocalDate().equals(endDate.toLocalDate())) {
+				outString += (REGEX_SPACE + dateTimeFormatter
+						.formatTimeToString(endDate));
+			}
+			else{
+				outString += (REGEX_SPACE + dateTimeFormatter
+						.formatDateTimeToString(endDate));
+			}
 		}
 		logExitMethod("toHtmlString");
 		return (outString);

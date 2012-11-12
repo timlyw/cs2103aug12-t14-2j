@@ -107,7 +107,7 @@ public class TimeExtractor {
 	 */
 	private void process24hrFormat(String time) {
 		logEnterMethod("process24hrFormat");
-
+		assert(time != null);
 		String[] timeArray = new String[2];
 		timeArray = time.split(REGEX_COLON);
 		try {
@@ -127,7 +127,7 @@ public class TimeExtractor {
 	 */
 	private void process12HrFormat(String time) {
 		logEnterMethod("process12HrFormat");
-
+		assert(time != null);
 		String[] timeArray = new String[2];
 		time = time.replaceAll(REGEX_NON_WORD_CHAR, REGEX_SPACE);
 		timeArray = time.split(REGEX_SPACE);
@@ -153,6 +153,7 @@ public class TimeExtractor {
 	 */
 	private int extractMinute(String[] timeArray) {
 		logEnterMethod("extractMinute");
+		assert(timeArray != null);
 		int minute = 0;
 		if (timeArray.length > 1) {
 			minute = Integer.parseInt(timeArray[1]);
@@ -171,6 +172,7 @@ public class TimeExtractor {
 	 */
 	private int extractHour(String[] timeArray) {
 		logEnterMethod("extractHour");
+		assert(timeArray != null);
 		int hour = 0;
 		for (int i = 0; i < timeArray.length; i++) {
 			if (timeArray[i].toLowerCase().contains(PM)) {
@@ -196,6 +198,7 @@ public class TimeExtractor {
 	 */
 	private int extractHourAM(String[] timeArray, int i) {
 		logEnterMethod("extractHourAM");
+		assert(timeArray != null);
 		int hour;
 		timeArray[i] = timeArray[i].replaceAll(REGEX_AM_IGNORE_CASE, "");
 		hour = Integer.parseInt(timeArray[0]);
@@ -219,6 +222,7 @@ public class TimeExtractor {
 	 */
 	private int extractHourPM(String[] timeArray, int i) {
 		logEnterMethod("extractHourPM");
+		assert(timeArray != null);
 		int hour;
 		timeArray[i] = timeArray[i].replaceAll(REGEX_PM_IGNORE_CASE, "");
 		hour = Integer.parseInt(timeArray[0]);
