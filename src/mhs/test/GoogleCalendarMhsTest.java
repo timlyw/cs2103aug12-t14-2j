@@ -57,7 +57,7 @@ public class GoogleCalendarMhsTest {
 		
 		String title = "CreateGoogleCalendarMhsTest";
 		String startTime = "2012-11-16T13:00:00+08:00";
-		String endTime = "2011-11-16T13:00:00+08:00";
+		String endTime = "2012-11-16T15:00:00+08:00";
 		
 		Task newTask1 = createTask(title, startTime, endTime);
 		Task newTask2 = createTask(title, startTime, endTime);
