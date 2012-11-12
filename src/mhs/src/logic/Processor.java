@@ -2,7 +2,6 @@
 
 package mhs.src.logic;
 
-
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ public class Processor {
 	private static final String TEST_FILE_START_HTML = "<html><body>";
 
 	private static final String COMMAND_HOME = "home";
-	
+
 	private static final String MESSAGE_LOGOUT_FAIL = "Some error occurred during logout!";
 	private static final String MESSAGE_LOGOUT_SUCCESS = "You have successfully logged out !";
 	private static final String MESSAGE_LOGOUT_FAIL_NOT_LOGGED_IN = "You are not logged in! Cannot logout";
@@ -53,6 +52,7 @@ public class Processor {
 	private static final String MESSAGE_NO_PARAMS = "No Params specified";
 	private static final String MESSAGE_NULL_INPUT = "Null Input";
 	private static final String MESSAGE_BLANK = "";
+	private static final String MESSAGE_LOGIN_ISSUE = "Login credentials mismatch.";
 	private static final String MESSAGE_DATABASE_FACTORY_NOT_INSTANTIATED = "Database Factory not instantiated";
 	private static final String MESSAGE_DATABASE_GIVEN_WRONG_ARGUMENTS = "Database given wrong arguments";
 	private static final String MESSAGE_DATABASE_NOT_INSTANTIATED = "Database not instantiated";
@@ -213,8 +213,7 @@ public class Processor {
 		if (dataHandler.isUserGoogleCalendarAuthenticated()) {
 			boldTitle = displayTextIfLoggedIn();
 		} else {
-			boldTitle = htmlCreator
-					.makeBold(MESSAGE_BLANK);
+			boldTitle = htmlCreator.makeBold(MESSAGE_BLANK);
 		}
 		logExitMethod("getLoginDisplayFieldText");
 		return boldTitle;
@@ -284,7 +283,7 @@ public class Processor {
 	public String getCommandFeedback() {
 		return commandFeedback;
 	}
-	
+
 	/**
 	 * Returns the user the Current State, to be displayed in the state box.
 	 * 
@@ -595,9 +594,9 @@ public class Processor {
 			} catch (ServiceException e) {
 				outputString = MESSAGE_NO_INTERNET;
 			} catch (IOException e) {
-				outputString = MESSAGE_NO_INTERNET;
+				outputString = MESSAGE_FILE_I_O_ERROR;
 			} catch (NoActiveCredentialException e) {
-				outputString = MESSAGE_NO_INTERNET;
+				outputString = MESSAGE_LOGIN_ISSUE;
 			}
 			commandFeedback = outputString;
 			refreshDisplay();
