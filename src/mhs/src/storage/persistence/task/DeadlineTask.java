@@ -81,22 +81,37 @@ public class DeadlineTask extends Task {
 		this.endDateTime = endDateTime;
 	}
 
+	/**
+	 * Getter for Google Calendar Event Id
+	 */
 	public String getgCalTaskId() {
 		return gCalTaskId;
 	}
 
+	/**
+	 * Setter for Google Calendar Event Id
+	 */
 	public void setGcalTaskId(String gCalTaskId) {
 		this.gCalTaskId = gCalTaskId;
 	}
 
+	/**
+	 * Getter for Google Calendar Event Uid
+	 */
 	public String getgCalTaskUid() {
 		return gCalTaskUid;
 	}
 
+	/**
+	 * Setter for Google Calendar Event Uid
+	 */
 	public void setGcalTaskUid(String gCalTaskUid) {
 		this.gCalTaskUid = gCalTaskUid;
 	}
 
+	/**
+	 * To String
+	 */
 	public String toString() {
 		String taskToString = "";
 		if (taskId != null) {
