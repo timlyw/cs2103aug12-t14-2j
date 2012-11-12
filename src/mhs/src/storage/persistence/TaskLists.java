@@ -321,23 +321,37 @@ public class TaskLists {
 	/**
 	 * Get all non-deleted tasks with matching task name
 	 * 
-	 * @param taskName
+	 * @param queryTaskName
 	 * @param queriedTaskRecordset
 	 */
 	private void addAllNonDeletedTasksWithMatchingTaskNameToRecordSet(
-			String taskName, List<Task> queriedTaskRecordset) {
+			String queryTaskName, List<Task> queriedTaskRecordset) {
 		logEnterMethod("getAllNonDeletedTasksWithMatchingTaskName");
 		for (Map.Entry<Integer, Task> entry : taskList.entrySet()) {
 			Task taskEntry = entry.getValue();
 			if (taskEntry.isDeleted()) {
 				continue;
 			}
-			if (taskEntry.getTaskName().toLowerCase()
-					.contains(taskName.toLowerCase())) {
+			if (isQueryTaskNameContainedInTaskEntryTaskName(queryTaskName,
+					taskEntry)) {
 				queriedTaskRecordset.add(taskEntry.clone());
 			}
 		}
 		logExitMethod("getAllNonDeletedTasksWithMatchingTaskName");
+	}
+
+	/**
+	 * Checks if specified query task name is contained within Task Entry's task
+	 * name
+	 * 
+	 * @param queryTaskName
+	 * @param taskEntry
+	 * @return
+	 */
+	protected boolean isQueryTaskNameContainedInTaskEntryTaskName(
+			String queryTaskName, Task taskEntry) {
+		return taskEntry.getTaskName().toLowerCase()
+				.contains(queryTaskName.toLowerCase());
 	}
 
 	/**

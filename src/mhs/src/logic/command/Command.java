@@ -307,6 +307,9 @@ public abstract class Command {
 	 */
 	private static boolean isTaskNameInitialized(CommandInfo inputCommand) {
 		boolean name;
+		if (inputCommand == null) {
+			return false;
+		}
 		if (inputCommand.getTaskName() == null) {
 			name = false;
 		} else {
