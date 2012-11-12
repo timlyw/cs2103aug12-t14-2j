@@ -20,7 +20,7 @@ import mhs.src.storage.persistence.task.Task;
 public class CommandRemove extends Command {
 
 	private static final String MESSAGE_TASK_NOT_DELETED = "Error occured. Task not Deleted.";
-	private static final String CONFIRM_TASK_DELETED = "I have deleted - '%1$s'.";
+	private static final String CONFIRM_TASK_DELETED = "I have deleted: %1$s";
 	protected static final String MESSAGE_MULTIPLE_MATCHES_REMOVE = "Multiple matches found.<br/>Enter task index to remove.";
 
 	private Task lastDeletedTask;
