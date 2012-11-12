@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="1" failures="0" hostname="64-180711" name="mhs.test.AllTests" tests="1" time="0.0" timestamp="2012-11-12T14:28:45">
+  <properties>
+    <property name="java.vendor" value="Oracle Corporation" />
+    <property name="lib.dir" value="libs" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="eclipse.pdebuild.templates" value="/C:/Users/timlyw/Desktop/eclipse/plugins/org.eclipse.pde.build_3.7.0.v20110512-1320/templates/" />
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers" />
+    <property name="os.name" value="Windows 7" />
+    <property name="sun.boot.class.path" value="C:\Program Files\Java\jre7\lib\resources.jar;C:\Program Files\Java\jre7\lib\rt.jar;C:\Program Files\Java\jre7\lib\sunrsasign.jar;C:\Program Files\Java\jre7\lib\jsse.jar;C:\Program Files\Java\jre7\lib\jce.jar;C:\Program Files\Java\jre7\lib\charsets.jar;C:\Program Files\Java\jre7\lib\jfr.jar;C:\Program Files\Java\jre7\classes" />
+    <property name="sun.desktop" value="windows" />
+    <property name="java.vm.specification.vendor" value="Oracle Corporation" />
+    <property name="ant.home" value="C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300" />
+    <property name="java.runtime.version" value="1.7.0_06-b24" />
+    <property name="user.name" value="timlyw" />
+    <property name="junit.out.dir.html" value="target/report/junit/html" />
+    <property name="build.dir" value="target/build" />
+    <property name="user.language" value="en" />
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jre7\bin" />
+    <property name="ant.project.default-target" value="testsuite" />
+    <property name="ant.file.type.junitsuiteexample" value="file" />
+    <property name="ant.project.name" value="junitsuiteexample" />
+    <property name="junit.out.dir.xml" value="target/report/junit/xml" />
+    <property name="java.version" value="1.7.0_06" />
+    <property name="ant.file.junitsuiteexample" value="C:\Users\timlyw\Desktop\eclipse-java-workspace\cs2103-MHS\NewFile.xml" />
+    <property name="user.timezone" value="" />
+    <property name="sun.arch.data.model" value="64" />
+    <property name="java.endorsed.dirs" value="C:\Program Files\Java\jre7\lib\endorsed" />
+    <property name="sun.cpu.isalist" value="amd64" />
+    <property name="sun.jnu.encoding" value="Cp1252" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="file.separator" value="\" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="java.class.version" value="51.0" />
+    <property name="user.country" value="SG" />
+    <property name="java.home" value="C:\Program Files\Java\jre7" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="ant.file" value="C:\Users\timlyw\Desktop\eclipse-java-workspace\cs2103-MHS\NewFile.xml" />
+    <property name="os.version" value="6.1" />
+    <property name="path.separator" value=";" />
+    <property name="java.vm.version" value="23.2-b09" />
+    <property name="user.variant" value="" />
+    <property name="ant.library.dir" value="C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib" />
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit" />
+    <property name="user.script" value="" />
+    <property name="eclipse.pdebuild.scripts" value="/C:/Users/timlyw/Desktop/eclipse/plugins/org.eclipse.pde.build_3.7.0.v20110512-1320/scripts/" />
+    <property name="user.home" value="C:\Users\timlyw" />
+    <property name="java.specification.vendor" value="Oracle Corporation" />
+    <property name="java.library.path" value="C:\Windows\system32;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files\Common Files\Microsoft Shared\Windows Live;C:\Program Files (x86)\Common Files\Microsoft Shared\Windows Live;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files (x86)\Windows Live\Shared;c:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\Tools\Binn\;c:\Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files\TortoiseHg\;C:\Program Files (x86)\Google\google_appengine\;C:\ant\bin;C:\Program Files (x86)\arduino-1.0.1\hardware\tools\avr\bin;C:\Program Files (x86)\SSH Communications Security\SSH Secure Shell;.;C:\Users\timlyw\Desktop\eclipse\configuration\org.eclipse.osgi\bundles\249\1\.cp" />
+    <property name="java.vendor.url" value="http://java.oracle.com/" />
+    <property name="java.vm.vendor" value="Oracle Corporation" />
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
+    <property name="sun.java.command" value="org.eclipse.ant.internal.launching.remote.InternalAntRunner -Dorg.eclipse.ant.core.ANT_PROCESS_ID=1352730521567 -Declipse.connect.port=52082 -Declipse.pdebuild.home=/C:/Users/timlyw/Desktop/eclipse/plugins/org.eclipse.pde.build_3.7.0.v20110512-1320/./ -Declipse.pdebuild.scripts=/C:/Users/timlyw/Desktop/eclipse/plugins/org.eclipse.pde.build_3.7.0.v20110512-1320/scripts/ -Declipse.pdebuild.templates=/C:/Users/timlyw/Desktop/eclipse/plugins/org.eclipse.pde.build_3.7.0.v20110512-1320/templates/ -Dant.home=C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300 -logger org.eclipse.ant.internal.launching.remote.logger.RemoteAntBuildLogger -inputhandler org.eclipse.ant.internal.ui.antsupport.inputhandler.ProxyInputHandler -buildfile C:\Users\timlyw\Desktop\eclipse-java-workspace\cs2103-MHS\NewFile.xml" />
+    <property name="java.class.path" value="C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-antlr.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-apache-bcel.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-apache-bsf.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-apache-log4j.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-apache-oro.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-apache-regexp.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-apache-resolver.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-apache-xalan2.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-commons-logging.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-commons-net.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-jai.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-javamail.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-jdepend.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-jmf.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-jsch.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-junit.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-junit4.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-launcher.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-netrexx.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-swing.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant-testutil.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant.jar;C:\Users\timlyw\Desktop\eclipse\configuration\org.eclipse.osgi\bundles\38\1\.cp\lib\antdebug.jar;C:\Users\timlyw\Desktop\eclipse\configuration\org.eclipse.osgi\bundles\38\1\.cp\lib\remote.jar;C:\Users\timlyw\Desktop\eclipse\configuration\org.eclipse.osgi\bundles\39\1\.cp\lib\remoteAnt.jar;C:\Program Files (x86)\Java\jdk1.7.0_04\lib\tools.jar;C:\Users\timlyw\Desktop\eclipse\plugins\org.eclipse.swt.win32.win32.x86_64_3.7.1.v3738a.jar" />
+    <property name="ant.version" value="Apache Ant(TM) version 1.8.2 compiled on December 20 2010" />
+    <property name="project.name" value="junitsuiteexample" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="java.vm.specification.version" value="1.7" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="sun.os.patch.level" value="Service Pack 1" />
+    <property name="eclipse.pdebuild.home" value="/C:/Users/timlyw/Desktop/eclipse/plugins/org.eclipse.pde.build_3.7.0.v20110512-1320/./" />
+    <property name="java.io.tmpdir" value="C:\Users\timlyw\AppData\Local\Temp\" />
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/" />
+    <property name="os.arch" value="amd64" />
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment" />
+    <property name="java.ext.dirs" value="C:\Program Files\Java\jre7\lib\ext;C:\Windows\Sun\Java\lib\ext" />
+    <property name="user.dir" value="C:\Users\timlyw\Desktop\eclipse-java-workspace\cs2103-MHS" />
+    <property name="line.separator" value="&#xd;&#xa;" />
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM" />
+    <property name="basedir" value="C:\Users\timlyw\Desktop\eclipse-java-workspace\cs2103-MHS" />
+    <property name="ant.java.version" value="1.7" />
+    <property name="ant.core.lib" value="C:\Users\timlyw\Desktop\eclipse\plugins\org.apache.ant_1.8.2.v20110505-1300\lib\ant.jar" />
+    <property name="file.encoding" value="Cp1252" />
+    <property name="target.dir" value="target" />
+    <property name="java.specification.version" value="1.7" />
+    <property name="src.dir" value="src" />
+    <property name="ant.project.invoked-targets" value="testsuite" />
+  </properties>
+  <testcase classname="mhs.test.AllTests" name="unknown" time="0.01">
+    <error message="Forked Java VM exited abnormally. Please note the time in the report does not reflect the time until the VM exit." type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: Forked Java VM exited abnormally. Please note the time in the report does not reflect the time until the VM exit.
+	at org.eclipse.ant.internal.launching.remote.EclipseDefaultExecutor.executeTargets(EclipseDefaultExecutor.java:32)
+	at org.eclipse.ant.internal.launching.remote.InternalAntRunner.run(InternalAntRunner.java:424)
+	at org.eclipse.ant.internal.launching.remote.InternalAntRunner.main(InternalAntRunner.java:138)
+</error>
+  </testcase>
+</testsuite>
