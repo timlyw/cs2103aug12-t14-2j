@@ -163,10 +163,10 @@ public class CommandCreator {
 			executeRename(userCommand);
 			break;
 		case next:
-			Command.displayNext();
+			nextPage();
 			break;
 		case previous:
-			Command.displayPrev();
+			previousPage();
 			break;
 		default:
 			commandFeedback = MESSAGE_INVALID_COMMAND;
@@ -176,6 +176,16 @@ public class CommandCreator {
 		pushToUndoStack(currentCommand);
 		logExitMethod("executeCommand");
 		return userOutputString;
+	}
+
+	private void previousPage() {
+		Command.displayPrev();
+		updateDisplay(currentCommand);
+	}
+
+	private void nextPage() {
+		Command.displayNext();
+		updateDisplay(currentCommand);
 	}
 
 	/**
