@@ -1041,7 +1041,6 @@ class Syncronize {
 			Task localTask) {
 		logEnterMethod("deleteGoogleCalendarEventIfFloatingTaskIsPreviouslySynced");
 		if (isGoogleCalendarSyncedTask(localTask)) {
-			System.out.println("Deleting old google cal task");
 			Database.googleCalendar.deleteEvent(localTask.getgCalTaskId());
 		}
 		logExitMethod("deleteGoogleCalendarEventIfFloatingTaskIsPreviouslySynced");
