@@ -22,9 +22,9 @@ import org.joda.time.Interval;
  * 
  * Abstracts operations on the taskLists containing different views of tasks:
  * 
- * 1. taskList 		- by taskId<br>
- * 2. gCalTaskList  - by gCalTaskId (Google Calendar)<br>
- * 3. gTaskList 	- by gTaskId	(Google Tasks)<br>
+ * 1. taskList - by taskId<br>
+ * 2. gCalTaskList - by gCalTaskId (Google Calendar)<br>
+ * 3. gTaskList - by gTaskId (Google Tasks)<br>
  * 
  * Functionality<br>
  * - logic for CRUD on tasks in all task lists<br>
@@ -175,13 +175,22 @@ public class TaskLists {
 		logExitMethod("removeTaskInTaskLists");
 	}
 
+	/**
+	 * Remove Task From Task Lists
+	 * 
+	 * @param taskToRemoveFromTaskLists
+	 */
 	protected void removeTaskFromTaskLists(Task taskToRemoveFromTaskLists) {
+		logEnterMethod("removeTaskFromTaskLists");
 		taskList.remove(taskToRemoveFromTaskLists.getTaskId());
 		gCalTaskList.remove(taskToRemoveFromTaskLists.getgCalTaskId());
 		gTaskList.remove(taskToRemoveFromTaskLists.getgCalTaskUid());
+		logExitMethod("removeTaskFromTaskLists");
 	}
 
-	// Task Query Methods
+	/**
+	 * Task Query Methods
+	 */
 
 	/**
 	 * Gets task by taskId
@@ -192,12 +201,10 @@ public class TaskLists {
 	 */
 	public Task getTask(int taskId) throws TaskNotFoundException {
 		logEnterMethod("getTask");
-
 		if (!containsTask(taskId)) {
 			throw new TaskNotFoundException(
 					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
-
 		logExitMethod("getTask");
 		return taskList.get(taskId).clone();
 	}

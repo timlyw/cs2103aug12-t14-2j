@@ -41,7 +41,6 @@ public class ConfigFileTest {
 	 */
 	public void configFileTest() throws IOException {
 		ConfigFile configFile = new ConfigFile(TEST_CONFIG_FILE_NAME);
-
 		configFile.setConfigParameter(TEST_PARAM, TEST_PARAM_VALUE);
 
 		assertTrue(configFile.hasConfigParameter(TEST_PARAM));
@@ -59,7 +58,6 @@ public class ConfigFileTest {
 	 */
 	public void configFileTestLoad() throws IOException {
 		ConfigFile configFile = new ConfigFile(TEST_CONFIG_FILE_NAME);
-
 		configFile.setConfigParameter(TEST_PARAM, TEST_PARAM_VALUE);
 
 		assertTrue(configFile.hasConfigParameter(TEST_PARAM));
