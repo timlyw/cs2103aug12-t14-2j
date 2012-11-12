@@ -226,7 +226,6 @@ public class TimedTask extends Task {
 			timeString = date.toString("h.mm aa");
 		}
 
-		timeString = timeString.toLowerCase();
 
 		return timeString;
 	}

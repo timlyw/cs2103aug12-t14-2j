@@ -165,7 +165,6 @@ public class DeadlineTask extends Task {
 			timeString = date.toString("h.mm aa");
 		}
 
-		timeString = timeString.toLowerCase();
 
 		return timeString;
 	}
