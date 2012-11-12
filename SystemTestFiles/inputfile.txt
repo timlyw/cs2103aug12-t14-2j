@@ -135,9 +135,39 @@ delete 2
 home
 home
 undo
+add deadline task 5pm weds
+add timing task weds 5pm to 7pm
+add task try
+rename task try to trysomething else
+rename deadline task to deadline task 2
+rename timing task to tmingas 
+rename task to something
+edit trysomething else to try some other thing
+edit deadline task 2
+edit tmingas to 5pm thursday 6pm
+mark tmingas
+undo
+rename tmingas to try yes
+undo
+unmark task
+4
+
+3
+5
 p
 p
 n
+help
+1
+2
+3
+4
+5
+6
+7
+8
+search
+
 delete 3000
 delete 3000000
 delete 3000000;

@@ -175,6 +175,7 @@ public class DateExtractor {
 	 */
 	private void processDate(String[] processArray) {
 		logEnterMethod("processDate");
+		assert(processArray != null);
 		String dateCommand;
 		for (counter = 0; counter < processArray.length; counter++) {
 			resetDateParameterFlags();
@@ -202,6 +203,8 @@ public class DateExtractor {
 	 */
 	private void extractDateFromQueue(String dateCommand) {
 		logEnterMethod("extractDateFromQueue");
+		assert(dateCommand != null);
+
 		if (isInteger(dateCommand)) {
 			setIntegerDate(dateCommand);
 		}
@@ -275,6 +278,7 @@ public class DateExtractor {
 	 */
 	private String setUpUniqueDateCommand(String dateCommand) {
 		logEnterMethod("setUpUniqueDateCommand");
+		assert(dateCommand != null);
 		if (dateQueue.size() > 0 && isUniqueDateType(dateQueue.peek())) {
 			dateCommand = dateCommand + REGEX_SPACE + dateQueue.poll();
 		}
@@ -290,6 +294,7 @@ public class DateExtractor {
 	 */
 	private void setStringDay(String dateCommand) {
 		logEnterMethod("setStringDay");
+		assert(dateCommand != null);
 		int parameters;
 		parameters = getDayParameters(dateCommand);
 		setDay(parameters);
@@ -305,6 +310,7 @@ public class DateExtractor {
 	 */
 	private void setStringMonth(String dateCommand) {
 		logEnterMethod("setStringMonth");
+		assert(dateCommand != null);
 		int parameters;
 		parameters = getMontParameters(dateCommand);
 		setIntegerMonth(parameters);
@@ -319,6 +325,7 @@ public class DateExtractor {
 	 */
 	private void setIntegerDate(String dateCommand) {
 		logEnterMethod("setIntegerDate");
+		assert(dateCommand != null);
 		int parameters;
 		parameters = Integer.parseInt(dateCommand);
 
@@ -499,6 +506,7 @@ public class DateExtractor {
 	 */
 	private Queue<String> setUpDateQueue(String[] processArray) {
 		logEnterMethod("setUpDateQueue");
+		assert(processArray != null);
 		int j;
 		Queue<String> commandQueue = new LinkedList<String>();
 		for (j = counter; j < processArray.length; j++) {
@@ -521,6 +529,7 @@ public class DateExtractor {
 	 */
 	private void setUniqueDate(String dateCommand) {
 		logEnterMethod("setUniqueDate");
+		assert(dateCommand != null);
 		dateCommand = setUpUniqueDateCommand(dateCommand);
 		dateList = new LinkedList<LocalDate>();
 		if (isToday(dateCommand)) {
@@ -551,6 +560,7 @@ public class DateExtractor {
 	 */
 	private boolean isThisWeekend(String dateCommand) {
 		logEnterMethod("isThisWeekend");
+		assert(dateCommand != null);
 		logExitMethod("isThisWeekend");
 		return dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
 				+ REGEX_SPACE + UniqueDateTypeKeyWord.weekend.name());
@@ -564,6 +574,7 @@ public class DateExtractor {
 	 */
 	private boolean isThisYear(String dateCommand) {
 		logEnterMethod("isThisYear");
+		assert(dateCommand != null);
 		logExitMethod("isThisYear");
 		return dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
 				+ REGEX_SPACE + UniqueDateTypeKeyWord.year.name());
@@ -577,6 +588,7 @@ public class DateExtractor {
 	 */
 	private boolean isThisMonth(String dateCommand) {
 		logEnterMethod("isThisMonth");
+		assert(dateCommand != null);
 		logExitMethod("isThisMonth");
 		return dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
 				+ REGEX_SPACE + UniqueDateTypeKeyWord.month.name());
@@ -590,6 +602,7 @@ public class DateExtractor {
 	 */
 	private boolean isThisWeek(String dateCommand) {
 		logEnterMethod("isThisWeek");
+		assert(dateCommand != null);
 		logExitMethod("isThisWeek");
 		return dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.THIS.name()
 				+ REGEX_SPACE + UniqueDateTypeKeyWord.week.name());
@@ -603,6 +616,7 @@ public class DateExtractor {
 	 */
 	private boolean isTomorrow(String dateCommand) {
 		logEnterMethod("isTomorrow");
+		assert(dateCommand != null);
 		logExitMethod("isTomorrow");
 		return dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.tomorrow
 				.name());
@@ -616,6 +630,7 @@ public class DateExtractor {
 	 */
 	private boolean isToday(String dateCommand) {
 		logEnterMethod("isToday");
+		assert(dateCommand != null);
 		logExitMethod("isToday");
 		return dateCommand.equalsIgnoreCase(UniqueDateTypeKeyWord.today.name());
 	}
@@ -875,6 +890,7 @@ public class DateExtractor {
 	 */
 	private void setFullDateFormat(String command) {
 		logEnterMethod("setFullDateFormat");
+		assert(command != null);
 		int[] dateParameters = new int[3];
 		String[] dateArray = command.split(REGEX_NON_WORD_CHAR);
 
@@ -961,6 +977,7 @@ public class DateExtractor {
 	 */
 	public boolean checkDateFormat(String printString) {
 		logEnterMethod("checkDateFormat");
+		assert(printString != null);
 		if (isInteger(printString)) {
 			logExitMethod("checkDateFormat");
 			return true;
@@ -995,6 +1012,7 @@ public class DateExtractor {
 	 */
 	private boolean isUniqueDateType(String printString) {
 		logEnterMethod("isUniqueDateType");
+		assert(printString != null);
 		for (UniqueDateTypeKeyWord d : UniqueDateTypeKeyWord.values()) {
 			if (printString.equalsIgnoreCase(d.name())) {
 				logExitMethod("isUniqueDateType");
@@ -1035,6 +1053,7 @@ public class DateExtractor {
 	 */
 	private boolean isDayOfWeek(String printString) {
 		logEnterMethod("isDayOfWeek");
+		assert(printString != null);
 		for (DayKeyWord d : DayKeyWord.values()) {
 			if (printString.equalsIgnoreCase(d.name())) {
 				logExitMethod("isDayOfWeek");
@@ -1056,6 +1075,7 @@ public class DateExtractor {
 	 */
 	private boolean isDateWithMonthSpelled(String printString) {
 		logEnterMethod("isDateWithMonthSpelled");
+		assert(printString != null);
 		for (MonthKeyWord m : MonthKeyWord.values()) {
 			if (printString.equalsIgnoreCase(m.name())) {
 				logExitMethod("isDateWithMonthSpelled");
@@ -1077,6 +1097,7 @@ public class DateExtractor {
 	 */
 	private boolean isDateStandardFormat(String printString) {
 		logEnterMethod("isDateStandardFormat");
+		assert(printString != null);
 		if (printString.matches(REGEX_FULL_DATE_FORMAT)) {
 			logExitMethod("isDateStandardFormat");
 			return true;

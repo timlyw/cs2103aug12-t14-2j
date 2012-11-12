@@ -1,3 +1,4 @@
+//author A0086805X
 package mhs.test;
 
 import static org.junit.Assert.assertEquals;
@@ -20,6 +21,9 @@ import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ *Component test to test the parser package
+ */
 public class CommandParserTest {
 
 	private DateExtractor dateExtractor;
@@ -28,6 +32,9 @@ public class CommandParserTest {
 	private NameExtractor nameExtractor;
 	private int day, month, year;
 
+	/**
+	 * Set up the environment for testing and defaulting current day to 7/11/2012.
+	 */
 	@Before
 	public void setUpEnvironment() {
 
@@ -43,6 +50,17 @@ public class CommandParserTest {
 		nameExtractor = NameExtractor.getNameExtractor();
 	}
 
+	/**
+	 * Tests time extractor.
+	 * 
+	 * Test cases
+	 * 1. Tests normal 12hr timing for pm.
+	 * 2. Tests normal 12hr timing for am.
+	 * 3. Tests normal 24hr timing.
+	 * 4. Tests time range with am as upper case.
+	 * 5. Tests time range with start of day to mid day for in upper case.
+	 * 6. Invalid time range. 
+	 */
 	@Test
 	public void testTimeExtractor() {
 
@@ -90,8 +108,28 @@ public class CommandParserTest {
 
 	}
 
+	/**
+	 * Tests date extractor.
+	 * 
+	 * Test cases
+	 * 1. Test a day in the next week from the current day.
+	 * 2. Test a day that is exactly one week from current day.
+	 * 3. Test a day that is in the same week as the current day.
+	 * 4. Test a full date date range. 
+	 * 5. Test a date range with special key words. 
+	 * 6. Test a date range with a special key word and normal date. 
+	 * 7. Test a date range with a half date. 
+	 * 8. Test a date range with half dates. 
+	 * 9. Test a particular month of the year.
+	 * 10.Test this month.
+	 * 11.Test this week.
+	 * 12.Test this year.
+	 * 13.Test this weekend. 
+	 * 14.Test today.
+	 * 15.Test tomorrow.
+	 */
 	@Test
-	public void dateTimeExtractor() {
+	public void testDateExtractor() {
 
 		Queue<LocalDate> testList = new LinkedList<LocalDate>();
 		Queue<LocalDate> expectedList = new LinkedList<LocalDate>();
@@ -213,8 +251,11 @@ public class CommandParserTest {
 
 	}
 
+	/**
+	 * Test the nameExtractor.
+	 */
 	@Test
-	public void NameExtractor() {
+	public void testNameExtractor() {
 
 		Queue<String> testList = new LinkedList<String>();
 		Queue<String> expectedList = new LinkedList<String>();
@@ -230,8 +271,15 @@ public class CommandParserTest {
 
 	}
 
+	/**
+	 * Test the command extractor.
+	 * 
+	 * Test case
+	 * 1. Test normal case.
+	 * 2. Test normal case with different cases in string.
+	 */
 	@Test
-	public void commandExtractor() {
+	public void testCommandExtractor() {
 
 		String expectedCommand;
 		String testCommand;
@@ -246,6 +294,27 @@ public class CommandParserTest {
 
 	}
 
+	/**
+	 * Test the whole parser package and the defaulting of the variables. 
+	 * 
+	 * Test Case
+	 * 1. Test add of a full task with all parameters and special keyword appended to the the name.
+	 * 2. Test searching for an event in a specific time range. 
+	 * 3. Test marking by index.
+	 * 4. Test editing a task by index and editing the time range. 
+	 * 5. Test defaulting of the date when just time is written.
+	 * 6. Test appending a number to the name and time extracting in upper case.
+	 * 7. Test searching of a time.
+	 * 8. Test default search for a single date input.
+	 * 9. Test date range this year.
+	 * 10.Test one year period.
+	 * 11.Test clearing parameters for mark.
+	 * 12.Test name parsing of quotation marks.
+	 * 13.Test appending the back of the sentence to the name for adding. 
+	 * 14.Test clearing parameters for renaming.
+	 * 15.Test clearing parameters for login.
+	 * 
+	 */
 	@Test
 	public void testCommandParser() {
 
@@ -302,15 +371,7 @@ public class CommandParserTest {
 		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.edit,
 				"meeting 5", "do tutorial", expectedStartDate, expectedEndDate, 0);
 		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
-		
-		testCommand = commandParser
-				.getParsedCommand("edit meeting 5 to do tutorial from 1AM to 4PM ");
-		expectedStartDate = new DateTime(year, month, day, 16, 0);
-		expectedEndDate = new DateTime(year, month, day+1, 1, 0);
-		expectedCommand = new CommandInfo(CommandInfo.CommandKeyWords.edit,
-				"meeting 5", "do tutorial", expectedStartDate, expectedEndDate, 0);
-		assertTrue(testCommand.isEqual(expectedCommand, testCommand));
-		
+
 		testCommand = commandParser
 				.getParsedCommand("1AM");
 		expectedStartDate = new DateTime(year, month, day+1, 1, 0);
