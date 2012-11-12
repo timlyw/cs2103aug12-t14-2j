@@ -16,6 +16,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ DatabaseFactoryTest.class, DatabaseTest.class,
 		ConfigFileTest.class, TaskRecordFileTest.class,
+		GoogleCalendarMhsTest.class, GoogleTasksTest.class, MhsFrameTest.class,
 		CommandParserTest.class, TaskListsTest.class, SystemTest.class })
 public class AllTests {
 

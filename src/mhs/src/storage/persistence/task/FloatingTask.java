@@ -18,8 +18,6 @@ import org.joda.time.DateTime;
  */
 public class FloatingTask extends Task {
 
-	private String gTaskId;
-
 	/**
 	 * Constructor with TaskCategory taskCategory
 	 * 
@@ -59,20 +57,6 @@ public class FloatingTask extends Task {
 	}
 
 	/**
-	 * Getter for Google Task Id
-	 */
-	public String getGTaskId() {
-		return gTaskId;
-	}
-
-	/**
-	 * Setter for Google Task Id
-	 */
-	public void setGTaskId(String gTaskId) {
-		this.gTaskId = gTaskId;
-	}
-
-	/**
 	 * To String
 	 */
 	public String toString() {
@@ -88,7 +72,6 @@ public class FloatingTask extends Task {
 		}
 		if (gTaskId != null) {
 			taskToString += "gTaskId=" + gTaskId;
-			;
 		}
 		if (taskCreated != null) {
 			taskToString += "taskCreated=" + taskCreated.toString();

@@ -22,8 +22,6 @@ import com.google.api.services.calendar.model.Event;
 
 public class DeadlineTask extends Task {
 
-	private String gCalTaskId;
-	private String gCalTaskUid;
 	private DateTime endDateTime;
 
 	/**
@@ -79,34 +77,6 @@ public class DeadlineTask extends Task {
 
 	public void setEndDateTime(DateTime endDateTime) {
 		this.endDateTime = endDateTime;
-	}
-
-	/**
-	 * Getter for Google Calendar Event Id
-	 */
-	public String getgCalTaskId() {
-		return gCalTaskId;
-	}
-
-	/**
-	 * Setter for Google Calendar Event Id
-	 */
-	public void setGcalTaskId(String gCalTaskId) {
-		this.gCalTaskId = gCalTaskId;
-	}
-
-	/**
-	 * Getter for Google Calendar Event Uid
-	 */
-	public String getgCalTaskUid() {
-		return gCalTaskUid;
-	}
-
-	/**
-	 * Setter for Google Calendar Event Uid
-	 */
-	public void setGcalTaskUid(String gCalTaskUid) {
-		this.gCalTaskUid = gCalTaskUid;
 	}
 
 	/**
@@ -179,7 +149,6 @@ public class DeadlineTask extends Task {
 		} else {
 			timeString = date.toString("h.mm aa");
 		}
-
 
 		return timeString;
 	}

@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -315,9 +314,20 @@ public class ConfigFile {
 		logExitMethod("removeConfigParameter");
 	}
 
+	/**
+	 * Log Trace Entry Method
+	 * 
+	 * @param methodName
+	 */
 	private void logEnterMethod(String methodName) {
 		logger.entering(getClass().getName(), methodName);
 	}
+
+	/**
+	 * Log Trace Exit Method
+	 * 
+	 * @param methodName
+	 */
 
 	private void logExitMethod(String methodName) {
 		logger.exiting(getClass().getName(), methodName);
