@@ -82,6 +82,7 @@ public class Processor {
 	private Database dataHandler;
 	private CommandParser commandParser;
 	private CommandCreator commandCreator;
+	private String feedbackFileName;
 
 	private boolean usernameIsExpected = false;
 	private String username;
@@ -167,14 +168,18 @@ public class Processor {
 	 * Initiates out files for system testing
 	 */
 	private void initiateTestFiles() {
-		feedbackFile = new FileHandler(String.format(FILE_FEEDBACK, DateTime
-				.now().toString(DATE_TIME_FORMAT)));
+		feedbackFileName = String.format(FILE_FEEDBACK, DateTime
+				.now().toString(DATE_TIME_FORMAT));
+		feedbackFile = new FileHandler(feedbackFileName);
 		stateFile = new FileHandler(String.format(FILE_STATE, DateTime.now()
 				.toString(DATE_TIME_FORMAT)));
 		feedbackFile.writeToFile(TEST_FILE_START_HTML);
 		stateFile.writeToFile(TEST_FILE_START_HTML);
 	}
 
+	public String getFeedbackFileName(){
+		return feedbackFileName;
+	}
 	/**
 	 * Initializes Database for System Testing.
 	 * 
@@ -674,7 +679,6 @@ public class Processor {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
-
 	/**
 	 * Sets debug mode
 	 */

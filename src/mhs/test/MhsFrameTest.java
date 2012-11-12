@@ -8,6 +8,12 @@ import static org.junit.Assert.assertTrue;
 
 import mhs.src.userinterface.MhsFrame;
 
+/**
+ * This class test if MhsFrame properly initializes its frame components
+ * 
+ * @author John Wong
+ */
+
 public class MhsFrameTest {
 	
 	/**
@@ -18,10 +24,10 @@ public class MhsFrameTest {
 	@Test
 	public void testMhsFrameInitialization() {
 		MhsFrame mhsFrame = MhsFrame.getInstance();
-		assertTrue(mhsFrame.framePanelInitialized());
-		assertTrue(mhsFrame.titleScreenInitialized());
-		assertTrue(mhsFrame.displayScreenInitialized());
-		assertTrue(mhsFrame.feedbackScreenInitialized());
-		assertTrue(mhsFrame.plainTextBoxInitialized());
+		assertTrue(mhsFrame.isFramePanelInitialized());
+		assertTrue(mhsFrame.isTitleScreenInitialized());
+		assertTrue(mhsFrame.isDisplayScreenInitialized());
+		assertTrue(mhsFrame.isFeedbackScreenInitialized());
+		assertTrue(mhsFrame.isInputBoxInitialized());
 	}
 }

@@ -1,4 +1,5 @@
 home
+logout
 add task 10pm
 add task 10 pm
 add task 17pm
@@ -31,7 +32,6 @@ search
 rename 5 to renamedtasks
 add add edit task 4 5pm 10 nov
 search nov
-sync
 mark 5
 mark 2
 mark task
@@ -47,7 +47,6 @@ floating
 deadline
 timed
 find
-sync
 undo
 undo
 undo
@@ -96,12 +95,7 @@ delete task
 
 undo undo undo
 redo
-login
-login
-logout
-logout
 cs1234@hotmail.com
-sync
 redo
 undo
 p
@@ -118,9 +112,6 @@ floating
 deadline
 timed
 edit 4 to fly 3pm weDs
-sync
-sync
-sync
 find
 delete 3
 redo
@@ -170,5 +161,4 @@ search
 
 delete 3000
 delete 3000000
-delete 3000000;
-exit
+delete 3000000

@@ -12,6 +12,7 @@ import mhs.src.storage.persistence.task.TaskCategory;
 import mhs.src.storage.persistence.task.Task;
 
 /**
+ * Executes the Search command
  * 
  * @author A0088669A
  * 

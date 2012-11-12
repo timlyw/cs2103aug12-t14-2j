@@ -2,6 +2,7 @@
 
 package mhs.src.common;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
@@ -9,7 +10,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+
+import org.joda.time.DateTime;
 
 /**
  * USed for test File Read/Write
@@ -48,6 +52,35 @@ public class FileHandler {
 			output.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void compareFiles(String feedbackFile) {
+		try {
+			FileInputStream fstream1 = new FileInputStream(
+					"SystemTestFiles/expected.html");
+			FileInputStream fstream2 = new FileInputStream(feedbackFile);
+			DataInputStream in1 = new DataInputStream(fstream1);
+			BufferedReader br1 = new BufferedReader(new InputStreamReader(in1));
+			DataInputStream in2 = new DataInputStream(fstream2);
+			BufferedReader br2 = new BufferedReader(new InputStreamReader(in2));
+			String strLine1, strLine2;
+
+			while (((strLine1 = br1.readLine()) != null)
+					&& ((strLine2 = br2.readLine()) != null)) {
+				if (!(strLine1.equals(strLine2))) {
+					System.out.println("!" + strLine1);
+					System.out.println("!!" + strLine2);
+					writeToFile(strLine1);
+					writeToFile(strLine2);
+					
+				}
+			}
+			
+			br1.close();
+			br2.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

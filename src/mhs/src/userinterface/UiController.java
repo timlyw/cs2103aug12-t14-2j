@@ -36,14 +36,22 @@ import mhs.src.logic.StateListener;
 
 public class UiController {
 
+	// hot key code to register with jintellitype
+	private static final int HOT_KEY_CODE = 1;
+
+	// hot key letter to activate application
 	private static final int HOT_KEY_LETTER = (int) 'X';
 
+	// hot key letter prefix to activate application
 	private static final int HOT_KEY_ALT = JIntellitype.MOD_ALT;
 
+	//constant string used to store and retrieve whether mhsFrame is maximized
 	private static final String MHS_FRAME_MAXIMIZED = "mhsFrameMaximized";
 
+	//constant string used to store and retrieve height of mhsFrame
 	private static final String MHS_FRAME_HEIGHT = "mhsFrameHeight";
 
+	//constant string used to store and retrieve width of mhsFrame
 	private static final String MHS_FRAME_WIDTH = "mhsFrameWidth";
 	
 	// mhsFrame used to handle user input and display output to user
@@ -64,10 +72,16 @@ public class UiController {
 	// class name used for logging
 	private static final String CLASS_NAME = "UiController";
 
+	// stores width of mhsFrame
 	int mhsFrameWidth = 600;
+	
+	// stores height of mhsFrame
 	int mhsFrameHeight = 450;
+	
+	// stores whether mhsFrame is maximized
 	boolean mhsFrameMaximized = true;
 
+	// instance of ConfigFile to store user's preferred sizing
 	ConfigFile configFile = null;
 
 	/**
@@ -83,15 +97,21 @@ public class UiController {
 		endLog("constructor");
 	}
 
+	/**
+	 * initialize hot key registration
+	 */
 	private void initHotKey() {
 		// Initialize JIntellitype
 		JIntellitype.getInstance();
-		JIntellitype.getInstance().registerHotKey(1, HOT_KEY_ALT,
+		JIntellitype.getInstance().registerHotKey(HOT_KEY_CODE, HOT_KEY_ALT,
 				HOT_KEY_LETTER);
 		MhsHotKeyListener mhsHotkeyListener = new MhsHotKeyListener();
 		JIntellitype.getInstance().addHotKeyListener(mhsHotkeyListener);
 	}
 
+	/**
+	 * 
+	 */
 	private void loadMhsParameters() {
 		try {
 			configFile = new ConfigFile();
@@ -109,7 +129,7 @@ public class UiController {
 			mhsFrameMaximized = Boolean.parseBoolean(maximizedString);
 
 		} catch (IOException e) {
-
+			endLog("unable to open config file");
 		}
 	}
 
@@ -123,32 +143,50 @@ public class UiController {
 		endLog("openMhsFrame");
 	}
 
+	/**
+	 * show home page to user
+	 */
 	private void showHomePage() {
 		updateLineLimit();
 		processor.showHome();
 	}
 
+	/**
+	 * show MhsFrame to user
+	 */
 	private void openMhsFrame() {
 		mhsFrame.open();
 		mhsFrame.selectInputBox();
 		updateMhsFrameSize();
 	}
 
+	/**
+	 * update size of mhsFrame
+	 */
 	public void updateMhsFrameSize() {
 		mhsFrame.setSize(mhsFrameWidth, mhsFrameHeight, mhsFrameMaximized);
 	}
 
+	/**
+	 * update line limit and store size of mhsFrame 
+	 */
 	private void mhsFrameResized() {
 		updateLineLimit();
 		storeMhsParameters();
 	}
 
+	/**
+	 * store mhsFrame parameters into configFile
+	 */
 	private void storeMhsParameters() {
 		updateMhsFrameMaximized();
 		updateMhsFrameDimensions();
 		saveParameters();
 	}
 
+	/**
+	 * save mhsFrame size parameters
+	 */
 	private void saveParameters() {
 		if (configFile == null) {
 			return;
@@ -165,6 +203,9 @@ public class UiController {
 		}
 	}
 
+	/**
+	 * update if mhsFrame is maximized
+	 */
 	private void updateMhsFrameMaximized() {
 		if (mhsFrame.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
 			mhsFrameMaximized = true;
@@ -173,6 +214,9 @@ public class UiController {
 		}
 	}
 
+	/**
+	 * update variables keeping track of dimensions of mhsFrame
+	 */
 	private void updateMhsFrameDimensions() {
 		if (!mhsFrameMaximized) {
 			mhsFrameWidth = mhsFrame.getWidth();
@@ -230,11 +274,17 @@ public class UiController {
 		endLog("initListeners");
 	}
 
+	/**
+	 * initialize window listener
+	 */
 	private void initWindowListener() {
 		MhsWindowListener mhsWindowListener = new MhsWindowListener();
 		mhsFrame.addWindowListener(mhsWindowListener);
 	}
 
+	/**
+	 * initialize tray listener
+	 */
 	private void initTrayListener() {
 		TrayClickListener trayListener = new TrayClickListener();
 		mhsFrame.addTrayListener(trayListener);
@@ -287,6 +337,9 @@ public class UiController {
 		endLog("updateProcessorCommand");
 	}
 
+	/**
+	 * update mhsFrame display and size
+	 */
 	private void updateMhsFrame() {
 		updateTitleScreen();
 		updateDisplayScreen();
@@ -296,6 +349,9 @@ public class UiController {
 		mhsFrame.repaint();
 	}
 	
+	/**
+	 * update if mhsFrame is maximized
+	 */
 	private void updateMhsFrameMinimization() {
 		if(processor.isHideRequested()) {
 			mhsFrame.minimize();
@@ -303,6 +359,9 @@ public class UiController {
 		}
 	}
 
+	/**
+	 * update title screen of mhsFrame
+	 */
 	private void updateTitleScreen() {
 		startLog("updateTitleScreen");
 		String titleText = processor.getLoginDisplayFieldText();
@@ -416,6 +475,9 @@ public class UiController {
 
 	}
 
+	/**
+	 * nested class to listen if user clicks on application's tray icon
+	 */
 	private class TrayClickListener implements MouseListener {
 		public void mouseClicked(MouseEvent arg0) {
 			openMhsFrame();
@@ -436,6 +498,9 @@ public class UiController {
 
 	}
 
+	/**
+	 * nested class to listen when mhsFrame is minimized
+	 */
 	private class MhsWindowListener implements WindowListener {
 		public void windowActivated(WindowEvent arg0) {
 		}
@@ -461,6 +526,9 @@ public class UiController {
 
 	}
 
+	/**
+	 * nested class to listen when hot key is pressed
+	 */
 	private class MhsHotKeyListener implements HotkeyListener {
 		public void onHotKey(int arg0) {
 			openMhsFrame();

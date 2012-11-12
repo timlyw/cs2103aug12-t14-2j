@@ -5,6 +5,7 @@ package mhs.test;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
+import mhs.src.common.FileHandler;
 import mhs.src.logic.Processor;
 
 import org.junit.After;
@@ -15,6 +16,10 @@ import org.junit.Test;
 
 public class SystemTest {
 
+	private static final String STRING_NOT_OK = "not ok";
+	private static final String STRING_OK = "ok";
+	private static final String FILE_ERROR_LOG = "SystemTestFiles/error.txt";
+	private static final String FILE_INPUT_COMMAND_TEST = "SystemTestFiles/inputfile.txt";
 	private static final String COMMAND_HOME = "home";
 	private static final String TEST_DATABASE_JSON = "testDatabase.json";
 	private Processor processor;
@@ -64,12 +69,28 @@ public class SystemTest {
 		BufferedReader readFile;
 		try {
 			readFile = new BufferedReader(new FileReader(
-					"SystemTestFiles/inputfile.txt"));
+					FILE_INPUT_COMMAND_TEST));
 			String currentLine;
 			while ((currentLine = readFile.readLine()) != null) {
 				processor.setCommand(currentLine);
 				processor.executeCommand();
 			}
+
+			FileHandler fileHandler = new FileHandler(
+					FILE_ERROR_LOG);
+			fileHandler.clearFile();
+			String fileName;
+			fileName = processor.getFeedbackFileName();
+			fileHandler.compareFiles(fileName);
+			BufferedReader errorFile;
+			errorFile = new BufferedReader(new FileReader(FILE_ERROR_LOG));
+			String lineToRead = errorFile.readLine();
+			if (lineToRead == null) {
+				System.out.println(STRING_OK);
+			} else {
+				System.out.println(STRING_NOT_OK);
+			}
+
 		} catch (Exception e) {
 			System.out.println("Error");
 		}
