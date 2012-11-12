@@ -58,14 +58,23 @@ public class FloatingTask extends Task {
 		setGTaskId(googleTask.getId());
 	}
 
+	/**
+	 * Getter for Google Task Id
+	 */
 	public String getGTaskId() {
 		return gTaskId;
 	}
 
+	/**
+	 * Setter for Google Task Id
+	 */
 	public void setGTaskId(String gTaskId) {
 		this.gTaskId = gTaskId;
 	}
 
+	/**
+	 * To String
+	 */
 	public String toString() {
 		String taskToString = "";
 		if (taskId != null) {

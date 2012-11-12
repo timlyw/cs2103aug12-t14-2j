@@ -31,7 +31,7 @@ public class CommandInfo {
 	private static final String FEEDBACK_EDITTED_NAME = "editted name";
 	private static final String FEEDBACK_EDIT_PARAMETERS = "new task name or new date time";
 	private static final String FEEDBACK_TIME_OPTIONAL = "time";
-	private static final String FEEDBACK_TIME_OPTIONAL_END =" if needed :)";
+	private static final String FEEDBACK_TIME_OPTIONAL_END = " if needed :)";
 	private static final String FEEDBACK_TASKNAME = "task name";
 	private static final String FEEDBACK_TASKNAME_INDEX = "task name / index";
 
@@ -118,7 +118,6 @@ public class CommandInfo {
 		index = indexInput;
 		startDate = startDateInput;
 		endDate = endDateInput;
-		System.out.println(toString());
 		logExitMethod("CommandInfo");
 
 	}
@@ -254,7 +253,7 @@ public class CommandInfo {
 			outString += (REGEX_HASH + (index));
 		}
 		if (taskName != null) {
-			outString += (REGEX_SPACE + taskName)  + HtmlCreator.NEW_LINE;
+			outString += (REGEX_SPACE + taskName) + HtmlCreator.NEW_LINE;
 		}
 		if (edittedName != null) {
 			outString += (REGEX_SPACE + edittedName);
@@ -270,8 +269,7 @@ public class CommandInfo {
 			if (startDate.toLocalDate().equals(endDate.toLocalDate())) {
 				outString += (REGEX_SPACE + dateTimeFormatter
 						.formatTimeToString(endDate));
-			}
-			else{
+			} else {
 				outString += (REGEX_SPACE + dateTimeFormatter
 						.formatDateTimeToString(endDate));
 			}
@@ -362,7 +360,8 @@ public class CommandInfo {
 	}
 
 	/**
-	 * Method to check that only the command is entered. 
+	 * Method to check that only the command is entered.
+	 * 
 	 * @return
 	 */
 	private boolean noParametersEntered() {
@@ -611,7 +610,7 @@ public class CommandInfo {
 		String outString;
 		outString = STRING_ENTER
 				+ htmlCreator.color(FEEDBACK_TASKNAME, COLOR_RED) + STRING_AND
-				+ htmlCreator.color(FEEDBACK_TIME_OPTIONAL, COLOR_GREEN) 
+				+ htmlCreator.color(FEEDBACK_TIME_OPTIONAL, COLOR_GREEN)
 				+ FEEDBACK_TIME_OPTIONAL_END;
 		logExitMethod("getAddParametersFeedback");
 		return outString;
