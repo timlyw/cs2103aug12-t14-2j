@@ -248,7 +248,7 @@ public class CommandInfo {
 		DateTimeHelper dateTimeFormatter = new DateTimeHelper();
 		outString = getCommandEnumFeedback();
 		if (index != 0) {
-			outString += (" at index" + (index));
+			outString += (" at #" + (index));
 		}
 		if (taskName != null) {
 			outString += (REGEX_SPACE + taskName);
