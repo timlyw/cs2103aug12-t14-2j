@@ -23,7 +23,7 @@ import mhs.src.storage.persistence.task.Task;
 public class CommandMark extends Command {
 
 	private static final String MESSAGE_TASK_NOT_MARKED = "Error occured. Task not marked.";
-	private static final String CONFIRM_TASK_MARKED = "Good Job. I have marked '%1$s' as DONE";
+	private static final String CONFIRM_TASK_MARKED = "Good Job. I have marked: %1$s";
 	protected static final String MESSAGE_MULTIPLE_MATCHES_MARK = "Multiple matches found.<br/>Enter task index to mark as done.";
 
 	private static final Logger logger = MhsLogger.getLogger();

@@ -22,7 +22,7 @@ import com.google.gdata.util.ServiceException;
 public class CommandUnmark extends Command {
 
 	private static final String MESSAGE_TASK_NOT_UNMARKED = "Error occured. Task not un-marked.";
-	private static final String CONFIRM_TASK_UNMARKED = "I marked '%1$s' to PENDING";
+	private static final String CONFIRM_TASK_UNMARKED = "I have unmarked: %1$s";
 	protected static final String MESSAGE_MULTIPLE_MATCHES_UNMARK = "Multiple matches found.<br/>Enter index to mark as pending.";
 
 	private static final Logger logger = MhsLogger.getLogger();

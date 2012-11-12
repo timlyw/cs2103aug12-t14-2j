@@ -30,7 +30,7 @@ public class CommandRename extends Command {
 
 	private static final String MESSAGE_NO_EDITED_NAME = "No new name specified.";
 	private static final String MESSAGE_TASK_NOT_RENAMED = "Error occured. Task not Re-named.";
-	private static final String CONFIRM_TASK_RENAMED = "I have renamed '%1$s'<br/>to '%2$s'";
+	private static final String CONFIRM_TASK_RENAMED = "I have renamed: %1$s<br/>to: %2$s";
 	protected static final String MESSAGE_MULTIPLE_MATCHES_RENAME = "Multiple matches found.<br/>Enter task index to rename.";
 
 	private CommandInfo tempCommandInfo;
