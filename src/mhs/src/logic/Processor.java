@@ -49,9 +49,6 @@ public class Processor {
 	private static final String MESSAGE_SYNCING = "Pulling events from your Google calender.... Please refresh !";
 	private static final String MESSAGE_NO_INTERNET = "No internet connection available.";
 	private static final String MESSAGE_LOGIN_FAIL = "Login unsuccessful! Please check username and password.";
-	private static final String MESSAGE_LOGIN_SUCCESS = htmlCreator
-			.color("You have successfully logged in! Your tasks will now be synced with Google Calender and Tasks.",
-					HtmlCreator.BLUE);
 	private static final String MESSAGE_ERROR = "Some Error Occurred";
 	private static final String MESSAGE_NO_PARAMS = "You didn't specify any parameters.";
 	private static final String MESSAGE_NULL_INPUT = "Null Input";
@@ -64,6 +61,9 @@ public class Processor {
 	private static final String MESSAGE_INVALID_INDEX = "Invalid Index";
 	private static final String MESSAGE_HI_USERNAME = "Hi %1$s";
 	private static final String MESSAGE_FEEDBACK = "%1$s";
+	private static final String MESSAGE_LOGIN_SUCCESS = htmlCreator
+			.color("You have successfully logged in! Your tasks will now be synced with Google Calender and Tasks.",
+					HtmlCreator.BLUE);
 
 	private static final String FILE_FEEDBACK = "SystemTestFiles/feedback-%1$s.html";
 	private static final String FILE_STATE = "SystemTestFiles/state-%1$s.html";
@@ -100,6 +100,7 @@ public class Processor {
 	private CommandInfo userCommand;
 	private boolean isCommandQueried = false;
 	private boolean isHelpIndexExpected = false;
+	private boolean isHideRequested = false;
 	private Help help;
 
 	private static final Logger logger = MhsLogger.getLogger();
@@ -440,6 +441,9 @@ public class Processor {
 		case exit:
 			exitProgram();
 			break;
+		case hide:
+			isHideRequested = true;
+			break;
 		case help:
 			showHelp();
 			break;
@@ -449,6 +453,22 @@ public class Processor {
 			break;
 		}
 		logExitMethod("executeNonTaskBasedCommand");
+	}
+
+	/**
+	 * Requests to hide the program
+	 * 
+	 * @return
+	 */
+	public boolean isHideRequested() {
+		return isHideRequested;
+	}
+
+	/**
+	 * Reset isHideRequested
+	 */
+	public void resetHide() {
+		isHideRequested = false;
 	}
 
 	/**
@@ -475,11 +495,11 @@ public class Processor {
 	 * @param userCommand
 	 */
 	private void executeNonIndexCommand(CommandInfo userCommand) {
-		logEnterMethod("commandByIndexOnly");
+		logEnterMethod("commandNonIndex");
 		commandCreator.createCommand(userCommand);
 		commandFeedback = commandCreator.getFeedback();
 		currentState = commandCreator.getState();
-		logExitMethod("commandByIndexOnly");
+		logExitMethod("commandNonIndex");
 	}
 
 	/**

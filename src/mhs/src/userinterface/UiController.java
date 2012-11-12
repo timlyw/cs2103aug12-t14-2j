@@ -144,7 +144,7 @@ public class UiController {
 
 	private void storeMhsParameters() {
 		updateMhsFrameMaximized();
-		updateMhsFrameDimensionst();
+		updateMhsFrameDimensions();
 		saveParameters();
 	}
 
@@ -172,7 +172,7 @@ public class UiController {
 		}
 	}
 
-	private void updateMhsFrameDimensionst() {
+	private void updateMhsFrameDimensions() {
 		if (!mhsFrameMaximized) {
 			mhsFrameWidth = mhsFrame.getWidth();
 			mhsFrameHeight = mhsFrame.getHeight();
@@ -290,8 +290,16 @@ public class UiController {
 		updateTitleScreen();
 		updateDisplayScreen();
 		updateFeedbackText();
-		updateMhsFrameDimensionst();
+		updateMhsFrameDimensions();
+		updateMhsFrameMinimization();
 		mhsFrame.repaint();
+	}
+	
+	private void updateMhsFrameMinimization() {
+		if(processor.isHideRequested()) {
+			mhsFrame.minimize();
+			processor.resetHide();
+		}
 	}
 
 	private void updateTitleScreen() {

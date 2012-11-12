@@ -10,6 +10,7 @@ package mhs.src.common;
  */
 
 public class HtmlCreator {
+	private static final int STRING_NOT_FOUND = -1;
 	private static final String DEFAULT_FONT = "calibri";
 	private static final String DEFAULT_FONT_SIZE = "5";
 	private static final String SMALL_FONT = "3";
@@ -93,7 +94,7 @@ public class HtmlCreator {
 	public static int countNewLine(String htmlString) {
 		int count = 0;
 		int index = 0;
-		while ((index = htmlString.indexOf(NEW_LINE, index)) != -1) {
+		while ((index = htmlString.indexOf(NEW_LINE, index)) != STRING_NOT_FOUND) {
 			count++;
 			index++;
 		}

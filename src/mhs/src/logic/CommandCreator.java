@@ -24,10 +24,10 @@ import java.util.Stack;
  * 
  */
 public class CommandCreator {
-	private static final String MESSAGE_HOME_PAGE = "Displaying home page";
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command";
 	private static final String MESSAGE_NOTHING_TO_UNDO = "Nothing to undo";
 	private static final String MESSAGE_NOTHING_TO_REDO = "Nothing to redo";
+	private static final String MESSAGE_HOME_PAGE = "<b>Commands:</b> add/delete/edit/mark/rename/login <br/><b>Type 'help' for more info.</b>";
 
 	private static CommandCreator commandCreator;
 	private Command currentCommand;
@@ -163,10 +163,10 @@ public class CommandCreator {
 			executeRename(userCommand);
 			break;
 		case next:
-			Command.displayNext();
+			nextPage();
 			break;
 		case previous:
-			Command.displayPrev();
+			previousPage();
 			break;
 		default:
 			commandFeedback = MESSAGE_INVALID_COMMAND;
@@ -176,6 +176,16 @@ public class CommandCreator {
 		pushToUndoStack(currentCommand);
 		logExitMethod("executeCommand");
 		return userOutputString;
+	}
+
+	private void previousPage() {
+		Command.displayPrev();
+		updateDisplay(currentCommand);
+	}
+
+	private void nextPage() {
+		Command.displayNext();
+		updateDisplay(currentCommand);
 	}
 
 	/**
