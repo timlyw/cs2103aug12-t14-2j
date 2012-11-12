@@ -15,6 +15,7 @@ public class HtmlCreator {
 	private static final String SMALL_FONT = "3";
 
 	public static final String BLUE = "#0094f0";
+	public static final String RED = "#ff0000";
 	public static final String PURPLE = "#548dd4";
 	public static final String ORANGE = "#FF6600";
 	public static final String LIGHT_BLUE = "#0094f0";
@@ -53,13 +54,13 @@ public class HtmlCreator {
 	public static final String FONT_SIZE_FORMAT = "<font face='courier' size=%1$s>%2$s</font>";
 
 	public static String shortenString(String htmlBody, int maxWidth) {
-		if(htmlBody.length() > maxWidth) {
+		if (htmlBody.length() > maxWidth) {
 			htmlBody = htmlBody.substring(0, maxWidth);
 		}
-		
+
 		return htmlBody;
 	}
-	
+
 	public String largeFont(String htmlBody) {
 		return String.format(FONT_SIZE_FORMAT, LARGE_FONT, htmlBody);
 	}

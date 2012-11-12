@@ -37,6 +37,7 @@ public class CommandInfo {
 	// regex for characters
 	private static final String REGEX_SPACE = " ";
 	private static final String REGEX_DASH = " -";
+	private static final String REGEX_HASH = " # ";
 
 	private static final String KEYWORD_INDEX = " Index is : ";
 	private static final String KEYWORD_END_DATE = " End Date : ";
@@ -249,7 +250,7 @@ public class CommandInfo {
 		DateTimeHelper dateTimeFormatter = new DateTimeHelper();
 		outString = getCommandEnumFeedback();
 		if (index != 0) {
-			outString += (" at index" + (index));
+			outString += (REGEX_HASH + (index));
 		}
 		if (taskName != null) {
 			outString += (REGEX_SPACE + taskName);
@@ -351,13 +352,23 @@ public class CommandInfo {
 	private String getSearchFeedback() {
 		logEnterMethod("getSearchFeedback");
 		String outString;
-		if (taskName == null && edittedName == null && startDate == null
-				&& endDate == null) {
+		if (noParametersEntered()) {
 			outString = getSearchParametersFeedback();
 		} else
 			outString = COMMAND_FEEDBACK_SEARCH;
 		logExitMethod("getSearchFeedback");
 		return outString;
+	}
+
+	/**
+	 * Method to check that only the command is entered. 
+	 * @return
+	 */
+	private boolean noParametersEntered() {
+		logEnterMethod("noParametersEntered");
+		logExitMethod("noParametersEntered");
+		return taskName == null && edittedName == null && startDate == null
+				&& endDate == null && index == 0;
 	}
 
 	/**
@@ -383,8 +394,7 @@ public class CommandInfo {
 	private String getUnmarkFeedBack() {
 		logEnterMethod("getUnmarkFeedBack");
 		String outString;
-		if (taskName == null && edittedName == null && startDate == null
-				&& endDate == null) {
+		if (noParametersEntered()) {
 			outString = getRemoveParametersFeedBack();
 		} else
 			outString = COMMAND_FEEDBACK_UNMARK;
@@ -400,8 +410,7 @@ public class CommandInfo {
 	private String getMarkFeedback() {
 		logEnterMethod("getMarkFeedback");
 		String outString;
-		if (taskName == null && edittedName == null && startDate == null
-				&& endDate == null) {
+		if (noParametersEntered()) {
 			outString = getRemoveParametersFeedBack();
 		} else
 			outString = COMMAND_FEEDBACK_MARK;
@@ -469,8 +478,7 @@ public class CommandInfo {
 	private String getRemoveFeedback() {
 		logEnterMethod("getRemoveFeedback");
 		String outString;
-		if (taskName == null && edittedName == null && startDate == null
-				&& endDate == null) {
+		if (noParametersEntered()) {
 			outString = getRemoveParametersFeedBack();
 		} else
 			outString = COMMAND_FEEDBACK_REMOVE;
@@ -500,8 +508,7 @@ public class CommandInfo {
 	private String getRenameFeedback() {
 		logEnterMethod("getRenameFeedback");
 		String outString;
-		if (taskName == null && edittedName == null && startDate == null
-				&& endDate == null) {
+		if (noParametersEntered()) {
 			outString = getRenameParametersFeedback();
 		} else
 			outString = COMMAND_FEEDBACK_RENAME;
@@ -585,8 +592,7 @@ public class CommandInfo {
 	private String getAddFeedback() {
 		logEnterMethod("getAddFeedback");
 		String outString;
-		if (taskName == null && edittedName == null && startDate == null
-				&& endDate == null) {
+		if (noParametersEntered()) {
 			outString = getAddParametersFeedback();
 		} else
 			outString = COMMAND_FEEDBACK_ADD;
@@ -617,8 +623,7 @@ public class CommandInfo {
 	private String getEditFeedback() {
 		logEnterMethod("getEditFeedback");
 		String outString;
-		if (taskName == null && edittedName == null && startDate == null
-				&& endDate == null) {
+		if (noParametersEntered()) {
 			outString = getEditParametersFeedback();
 		} else
 			outString = COMMAND_FEEDBACK_EDIT;

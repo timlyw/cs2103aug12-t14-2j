@@ -1,4 +1,5 @@
 //@author A0088669A
+
 package mhs.src.common;
 
 import java.io.BufferedWriter;
@@ -8,10 +9,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * USed for test File Read/Write
+ * 
+ * @author Shekhar
+ * 
+ */
 public class FileHandler {
 
 	private final String FILE;
 
+	/**
+	 * Creates and initilates a new file
+	 * 
+	 * @param fileName
+	 */
 	public FileHandler(String fileName) {
 		File file = new File(fileName);
 		try {
@@ -21,6 +33,11 @@ public class FileHandler {
 		FILE = fileName;
 	}
 
+	/**
+	 * Appends given string to file
+	 * 
+	 * @param writeString
+	 */
 	public void writeToFile(String writeString) {
 		BufferedWriter output;
 		try {
@@ -33,6 +50,9 @@ public class FileHandler {
 		}
 	}
 
+	/**
+	 * Clears the file
+	 */
 	public void clearFile() {
 		PrintWriter writer;
 		try {
@@ -46,6 +66,13 @@ public class FileHandler {
 
 	}
 
+	/**
+	 * Opens file in append mode
+	 * 
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
 	private static BufferedWriter openFileAppend(String fileName)
 			throws IOException {
 		BufferedWriter out = new BufferedWriter(new FileWriter(fileName, true));
