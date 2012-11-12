@@ -114,7 +114,7 @@ public class MhsFrame extends JFrame {
 	private final JEditorPane feedbackScreen = new JEditorPane();
 	
 	// input area for plain text
-	private final JTextField plainTextBox = new JTextField();
+	private final JTextField inputBox = new JTextField();
 	
 	// used to format text for display and feedback
 	private final HtmlCreator htmlCreator = new HtmlCreator();
@@ -180,7 +180,7 @@ public class MhsFrame extends JFrame {
 	 * @return current user command
 	 */
 	public String getCommand() {
-		return plainTextBox.getText();
+		return inputBox.getText();
 	}
 	
 	/**
@@ -189,7 +189,7 @@ public class MhsFrame extends JFrame {
 	 * @param inputListener
 	 */
 	public void addInputChangedListener(DocumentListener inputListener) {
-		plainTextBox.getDocument().addDocumentListener(inputListener);
+		inputBox.getDocument().addDocumentListener(inputListener);
 	}
 	
 	public void addTrayListener(MouseListener trayListener) {
@@ -202,7 +202,7 @@ public class MhsFrame extends JFrame {
 	 * @param keyListener
 	 */
 	public void addInputKeyListener(KeyListener keyListener) {
-		plainTextBox.addKeyListener(keyListener);
+		inputBox.addKeyListener(keyListener);
 	}
 	
 	/**
@@ -210,7 +210,7 @@ public class MhsFrame extends JFrame {
 	 */
 	public void clearInput() {
 		isInputDisabled = true;
-		plainTextBox.setText(BLANK);
+		inputBox.setText(BLANK);
 		isInputDisabled = false;
 	}
 	
@@ -244,7 +244,7 @@ public class MhsFrame extends JFrame {
 	 * select input box based on current input format
 	 */
 	public void selectInputBox() {
-		plainTextBox.requestFocus();	
+		inputBox.requestFocus();	
 	}
 	
 	public void setSize(int width, int height, boolean maximized) {
@@ -274,7 +274,7 @@ public class MhsFrame extends JFrame {
 	}
 
 	public boolean plainTextBoxInitialized() {
-		return plainTextBox.getParent().getParent() == framePanel;
+		return inputBox.getParent().getParent() == framePanel;
 	}
 	
 	
@@ -461,28 +461,28 @@ public class MhsFrame extends JFrame {
 	 * add and format the password and plain text box to frame panel
 	 */
 	private void initInputBox() {
-		addPlainTextBoxToFramePanel();
-		formatPlainTextBox();
+		addInputBoxToFramePanel();
+		formatInputBox();
 	}
 	
 	/**
 	 * add the plain text box to framePanel
 	 */
-	private void formatPlainTextBox() {
-		plainTextBox.setFont(INPUT_BOX_FONT);
+	private void formatInputBox() {
+		inputBox.setFont(INPUT_BOX_FONT);
 		EmptyBorder paddingBorder = createPaddingBorder(DEFAULT_PADDING_WIDTH,
 				DEFAULT_PADDING_WIDTH, DEFAULT_PADDING_WIDTH);
-		plainTextBox.setBorder(paddingBorder);
+		inputBox.setBorder(paddingBorder);
 	}
 
 	/**
 	 * add plain text box to the frame panel
 	 */
-	private void addPlainTextBoxToFramePanel() {
+	private void addInputBoxToFramePanel() {
 		GridBagConstraints constraints = getDefaultConstraints(
 				INPUT_BOX_POSITION_Y, INPUT_BOX_WEIGHT_Y, INPUT_BOX_HEIGHT);
 
-		Box inputBoxContainer = createContainer(plainTextBox,
+		Box inputBoxContainer = createContainer(inputBox,
 				DEFAULT_PADDING_WIDTH, INPUT_BOX_TOP_PADDING,
 				INPUT_BOX_BOTTOM_PADDING);
 		framePanel.add(inputBoxContainer, constraints);
