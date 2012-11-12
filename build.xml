@@ -1,13 +1,18 @@
 <?xml version="1.0"?>
 <project name="Build Project cs2103-MHS"  default="main" basedir=".">
+  
+  <!-- Variables -->
   <!-- The value of a property is accessed via ${} -->
   <property name="src.dir" location="src" />
+  <property name="tests.dir" location="src/mhs/test" />
+  <property name="tests.report.dir" location="testreports" />
   <property name="bin.dir" location="bin" />
   <property name="build.dir" location="build" />
   <property name="dist.dir" location="dist" />
   <property name="docs.dir" location="javadocs" />
   <property name="libs.dir" location="libs" />
-
+  <property name="postCompilationDependencies.dir" location="libs/postCompilationDependencies" />
+  
   <!-- libs dependencies -->
   <path id="build.classpath">
     <fileset dir="${libs.dir}">
@@ -15,23 +20,33 @@
     </fileset>
   </path>
   
+  <!-- Define the classpath which includes the junit.jar and the classes after compiling-->
+  <path id="junit.classpath">
+    <pathelement location="libs/junit.jar" />
+    <pathelement location="${build.dir}" />
+  </path>
+
+  
   <!-- Deletes the existing build, docs and dist directory-->
   <target name="clean">
     <delete dir="${build.dir}" />
     <delete dir="${docs.dir}" />
     <delete dir="${dist.dir}" />
-  </target>
+    <delete dir="${tests.report.dir}" />
+    </target>
 
-  <!-- Creates the  build, docs and dist directory-->
+  <!-- Creates the build, docs and dist directory-->
   <target name="makedir">
     <mkdir dir="${build.dir}" />
     <mkdir dir="${docs.dir}" />
     <mkdir dir="${dist.dir}" />
-  </target>
+    <mkdir dir="${tests.report.dir}" />
+    </target>
 
   <!-- Compiles the java code (including the usage of library for JUnit -->
   <target name="compile" depends="clean, makedir">
     <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="build.classpath" includeantruntime="false">
+      <classpath refid="junit.classpath" />
     </javac>
   </target>
 
@@ -45,7 +60,7 @@
     </javadoc>
   </target>
   
-  <!-- combine jars --> 
+  <!-- Combine Dependencies into single jars --> 
   <target name="combine_dependencies">
   	<zip destfile="${libs.dir}/combined/mhs-dependencies.jar">
   		<zipgroupfileset excludes="META-INF/*.SF" dir="${libs.dir}" includes="*.jar"/>
@@ -59,15 +74,59 @@
         <attribute name="Main-Class" value="mhs.src.Mhs" />
         <attribute name="Class-Path" value="."/>
       </manifest>
-        
 	    <fileset dir="${bin.dir}"/>
-	
 		<!-- add combined jars -->	    
 	    <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/combined/mhs-dependencies.jar"/>
     </jar>
   </target>
 
-  <target name="main" depends="compile, create_run_jar, docs">
+  
+<!-- Automated Tests  -->
+  <target name="junit" depends="compile">
+    <junit printsummary="on" fork="true" haltonfailure="no">
+        
+    <classpath refid="junit.classpath"/>
+    <classpath refid="build.classpath"/>
+    <classpath refid="build.classpath"/>
+
+    <test name="${tests.dir}\AllTests.java"
+             haltonfailure="no" outfile="result1">
+      <formatter type="plain"/>
+      <formatter type="xml"/>
+    </test>
+    <test name="${tests.dir}\sampleTest.java"
+             haltonfailure="no" outfile="result2">
+      <formatter type="plain"/>
+      <formatter type="xml"/>
+    </test>
+    <test name="${tests.dir}\SystemTest.java"
+             haltonfailure="no" outfile="result3">
+      <formatter type="plain"/>
+      <formatter type="xml"/>
+    </test>
+        
+<!--      <classpath refid="build.classpath"/> -->
+<!--      <classpath refid="junit.classpath"/> -->
+<!--      <formatter type="xml" /> -->
+<!--      <batchtest todir="${test.report.dir}"> -->
+<!--         <fileset dir="${tests.dir}"> -->
+<!-- 		    <include name="**/*.java"/> -->
+<!--         </fileset> -->
+<!--       </batchtest> -->
+    </junit>
+  </target>
+  
+  <!-- Copy post compilation dependencies -->
+  <target name="copy_dependencies" depends="compile">
+  	<copy todir="${dist.dir}" includeEmptyDirs="false"> 
+	  <fileset dir="${postCompilationDependencies.dir}"> 
+	     <include name="*"/> 
+	  </fileset> 
+  	</copy>
+  </target>
+  
+  <!-- Main -->
+  <target name="main" depends="compile, create_run_jar, junit, copy_dependencies">
     <description>Main target</description>
   </target>
 

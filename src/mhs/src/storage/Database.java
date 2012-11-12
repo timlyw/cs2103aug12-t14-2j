@@ -761,6 +761,11 @@ public class Database {
 		return updatedTaskToSave;
 	}
 
+	/**
+	 * Schedule Push Sync Task
+	 * 
+	 * @param updatedTaskToSave
+	 */
 	private void schedulePushSyncTask(Task updatedTaskToSave) {
 		if (isRemoteSyncEnabled) {
 			syncronize.schedulePushSyncTask(updatedTaskToSave);
