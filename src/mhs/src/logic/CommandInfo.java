@@ -117,7 +117,6 @@ public class CommandInfo {
 		index = indexInput;
 		startDate = startDateInput;
 		endDate = endDateInput;
-		System.out.println(toString());
 		logExitMethod("CommandInfo");
 
 	}
