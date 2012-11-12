@@ -31,12 +31,27 @@ class TaskValidator {
 	static boolean isTaskValid(Task task) {
 		logEnterMethod("isTaskValid");
 		assert (task != null);
-
 		if (isTaskNameAndCategoryNull(task)) {
 			logExitMethod("isTaskValid");
 			return false;
 		}
 		boolean taskIsValid = true;
+		taskIsValid = validateTaskTypesValid(task, taskIsValid);
+
+		logExitMethod("isTaskValid");
+		return taskIsValid;
+	}
+
+	/**
+	 * Validates whether specific task types are valid
+	 * 
+	 * @param task
+	 * @param taskIsValid
+	 * @return
+	 */
+	protected static boolean validateTaskTypesValid(Task task,
+			boolean taskIsValid) {
+		logEnterMethod("validateTaskTypesValid");
 		switch (task.getTaskCategory()) {
 		case FLOATING:
 			break;
@@ -50,8 +65,7 @@ class TaskValidator {
 			taskIsValid = false;
 			break;
 		}
-
-		logExitMethod("isTaskValid");
+		logExitMethod("validateTaskTypesValid");
 		return taskIsValid;
 	}
 
@@ -92,6 +106,7 @@ class TaskValidator {
 	 */
 	protected static boolean isDeadlineEndDateTimesNull(Task task) {
 		logEnterMethod("isDeadlineEndDateTimesNull");
+		assert (task != null);
 		logExitMethod("isDeadlineEndDateTimesNull");
 		return task.getEndDateTime() == null;
 	}
@@ -121,6 +136,7 @@ class TaskValidator {
 	 */
 	protected static boolean isTimedTaskStartAndEndDateTimesNull(Task task) {
 		logEnterMethod("isTimedTaskStartAndEndDateTimesNull");
+		assert (task != null);
 		logExitMethod("isTimedTaskStartAndEndDateTimesNull");
 		return task.getStartDateTime() == null
 				|| isDeadlineEndDateTimesNull(task);
@@ -152,6 +168,7 @@ class TaskValidator {
 	 */
 	protected static boolean isTimedOrDeadlineTaskSynced(Task localTask) {
 		logEnterMethod("isTimedOrDeadlineTaskSynced");
+		assert (localTask != null);
 		logExitMethod("isTimedOrDeadlineTaskSynced");
 		return localTask.getgCalTaskId() == null
 				|| localTask.getTaskLastSync() == null;
@@ -165,6 +182,7 @@ class TaskValidator {
 	 */
 	protected static boolean isFloatingTaskSynced(Task localTask) {
 		logEnterMethod("isFloatingTaskSynced");
+		assert (localTask != null);
 		logExitMethod("isFloatingTaskSynced");
 		return localTask.getGTaskId() == null
 				|| localTask.getTaskLastSync() == null;

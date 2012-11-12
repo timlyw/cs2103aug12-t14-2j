@@ -44,7 +44,6 @@ public class MhsGoogleOAuth2 {
 
 	private static final String GOOGLE_USER_INFO_EMAIL = "email";
 	private static final String GOOGLE_USER_INFO_GIVEN_NAME = "given_name";
-	private static final String EXCEPTION_MESSAGE_NO_VALID_CREDENTIAL = "No valid credential. Call authorizeCredentialAndStoreInCredentialStore to setup credential.";
 
 	// Configurables
 	private static final String FILE_PATH_CREDENTIALS_OAUTH2 = ".credentials/oauth2.json";
@@ -67,6 +66,7 @@ public class MhsGoogleOAuth2 {
 	private static final String GOOGLE_OAUTH2_ACCESS_TYPE_OFFLINE = "offline";
 
 	// Messages
+	private static final String EXCEPTION_MESSAGE_NO_VALID_CREDENTIAL = "No valid credential. Call authorizeCredentialAndStoreInCredentialStore to setup credential.";
 	private static final String ERROR_MESSAGE_ERROR_AUDIENCE_DOES_NOT_MATCH_OUR_CLIENT_ID = "ERROR: audience does not match our client ID!";
 
 	private static MhsGoogleOAuth2 instance = null;
@@ -80,6 +80,12 @@ public class MhsGoogleOAuth2 {
 
 	private static String GOOGLE_CURRENT_OAUTH2_USER_ID = GOOGLE_OAUTH2_DEFAULT_USER_ID;
 
+	/**
+	 * Returns instance of MhsGoogleOAuth2
+	 * 
+	 * @return MhsGoogleOAuth2 instance
+	 * @throws IOException
+	 */
 	public static MhsGoogleOAuth2 getInstance() throws IOException {
 		if (instance == null) {
 			instance = new MhsGoogleOAuth2();
@@ -155,8 +161,10 @@ public class MhsGoogleOAuth2 {
 	 * @throws IOException
 	 */
 	public static void deleteCurrentCredential() throws IOException {
+		logEnterMethod("deleteCurrentCredential");
 		credentialStore.delete(GOOGLE_CURRENT_OAUTH2_USER_ID, credential);
 		credential = null;
+		logExitMethod("deleteCurrentCredential");
 	}
 
 	/**
@@ -344,10 +352,18 @@ public class MhsGoogleOAuth2 {
 		return userName;
 	}
 
+	/**
+	 * Checks if user is authenticated with Google Server
+	 * 
+	 * @return
+	 */
 	public static boolean isAuthenticated() {
+		logEnterMethod("isAuthenticated");
 		if (credential != null) {
+			logExitMethod("isAuthenticated");
 			return true;
 		}
+		logExitMethod("isAuthenticated");
 		return false;
 	}
 
