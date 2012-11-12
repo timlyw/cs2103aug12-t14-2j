@@ -2,18 +2,15 @@
 
 package mhs.test;
 
-import java.util.List;
-
-import com.google.api.services.tasks.model.Task;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import mhs.src.storage.persistence.remote.GoogleTasks;
 import mhs.src.storage.persistence.remote.MhsGoogleOAuth2;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import com.google.api.services.tasks.model.Task;
 
 /**
  * This class tests the creation, retrival, updating and deletion operations for 
