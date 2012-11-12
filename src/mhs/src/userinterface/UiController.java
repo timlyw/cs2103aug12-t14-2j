@@ -20,11 +20,11 @@ import javax.swing.event.DocumentListener;
 import com.melloware.jintellitype.HotkeyListener;
 import com.melloware.jintellitype.JIntellitype;
 
+import mhs.src.common.ConfigFile;
 import mhs.src.common.HtmlCreator;
 import mhs.src.common.MhsLogger;
 import mhs.src.logic.Processor;
 import mhs.src.logic.StateListener;
-import mhs.src.storage.persistence.local.ConfigFile;
 
 /**
  * UiController controls the interaction between MhsFrame and Processor It makes
@@ -78,6 +78,7 @@ public class UiController {
 		initMhsFrame();
 		initListeners();
 		loadMhsParameters();
+		updateMhsFrameSize();
 		//initHotKey();
 		endLog("constructor");
 	}
@@ -144,7 +145,7 @@ public class UiController {
 
 	private void storeMhsParameters() {
 		updateMhsFrameMaximized();
-		updateMhsFrameDimensionst();
+		updateMhsFrameDimensions();
 		saveParameters();
 	}
 
@@ -172,7 +173,7 @@ public class UiController {
 		}
 	}
 
-	private void updateMhsFrameDimensionst() {
+	private void updateMhsFrameDimensions() {
 		if (!mhsFrameMaximized) {
 			mhsFrameWidth = mhsFrame.getWidth();
 			mhsFrameHeight = mhsFrame.getHeight();
@@ -290,8 +291,16 @@ public class UiController {
 		updateTitleScreen();
 		updateDisplayScreen();
 		updateFeedbackText();
-		updateMhsFrameDimensionst();
+		updateMhsFrameDimensions();
+		updateMhsFrameMinimization();
 		mhsFrame.repaint();
+	}
+	
+	private void updateMhsFrameMinimization() {
+		if(processor.isHideRequested()) {
+			mhsFrame.minimize();
+			processor.resetHide();
+		}
 	}
 
 	private void updateTitleScreen() {

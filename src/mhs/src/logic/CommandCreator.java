@@ -24,10 +24,10 @@ import java.util.Stack;
  * 
  */
 public class CommandCreator {
-	private static final String MESSAGE_HOME_PAGE = "Displaying home page";
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command";
 	private static final String MESSAGE_NOTHING_TO_UNDO = "Nothing to undo";
 	private static final String MESSAGE_NOTHING_TO_REDO = "Nothing to redo";
+	private static final String MESSAGE_HOME_PAGE = "<b>Commands:</b> add/delete/edit/mark/rename/login <br/><b>Type 'help' for more info.</b>";
 
 	private static CommandCreator commandCreator;
 	private Command currentCommand;

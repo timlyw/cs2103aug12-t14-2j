@@ -29,69 +29,108 @@ public class CommandSearch extends Command {
 	 */
 	public CommandSearch(CommandInfo inputCommand) {
 		logEnterMethod("CommandSearch");
-		List<Task> resultList;
 		switch (inputCommand.getCommandEnum()) {
 		case search:
-			try {
-				minTaskQuery = 0;
-				resultList = queryTask(inputCommand);
-				minTaskQuery = 1;
-				matchedTasks = resultList;
-				assert (matchedTasks != null);
-			} catch (IOException e) {
-				matchedTasks = null;
-			}
+			executeGenericSearch(inputCommand);
 			break;
 		case floating:
-			try {
-				System.out.println("float me");
-				minTaskQuery = 0;
-				resultList = queryTaskByCategory(TaskCategory.FLOATING);
-				System.out.println(resultList);
-				minTaskQuery = 1;
-				matchedTasks = resultList;
-				assert (matchedTasks != null);
-			} catch (IOException e) {
-				matchedTasks = null;
-			}
+			executeFloatingSearch();
 			break;
 		case deadline:
-			try {
-				minTaskQuery = 0;
-				resultList = queryTaskByCategory(TaskCategory.DEADLINE);
-				minTaskQuery = 1;
-				matchedTasks = resultList;
-				assert (matchedTasks != null);
-			} catch (IOException e) {
-				matchedTasks = null;
-			}
+			executeDeadlineSearch();
 			break;
 		case timed:
-			try {
-				minTaskQuery = 0;
-				resultList = queryTaskByCategory(TaskCategory.TIMED);
-				minTaskQuery = 1;
-				matchedTasks = resultList;
-				assert (matchedTasks != null);
-			} catch (IOException e) {
-				matchedTasks = null;
-			}
+			executeTimedSearch();
 			break;
 		case home:
-			try {
-				minTaskQuery = 0;
-				resultList = queryHome();
-				minTaskQuery = 1;
-				matchedTasks = resultList;
-				assert (matchedTasks != null);
-			} catch (IOException e) {
-				matchedTasks = null;
-			}
+			executeHomeSearch();
 			break;
 		default:
 			break;
 		}
 		logExitMethod("CommandSearch");
+	}
+
+	/**
+	 * Queries home and populates matchedtasks
+	 */
+	private void executeHomeSearch() {
+		List<Task> resultList;
+		try {
+			minTaskQuery = 0;
+			resultList = queryHome();
+			minTaskQuery = 1;
+			matchedTasks = resultList;
+			assert (matchedTasks != null);
+		} catch (IOException e) {
+			matchedTasks = null;
+		}
+	}
+
+	/**
+	 * Queries Timed Tasks and populates matchedtasks
+	 */
+	private void executeTimedSearch() {
+		List<Task> resultList;
+		try {
+			minTaskQuery = 0;
+			resultList = queryTaskByCategory(TaskCategory.TIMED);
+			minTaskQuery = 1;
+			matchedTasks = resultList;
+			assert (matchedTasks != null);
+		} catch (IOException e) {
+			matchedTasks = null;
+		}
+	}
+
+	/**
+	 * Queries deadline and populates matchedtasks
+	 */
+	private void executeDeadlineSearch() {
+		List<Task> resultList;
+		try {
+			minTaskQuery = 0;
+			resultList = queryTaskByCategory(TaskCategory.DEADLINE);
+			minTaskQuery = 1;
+			matchedTasks = resultList;
+			assert (matchedTasks != null);
+		} catch (IOException e) {
+			matchedTasks = null;
+		}
+	}
+
+	/**
+	 * Queries floating and populates matchestasks
+	 */
+	private void executeFloatingSearch() {
+		List<Task> resultList;
+		try {
+			minTaskQuery = 0;
+			resultList = queryTaskByCategory(TaskCategory.FLOATING);
+			minTaskQuery = 1;
+			matchedTasks = resultList;
+			assert (matchedTasks != null);
+		} catch (IOException e) {
+			matchedTasks = null;
+		}
+	}
+
+	/**
+	 * Queries based on inputcommand and populates matchedtasks
+	 * 
+	 * @param inputCommand
+	 */
+	private void executeGenericSearch(CommandInfo inputCommand) {
+		List<Task> resultList;
+		try {
+			minTaskQuery = 0;
+			resultList = queryTask(inputCommand);
+			minTaskQuery = 1;
+			matchedTasks = resultList;
+			assert (matchedTasks != null);
+		} catch (IOException e) {
+			matchedTasks = null;
+		}
 	}
 
 	/**

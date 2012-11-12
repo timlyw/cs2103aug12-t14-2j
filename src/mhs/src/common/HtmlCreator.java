@@ -10,6 +10,7 @@ package mhs.src.common;
  */
 
 public class HtmlCreator {
+	private static final int STRING_NOT_FOUND = -1;
 	private static final String DEFAULT_FONT = "calibri";
 	private static final String DEFAULT_FONT_SIZE = "5";
 	private static final String SMALL_FONT = "3";
@@ -52,6 +53,7 @@ public class HtmlCreator {
 
 	public static final String LARGE_FONT = "6";
 	public static final String FONT_SIZE_FORMAT = "<font face='courier' size=%1$s>%2$s</font>";
+	public static final String FONT_SIZE_FORMAT_CALIBRI = "<font face='calibri' size=%1$s>%2$s</font>";
 
 	public static String shortenString(String htmlBody, int maxWidth) {
 		if (htmlBody.length() > maxWidth) {
@@ -63,6 +65,10 @@ public class HtmlCreator {
 
 	public String largeFont(String htmlBody) {
 		return String.format(FONT_SIZE_FORMAT, LARGE_FONT, htmlBody);
+	}
+
+	public String smallFont(String htmlBody) {
+		return String.format(FONT_SIZE_FORMAT_CALIBRI, SMALL_FONT, htmlBody);
 	}
 
 	public String createFeedbackScreenHtml(String htmlBody) {
@@ -93,7 +99,7 @@ public class HtmlCreator {
 	public static int countNewLine(String htmlString) {
 		int count = 0;
 		int index = 0;
-		while ((index = htmlString.indexOf(NEW_LINE, index)) != -1) {
+		while ((index = htmlString.indexOf(NEW_LINE, index)) != STRING_NOT_FOUND) {
 			count++;
 			index++;
 		}

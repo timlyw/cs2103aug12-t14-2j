@@ -146,6 +146,10 @@ public class MhsFrame extends JFrame {
 		return mhsFrameInstance;
 	}
 	
+	public void minimize() {
+		this.setExtendedState(JFrame.ICONIFIED);
+	}
+	
 	/**
 	 * makes the frame visible to user
 	 */

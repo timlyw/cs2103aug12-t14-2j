@@ -71,6 +71,9 @@ public class Task {
 		return gson.fromJson(gson.toJson(this), this.getClass());
 	}
 
+	/**
+	 * To String
+	 */
 	public String toString() {
 		String taskToString = "";
 		if (taskId != null) {
@@ -104,7 +107,7 @@ public class Task {
 		return gson.toJson(this);
 	}
 
-	/*
+	/**
 	 * Getters and Setters
 	 */
 
@@ -120,12 +123,22 @@ public class Task {
 		return taskName;
 	}
 
+	/**
+	 * Setter for Task Name
+	 * 
+	 * @param taskName
+	 *            null and empty strings defaults to default unnamed task name
+	 */
 	public void setTaskName(String taskName) {
-		if (taskName == null || taskName.isEmpty()) {
+		if (isTaskNameNullOrEmpty(taskName)) {
 			this.taskName = DEFAULT_UNNAMED_TASK_NAME;
 		} else {
 			this.taskName = taskName;
 		}
+	}
+
+	protected boolean isTaskNameNullOrEmpty(String taskName) {
+		return taskName == null || taskName.isEmpty();
 	}
 
 	public TaskCategory getTaskCategory() {
