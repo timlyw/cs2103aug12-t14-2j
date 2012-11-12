@@ -13,12 +13,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import mhs.src.common.ConfigFile;
 import mhs.src.common.MhsLogger;
 import mhs.src.common.exceptions.InvalidTaskFormatException;
 import mhs.src.common.exceptions.NoActiveCredentialException;
 import mhs.src.common.exceptions.TaskNotFoundException;
 import mhs.src.storage.persistence.TaskLists;
-import mhs.src.storage.persistence.local.ConfigFile;
 import mhs.src.storage.persistence.local.TaskRecordFile;
 import mhs.src.storage.persistence.remote.GoogleCalendarMhs;
 import mhs.src.storage.persistence.remote.GoogleTasks;
@@ -351,6 +351,7 @@ public class Database {
 			saveGoogleAccountInfo(userName);
 		} catch (Exception e) {
 			syncronize.disableRemoteSync();
+			throw e;
 		}
 		if (!isGoogleServicesInstantiated()) {
 			initializeGoogleServices();
@@ -761,6 +762,11 @@ public class Database {
 		return updatedTaskToSave;
 	}
 
+	/**
+	 * Schedule Push Sync Task
+	 * 
+	 * @param updatedTaskToSave
+	 */
 	private void schedulePushSyncTask(Task updatedTaskToSave) {
 		if (isRemoteSyncEnabled) {
 			syncronize.schedulePushSyncTask(updatedTaskToSave);

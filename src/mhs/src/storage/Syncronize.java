@@ -1203,6 +1203,9 @@ class Syncronize {
 		// update remote task
 		com.google.api.services.tasks.model.Task updatedGTask;
 		try {
+			if (isGoogleCalendarSyncedTask(localTask)) {
+				Database.googleCalendar.deleteEvent(localTask.getgCalTaskId());
+			}
 			updatedGTask = Database.googleTasks.updateTask(
 					localTask.getGTaskId(), localTask.getTaskName(),
 					localTask.isDone());
@@ -1215,6 +1218,16 @@ class Syncronize {
 			logger.log(Level.FINER, e.getMessage());
 		}
 		logExitMethod("pushSyncExistingFloatingSyncTask");
+	}
+
+	/**
+	 * Checks if Task is Google Calendar Synced Task
+	 * 
+	 * @param localTask
+	 * @return
+	 */
+	protected boolean isGoogleCalendarSyncedTask(Task localTask) {
+		return localTask.getgCalTaskId() != null;
 	}
 
 	/**
@@ -1236,6 +1249,9 @@ class Syncronize {
 		// update remote task
 		Event updatedGcalEvent;
 		try {
+			if (isGoogleTaskSyncedTask(localTask)) {
+				Database.googleTasks.deleteTask(localTask.getGTaskId());
+			}
 			updatedGcalEvent = Database.googleCalendar.updateEvent(localTask
 					.clone());
 
@@ -1248,6 +1264,16 @@ class Syncronize {
 			logger.log(Level.FINER, e.getMessage());
 		}
 		logExitMethod("pushSyncExistingTask");
+	}
+
+	/**
+	 * Checks if task is Google Task Synced Task
+	 * 
+	 * @param localTask
+	 * @return
+	 */
+	protected boolean isGoogleTaskSyncedTask(Task localTask) {
+		return localTask.getGTaskId() != null;
 	}
 
 	/**
@@ -1329,8 +1355,19 @@ class Syncronize {
 		logEnterMethod("updateLocalSyncTask");
 		Task updatedlocalSyncTask = new FloatingTask(
 				localSyncTaskToUpdate.getTaskId(), addedGTask, syncDateTime);
+		clearGoogleCalendarSyncData(updatedlocalSyncTask);
 		logEnterMethod("updateLocalSyncTask");
 		return updatedlocalSyncTask;
+	}
+
+	/**
+	 * Clears task of Google Calendar Sync Data
+	 * 
+	 * @param updatedlocalSyncTask
+	 */
+	protected void clearGoogleCalendarSyncData(Task updatedlocalSyncTask) {
+		updatedlocalSyncTask.setGcalTaskId(null);
+		updatedlocalSyncTask.setGcalTaskUid(null);
 	}
 
 	/**
@@ -1352,8 +1389,18 @@ class Syncronize {
 			updatedTask = new TimedTask(localSyncTaskToUpdate.getTaskId(),
 					gCalEntry, syncDateTime);
 		}
+		clearGoogleTaskSyncData(updatedTask);
 		logExitMethod("updateLocalSyncTask");
 		return updatedTask;
+	}
+
+	/**
+	 * Clears task of Google Task Sync Data
+	 * 
+	 * @param updatedTask
+	 */
+	protected void clearGoogleTaskSyncData(Task updatedTask) {
+		updatedTask.setGTaskId(null);
 	}
 
 	/**

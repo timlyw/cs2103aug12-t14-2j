@@ -45,10 +45,10 @@ public class Processor {
 	private static final String MESSAGE_LOGOUT_SUCCESS = "You have successfully logged out !";
 	private static final String MESSAGE_LOGOUT_FAIL_NOT_LOGGED_IN = "You are not logged in! Cannot logout";
 	private static final String MESSAGE_NOT_LOGGED_IN = "You are already logged in!";
-	private static final String MESSAGE_SYNC_NOT_LOGGED_IN = "To Sync you need to log in. \nEnter a username . e.g: jim";
-	private static final String MESSAGE_SYNCING = "Pulling events from your Google calender.... Please refresh !";
+	private static final String MESSAGE_SYNC_NOT_LOGGED_IN = "To Sync you need to log in. <br/>Enter a username . e.g: jim";
+	private static final String MESSAGE_SYNCING = "Pulling events from your Google calender....<br/> Type display to view synced tasks. !";
 	private static final String MESSAGE_NO_INTERNET = "No internet connection available.";
-	private static final String MESSAGE_LOGIN_FAIL = "Login unsuccessful! Please check username and password.";
+	private static final String MESSAGE_LOGIN_FAIL = "Login unsuccessful!<br/>Please check username and password.";
 	private static final String MESSAGE_ERROR = "Some Error Occurred";
 	private static final String MESSAGE_NO_PARAMS = "You didn't specify any parameters.";
 	private static final String MESSAGE_NULL_INPUT = "Null Input";
@@ -62,7 +62,7 @@ public class Processor {
 	private static final String MESSAGE_HI_USERNAME = "Hi %1$s";
 	private static final String MESSAGE_FEEDBACK = "%1$s";
 	private static final String MESSAGE_LOGIN_SUCCESS = htmlCreator
-			.color("You have successfully logged in! Your tasks will now be synced with Google Calender and Tasks.",
+			.color("You have successfully logged in!<br/> Your tasks will now be synced with Google Calender and Tasks.",
 					HtmlCreator.BLUE);
 
 	private static final String FILE_FEEDBACK = "SystemTestFiles/feedback-%1$s.html";
@@ -241,6 +241,8 @@ public class Processor {
 	 */
 	public void showHome() {
 		logEnterMethod("showHome");
+		setCommand("display");
+		executeCommand();
 		setCommand(COMMAND_HOME);
 		executeCommand();
 		logExitMethod("showHome");
@@ -337,6 +339,7 @@ public class Processor {
 				parseAndExecute();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			commandFeedback = MESSAGE_ERROR;
 		}
 	}
