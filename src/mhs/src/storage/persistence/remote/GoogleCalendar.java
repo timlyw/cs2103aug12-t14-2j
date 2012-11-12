@@ -63,9 +63,11 @@ public class GoogleCalendar {
 		return retrievedEvent;
 	}
 
-	public void deleteEvent(String eventId) throws IOException,
-			ResourceNotFoundException {
-		calService.events().delete(calendarId, eventId).execute();
+	public void deleteEvent(String eventId) {
+		try {
+			calService.events().delete(calendarId, eventId).execute();
+		} catch (IOException e) {
+		}
 	}
 
 	public List<Event> retrieveDeletedEvents(String minDate, String maxDate)
@@ -146,7 +148,6 @@ public class GoogleCalendar {
 				.execute().getItems();
 
 		for (int i = 0; i < calLists.size(); i++) {
-			System.out.println("calendar: " + calLists.get(i).getSummary());
 			if (calLists.get(i).getSummary().equals(calTitle)) {
 				return calLists.get(i).getId();
 			}
@@ -162,4 +163,9 @@ public class GoogleCalendar {
 			deleteEvent(eventList.get(i).getId());
 		}
 	}
+	
+	public void moveEvent(String eventId, String fromCalendarId, String toCalendarId) throws IOException {
+		calService.events().move(eventId, fromCalendarId, toCalendarId).execute();
+	}
+	
 }
