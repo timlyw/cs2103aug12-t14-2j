@@ -29,7 +29,7 @@ import mhs.src.storage.persistence.task.TimedTask;
 public class CommandEdit extends Command {
 
 	private static final String MESSAGE_TASK_NOT_EDITED = "Error occured. Task not Edited.";
-	private static final String CONFIRM_TASK_EDITED = "I have edited '%1$s' to '%2$s' %3$s";
+	private static final String CONFIRM_TASK_EDITED = "I have edited '%1$s'<br/>to '%2$s' %3$s";
 
 	private static final int FLOATING = 0;
 	private static final int DEADLINE = 1;

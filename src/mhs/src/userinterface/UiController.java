@@ -78,7 +78,8 @@ public class UiController {
 		initMhsFrame();
 		initListeners();
 		loadMhsParameters();
-		initHotKey();
+		updateMhsFrameSize();
+		//initHotKey();
 		endLog("constructor");
 	}
 

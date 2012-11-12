@@ -63,8 +63,7 @@ public class DateTimeHelper {
 	public String formatDateToString(DateTime formatDate) {
 
 		logEnterMethod("formatDateToString");
-		String outString;
-		outString = formatDate.toString(FORMAT_DATE);
+		String outString = "";
 		new DateTime();
 		DateTime now = DateTime.now();
 		if (formatDate.getDayOfMonth() == now.getDayOfMonth()
@@ -98,6 +97,8 @@ public class DateTimeHelper {
 				outString += DAY_SUNDAY;
 			}
 		}
+
+		outString += ", " + formatDate.toString(FORMAT_DATE);
 		logExitMethod("formatDateToString");
 
 		return outString;
