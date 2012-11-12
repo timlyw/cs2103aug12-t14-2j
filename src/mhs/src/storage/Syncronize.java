@@ -92,6 +92,8 @@ class Syncronize {
 	 * Initialize Syncronize Background Executor
 	 */
 	private void initializeSyncronizeBackgroundExecutor() {
+		logEnterMethod("initializeSyncronizeBackgroundExecutor");
+		logExitMethod("initializeSyncronizeBackgroundExecutor");
 		syncronizeBackgroundExecutor = new ScheduledThreadPoolExecutor(
 				THREADS_TO_INITIALIZE_1);
 	}
@@ -104,8 +106,9 @@ class Syncronize {
 	 */
 	private void initializeGoogleCalendarServicesAndSync(
 			boolean disableSyncronize) throws IOException {
+		logEnterMethod("initializeGoogleCalendarServicesAndSync");
 		try {
-			if (database.initializeGoogleServices() && !disableSyncronize) {
+			if (isGoogleServicesInitializedAndSyncEnabled(disableSyncronize)) {
 				enableRemoteSync();
 				syncronizeDatabases();
 			} else {
@@ -114,18 +117,37 @@ class Syncronize {
 		} catch (AuthenticationException | UnknownHostException
 				| NoActiveCredentialException e) {
 			disableRemoteSync();
-			e.printStackTrace();
 			logger.log(Level.FINER, e.getMessage());
 		} catch (ServiceException e) {
-			e.printStackTrace();
 			logger.log(Level.FINER, e.getMessage());
 		}
+		logExitMethod("initializeGoogleCalendarServicesAndSync");
+	}
+
+	/**
+	 * Checks if Google Services is Initialized And Sync is Enabled
+	 * 
+	 * @param disableSyncronize
+	 * @return
+	 * @throws AuthenticationException
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws NoActiveCredentialException
+	 */
+	protected boolean isGoogleServicesInitializedAndSyncEnabled(
+			boolean disableSyncronize) throws AuthenticationException,
+			IOException, ServiceException, NoActiveCredentialException {
+		logEnterMethod("isGoogleServicesInitializedAndSyncEnabled");
+		logExitMethod("isGoogleServicesInitializedAndSyncEnabled");
+		return database.initializeGoogleServices() && !disableSyncronize;
 	}
 
 	/**
 	 * Initialize Push-Sync Background tasks list
 	 */
 	private void initializePushSyncBackgroundTasksList() {
+		logEnterMethod("initializePushSyncBackgroundTasksList");
+		logExitMethod("initializePushSyncBackgroundTasksList");
 		syncBackgroundTasks = new ConcurrentHashMap<String, Callable<Boolean>>();
 	}
 
@@ -135,10 +157,12 @@ class Syncronize {
 	 * @param taskToScheduleSync
 	 */
 	synchronized void schedulePushSyncTask(Task taskToScheduleSync) {
+		logEnterMethod("schedulePushSyncTask");
 		Callable<Boolean> pushTaskToSchedule = new SyncPushTask(
 				taskToScheduleSync, this);
 		syncBackgroundTasks.put(getSyncTaskQueueUid(), pushTaskToSchedule);
 		syncronizeBackgroundExecutor.submit(pushTaskToSchedule);
+		logExitMethod("schedulePushSyncTask");
 	}
 
 	/**
@@ -147,6 +171,8 @@ class Syncronize {
 	 * @return random uid string
 	 */
 	synchronized private String getSyncTaskQueueUid() {
+		logEnterMethod("getSyncTaskQueueUid");
+		logExitMethod("getSyncTaskQueueUid");
 		return UUID.randomUUID().toString();
 	}
 
@@ -200,7 +226,6 @@ class Syncronize {
 		futureSyncronizeBackgroundTask.get(maxExecutionTimeInSeconds,
 				TimeUnit.SECONDS);
 		waitForBackgroundPushSyncTasks();
-
 		logExitMethod("waitForSyncronizeBackgroundTaskToComplete");
 	}
 
@@ -337,14 +362,12 @@ class Syncronize {
 	 * @throws TaskNotFoundException
 	 * @throws InvalidTaskFormatException
 	 */
-	protected void pullSyncGoogleCalendarEvents()
+	private void pullSyncGoogleCalendarEvents()
 			throws ResourceNotFoundException, IOException,
 			TaskNotFoundException, InvalidTaskFormatException {
 		logEnterMethod("pullSyncGoogleCalendarEvents");
-
 		Map<String, Event> allGoogleCalendarEvents = getAllGoogleCalendarEvents();
 		pullSyncEventsInGoogleCalendarEventList(allGoogleCalendarEvents);
-
 		logExitMethod("pullSyncGoogleCalendarEvents");
 	}
 
@@ -356,8 +379,10 @@ class Syncronize {
 	 * @throws ResourceNotFoundException
 	 * @throws IOException
 	 */
-	protected Map<String, Event> getAllGoogleCalendarEvents()
+	private Map<String, Event> getAllGoogleCalendarEvents()
 			throws ResourceNotFoundException, IOException {
+		logEnterMethod("getAllGoogleCalendarEvents");
+		logExitMethod("getAllGoogleCalendarEvents");
 		return retrieveGoogleCalendarEvents(
 				Database.syncStartDateTime.toString(),
 				Database.syncEndDateTime.toString());
@@ -373,6 +398,7 @@ class Syncronize {
 	private Map<String, Event> retrieveGoogleCalendarEvents(
 			String startDateTime, String endDateTime)
 			throws ResourceNotFoundException, IOException {
+		logEnterMethod("retrieveGoogleCalendarEvents");
 
 		Map<String, Event> allGoogleCalendarEventsList = new LinkedHashMap<>();
 
@@ -385,6 +411,7 @@ class Syncronize {
 		loadAllGoogleCalendarEventsListWithDeletedCompletedEvents(
 				startDateTime, endDateTime, allGoogleCalendarEventsList);
 
+		logExitMethod("retrieveGoogleCalendarEvents");
 		return allGoogleCalendarEventsList;
 	}
 
@@ -397,14 +424,16 @@ class Syncronize {
 	 * @throws IOException
 	 * @throws ResourceNotFoundException
 	 */
-	protected void loadAllGoogleCalendarEventsListWithDefaultEvents(
+	private void loadAllGoogleCalendarEventsListWithDefaultEvents(
 			String startDateTime, String endDateTime,
 			Map<String, Event> allGoogleCalendarEventsList) throws IOException,
 			ResourceNotFoundException {
+		logEnterMethod("loadAllGoogleCalendarEventsListWithDefaultEvents");
 		List<Event> googleDefaultEvents = Database.googleCalendar
 				.retrieveDefaultEvents(startDateTime, endDateTime, false);
 		loadGoogleCalendarEventsFromList(allGoogleCalendarEventsList,
 				googleDefaultEvents);
+		logExitMethod("loadAllGoogleCalendarEventsListWithDefaultEvents");
 	}
 
 	/**
@@ -416,14 +445,16 @@ class Syncronize {
 	 * @throws IOException
 	 * @throws ResourceNotFoundException
 	 */
-	protected void loadAllGoogleCalendarEventsListWithCompletedEvents(
+	private void loadAllGoogleCalendarEventsListWithCompletedEvents(
 			String startDateTime, String endDateTime,
 			Map<String, Event> allGoogleCalendarEventsList) throws IOException,
 			ResourceNotFoundException {
+		logEnterMethod("loadAllGoogleCalendarEventsListWithCompletedEvents");
 		List<Event> googleCompletedEvents = Database.googleCalendar
 				.retrieveCompletedEvents(startDateTime, endDateTime, false);
-		loadGoogleCalendarEventListWithoutDuplicates(
+		loadGoogleCalendarEventListWithUniqueNewerEvent(
 				allGoogleCalendarEventsList, googleCompletedEvents);
+		logExitMethod("loadAllGoogleCalendarEventsListWithCompletedEvents");
 	}
 
 	/**
@@ -435,14 +466,16 @@ class Syncronize {
 	 * @throws IOException
 	 * @throws ResourceNotFoundException
 	 */
-	protected void loadAllGoogleCalendarEventsListWithDeletedDefaultEvents(
+	private void loadAllGoogleCalendarEventsListWithDeletedDefaultEvents(
 			String startDateTime, String endDateTime,
 			Map<String, Event> allGoogleCalendarEventsList) throws IOException,
 			ResourceNotFoundException {
+		logEnterMethod("loadAllGoogleCalendarEventsListWithDeletedDefaultEvents");
 		List<Event> googleDeletedDefaultEvents = Database.googleCalendar
 				.retrieveDefaultEvents(startDateTime, endDateTime, true);
 		loadGoogleCalendarEventsFromList(allGoogleCalendarEventsList,
 				googleDeletedDefaultEvents);
+		logExitMethod("loadAllGoogleCalendarEventsListWithDeletedDefaultEvents");
 	}
 
 	/**
@@ -454,14 +487,16 @@ class Syncronize {
 	 * @throws IOException
 	 * @throws ResourceNotFoundException
 	 */
-	protected void loadAllGoogleCalendarEventsListWithDeletedCompletedEvents(
+	private void loadAllGoogleCalendarEventsListWithDeletedCompletedEvents(
 			String startDateTime, String endDateTime,
 			Map<String, Event> allGoogleCalendarEventsList) throws IOException,
 			ResourceNotFoundException {
+		logEnterMethod("loadAllGoogleCalendarEventsListWithDeletedCompletedEvents");
 		List<Event> googleDeletedCompletedEvents = Database.googleCalendar
 				.retrieveCompletedEvents(startDateTime, endDateTime, true);
 		loadGoogleCalendarEventsFromList(allGoogleCalendarEventsList,
 				googleDeletedCompletedEvents);
+		logExitMethod("loadAllGoogleCalendarEventsListWithDeletedCompletedEvents");
 	}
 
 	/**
@@ -471,13 +506,30 @@ class Syncronize {
 	 * @param googleCalendarEventsToLoad
 	 * @param googleEventList
 	 */
-	protected void loadGoogleCalendarEventListWithoutDuplicates(
+	private void loadGoogleCalendarEventListWithUniqueNewerEvent(
 			Map<String, Event> googleCalendarEventsToLoad,
 			List<Event> googleEventList) {
+		logEnterMethod("loadGoogleCalendarEventListWithoutDuplicates");
 		if (googleEventList == null) {
 			return;
 		}
 		Iterator<Event> googleEventListIterator = googleEventList.iterator();
+		addEventsToGoogleCalendarListWithUniqueNewerEvent(
+				googleCalendarEventsToLoad, googleEventListIterator);
+		logExitMethod("loadGoogleCalendarEventListWithoutDuplicates");
+	}
+
+	/**
+	 * Add Events To GoogleCalendarList With Unique Newer Event if duplicates
+	 * occur
+	 * 
+	 * @param googleCalendarEventsToLoad
+	 * @param googleEventListIterator
+	 */
+	private void addEventsToGoogleCalendarListWithUniqueNewerEvent(
+			Map<String, Event> googleCalendarEventsToLoad,
+			Iterator<Event> googleEventListIterator) {
+		logEnterMethod("addEventsToGoogleCalendarListWithUniqueNewerEvent");
 		while (googleEventListIterator.hasNext()) {
 			Event googleEventToAddToList = googleEventListIterator.next();
 			if (isDuplicateEvent(googleCalendarEventsToLoad,
@@ -492,6 +544,7 @@ class Syncronize {
 			googleCalendarEventsToLoad.put(googleEventToAddToList.getId(),
 					googleEventToAddToList);
 		}
+		logExitMethod("addEventsToGoogleCalendarListWithUniqueNewerEvent");
 	}
 
 	/**
@@ -501,7 +554,7 @@ class Syncronize {
 	 * @param completedEventToCompare
 	 * @return
 	 */
-	protected boolean isEventToAddNewer(Event googleEventToAddToList,
+	private boolean isEventToAddNewer(Event googleEventToAddToList,
 			Event completedEventToCompare) {
 		return completedEventToCompare.getUpdated().getValue() > googleEventToAddToList
 				.getUpdated().getValue();
@@ -514,7 +567,7 @@ class Syncronize {
 	 * @param googleEventToAddToList
 	 * @return
 	 */
-	protected boolean isDuplicateEvent(
+	private boolean isDuplicateEvent(
 			Map<String, Event> googleCalendarEventsToLoad,
 			Event googleEventToAddToList) {
 		return googleCalendarEventsToLoad.containsKey(googleEventToAddToList
@@ -527,7 +580,7 @@ class Syncronize {
 	 * @param googleCalendarEventsToLoad
 	 * @param googleEventList
 	 */
-	protected void loadGoogleCalendarEventsFromList(
+	private void loadGoogleCalendarEventsFromList(
 			Map<String, Event> googleCalendarEventsToLoad,
 			List<Event> googleEventList) {
 		if (googleEventList == null) {
@@ -569,7 +622,7 @@ class Syncronize {
 	 * @throws InvalidTaskFormatException
 	 * @throws IOException
 	 */
-	protected void performGoogleCalendarPullSyncForExistingSyncTask(
+	private void performGoogleCalendarPullSyncForExistingSyncTask(
 			Event gCalEntry) throws TaskNotFoundException,
 			InvalidTaskFormatException, IOException {
 		logEnterMethod("performPullSyncForExistingGoogleCalendarTask");
@@ -599,7 +652,7 @@ class Syncronize {
 	 * @param localTask
 	 * @throws TaskNotFoundException
 	 */
-	protected void performGoogleCalendarPullSyncForDeletedLocalSyncTask(
+	private void performGoogleCalendarPullSyncForDeletedLocalSyncTask(
 			Event gCalEntry, Task localTask) throws TaskNotFoundException {
 		if (!localTask.isDeleted()) {
 			logger.log(Level.INFO,
@@ -614,9 +667,8 @@ class Syncronize {
 	 * @param gCalEntry
 	 * @throws UnknownHostException
 	 */
-	protected void performGoogleCalendarPullSyncForNewTask(Event gCalEntry)
+	private void performGoogleCalendarPullSyncForNewTask(Event gCalEntry)
 			throws UnknownHostException {
-		// Skip deleted events
 		if (Database.googleCalendar.isDeleted(gCalEntry)) {
 			return;
 		}
@@ -650,7 +702,7 @@ class Syncronize {
 	 * @param localTask
 	 * @return
 	 */
-	protected boolean isGoogleCalendarEventNewerThanLocalSyncTask(
+	private boolean isGoogleCalendarEventNewerThanLocalSyncTask(
 			Event gCalEntry, Task localTask) {
 		return localTask.getTaskLastSync().isBefore(
 				new DateTime(gCalEntry.getUpdated().getValue()));
@@ -662,7 +714,7 @@ class Syncronize {
 	 * @param gCalEntry
 	 * @return
 	 */
-	protected boolean hasGoogleCalendarSyncTask(Event gCalEntry) {
+	private boolean hasGoogleCalendarSyncTask(Event gCalEntry) {
 		return Database.taskLists.containsGoogleCalendarSyncTask(gCalEntry
 				.getId());
 	}
@@ -702,7 +754,7 @@ class Syncronize {
 	 * @throws TaskNotFoundException
 	 * @throws InvalidTaskFormatException
 	 */
-	protected void pullSyncGoogleTasksTasks() throws IOException,
+	private void pullSyncGoogleTasksTasks() throws IOException,
 			ResourceNotFoundException, TaskNotFoundException,
 			InvalidTaskFormatException {
 		logExitMethod("pullSyncGoogleTasksTasks");
@@ -967,7 +1019,7 @@ class Syncronize {
 	 * @throws TaskNotFoundException
 	 * @throws InvalidTaskFormatException
 	 */
-	protected void pushSyncFloatingTask(Task localTask)
+	private void pushSyncFloatingTask(Task localTask)
 			throws NullPointerException, IOException, ServiceException,
 			TaskNotFoundException, InvalidTaskFormatException {
 		logExitMethod("pushSyncFloatingTask");
@@ -985,7 +1037,7 @@ class Syncronize {
 	 * 
 	 * @param localTask
 	 */
-	protected void performPushSyncForExistingFloatingTask(Task localTask) {
+	private void performPushSyncForExistingFloatingTask(Task localTask) {
 		if (localTask.isDeleted()) {
 			deleteExistingFloatingSyncTask(localTask);
 		} else {
@@ -998,7 +1050,7 @@ class Syncronize {
 	 * 
 	 * @param localTask
 	 */
-	protected void deleteExistingFloatingSyncTask(Task localTask) {
+	private void deleteExistingFloatingSyncTask(Task localTask) {
 		logExitMethod("deleteExistingFloatingSyncTask");
 		logger.log(Level.INFO, "Removing deleted synced floating task : "
 				+ localTask.getTaskName());
@@ -1022,7 +1074,7 @@ class Syncronize {
 	 * 
 	 * @param localTask
 	 */
-	protected void pushUpdatedFloatingSyncTask(Task localTask) {
+	private void pushUpdatedFloatingSyncTask(Task localTask) {
 		// push updated sync tasks
 		if (localTask.getTaskUpdated().isAfter(localTask.getTaskLastSync())) {
 			logger.log(Level.INFO, "Pushing updated floating task : "
@@ -1040,7 +1092,7 @@ class Syncronize {
 	 * @throws TaskNotFoundException
 	 * @throws InvalidTaskFormatException
 	 */
-	protected void pushSyncTimedAndDeadlineTask(Task localTask)
+	private void pushSyncTimedAndDeadlineTask(Task localTask)
 			throws IOException, ServiceException, TaskNotFoundException,
 			InvalidTaskFormatException {
 		logEnterMethod("pushSyncTimedAndDeadlineTask");
@@ -1061,7 +1113,7 @@ class Syncronize {
 	 * @throws TaskNotFoundException
 	 * @throws InvalidTaskFormatException
 	 */
-	protected void performPushSyncForUnsyncedTimedAndDeadlineTask(Task localTask)
+	private void performPushSyncForUnsyncedTimedAndDeadlineTask(Task localTask)
 			throws IOException, ServiceException, TaskNotFoundException,
 			InvalidTaskFormatException {
 		logger.log(Level.INFO,
@@ -1074,7 +1126,7 @@ class Syncronize {
 	 * 
 	 * @param localTask
 	 */
-	protected void performPushSyncForSyncedTimedAndDeadlineTask(Task localTask) {
+	private void performPushSyncForSyncedTimedAndDeadlineTask(Task localTask) {
 		if (localTask.isDeleted()) {
 			deleteExistingTimedAndDeadlineSyncTask(localTask);
 		} else {
@@ -1089,7 +1141,7 @@ class Syncronize {
 	 * 
 	 * @param localTask
 	 */
-	protected void deleteExistingTimedAndDeadlineSyncTask(Task localTask) {
+	private void deleteExistingTimedAndDeadlineSyncTask(Task localTask) {
 		logger.log(Level.INFO,
 				"Removing deleted synced task : " + localTask.getTaskName());
 		try {
@@ -1310,7 +1362,9 @@ class Syncronize {
 	 * @param gCalEntry
 	 * @return
 	 */
-	protected boolean isGoogleEventWithoutDuration(Event gCalEntry) {
+	private boolean isGoogleEventWithoutDuration(Event gCalEntry) {
+		logEnterMethod("isGoogleEventWithoutDuration");
+		logExitMethod("isGoogleEventWithoutDuration");
 		return gCalEntry.getStart().getDateTime().toString()
 				.equals(gCalEntry.getEnd().getDateTime().toString());
 	}
@@ -1323,18 +1377,43 @@ class Syncronize {
 	 */
 	private DateTime setSyncTime(Event gCalEntry) {
 		logEnterMethod("setSyncTime");
-		new DateTime();
-		DateTime syncDateTime = DateTime.now();
+		DateTime syncDateTime = getDateTimeNow();
 
 		if (gCalEntry != null) {
 			syncDateTime = new DateTime(gCalEntry.getUpdated().getValue());
 		}
-		// assert that sync DateTimes between local and remote are equal
-		assert (syncDateTime.isEqual(new DateTime(gCalEntry.getUpdated()
-				.toString())));
+		assert isConvertedGoogleDateTimeSameAsSyncDateTime(
+				gCalEntry.getUpdated(), syncDateTime);
 
 		logExitMethod("setSyncTime");
 		return syncDateTime;
+	}
+
+	/**
+	 * Get date time defaulted to now
+	 * 
+	 * @return DateTime default to now
+	 */
+	protected DateTime getDateTimeNow() {
+		logEnterMethod("getDateTimeNow");
+		new DateTime();
+		DateTime syncDateTime = DateTime.now();
+		logExitMethod("getDateTimeNow");
+		return syncDateTime;
+	}
+
+	/**
+	 * Checks if Google DateTime is same as Sync Date Time
+	 * 
+	 * @param dateTime
+	 * @param syncDateTime
+	 * @return
+	 */
+	private boolean isConvertedGoogleDateTimeSameAsSyncDateTime(
+			com.google.api.client.util.DateTime dateTime, DateTime syncDateTime) {
+		logEnterMethod("isConvertedGoogleDateTimeSameAsSyncDateTime");
+		logExitMethod("isConvertedGoogleDateTimeSameAsSyncDateTime");
+		return syncDateTime.isEqual(new DateTime(dateTime.toString()));
 	}
 
 	/**
@@ -1346,14 +1425,13 @@ class Syncronize {
 	private DateTime setSyncTime(
 			com.google.api.services.tasks.model.Task addedGTask) {
 		logEnterMethod("setSyncTime");
-		new DateTime();
-		DateTime syncDateTime = DateTime.now();
+		DateTime syncDateTime = getDateTimeNow();
 		if (addedGTask != null) {
 			syncDateTime = new DateTime(addedGTask.getUpdated().getValue());
 		}
-		// assert that sync DateTimes between local and remote are equal
-		assert (syncDateTime.isEqual(new DateTime(addedGTask.getUpdated()
-				.toString())));
+		assert isConvertedGoogleDateTimeSameAsSyncDateTime(
+				addedGTask.getUpdated(), syncDateTime);
+
 		logExitMethod("setSyncTime");
 		return syncDateTime;
 	}
