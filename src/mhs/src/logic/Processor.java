@@ -43,7 +43,7 @@ public class Processor {
 	private static final String MESSAGE_LOGOUT_SUCCESS = "You have successfully logged out !";
 	private static final String MESSAGE_LOGOUT_FAIL_NOT_LOGGED_IN = "You are not logged in! Cannot logout";
 	private static final String MESSAGE_NOT_LOGGED_IN = "You are already logged in!";
-	private static final String MESSAGE_SYNC_NOT_LOGGED_IN = "To Sync you need to log in. \nEnter Google username . e.g: jim@gmail.com ";
+	private static final String MESSAGE_SYNC_NOT_LOGGED_IN = "To Sync you need to log in. \nEnter a username . e.g: jim";
 	private static final String MESSAGE_SYNCING = "Pulling events from your Google calender.... Please refresh !";
 	private static final String MESSAGE_NO_INTERNET = "No internet connection available.";
 	private static final String MESSAGE_LOGIN_FAIL = "Login unsuccessful! Please check username and password.";

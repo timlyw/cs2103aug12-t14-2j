@@ -1637,10 +1637,10 @@
     "taskName": "gym",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-12T11:09:26.000+08:00",
-    "taskUpdated": "2012-11-12T11:09:26.000+08:00",
+    "taskUpdated": "2012-11-12T13:20:28.459+08:00",
     "taskLastSync": "2012-11-12T11:09:26.000+08:00",
     "isDone": true,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "gTaskId": "MTY4NDcwMTI5OTUyNTI1MjMxNzg6MDozNjc5MjMwMTA",
@@ -1659,10 +1659,10 @@
     "taskName": "project",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-12T11:10:36.000+08:00",
-    "taskUpdated": "2012-11-12T11:10:36.000+08:00",
+    "taskUpdated": "2012-11-12T13:18:39.921+08:00",
     "taskLastSync": "2012-11-12T11:10:36.000+08:00",
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "gTaskId": null,
@@ -1674,5 +1674,140 @@
     "taskLastSync": null,
     "isDone": false,
     "isDeleted": true
+  },
+  {
+    "startDateTime": "2012-11-12T13:00:00.000+08:00",
+    "endDateTime": "2012-11-12T16:00:00.000+08:00",
+    "gCalTaskId": null,
+    "gCalTaskUid": null,
+    "taskId": 140,
+    "taskName": "test",
+    "taskCategory": "TIMED",
+    "taskCreated": "2012-11-12T11:50:16.965+08:00",
+    "taskUpdated": "2012-11-12T11:50:16.965+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "gTaskId": null,
+    "taskId": 141,
+    "taskName": "delet 5",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T11:50:42.081+08:00",
+    "taskUpdated": "2012-11-12T11:51:49.464+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "gTaskId": null,
+    "taskId": 142,
+    "taskName": "bum",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T11:58:00.398+08:00",
+    "taskUpdated": "2012-11-12T11:59:16.577+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "gTaskId": null,
+    "taskId": 143,
+    "taskName": "hum",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T11:58:12.565+08:00",
+    "taskUpdated": "2012-11-12T11:59:21.103+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "gTaskId": null,
+    "taskId": 144,
+    "taskName": "yelp",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T11:58:34.714+08:00",
+    "taskUpdated": "2012-11-12T11:59:36.556+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "gTaskId": null,
+    "taskId": 145,
+    "taskName": "yelp",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T11:58:50.101+08:00",
+    "taskUpdated": "2012-11-12T11:59:53.505+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "gTaskId": null,
+    "taskId": 146,
+    "taskName": "hulp",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T13:11:40.127+08:00",
+    "taskUpdated": "2012-11-12T13:12:43.084+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "gTaskId": null,
+    "taskId": 147,
+    "taskName": "hulp",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T13:14:07.154+08:00",
+    "taskUpdated": "2012-11-12T13:18:20.966+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "gTaskId": null,
+    "taskId": 148,
+    "taskName": "project",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T13:17:42.247+08:00",
+    "taskUpdated": "2012-11-12T13:18:44.791+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "gTaskId": null,
+    "taskId": 149,
+    "taskName": "gym",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T13:19:31.863+08:00",
+    "taskUpdated": "2012-11-12T13:20:33.971+08:00",
+    "taskLastSync": null,
+    "isDone": true,
+    "isDeleted": true
+  },
+  {
+    "gTaskId": null,
+    "taskId": 150,
+    "taskName": "hilp",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T13:26:06.135+08:00",
+    "taskUpdated": "2012-11-12T13:27:09.430+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "gTaskId": null,
+    "taskId": 151,
+    "taskName": "hilp",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T13:26:12.225+08:00",
+    "taskUpdated": "2012-11-12T13:26:12.225+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": false
   }
 ]
