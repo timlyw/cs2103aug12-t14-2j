@@ -72,12 +72,11 @@ public class TimedTask extends Task {
 		super(taskId, gCalEntry.getSummary(), TaskCategory.TIMED, syncDateTime,
 				syncDateTime, syncDateTime, false, false);
 		logEnterMethod("TimedTask");
-		this.gCalTaskId = gCalEntry.getId().toString();
-		this.gCalTaskUid = gCalEntry.getICalUID().toString();
-		this.startDateTime = new DateTime(gCalEntry.getStart().getDateTime()
-				.getValue());
-		this.endDateTime = new DateTime(gCalEntry.getEnd().getDateTime()
-				.getValue());
+		setGcalTaskId(gCalEntry.getId().toString());
+		setGcalTaskUid(gCalEntry.getICalUID().toString());
+		setStartDateTime(new DateTime(gCalEntry.getStart().getDateTime()
+				.getValue()));
+		setEndDateTime(new DateTime(gCalEntry.getEnd().getDateTime().getValue()));
 		logExitMethod("TimedTask");
 	}
 

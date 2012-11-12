@@ -1,7 +1,5 @@
 package mhs.test;
 
-import mhs.src.storage.persistence.remote.GoogleCalendarMhs;
-
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -18,7 +16,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ DatabaseFactoryTest.class, DatabaseTest.class,
 		ConfigFileTest.class, TaskRecordFileTest.class,
-		CommandParserTest.class, TaskListsTest.class })
+		CommandParserTest.class, TaskListsTest.class, SystemTest.class })
 public class AllTests {
 
 }

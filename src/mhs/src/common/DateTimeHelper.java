@@ -1,3 +1,5 @@
+//@author A0086805X
+
 package mhs.src.common;
 
 import java.util.logging.Logger;
@@ -11,6 +13,22 @@ import org.joda.time.DateTime;
  * 
  */
 public class DateTimeHelper {
+	
+	//Strings related to formatting. 
+	private static final String FORMAT_DATE = "dd MMM yyyy ";
+	private static final String FORMAT_TIME = "hh mm aa";
+	private static final String FORMAT_TIME_NO_MINUTES = "hh aa";
+	
+	//Strings related to days.
+	private static final String DAY_SUNDAY = "Sun";
+	private static final String DAY_SATURDAY = "Sat";
+	private static final String DAY_FRIDAY = "Fri";
+	private static final String DAY_THURSDAY = "Thurs";
+	private static final String DAY_WEDSDAY = "Weds";
+	private static final String DAY_TUESDAY = "Tues";
+	private static final String DAY_MONDAY = "Mon";
+	private static final String DAY_TOMORROW = "Tomorrow";
+	private static final String DAY_TODAY = "Today";
 
 	private static DateTimeHelper instance = null;
 
@@ -56,38 +74,38 @@ public class DateTimeHelper {
 
 		logEnterMethod("formatDateToString");
 		String outString;
-		outString = formatDate.toString("dd MMM yyyy ");
+		outString = formatDate.toString(FORMAT_DATE);
 		new DateTime();
 		DateTime now = DateTime.now();
 		if (formatDate.getDayOfMonth() == now.getDayOfMonth()
 				&& formatDate.getMonthOfYear() == now.getMonthOfYear()
 				&& formatDate.getYear() == now.getYear()) {
-			outString += "Today";
+			outString += DAY_TODAY;
 		} else if (formatDate.getDayOfMonth() == now.getDayOfMonth() + 1
 				&& formatDate.getMonthOfYear() == now.getMonthOfYear()
 				&& formatDate.getYear() == now.getYear()) {
-			outString += "Tomorrow";
+			outString += DAY_TOMORROW;
 		} else {
 			if (formatDate.getDayOfWeek() == 1) {
-				outString += "Mon";
+				outString += DAY_MONDAY;
 			}
 			if (formatDate.getDayOfWeek() == 2) {
-				outString += "Tues";
+				outString += DAY_TUESDAY;
 			}
 			if (formatDate.getDayOfWeek() == 3) {
-				outString += "Weds";
+				outString += DAY_WEDSDAY;
 			}
 			if (formatDate.getDayOfWeek() == 4) {
-				outString += "Thurs";
+				outString += DAY_THURSDAY;
 			}
 			if (formatDate.getDayOfWeek() == 5) {
-				outString += "Fri";
+				outString += DAY_FRIDAY;
 			}
 			if (formatDate.getDayOfWeek() == 6) {
-				outString += "Sat";
+				outString += DAY_SATURDAY;
 			}
 			if (formatDate.getDayOfWeek() == 7) {
-				outString += "Sun";
+				outString += DAY_SUNDAY;
 			}
 		}
 		logExitMethod("formatDateToString");
@@ -106,9 +124,9 @@ public class DateTimeHelper {
 
 		String outString;
 		if (formatTime.getMinuteOfHour() == 0)
-			outString = formatTime.toString("hh aa");
+			outString = formatTime.toString(FORMAT_TIME_NO_MINUTES);
 		else
-			outString = formatTime.toString("hh mm aa");
+			outString = formatTime.toString(FORMAT_TIME);
 
 		logExitMethod("formatTimeToString");
 

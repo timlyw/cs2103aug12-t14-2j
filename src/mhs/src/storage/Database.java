@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -47,6 +46,7 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
+	private static final int REMOTE_SERVICE_CONNECTION_REACHABLE_TIMEOUT = 30;
 	static GoogleTasks googleTasks;
 	static GoogleCalendarMhs googleCalendar;
 	static TaskLists taskLists;
@@ -75,12 +75,8 @@ public class Database {
 
 	// Config parameters
 	private static final String CONFIG_PARAM_GOOGLE_USER_ACCOUNT = "GOOGLE_USER_ACCOUNT";
-	private static final String CONFIG_PARAM_GOOGLE_AUTH_TOKEN = "GOOGLE_AUTH_TOKEN";
-
-	private static final String GOOGLE_CALENDAR_APP_NAME = "My Hot Secretary";
 
 	private static final String EXCEPTION_MESSAGE_SYNCRONIZATION_WITH_REMOTE_STORAGE_FAILED = "Syncronization with remote storage failed.";
-	private static final String EXCEPTION_MESSAGE_REMOTE_SYNC_NOT_ENABLED = "Remote Sync Not Enabled.";
 	private static final String EXCEPTION_MESSAGE_NO_CONNECTIVITY_WITH_REMOTE_STORAGE = "No Connection with Remote Storage.";
 
 	private static final int SYNC_FORCE_PUSH_UPDATED_DATE_TIME_AHEAD_VALUE = 1;
@@ -88,7 +84,6 @@ public class Database {
 	private static final int SYNC_END_DATE_TIME_MONTHS_FROM_NOW = 12;
 
 	private static final String URL_REMOTE_SERVICE_GOOGLE = "http://google.com/";
-	private static final String REGEX_EMAIL_AT_SYMBOL = "@";
 
 	/**
 	 * Database constructor
@@ -176,7 +171,9 @@ public class Database {
 	private void initializeGoogleOAuth2() {
 		try {
 			MhsGoogleOAuth2.getInstance();
-			authenticateOAuth2WithDefaultUser();
+			if (isRemoteServiceConnectionActive()) {
+				authenticateOAuth2WithDefaultUser();
+			}
 		} catch (Exception e) {
 			// Connectivity Errors
 		}
@@ -224,7 +221,7 @@ public class Database {
 	public void syncronizeDatabases() throws ServiceException, IOException,
 			NoActiveCredentialException {
 		logEnterMethod("syncronizeDatabases");
-		if (!isRemoteServiceConnectivityActive()) {
+		if (!isRemoteServiceConnectionActive()) {
 			syncronize.disableRemoteSync();
 			throw new UnknownHostException(
 					EXCEPTION_MESSAGE_NO_CONNECTIVITY_WITH_REMOTE_STORAGE);
@@ -247,17 +244,21 @@ public class Database {
 	 * 
 	 * @return true if connection if active
 	 */
-	private boolean isRemoteServiceConnectivityActive() {
-		logEnterMethod("isRemoteServiceConnectivityActive");
+	private boolean isRemoteServiceConnectionActive() {
+		logEnterMethod("isRemoteServiceConnectionActive");
 		try {
-			URL remoteStorageServiceUrl = new URL(URL_REMOTE_SERVICE_GOOGLE);
-			remoteStorageServiceUrl.openConnection();
-		} catch (Exception e) {
-			logExitMethod("isRemoteServiceConnectivityActive");
+			URL googleUrl = new URL(URL_REMOTE_SERVICE_GOOGLE);
+			googleUrl.openConnection();
+			googleUrl.getContent();
+			logExitMethod("isRemoteServiceConnectionActive");
+			return true;
+		} catch (UnknownHostException e) {
+			logExitMethod("isRemoteServiceConnectionActive");
+			return false;
+		} catch (IOException e) {
+			logExitMethod("isRemoteServiceConnectionActive");
 			return false;
 		}
-		logExitMethod("isRemoteServiceConnectivityActive");
-		return true;
 	}
 
 	/**
@@ -341,6 +342,10 @@ public class Database {
 	 */
 	public void loginUserGoogleAccount(String userName) throws Exception {
 		logEnterMethod("loginUserGoogleAccount");
+		if (!isRemoteServiceConnectionActive()) {
+			throw new UnknownHostException(
+					EXCEPTION_MESSAGE_NO_CONNECTIVITY_WITH_REMOTE_STORAGE);
+		}
 		try {
 			MhsGoogleOAuth2.setupUserId(userName);
 			MhsGoogleOAuth2.authorizeCredentialAndStoreInCredentialStore();
@@ -348,8 +353,21 @@ public class Database {
 		} catch (Exception e) {
 			syncronize.disableRemoteSync();
 		}
+		if (!isGoogleServicesInstantiated()) {
+			initializeGoogleServices();
+		}
 		syncronize.enableRemoteSync();
+		syncronize.syncronizeDatabases();
 		logExitMethod("loginUserGoogleAccount");
+	}
+
+	/**
+	 * Checks if Google Services are Instantiated
+	 * 
+	 * @return
+	 */
+	protected static boolean isGoogleServicesInstantiated() {
+		return googleCalendar != null && googleTasks != null;
 	}
 
 	/**
@@ -374,6 +392,7 @@ public class Database {
 
 	protected void disableGoogleServices() {
 		googleCalendar = null;
+		googleTasks = null;
 	}
 
 	/**
@@ -828,17 +847,15 @@ public class Database {
 	 * @param taskId
 	 * @throws TaskNotFoundException
 	 */
-	private void removeRecord(Task taskToRemove) throws TaskNotFoundException {
+	public void removeRecord(Task taskToRemove) throws TaskNotFoundException {
 		logEnterMethod("removeRecord");
 		assert (taskToRemove != null);
 		assert (taskLists != null);
-
 		if (!taskLists.containsTask(taskToRemove.getTaskId())) {
 			throw new TaskNotFoundException(
 					EXCEPTION_MESSAGE_TASK_DOES_NOT_EXIST);
 		}
 		taskLists.removeTaskInTaskLists(taskToRemove);
-
 		logExitMethod("removeRecord");
 	}
 
@@ -883,15 +900,41 @@ public class Database {
 	public void clearRemoteDatabase() {
 		logEnterMethod("clearRemoteDatabase");
 		if (isRemoteSyncEnabled) {
-			try {
-				googleCalendar.deleteEvents(DateTime.now().minusYears(1)
-						.toString(), DateTime.now().plusYears(1).toString());
-			} catch (NullPointerException e) {
-				// SilentFailSync Policy
-				logger.log(Level.FINER, e.getMessage());
-			}
+			clearGoogleCalendar();
+			clearGoogleTasks();
 		}
 		logExitMethod("clearRemoteDatabase");
+	}
+
+	private void clearGoogleTasks() {
+		List<com.google.api.services.tasks.model.Task> googleTaskList;
+		try {
+			googleTaskList = googleTasks.retrieveTasks();
+			if (googleTaskList == null) {
+				return;
+			}
+			Iterator<com.google.api.services.tasks.model.Task> googleTaskListIterator = googleTaskList
+					.iterator();
+			while (googleTaskListIterator.hasNext()) {
+				com.google.api.services.tasks.model.Task googleTaskToDelete = googleTaskListIterator
+						.next();
+				googleTasks.deleteTask(googleTaskToDelete.getId());
+			}
+		} catch (ResourceNotFoundException | IOException e) {
+			// SilentFailSync Policy
+			logger.log(Level.FINER, e.getMessage());
+		}
+	}
+
+	protected void clearGoogleCalendar() {
+		try {
+			googleCalendar.deleteEvents(
+					DateTime.now().minusYears(1).toString(), DateTime.now()
+							.plusYears(1).toString());
+		} catch (NullPointerException e) {
+			// SilentFailSync Policy
+			logger.log(Level.FINER, e.getMessage());
+		}
 	}
 
 	/**

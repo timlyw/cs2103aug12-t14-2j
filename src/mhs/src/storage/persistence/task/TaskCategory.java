@@ -5,11 +5,11 @@ package mhs.src.storage.persistence.task;
 /**
  * TaskCategory
  * 
- * Task Category enumerated type
+ * Task Category enumerated type<br>
  * 
- * Task Categories:
- * 1. Floating
- * 2. Timed
+ * Task Categories:<br>
+ * 1. Floating <br>
+ * 2. Timed <br>
  * 3. Deadline
  * 
  * @author Timothy Lim Yi Wen A0087048X
