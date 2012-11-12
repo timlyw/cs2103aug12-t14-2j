@@ -31,6 +31,7 @@ public class CommandRename extends Command {
 	private static final String MESSAGE_NO_EDITED_NAME = "No new name specified.";
 	private static final String MESSAGE_TASK_NOT_RENAMED = "Error occured. Task not Re-named.";
 	private static final String CONFIRM_TASK_RENAMED = "I have renamed '%1$s'<br/>to '%2$s'";
+	protected static final String MESSAGE_MULTIPLE_MATCHES_RENAME = "Multiple matches found.<br/>Enter task index to rename.";
 
 	private CommandInfo tempCommandInfo;
 
@@ -105,7 +106,7 @@ public class CommandRename extends Command {
 		// if multiple matches are found display the list
 		else {
 			indexExpected = true;
-			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
+			commandFeedback = MESSAGE_MULTIPLE_MATCHES_RENAME;
 		}
 		logExitMethod("excuteCommand");
 	}
@@ -153,22 +154,36 @@ public class CommandRename extends Command {
 		assert (inputCommand.getEdittedName() != null);
 		Task newEditedTask = new Task();
 		if (inputCommand.getEdittedName() != null) {
-			switch (taskToEdit.getTaskCategory()) {
-			case FLOATING:
-				newEditedTask = createFloatingTaskWithNewName(inputCommand,
-						taskToEdit);
-				break;
-			case DEADLINE:
-				newEditedTask = createDeadlineTaskWithNewName(inputCommand,
-						taskToEdit);
-				break;
-			case TIMED:
-				newEditedTask = createTimedTaskWithNewName(inputCommand,
-						taskToEdit);
-				break;
-			}
+			newEditedTask = createRenamedTaskByCategory(inputCommand,
+					taskToEdit, newEditedTask);
 		}
 		logExitMethod("createRenamedTask");
+		return newEditedTask;
+	}
+
+	/**
+	 * Create renamed task by category
+	 * 
+	 * @param inputCommand
+	 * @param taskToEdit
+	 * @param newEditedTask
+	 * @return
+	 */
+	private Task createRenamedTaskByCategory(CommandInfo inputCommand,
+			Task taskToEdit, Task newEditedTask) {
+		switch (taskToEdit.getTaskCategory()) {
+		case FLOATING:
+			newEditedTask = createFloatingTaskWithNewName(inputCommand,
+					taskToEdit);
+			break;
+		case DEADLINE:
+			newEditedTask = createDeadlineTaskWithNewName(inputCommand,
+					taskToEdit);
+			break;
+		case TIMED:
+			newEditedTask = createTimedTaskWithNewName(inputCommand, taskToEdit);
+			break;
+		}
 		return newEditedTask;
 	}
 

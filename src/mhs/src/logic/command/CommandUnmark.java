@@ -23,6 +23,7 @@ public class CommandUnmark extends Command {
 
 	private static final String MESSAGE_TASK_NOT_UNMARKED = "Error occured. Task not un-marked.";
 	private static final String CONFIRM_TASK_UNMARKED = "I marked '%1$s' to PENDING";
+	protected static final String MESSAGE_MULTIPLE_MATCHES_UNMARK = "Multiple matches found.<br/>Enter index to mark as pending.";
 
 	private static final Logger logger = MhsLogger.getLogger();
 
@@ -72,21 +73,27 @@ public class CommandUnmark extends Command {
 		else if (matchedTasks.size() == 1) {
 			lastTask = matchedTasks.get(0).clone();
 			Task editedTask = markPending(matchedTasks.get(0));
-			try {
-				updateTask(editedTask);
-				outputString = String.format(CONFIRM_TASK_UNMARKED,
-						editedTask.getTaskName());
-			} catch (Exception e) {
-				outputString = MESSAGE_TASK_NOT_UNMARKED;
-			}
+			outputString = unmarkTaskInDatabase(editedTask);
 			commandFeedback = outputString;
 		}
 		// if multiple matches are found display the list
 		else {
 			indexExpected = true;
-			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
+			commandFeedback = MESSAGE_MULTIPLE_MATCHES_UNMARK;
 		}
 		logExitMethod("executeCommand");
+	}
+
+	private String unmarkTaskInDatabase(Task editedTask) {
+		String outputString;
+		try {
+			updateTask(editedTask);
+			outputString = String.format(CONFIRM_TASK_UNMARKED,
+					editedTask.getTaskName());
+		} catch (Exception e) {
+			outputString = MESSAGE_TASK_NOT_UNMARKED;
+		}
+		return outputString;
 	}
 
 	private void updateTask(Task editedTask) throws IOException,

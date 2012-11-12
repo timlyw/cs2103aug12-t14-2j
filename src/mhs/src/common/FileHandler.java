@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
-import org.joda.time.DateTime;
-
 /**
  * USed for test File Read/Write
  * 
@@ -74,10 +72,10 @@ public class FileHandler {
 					System.out.println("!!" + strLine2);
 					writeToFile(strLine1);
 					writeToFile(strLine2);
-					
+
 				}
 			}
-			
+
 			br1.close();
 			br2.close();
 		} catch (IOException e) {

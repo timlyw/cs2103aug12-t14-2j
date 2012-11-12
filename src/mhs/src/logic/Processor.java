@@ -168,8 +168,8 @@ public class Processor {
 	 * Initiates out files for system testing
 	 */
 	private void initiateTestFiles() {
-		feedbackFileName = String.format(FILE_FEEDBACK, DateTime
-				.now().toString(DATE_TIME_FORMAT));
+		feedbackFileName = String.format(FILE_FEEDBACK, DateTime.now()
+				.toString(DATE_TIME_FORMAT));
 		feedbackFile = new FileHandler(feedbackFileName);
 		stateFile = new FileHandler(String.format(FILE_STATE, DateTime.now()
 				.toString(DATE_TIME_FORMAT)));
@@ -177,9 +177,10 @@ public class Processor {
 		stateFile.writeToFile(TEST_FILE_START_HTML);
 	}
 
-	public String getFeedbackFileName(){
+	public String getFeedbackFileName() {
 		return feedbackFileName;
 	}
+
 	/**
 	 * Initializes Database for System Testing.
 	 * 
@@ -381,7 +382,8 @@ public class Processor {
 	private void setUsername() {
 		username = userInputString;
 		usernameIsExpected = false;
-		currentState = authenticateUser(username);
+		commandFeedback = authenticateUser(username);
+		currentState = commandCreator.getState();
 	}
 
 	/**
@@ -650,7 +652,6 @@ public class Processor {
 		} else {
 			outputString = MESSAGE_NOT_LOGGED_IN;
 		}
-		logger.exiting(getClass().getName(), this.getClass().getName());
 		logExitMethod("loginUser");
 		return outputString;
 	}
@@ -679,6 +680,7 @@ public class Processor {
 		logger.exiting(getClass().getName(), this.getClass().getName());
 		return outputString;
 	}
+
 	/**
 	 * Sets debug mode
 	 */

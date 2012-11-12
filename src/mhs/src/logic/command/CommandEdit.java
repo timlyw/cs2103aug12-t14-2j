@@ -30,6 +30,7 @@ public class CommandEdit extends Command {
 
 	private static final String MESSAGE_TASK_NOT_EDITED = "Error occured. Task not Edited.";
 	private static final String CONFIRM_TASK_EDITED = "I have edited '%1$s'<br/>to '%2$s' %3$s";
+	protected static final String MESSAGE_MULTIPLE_MATCHES_EDIT = "Multiple matches found.<br/>Enter task index to edit.";
 
 	private static final int FLOATING = 0;
 	private static final int DEADLINE = 1;
@@ -88,23 +89,33 @@ public class CommandEdit extends Command {
 		else if (matchedTasks.size() == 1) {
 			storeLastTask(matchedTasks.get(0));
 			newTask = createEditedTask(tempCommandInfo, lastTask);
-			try {
-				editTask(newTask);
-				String timeString = this.getTimeString(newTask);
-				outputString = String.format(CONFIRM_TASK_EDITED,
-						lastTask.getTaskName(), newTask.getTaskName(),
-						timeString);
-			} catch (Exception e) {
-				outputString = MESSAGE_TASK_NOT_EDITED;
-			}
+			outputString = updateEditedTask();
 			commandFeedback = outputString;
 		}
 		// if multiple matches are found display the list
 		else {
 			indexExpected = true;
-			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
+			commandFeedback = MESSAGE_MULTIPLE_MATCHES_EDIT;
 		}
 		logExitMethod("executeCommand");
+	}
+
+	/**
+	 * Updates the edited task in the database
+	 * 
+	 * @return
+	 */
+	private String updateEditedTask() {
+		String outputString;
+		try {
+			editTask(newTask);
+			String timeString = this.getTimeString(newTask);
+			outputString = String.format(CONFIRM_TASK_EDITED,
+					lastTask.getTaskName(), newTask.getTaskName(), timeString);
+		} catch (Exception e) {
+			outputString = MESSAGE_TASK_NOT_EDITED;
+		}
+		return outputString;
 	}
 
 	/**
@@ -148,38 +159,69 @@ public class CommandEdit extends Command {
 		assert (taskType >= 0 && taskType < 3);
 		Task newEditedTask = new Task();
 		if (inputCommand.getEdittedName() != null) {
-			switch (taskType) {
-			case FLOATING:
-				newEditedTask = createFloatingTaskWithNewName(inputCommand,
-						taskToEdit);
-				break;
-			case DEADLINE:
-				newEditedTask = createDeadlineTaskWithNewName(inputCommand,
-						taskToEdit);
-				break;
-			case TIMED:
-				newEditedTask = createTimedTaskWithNewName(inputCommand,
-						taskToEdit);
-				break;
-			}
+			newEditedTask = createTaskWithNewName(inputCommand, taskToEdit,
+					taskType, newEditedTask);
 		} else {
-			switch (taskType) {
-			case FLOATING:
-				newEditedTask = createFloatingTaskWithSameName(inputCommand,
-						taskToEdit);
-				break;
-			case DEADLINE:
-				newEditedTask = createDeadlineTaskWithSameName(inputCommand,
-						taskToEdit);
-				break;
-			case TIMED:
-				newEditedTask = createTimedTaskWithSameName(inputCommand,
-						taskToEdit);
-				break;
-			}
+			newEditedTask = createTaskWithSameName(inputCommand, taskToEdit,
+					taskType, newEditedTask);
 		}
 		assert (newEditedTask != null);
 		logExitMethod("createEditedTask");
+		return newEditedTask;
+	}
+
+	/**
+	 * Creates a new task depending on given params, with new name
+	 * 
+	 * @param inputCommand
+	 * @param taskToEdit
+	 * @param taskType
+	 * @param newEditedTask
+	 * @return
+	 */
+	private Task createTaskWithSameName(CommandInfo inputCommand,
+			Task taskToEdit, int taskType, Task newEditedTask) {
+		switch (taskType) {
+		case FLOATING:
+			newEditedTask = createFloatingTaskWithSameName(inputCommand,
+					taskToEdit);
+			break;
+		case DEADLINE:
+			newEditedTask = createDeadlineTaskWithSameName(inputCommand,
+					taskToEdit);
+			break;
+		case TIMED:
+			newEditedTask = createTimedTaskWithSameName(inputCommand,
+					taskToEdit);
+			break;
+		}
+		return newEditedTask;
+	}
+
+	/**
+	 * Creates a task with new params , keeping the same name
+	 * 
+	 * @param inputCommand
+	 * @param taskToEdit
+	 * @param taskType
+	 * @param newEditedTask
+	 * @return
+	 */
+	private Task createTaskWithNewName(CommandInfo inputCommand,
+			Task taskToEdit, int taskType, Task newEditedTask) {
+		switch (taskType) {
+		case FLOATING:
+			newEditedTask = createFloatingTaskWithNewName(inputCommand,
+					taskToEdit);
+			break;
+		case DEADLINE:
+			newEditedTask = createDeadlineTaskWithNewName(inputCommand,
+					taskToEdit);
+			break;
+		case TIMED:
+			newEditedTask = createTimedTaskWithNewName(inputCommand, taskToEdit);
+			break;
+		}
 		return newEditedTask;
 	}
 

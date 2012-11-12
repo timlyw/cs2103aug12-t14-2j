@@ -4429,7 +4429,7 @@
     "taskName": "dispaly",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-12T17:45:05.673+08:00",
-    "taskUpdated": "2012-11-12T17:45:05.673+08:00",
+    "taskUpdated": "2012-11-12T21:52:50.555+08:00",
     "taskLastSync": null,
     "isDone": false,
     "isDeleted": false
@@ -4453,7 +4453,7 @@
     "taskName": "hello",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-12T17:56:21.031+08:00",
-    "taskUpdated": "2012-11-12T17:56:21.031+08:00",
+    "taskUpdated": "2012-11-12T21:52:41.414+08:00",
     "taskLastSync": null,
     "isDone": false,
     "isDeleted": false
@@ -4477,10 +4477,10 @@
     "taskName": "o",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-12T18:02:51.550+08:00",
-    "taskUpdated": "2012-11-12T18:02:51.550+08:00",
+    "taskUpdated": "2012-11-12T21:52:11.016+08:00",
     "taskLastSync": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "gTaskId": null,
@@ -4488,10 +4488,10 @@
     "taskName": "hel",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-12T18:11:47.509+08:00",
-    "taskUpdated": "2012-11-12T18:11:47.509+08:00",
+    "taskUpdated": "2012-11-12T21:52:14.075+08:00",
     "taskLastSync": null,
     "isDone": false,
-    "isDeleted": false
+    "isDeleted": true
   },
   {
     "gCalTaskId": null,
@@ -4512,7 +4512,64 @@
     "taskName": "dispaly",
     "taskCategory": "FLOATING",
     "taskCreated": "2012-11-12T18:21:22.430+08:00",
-    "taskUpdated": "2012-11-12T18:21:22.430+08:00",
+    "taskUpdated": "2012-11-12T21:52:21.469+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": true
+  },
+  {
+    "gTaskId": null,
+    "taskId": 396,
+    "taskName": "tasker",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T21:50:53.769+08:00",
+    "taskUpdated": "2012-11-12T21:52:05.051+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "gTaskId": null,
+    "taskId": 397,
+    "taskName": "task me",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T21:50:55.222+08:00",
+    "taskUpdated": "2012-11-12T21:50:55.222+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "gTaskId": null,
+    "taskId": 398,
+    "taskName": "dispaly",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T21:51:52.646+08:00",
+    "taskUpdated": "2012-11-12T21:51:52.646+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "gCalTaskId": null,
+    "gCalTaskUid": null,
+    "endDateTime": "2012-11-12T01:00:00.000+08:00",
+    "taskId": 399,
+    "taskName": "event",
+    "taskCategory": "DEADLINE",
+    "taskCreated": "2012-11-12T21:57:30.645+08:00",
+    "taskUpdated": "2012-11-12T21:57:30.645+08:00",
+    "taskLastSync": null,
+    "isDone": false,
+    "isDeleted": false
+  },
+  {
+    "gTaskId": null,
+    "taskId": 400,
+    "taskName": "dispaly",
+    "taskCategory": "FLOATING",
+    "taskCreated": "2012-11-12T22:11:33.758+08:00",
+    "taskUpdated": "2012-11-12T22:11:33.758+08:00",
     "taskLastSync": null,
     "isDone": false,
     "isDeleted": false
