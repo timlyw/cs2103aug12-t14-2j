@@ -58,29 +58,4 @@ public class GoogleTasksTest {
 		gTasks.isDeleted(retrievedUpdatedTask);
 	}
 	
-	/**
-	 * test retrival of multiple tasks
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void testCrudForMultipleTasks() throws Exception {
-		// initialize login
-		MhsGoogleOAuth2.getInstance();
-		MhsGoogleOAuth2.authorizeCredentialAndStoreInCredentialStore();
-		GoogleTasks gTasks = new GoogleTasks(MhsGoogleOAuth2.getHttpTransport(), MhsGoogleOAuth2.getJsonFactory(), MhsGoogleOAuth2.getCredential());
-		
-		// test retrieve tasks
-		List<Task> taskList = gTasks.retrieveTasks();
-		int initialSize = taskList.size();
-		String title = "createGoogleTasksTest";
-		Task createdTask1 = gTasks.createTask(title, false);
-		Task createdTask2 = gTasks.createTask(title, false);
-		
-		List<Task> updatedTaskList = gTasks.retrieveTasks();
-		int updatedSize = updatedTaskList.size();
-		assertEquals(initialSize + 2, updatedSize);
-		gTasks.deleteTask(createdTask1.getId());
-		gTasks.deleteTask(createdTask2.getId());
-	}
 }
