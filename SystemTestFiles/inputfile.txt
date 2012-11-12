@@ -1,0 +1,164 @@
+home
+logout
+add task 10pm
+add task 10 pm
+add task 17pm
+add task 5 12aM
+add runnung to vivo -1 12PM
+add 5pm today meeting 2103
+<add 10 nov task 10pm to 5pm 12sep>
+<!-- run edit find to 3pm 12313 nov>
+add floating deadline timed
+-1-1-1-1-1
+ 
+add "jUmp rope" tomOrrow to tHis monTh
+add "<day after tomorrow>"
+add 15:30 test at lt3 monday
+add 00:00 test at lt 4 tuesday
+add 000 : 000 tesst at lt5 wedsday
+12:30 test on thursday at lt 4
+add task 1
+task 2
+task 3
+task 4 4 2012
+task 5 friday 
+task 6 sat
+task 7 SuN 4Am to 4PM
+task 8 this weekend 12AM to 12PM
+task 9 this weEk 00:00 to 2359
+task 10 this year
+running from 8pm to 11pm today to tomorrow
+search
+rename 5 to renamedtasks
+add add edit task 4 5pm 10 nov
+search nov
+mark 5
+mark 2
+mark task
+5
+unmark 3
+unmark task 2
+mark invalidtask
+weds 5pm to 7pm
+postpone task 4 to task 4 changed 7pm to 11pm tomorrow
+display 10 nov to 12 nov
+find 12 nov
+floating
+deadline
+timed
+find
+undo
+undo
+undo
+redo
+redo
+
+
+
+
+
+search
+delete 5
+delete 2
+delete asdasdasda
+delete test lt 4
+delete delete delete
+undo
+redo
+undo
+undo
+redo
+find tomorrow
+delete 2
+edit 5 to sunday 8pm 
+edit task 10 to jump road jump up and down
+edit task 9 changeMistake 12PM
+oct
+nov
+delete 2
+add meeting 1 5pm
+add meeting 2 tomorrow
+nov
+mark 5
+mark 7
+rename 5 to renamedtask
+delete 2
+delete task 2
+2
+
+rename
+4
+task
+home
+delete task
+2
+
+undo undo undo
+redo
+cs1234@hotmail.com
+redo
+undo
+p
+p
+n
+n
+n
+n
+5
+search
+search tomorrow
+flating
+floating
+deadline
+timed
+edit 4 to fly 3pm weDs
+find
+delete 3
+redo
+undo
+add assignment 10 nov 3pm to 5pm 7 nov
+undo
+delete assignment
+redo
+undo
+undo
+delete 2
+home
+home
+undo
+add deadline task 5pm weds
+add timing task weds 5pm to 7pm
+add task try
+rename task try to trysomething else
+rename deadline task to deadline task 2
+rename timing task to tmingas 
+rename task to something
+edit trysomething else to try some other thing
+edit deadline task 2
+edit tmingas to 5pm thursday 6pm
+mark tmingas
+undo
+rename tmingas to try yes
+undo
+unmark task
+4
+
+3
+5
+p
+p
+n
+help
+1
+2
+3
+4
+5
+6
+7
+8
+search
+
+delete 3000
+delete 3000000
+delete 3000000
