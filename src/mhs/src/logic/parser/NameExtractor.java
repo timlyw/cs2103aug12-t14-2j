@@ -89,6 +89,7 @@ public class NameExtractor {
 	 */
 	private boolean isSpecialKeyWord(String printString) {
 		logEnterMethod("isSpecialKeyWord");
+		assert(printString != null);
 		for (SpecialKeyWords k : SpecialKeyWords.values()) {
 			if (printString.equalsIgnoreCase(k.name())) {
 				logExitMethod("isSpecialKeyWord");
@@ -144,6 +145,7 @@ public class NameExtractor {
 	 */
 	private String processName(String[] processArray) {
 		logEnterMethod("processName");
+		assert(processArray != null);
 		Queue<String> nameQueue;
 		nameQueue = setUpNameQueue(processArray);
 		String name = "";
@@ -163,6 +165,7 @@ public class NameExtractor {
 	 */
 	private boolean isCommandAtFirstLocation(String[] processArray) {
 		logEnterMethod("isCommandAtFirstLocation");
+		assert(processArray != null);
 		logExitMethod("isCommandAtFirstLocation");
 		return CommandExtractor.getCommandExtractor().checkCommand(
 				processArray[0])
@@ -176,6 +179,7 @@ public class NameExtractor {
 	 */
 	private void addNameToList(String name) {
 		logEnterMethod("addNameToList");
+		assert(name != null);
 		name = name.trim();
 		nameList.add(name);
 		logExitMethod("addNameToList");
@@ -223,6 +227,7 @@ public class NameExtractor {
 	 */
 	private void setNameInQuotationMarks(String name) {
 		logEnterMethod("setNameInQuotationMarks");
+		assert(name != null);
 		name = name.replace(REGEX_QUOTATION, "");
 		addNameToList(name);
 		logExitMethod("setNameInQuotationMarks");
@@ -241,6 +246,8 @@ public class NameExtractor {
 	 */
 	private String removeNameInQuotationMarks(String printString, String name) {
 		logEnterMethod("removeNameInQuotationMarks");
+		assert(name != null);
+		assert(printString != null);
 		printString = printString.replace(name, "");
 		logExitMethod("removeNameInQuotationMarks");
 		return printString;
@@ -258,7 +265,7 @@ public class NameExtractor {
 	private Queue<String> setUpNameQueue(String[] processArray) {
 		logEnterMethod("setUpNameQueue");
 		int j;
-
+		assert(processArray != null);
 		Queue<String> commandQueue = new LinkedList<String>();
 		for (j = counter; j < processArray.length; j++) {
 
@@ -291,6 +298,9 @@ public class NameExtractor {
 	private int addIndexToQueue(String[] processArray, int j,
 			Queue<String> commandQueue) {
 		logEnterMethod("setUpNameQueue");
+		assert(processArray != null);
+		assert(commandQueue != null);
+
 		DateExtractor dateExtractor = DateExtractor.getDateExtractor();
 		if (isInteger(processArray[j])) {
 			try {
@@ -325,6 +335,8 @@ public class NameExtractor {
 	private int addSpecialKeyWordsToQueue(String[] processArray, int j,
 			Queue<String> commandQueue) {
 		logEnterMethod("addSpecialKeyWordsToQueue");
+		assert(processArray != null);
+		assert(commandQueue != null);
 
 		for (SpecialKeyWords k : SpecialKeyWords.values()) {
 			if (isSpecialKeyWordExcludingTo(processArray, j, k)) {
@@ -354,6 +366,7 @@ public class NameExtractor {
 	private boolean isSpecialKeyWordExcludingTo(String[] processArray, int j,
 			SpecialKeyWords k) {
 		logEnterMethod("isSpecialKeyWordExcludingTo");
+		assert(processArray != null);
 		logExitMethod("isSpecialKeyWordExcludingTo");
 		return processArray[j].equalsIgnoreCase(k.name())
 				&& !processArray[j].equalsIgnoreCase(SpecialKeyWords.to.name());
@@ -390,6 +403,7 @@ public class NameExtractor {
 	 */
 	private boolean hasQuotations(String printString) {
 		logEnterMethod("hasQuotations");
+		assert(printString != null);
 		try {
 			Matcher matcher = Pattern.compile(REGEX_QUOTATION_MARKS).matcher(
 					printString);

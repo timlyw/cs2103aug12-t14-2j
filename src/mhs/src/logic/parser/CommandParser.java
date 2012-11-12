@@ -138,6 +138,7 @@ public class CommandParser {
 	 */
 	private void setIndex(String parseString) {
 		logEnterMethod("setIndex");
+		assert(parseString != null);
 		try {
 			String[] processArray = parseString.split(REGEX_WHITE_SPACES);
 
@@ -233,6 +234,7 @@ public class CommandParser {
 	 */
 	private String removeHtmlBrackets(String parseString) {
 		logEnterMethod("removeHtmlBrackets");
+		assert(parseString != null);
 		parseString = parseString.replaceAll(REGEX_LEFT_BRACER, "");
 		parseString = parseString.replaceAll(REGEX_RIGHT_BRACER, "");
 		logExitMethod("removeHtmlBrackets");
