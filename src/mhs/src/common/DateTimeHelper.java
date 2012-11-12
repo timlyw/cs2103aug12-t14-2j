@@ -13,13 +13,13 @@ import org.joda.time.DateTime;
  * 
  */
 public class DateTimeHelper {
-	
-	//Strings related to formatting. 
+
+	// Strings related to formatting.
 	private static final String FORMAT_DATE = "dd MMM yyyy ";
 	private static final String FORMAT_TIME = "hh mm aa";
 	private static final String FORMAT_TIME_NO_MINUTES = "hh aa";
-	
-	//Strings related to days.
+
+	// Strings related to days.
 	private static final String DAY_SUNDAY = "Sun";
 	private static final String DAY_SATURDAY = "Sat";
 	private static final String DAY_FRIDAY = "Fri";
@@ -30,26 +30,14 @@ public class DateTimeHelper {
 	private static final String DAY_TOMORROW = "Tomorrow";
 	private static final String DAY_TODAY = "Today";
 
-	private static DateTimeHelper instance = null;
-
-	/**
-	 * Getter for DateTimerHelper instance
-	 * 
-	 * @return instance of DateTimeHelper
-	 */
-	public static DateTimeHelper getInstance() {
-		if (instance == null) {
-			instance = new DateTimeHelper();
-		}
-		return instance;
-	}
-
 	private static final String REGEX_SPACE = " ";
 	private static final Logger logger = MhsLogger.getLogger();
 
 	/**
 	 * Method to format datetime object to a default string format.
-	 * @param formatDate DateTime object to be formatted.
+	 * 
+	 * @param formatDate
+	 *            DateTime object to be formatted.
 	 * 
 	 * @return Returns the formatted string.
 	 */
@@ -66,7 +54,9 @@ public class DateTimeHelper {
 
 	/**
 	 * Method to format datetime object to a default date string format.
-	 * @param formatDate DateTime object to be formatted.
+	 * 
+	 * @param formatDate
+	 *            DateTime object to be formatted.
 	 * 
 	 * @return Returns the formatted string.
 	 */
@@ -115,7 +105,9 @@ public class DateTimeHelper {
 
 	/**
 	 * Method to format datetime object to a default time string format.
-	 * @param formatDate DateTime object to be formatted.
+	 * 
+	 * @param formatDate
+	 *            DateTime object to be formatted.
 	 * 
 	 * @return Returns the formatted string.
 	 */
@@ -132,6 +124,7 @@ public class DateTimeHelper {
 
 		return outString;
 	}
+
 	/**
 	 * Logger exit method
 	 * 

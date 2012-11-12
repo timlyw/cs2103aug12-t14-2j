@@ -638,18 +638,40 @@ public abstract class Command {
 			switch (lastQueryType) {
 			case QUERY_BY_COMMANDINFO:
 				resultList = queryTask(lastQueryCommandInfo);
+				boolean name = isTaskNameInitialized(lastQueryCommandInfo);
+				boolean startDate = isStartDateInitialized(lastQueryCommandInfo);
+				boolean endDate = isEndDateInitialized(lastQueryCommandInfo);
+				DateTimeHelper helper;
+				lastStateString = "Showing results for ";
+				if(name)
+					lastStateString += lastQueryCommandInfo.getTaskName();
+				if(startDate){
+					helper = new DateTimeHelper();
+					lastStateString += helper.formatDateTimeToString(lastQueryCommandInfo.getStartDate()) + " - ";
+				}
+				if (endDate) {
+					helper = new DateTimeHelper();
+					lastStateString += helper.formatDateTimeToString(lastQueryCommandInfo.getEndDate());
+				}
+				lastStateString += HtmlCreator.NEW_LINE;
 				break;
 			case QUERY_BY_NAME:
 				resultList = queryTask(lastQueryCommandInfo);
+				lastStateString = "Showing results for "
+						+ lastQueryCommandInfo.getTaskName()
+						+ HtmlCreator.NEW_LINE;
 				break;
 			case QUERY_BY_CATEGORY:
+				lastStateString = "Showing results for " + lastQueryCategory
+						+ HtmlCreator.NEW_LINE;
 				resultList = queryTaskByCategory(lastQueryCategory);
 				break;
 			default:
+				lastStateString = "Showing home" + HtmlCreator.NEW_LINE;
 				resultList = queryHome();
 			}
 			matchedTasks = resultList;
-			lastStateString = displayListOfTasks(resultList);
+			lastStateString += displayListOfTasks(resultList);
 			return lastStateString;
 		} catch (IOException e) {
 			return MESSAGE_ERROR_IO;
@@ -664,8 +686,6 @@ public abstract class Command {
 	 */
 	protected String getTimeString(Task task) {
 		String timeString = "";
-		System.out.println(" create tim estring ");
-
 		if (task.isDeadline()) {
 			String dueTime = dateTimeHelper.formatDateTimeToString(task
 					.getStartDateTime());

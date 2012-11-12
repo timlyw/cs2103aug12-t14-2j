@@ -3,6 +3,7 @@ package mhs.src.storage.persistence.remote;
 import java.io.IOException;
 import java.util.List;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -58,9 +59,13 @@ public class GoogleCalendar {
 		if (eventId == null) {
 			return null;
 		}
-		Event retrievedEvent = calService.events().get(calendarId, eventId)
-				.execute();
-		return retrievedEvent;
+		try {
+			Event retrievedEvent = calService.events().get(calendarId, eventId)
+					.execute();
+			return retrievedEvent;
+		} catch (GoogleJsonResponseException e) {
+			return null;
+		}
 	}
 
 	public void deleteEvent(String eventId) {
