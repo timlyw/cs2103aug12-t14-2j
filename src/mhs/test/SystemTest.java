@@ -1,3 +1,5 @@
+//@author A0088669A
+
 package mhs.test;
 
 import java.io.BufferedReader;
@@ -13,6 +15,7 @@ import org.junit.Test;
 
 public class SystemTest {
 
+	private static final String COMMAND_HOME = "home";
 	private static final String TEST_DATABASE_JSON = "testDatabase.json";
 	private Processor processor;
 
@@ -33,6 +36,9 @@ public class SystemTest {
 	}
 
 	@Test
+	/**
+	 * Sets up environment and starts System tests
+	 */
 	public void testExecuteCommand() {
 		processor = Processor.getProcessor(TEST_DATABASE_JSON);
 		processor.setDebugMode();
@@ -42,11 +48,17 @@ public class SystemTest {
 		startTests();
 	}
 
+	/**
+	 * Sets up a task List
+	 */
 	private void initializeLists() {
-		processor.setCommand("home");
+		processor.setCommand(COMMAND_HOME);
 		processor.executeCommand();
 	}
 
+	/**
+	 * Starts executing all commands in inputfile.txt
+	 */
 	private void startTests() {
 
 		BufferedReader readFile;

@@ -31,13 +31,17 @@ import mhs.src.storage.persistence.task.TaskCategory;
  */
 public abstract class Command {
 
+	protected static HtmlCreator htmlCreator = new HtmlCreator();
 	private static final String MESSAGE_ERROR_IO = "Read/Write error";
 	private static final String MESSAGE_DATABASE_FACTORY_NOT_INITIALIZED = "Database Factory not instantiated";
-	private static final String MESSAGE_DATABASE_ILLEGAL_ARGUMENT = "Databse given wrong arguments";
+	private static final String MESSAGE_DATABASE_ILLEGAL_ARGUMENT = "Database given wrong arguments";
 	protected static final String MESSAGE_UNDO_FAIL = "Undo Failed";
 	protected static final String MESSAGE_UNDO_CONFIRM = "Undo Successful";
+	protected static final String MESSAGE_REDO_FAIL = "Redo Failed";
+	protected static final String MESSAGE_REDO_CONFIRM = "Redo Successful";
 	protected static final String MESSAGE_CANNOT_UNDO = "Sorry Cannot Undo last command";
-	protected static final String MESSAGE_NO_MATCH = "No matching results found";
+	protected static final String MESSAGE_NO_MATCH = htmlCreator.color(
+			"No matching results found!", HtmlCreator.RED);
 	protected static final String MESSAGE_INVALID_INDEX = "Invalid Index.";
 	protected static final String MESSAGE_MULTIPLE_MATCHES = "Multiple matches found.";
 
@@ -53,7 +57,6 @@ public abstract class Command {
 	public static List<Task> matchedTasks;
 	protected static Database dataHandler;
 	protected boolean indexExpected;
-	protected static HtmlCreator htmlCreator;
 	private static Stack<Integer> indexDisplayedStack = new Stack<Integer>();
 	private static boolean firstTimeDisplay = true;
 	private static int firstIndexDisplayed = 0;
@@ -164,9 +167,9 @@ public abstract class Command {
 		String outputString = new String();
 		try {
 			executeRedo();
-			outputString = MESSAGE_UNDO_CONFIRM;
+			outputString = MESSAGE_REDO_CONFIRM;
 		} catch (Exception e) {
-			outputString = MESSAGE_UNDO_FAIL;
+			outputString = MESSAGE_REDO_FAIL;
 		}
 
 		commandFeedback = outputString;
@@ -443,7 +446,7 @@ public abstract class Command {
 		firstTimeDisplay = false;
 		return taskListHtml;
 	}
-	
+
 	private static String getTasksHtml(List<Task> taskList, int limit) {
 		String taskListHtml = "";
 		int lineCount = 0;
@@ -454,7 +457,7 @@ public abstract class Command {
 			DateTime currTaskDateTime = getCurrTaskDateTime(task);
 			taskListHtml += getFloatingHeader(task, currTaskDateTime, i);
 			taskListHtml += getDateHeader(prevTaskDateTime, currTaskDateTime, i);
-			
+
 			prevTaskDateTime = currTaskDateTime;
 			String indexString = createIndexString(i);
 			taskListHtml += indexString + task.toHtmlString()
@@ -465,13 +468,13 @@ public abstract class Command {
 		}
 		return taskListHtml;
 	}
-	
+
 	private static String createIndexString(int index) {
 		String indexString = htmlCreator.color(Integer.toString(index + 1)
 				+ ". ", HtmlCreator.GRAY);
 		return indexString;
 	}
-	
+
 	private static String createPagination(List<Task> taskList) {
 		String pageInstruction = "";
 		if (lastIndexDisplayed + 1 < taskList.size()) {
@@ -491,8 +494,9 @@ public abstract class Command {
 		pagination = htmlCreator.color(pagination, HtmlCreator.GRAY);
 		return pagination;
 	}
-	
-	private static String getDateHeader(DateTime prevTaskDateTime, DateTime currTaskDateTime, int index) {
+
+	private static String getDateHeader(DateTime prevTaskDateTime,
+			DateTime currTaskDateTime, int index) {
 		String dateHeader = "";
 		if (!dateIsEqual(prevTaskDateTime, currTaskDateTime)
 				&& currTaskDateTime != null) {
@@ -504,10 +508,10 @@ public abstract class Command {
 			dateString = htmlCreator.largeFont(dateString);
 			dateHeader += dateString + HtmlCreator.NEW_LINE;
 		}
-		
+
 		return dateHeader;
 	}
-	
+
 	private static DateTime getCurrTaskDateTime(Task task) {
 		DateTime currTaskDateTime = null;
 		if (task.isTimed()) {
@@ -516,22 +520,23 @@ public abstract class Command {
 			currTaskDateTime = task.getEndDateTime();
 		} else if (task.isFloating()) {
 			currTaskDateTime = null;
-		} 
-		
+		}
+
 		return currTaskDateTime;
 	}
-	
-	private static String getFloatingHeader(Task task, DateTime currTaskDateTime, int index) {
+
+	private static String getFloatingHeader(Task task,
+			DateTime currTaskDateTime, int index) {
 		String taskListHtml = "";
 		if (task.isFloating() && index == firstIndexDisplayed) {
 			String floatingHtml = htmlCreator.largeFont("TASKS");
 			taskListHtml += htmlCreator.color(floatingHtml,
-			HtmlCreator.LIGHT_BLUE) + HtmlCreator.NEW_LINE;
+					HtmlCreator.LIGHT_BLUE) + HtmlCreator.NEW_LINE;
 		}
-		
+
 		return taskListHtml;
 	}
-	
+
 	private static void forwardToCurrentTime(List<Task> taskList) {
 		if (firstTimeDisplay) {
 			while (true) {
@@ -549,12 +554,13 @@ public abstract class Command {
 			}
 		}
 	}
-	
+
 	private static boolean isPastToday(DateTime date1) {
-		long todayMillis = DateTime.now().getMillis() - DateTime.now().getMillisOfDay();
+		long todayMillis = DateTime.now().getMillis()
+				- DateTime.now().getMillisOfDay();
 		return date1.getMillis() > todayMillis;
 	}
-	
+
 	private static int setBounds(int limit, List<Task> taskList) {
 		if (limit < 0) {
 			limit = 1;
@@ -563,7 +569,7 @@ public abstract class Command {
 		if (firstIndexDisplayed > taskList.size()) {
 			firstIndexDisplayed = taskList.size() - 1;
 		}
-		
+
 		return limit;
 	}
 
@@ -659,11 +665,11 @@ public abstract class Command {
 	protected String getTimeString(Task task) {
 		String timeString = "";
 		System.out.println(" create tim estring ");
-		
+
 		if (task.isDeadline()) {
 			String dueTime = dateTimeHelper.formatDateTimeToString(task
 					.getStartDateTime());
-			System.out.println("due " +dueTime);
+			System.out.println("due " + dueTime);
 			timeString = String.format(CONNECTOR_DEADLINE, dueTime);
 		} else if (task.isTimed()) {
 			String startTime = dateTimeHelper.formatDateTimeToString(task

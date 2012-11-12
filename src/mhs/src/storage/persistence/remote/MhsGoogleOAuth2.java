@@ -48,8 +48,8 @@ public class MhsGoogleOAuth2 {
 
 	// Configurables
 	private static final String FILE_PATH_CREDENTIALS_OAUTH2 = ".credentials/oauth2.json";
-	private static final String CLIENT_SECRET = "7it1jgxKg8RVFc0f8YuBsU5j";
-	private static final String CLIENT_ID = "975927934512.apps.googleusercontent.com";
+	private static final String CLIENT_SECRET = "NO9b_OyMLmAGiYhCVyPrprpy";
+	private static final String CLIENT_ID = "678151509235.apps.googleusercontent.com";
 	private static final String SCOPE_GOOGLEAPIS_COM_AUTH_TASKS = "https://www.googleapis.com/auth/tasks";
 	private static final String SCOPE_GOOGLEAPIS_COM_AUTH_CALENDAR = "https://www.googleapis.com/auth/calendar";
 	private static final String SCOPE_GOOGLEAPIS_COM_AUTH_USER_INFO_PROFILE = "https://www.googleapis.com/auth/userinfo.profile";
