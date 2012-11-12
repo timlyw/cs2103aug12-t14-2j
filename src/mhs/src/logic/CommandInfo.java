@@ -253,7 +253,7 @@ public class CommandInfo {
 			outString += (REGEX_HASH + (index));
 		}
 		if (taskName != null) {
-			outString += (REGEX_SPACE + taskName);
+			outString += (REGEX_SPACE + taskName)  + HtmlCreator.NEW_LINE;
 		}
 		if (edittedName != null) {
 			outString += (REGEX_SPACE + edittedName);
@@ -641,7 +641,7 @@ public class CommandInfo {
 		String outString;
 		outString = STRING_ENTER
 				+ htmlCreator.color(FEEDBACK_TASKNAME_INDEX, COLOR_RED)
-				+ STRING_FOLLOWED_BY
+				+ STRING_FOLLOWED_BY + HtmlCreator.NEW_LINE
 				+ htmlCreator.color(FEEDBACK_EDIT_PARAMETERS, COLOR_RED)
 				+ STRING_TO_BE_CHANGED;
 		logExitMethod("getEditParametersFeedback");
