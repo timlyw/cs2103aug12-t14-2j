@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 
 public class Task {
 
+	private static final String DEFAULT_UNNAMED_TASK_NAME = "Unnamed Task";
 	private static Gson gson = MhsGson.getInstance();
 
 	protected Integer taskId;
@@ -120,28 +121,15 @@ public class Task {
 	}
 
 	public void setTaskName(String taskName) {
-		this.taskName = taskName;
+		if (taskName == null || taskName.isEmpty()) {
+			this.taskName = DEFAULT_UNNAMED_TASK_NAME;
+		} else {
+			this.taskName = taskName;
+		}
 	}
 
 	public TaskCategory getTaskCategory() {
 		return taskCategory;
-	}
-
-	public void setTaskCategory(String taskCategory) {
-		switch (taskCategory.toLowerCase()) {
-		case "timed":
-			this.taskCategory = TaskCategory.TIMED;
-			break;
-		case "deadline":
-			this.taskCategory = TaskCategory.DEADLINE;
-			break;
-		case "floating":
-			this.taskCategory = TaskCategory.FLOATING;
-			break;
-		default:
-			this.taskCategory = TaskCategory.FLOATING;
-			break;
-		}
 	}
 
 	public void setTaskCategory(TaskCategory taskCategory) {

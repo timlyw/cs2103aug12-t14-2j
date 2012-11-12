@@ -57,11 +57,8 @@ public class GoogleTasks {
 			throws IOException, ResourceNotFoundException {
 		Task taskToBeUpdated = retrieveTask(taskId);
 		taskToBeUpdated.setTitle(title);
-		if (completed) {
-			taskToBeUpdated.setStatus(STATUS_COMPLETED);
-		} else {
-			taskToBeUpdated.setStatus(STATUS_NEEDS_ACTION);
-		}
+		setCompleted(taskToBeUpdated, completed);
+		
 		return taskService.tasks().update(taskListId, taskId, taskToBeUpdated)
 				.execute();
 	}

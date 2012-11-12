@@ -22,11 +22,41 @@ task 3
 task 4 4 2012
 task 5 friday 
 task 6 sat
-task 7 SuN
-task 8 this weekend
-task 9 this weEk
+task 7 SuN 4Am to 4PM
+task 8 this weekend 12AM to 12PM
+task 9 this weEk 00:00 to 2359
 task 10 this year
 running from 8pm to 11pm today to tomorrow
+search
+rename 5 to renamedtasks
+add add edit task 4 5pm 10 nov
+search nov
+sync
+mark 5
+mark 2
+mark task
+5
+unmark 3
+unmark task 2
+mark invalidtask
+weds 5pm to 7pm
+postpone task 4 to task 4 changed 7pm to 11pm tomorrow
+display 10 nov to 12 nov
+find 12 nov
+floating
+deadline
+timed
+find
+sync
+undo
+undo
+undo
+redo
+redo
+
+
+
+
 
 search
 delete 5
@@ -52,6 +82,18 @@ add meeting 2 tomorrow
 nov
 mark 5
 mark 7
+rename 5 to renamedtask
+delete 2
+delete task 2
+2
+
+rename
+4
+task
+home
+delete task
+2
+
 undo undo undo
 redo
 login
@@ -93,9 +135,39 @@ delete 2
 home
 home
 undo
+add deadline task 5pm weds
+add timing task weds 5pm to 7pm
+add task try
+rename task try to trysomething else
+rename deadline task to deadline task 2
+rename timing task to tmingas 
+rename task to something
+edit trysomething else to try some other thing
+edit deadline task 2
+edit tmingas to 5pm thursday 6pm
+mark tmingas
+undo
+rename tmingas to try yes
+undo
+unmark task
+4
+
+3
+5
 p
 p
 n
+help
+1
+2
+3
+4
+5
+6
+7
+8
+search
+
 delete 3000
 delete 3000000
 delete 3000000;

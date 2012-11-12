@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <project name="Build Project cs2103-MHS"  default="main" basedir=".">
-  <!-- Sets variables which can later be used. -->
   <!-- The value of a property is accessed via ${} -->
   <property name="src.dir" location="src" />
   <property name="bin.dir" location="bin" />
