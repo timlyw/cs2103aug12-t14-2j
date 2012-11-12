@@ -24,6 +24,7 @@ import java.util.Stack;
  * 
  */
 public class CommandCreator {
+	private static final String MESSAGE_HOME_PAGE = "Displaying home page";
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command";
 	private static final String MESSAGE_NOTHING_TO_UNDO = "Nothing to undo";
 	private static final String MESSAGE_NOTHING_TO_REDO = "Nothing to redo";
@@ -218,6 +219,11 @@ public class CommandCreator {
 	private void executeSearch(CommandInfo userCommand) {
 		currentCommand = new CommandSearch(userCommand);
 		currentCommand.executeCommand();
+		if (userCommand.getCommandEnum() == CommandKeyWords.home) {
+			currentState = currentCommand.getCurrentState();
+			commandFeedback = MESSAGE_HOME_PAGE;
+			return;
+		}
 		updateDisplay(currentCommand);
 	}
 
@@ -262,14 +268,21 @@ public class CommandCreator {
 	private void redoLastCommand() {
 		logEnterMethod("redoLastCommand");
 		if (redoListCommands.isEmpty()) {
-			currentState = currentCommand.getCurrentState();
-			commandFeedback = MESSAGE_NOTHING_TO_REDO;
+			updateRedoDisplay();
 		} else {
 			Command redoCommand = redoListCommands.pop();
 			redoCommand.redo();
 			updateDisplay(currentCommand);
 		}
 		logExitMethod("redoLastCommand");
+	}
+
+	/**
+	 * Refreshes display for redo
+	 */
+	private void updateRedoDisplay() {
+		currentState = currentCommand.getCurrentState();
+		commandFeedback = MESSAGE_NOTHING_TO_REDO;
 	}
 
 	/**
@@ -309,8 +322,7 @@ public class CommandCreator {
 	private void undoLastCommand() {
 		logEnterMethod("undoLastCommand");
 		if (undoListCommands.isEmpty()) {
-			currentState = currentCommand.getCurrentState();
-			commandFeedback = MESSAGE_NOTHING_TO_UNDO;
+			updateUndoDisplay();
 		} else {
 			Command undoCommand = undoListCommands.pop();
 			redoListCommands.push(undoCommand);
@@ -318,6 +330,14 @@ public class CommandCreator {
 			updateDisplay(currentCommand);
 		}
 		logExitMethod("undoLastCommand");
+	}
+
+	/**
+	 * refreshes display for undo
+	 */
+	private void updateUndoDisplay() {
+		currentState = currentCommand.getCurrentState();
+		commandFeedback = MESSAGE_NOTHING_TO_UNDO;
 	}
 
 	/**

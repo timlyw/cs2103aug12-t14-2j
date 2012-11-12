@@ -39,6 +39,8 @@ public class Processor {
 
 	private static final String COMMAND_HOME = "home";
 
+	private static HtmlCreator htmlCreator = new HtmlCreator();
+
 	private static final String MESSAGE_LOGOUT_FAIL = "Some error occurred during logout!";
 	private static final String MESSAGE_LOGOUT_SUCCESS = "You have successfully logged out !";
 	private static final String MESSAGE_LOGOUT_FAIL_NOT_LOGGED_IN = "You are not logged in! Cannot logout";
@@ -47,9 +49,11 @@ public class Processor {
 	private static final String MESSAGE_SYNCING = "Pulling events from your Google calender.... Please refresh !";
 	private static final String MESSAGE_NO_INTERNET = "No internet connection available.";
 	private static final String MESSAGE_LOGIN_FAIL = "Login unsuccessful! Please check username and password.";
-	private static final String MESSAGE_LOGIN_SUCCESS = "You have successfully logged in! Your tasks will now be synced with Google Calender.";
+	private static final String MESSAGE_LOGIN_SUCCESS = htmlCreator
+			.color("You have successfully logged in! Your tasks will now be synced with Google Calender and Tasks.",
+					HtmlCreator.BLUE);
 	private static final String MESSAGE_ERROR = "Some Error Occurred";
-	private static final String MESSAGE_NO_PARAMS = "No Params specified";
+	private static final String MESSAGE_NO_PARAMS = "You didn't specify any parameters.";
 	private static final String MESSAGE_NULL_INPUT = "Null Input";
 	private static final String MESSAGE_BLANK = "";
 	private static final String MESSAGE_LOGIN_ISSUE = "Login credentials mismatch.";
@@ -92,7 +96,6 @@ public class Processor {
 	private String currentState;
 
 	private ArrayList<StateListener> stateListeners = new ArrayList<StateListener>();
-	private HtmlCreator htmlCreator = new HtmlCreator();
 	public int LINE_HEIGHT = 20;
 	private CommandInfo userCommand;
 	private boolean isCommandQueried = false;
