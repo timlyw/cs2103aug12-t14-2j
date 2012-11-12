@@ -146,6 +146,9 @@ public class MhsFrame extends JFrame {
 		return mhsFrameInstance;
 	}
 	
+	/**
+	 * minimize MhsFrame
+	 */
 	public void minimize() {
 		this.setExtendedState(JFrame.ICONIFIED);
 	}
@@ -159,6 +162,9 @@ public class MhsFrame extends JFrame {
 		endLog("open");
 	}
 	
+	/**
+	 * hide frame from user
+	 */
 	public void close() {
 		this.setVisible(false);
 	}
@@ -196,6 +202,11 @@ public class MhsFrame extends JFrame {
 		inputBox.getDocument().addDocumentListener(inputListener);
 	}
 	
+	/**
+	 * add listener to observe mouse action on tray icon
+	 * 
+	 * @param trayListener
+	 */
 	public void addTrayListener(MouseListener trayListener) {
 		trayIcon.addMouseListener(trayListener);
 	}
@@ -218,6 +229,11 @@ public class MhsFrame extends JFrame {
 		isInputDisabled = false;
 	}
 	
+	/**
+	 * set the text for title screen
+	 * 
+	 * @param titleText
+	 */
 	public void setTitleText(String titleText) {
 		String htmlText = htmlCreator.createTitleScreenHtml(titleText);
 		titleScreen.setText(htmlText);
@@ -251,6 +267,13 @@ public class MhsFrame extends JFrame {
 		inputBox.requestFocus();	
 	}
 	
+	/**
+	 * set size of mhsFrame
+	 * 
+	 * @param width
+	 * @param height
+	 * @param maximized
+	 */
 	public void setSize(int width, int height, boolean maximized) {
 		if(maximized) {
 			this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -261,23 +284,38 @@ public class MhsFrame extends JFrame {
 		}
 	}
 	
-	public boolean framePanelInitialized() {
+	/**
+	 * @return if framePanel is initialized within MhsFrame
+	 */
+	public boolean isFramePanelInitialized() {
 		return framePanel.getParent()== this.getContentPane();
 	}
 
-	public boolean titleScreenInitialized() {
+	/**
+	 * @return if title screen is initialized within MhsFrame
+	 */
+	public boolean isTitleScreenInitialized() {
 		return titleScreen.getParent().getParent() == framePanel;
 	}
 	
-	public boolean displayScreenInitialized() {
+	/**
+	 * @return if displayScreen is initialized within MhsFrame
+	 */
+	public boolean isDisplayScreenInitialized() {
 		return displayScreen.getParent().getParent() == framePanel;
 	}
 	
-	public boolean feedbackScreenInitialized() {
+	/**
+	 * @return if feedbackScreen is initialized within MhsFrame
+	 */
+	public boolean isFeedbackScreenInitialized() {
 		return feedbackScreen.getParent().getParent() == framePanel;
 	}
 
-	public boolean plainTextBoxInitialized() {
+	/**
+	 * @return if inputBox is initialized within MhsFrame
+	 */
+	public boolean isInputBoxInitialized() {
 		return inputBox.getParent().getParent() == framePanel;
 	}
 	
@@ -302,6 +340,9 @@ public class MhsFrame extends JFrame {
 		endLog("initFrame");
 	}
 	
+	/**
+	 * initialize tray icon in user's system tray
+	 */
 	private void initTrayIcon() {
 		if(SystemTray.isSupported()) {
 			createTrayIcon();
@@ -310,12 +351,20 @@ public class MhsFrame extends JFrame {
 		}
 	}
 	
+	/**
+	 * create a tray icon instance
+	 */
 	private void createTrayIcon() {
 		ImageIcon icon = new ImageIcon(
 				MhsFrame.class.getResource(TRAY_ICON_FILE_NAME));
 		trayIcon = new TrayIcon(icon.getImage(), FRAME_TITLE);
 	}
 
+	/**
+	 * add tray icon to user's system tray
+	 * 
+	 * @param icon
+	 */
 	private void addTrayIconToSystemTray(TrayIcon icon) {
 		if(icon == null) {
 			return;
@@ -327,6 +376,11 @@ public class MhsFrame extends JFrame {
 		}
 	}
 	
+	/**
+	 * add basic menu to tray icon
+	 * 
+	 * @param icon
+	 */
 	private void addTrayIconMenu(TrayIcon icon) {
 		if(icon == null) {
 			return;
@@ -401,16 +455,27 @@ public class MhsFrame extends JFrame {
 		initInputBox();
 	}
 	
+	/**
+	 * add and format titleScreen
+	 */
 	private void initTitleScreen() {
 		addTitleScreenToFramePanel();
 		formatEditorPane(titleScreen);
 		setTitleBackground(TITLE_BACKGROUND_COLOR);
 	}
 	
+	/**
+	 * set background of titleScreen
+	 * 
+	 * @param backgroundColor
+	 */
 	private void setTitleBackground(Color backgroundColor) {
 		titleScreen.setBackground(TITLE_BACKGROUND_COLOR);
 	}
 	
+	/**
+	 * add titleScreen to framePanel
+	 */
 	private void addTitleScreenToFramePanel() {
 		GridBagConstraints constraints = getDefaultConstraints(
 				TITLE_SCREEN_POSITION_Y, TITLE_SCREEN_WEIGHT_Y,
@@ -506,6 +571,11 @@ public class MhsFrame extends JFrame {
 		framePanel.add(displayScreenContainer, constraints);
 	}
 
+	/**
+	 * format a JEditorPane object
+	 * 
+	 * @param editorPane
+	 */
 	private void formatEditorPane(JEditorPane editorPane) {
 		editorPane.setEditable(false);
 		editorPane.setContentType(CONTENT_TYPE_HTML);
@@ -648,7 +718,9 @@ public class MhsFrame extends JFrame {
 		System.exit(0);
 	}
 	
-	
+	/**
+	 * action listener to close application when user selects exit
+	 */
 	private class ClickTrayExitItem implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			closeApplication();

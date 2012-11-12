@@ -7,8 +7,8 @@ import java.util.logging.Logger;
 import mhs.src.common.MhsLogger;
 
 /**
- *         This is a class that checks string if they are commands and set the
- *         commands.
+ * This is a class that checks string if they are commands and set the
+ * commands.
  * 
  */
 
