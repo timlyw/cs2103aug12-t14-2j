@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 
 public class Task {
 
+	private static final String DEFAULT_UNNAMED_TASK_NAME = "Unnamed Task";
 	private static Gson gson = MhsGson.getInstance();
 
 	protected Integer taskId;
@@ -120,7 +121,11 @@ public class Task {
 	}
 
 	public void setTaskName(String taskName) {
-		this.taskName = taskName;
+		if (taskName == null || taskName.isEmpty()) {
+			this.taskName = DEFAULT_UNNAMED_TASK_NAME;
+		} else {
+			this.taskName = taskName;
+		}
 	}
 
 	public TaskCategory getTaskCategory() {

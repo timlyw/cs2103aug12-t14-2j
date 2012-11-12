@@ -64,7 +64,7 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 		logEnterMethod("deserialize");
 		JsonObject jObject = (JsonObject) json.getAsJsonObject();
 
-		switch (jObject.get(JSON_KEY_TASK_CATEGORY).getAsString()) {
+		switch (convertJsonElementToString(JSON_KEY_TASK_CATEGORY, jObject)) {
 		case "TIMED":
 			return convertJObjectToTimedTask(jObject);
 		case "DEADLINE":
@@ -119,7 +119,8 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 		logEnterMethod("convertJObjectToDeadlineTask");
 
 		int deadlineTaskId = jObject.get(JSON_KEY_TASK_ID).getAsInt();
-		String deadlineTaskName = jObject.get(JSON_KEY_TASK_NAME).getAsString();
+		String deadlineTaskName = convertJsonElementToString(
+				JSON_KEY_TASK_NAME, jObject);
 		DateTime deadlineTasktaskCreated = convertJsonElementToDateTime(
 				JSON_KEY_TASK_CREATED, jObject);
 		DateTime deadlineTasktaskUpdated = convertJsonElementToDateTime(
@@ -156,7 +157,8 @@ public class TaskTypeConverter implements JsonSerializer<Task>,
 	private Task convertJObjectToTimedTask(JsonObject jObject) {
 		logEnterMethod("convertJObjectToTimedTask");
 		int timedTaskId = jObject.get(JSON_KEY_TASK_ID).getAsInt();
-		String timedTaskName = jObject.get(JSON_KEY_TASK_NAME).getAsString();
+		String timedTaskName = convertJsonElementToString(JSON_KEY_TASK_NAME,
+				jObject);
 		DateTime timedTasktaskCreated = convertJsonElementToDateTime(
 				JSON_KEY_TASK_CREATED, jObject);
 		DateTime timedTasktaskUpdated = convertJsonElementToDateTime(

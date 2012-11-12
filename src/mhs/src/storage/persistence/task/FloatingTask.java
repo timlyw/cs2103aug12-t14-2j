@@ -38,7 +38,7 @@ public class FloatingTask extends Task {
 			String gTaskId, boolean isDone, boolean isDeleted) {
 		super(taskId, taskName, taskCategory, createdDt, updatedDt, syncDt,
 				isDone, isDeleted);
-		this.setGTaskId(gTaskId);
+		setGTaskId(gTaskId);
 	}
 
 	/**
