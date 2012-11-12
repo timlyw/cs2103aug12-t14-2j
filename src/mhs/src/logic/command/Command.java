@@ -31,6 +31,8 @@ import mhs.src.storage.persistence.task.TaskCategory;
  */
 public abstract class Command {
 
+	private static final String MESSAGE_SHOWING_HOME = "Showing home";
+	private static final String MESSAGE_SHOWING_RESULTS = "Showing results for ";
 	protected static HtmlCreator htmlCreator = new HtmlCreator();
 	private static final String MESSAGE_ERROR_IO = "Read/Write error";
 	private static final String MESSAGE_DATABASE_FACTORY_NOT_INITIALIZED = "Database Factory not instantiated";
@@ -641,33 +643,22 @@ public abstract class Command {
 				boolean name = isTaskNameInitialized(lastQueryCommandInfo);
 				boolean startDate = isStartDateInitialized(lastQueryCommandInfo);
 				boolean endDate = isEndDateInitialized(lastQueryCommandInfo);
-				DateTimeHelper helper;
-				lastStateString = "Showing results for ";
-				if(name)
-					lastStateString += lastQueryCommandInfo.getTaskName();
-				if(startDate){
-					helper = new DateTimeHelper();
-					lastStateString += helper.formatDateTimeToString(lastQueryCommandInfo.getStartDate()) + " - ";
-				}
-				if (endDate) {
-					helper = new DateTimeHelper();
-					lastStateString += helper.formatDateTimeToString(lastQueryCommandInfo.getEndDate());
-				}
-				lastStateString += HtmlCreator.NEW_LINE;
+				lastStateString = getFormattedSearchParams(lastStateString,
+						name, startDate, endDate);
 				break;
 			case QUERY_BY_NAME:
 				resultList = queryTask(lastQueryCommandInfo);
-				lastStateString = "Showing results for "
+				lastStateString = MESSAGE_SHOWING_RESULTS
 						+ lastQueryCommandInfo.getTaskName()
 						+ HtmlCreator.NEW_LINE;
 				break;
 			case QUERY_BY_CATEGORY:
-				lastStateString = "Showing results for " + lastQueryCategory
+				lastStateString = MESSAGE_SHOWING_RESULTS + lastQueryCategory
 						+ HtmlCreator.NEW_LINE;
 				resultList = queryTaskByCategory(lastQueryCategory);
 				break;
 			default:
-				lastStateString = "Showing home" + HtmlCreator.NEW_LINE;
+				lastStateString = MESSAGE_SHOWING_HOME + HtmlCreator.NEW_LINE;
 				resultList = queryHome();
 			}
 			matchedTasks = resultList;
@@ -676,6 +667,34 @@ public abstract class Command {
 		} catch (IOException e) {
 			return MESSAGE_ERROR_IO;
 		}
+	}
+
+	/**
+	 * Formats the name/date/time for page heading
+	 * 
+	 * @param lastStateString
+	 * @param name
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	private static String getFormattedSearchParams(String lastStateString,
+			boolean name, boolean startDate, boolean endDate) {
+		DateTimeHelper helper = new DateTimeHelper();
+		lastStateString = MESSAGE_SHOWING_RESULTS;
+		if (name)
+			lastStateString += lastQueryCommandInfo.getTaskName();
+		if (startDate) {
+			lastStateString += helper
+					.formatDateTimeToString(lastQueryCommandInfo.getStartDate())
+					+ " - ";
+		}
+		if (endDate) {
+			lastStateString += helper
+					.formatDateTimeToString(lastQueryCommandInfo.getEndDate());
+		}
+		lastStateString += HtmlCreator.NEW_LINE;
+		return lastStateString;
 	}
 
 	/**
