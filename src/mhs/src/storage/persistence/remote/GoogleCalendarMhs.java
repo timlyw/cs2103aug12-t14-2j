@@ -87,12 +87,8 @@ public class GoogleCalendarMhs {
 	}
 
 	public void deleteEvent(String eventId) {
-		try {
-			defaultCalendar.deleteEvent(eventId);
-			completedCalendar.deleteEvent(eventId);
-		} catch (ResourceNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
-		}
+		defaultCalendar.deleteEvent(eventId);
+		completedCalendar.deleteEvent(eventId);
 	}
 
 	public boolean isDeleted(Event event) {
