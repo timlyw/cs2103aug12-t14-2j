@@ -3,6 +3,7 @@
 package mhs.src.logic.command;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.logging.Logger;
@@ -26,13 +27,14 @@ import mhs.src.storage.persistence.task.TaskCategory;
 /**
  * Parent class of all task based commands
  * 
- * @author Shekhar
+ * @author Shekhar Baggavalli Raju
  * 
  */
 public abstract class Command {
 
+	private static final String MESSAGE_NO_TASKS_TO_DISPLAY = "No tasks to display";
 	private static final String MESSAGE_SHOWING_HOME = "Showing home";
-	private static final String MESSAGE_SHOWING_RESULTS = "Showing results for ";
+	private static final String MESSAGE_SHOWING_RESULTS = "Showing results ";
 	protected static HtmlCreator htmlCreator = new HtmlCreator();
 	private static final String MESSAGE_ERROR_IO = "Read/Write error";
 	private static final String MESSAGE_DATABASE_FACTORY_NOT_INITIALIZED = "Database Factory not instantiated";
@@ -56,11 +58,10 @@ public abstract class Command {
 	private static final String CONNECTOR_DEADLINE = " due %1$s";
 
 	protected boolean isUndoable;
-	public static List<Task> matchedTasks;
+	public static List<Task> matchedTasks = new ArrayList<Task>();
 	protected static Database dataHandler;
 	protected boolean indexExpected;
 	private static Stack<Integer> indexDisplayedStack = new Stack<Integer>();
-	private static boolean firstTimeDisplay = true;
 	private static int firstIndexDisplayed = 0;
 	private static int lastIndexDisplayed = 0;
 	private static int lineLimit = 0;
@@ -254,17 +255,12 @@ public abstract class Command {
 		} else if (!name && startDate && endDate) {
 			queryResultList = dataHandler.query(inputCommand.getStartDate(),
 					inputCommand.getEndDate(), false, true);
+			if (queryResultList == null) {
+			} else {
+			}
 		} else if (name && !startDate && !endDate) {
 			queryResultList = dataHandler.query(inputCommand.getTaskName(),
 					true);
-		} else if (name && startDate && !endDate) {
-			queryResultList = dataHandler.query(inputCommand.getTaskName(),
-					inputCommand.getStartDate(), inputCommand.getStartDate()
-							.plusDays(1).toDateMidnight().toDateTime(), true);
-		} else if (!name && startDate && !endDate) {
-			queryResultList = dataHandler.query(inputCommand.getStartDate(),
-					inputCommand.getStartDate().plusDays(1).toDateMidnight()
-							.toDateTime(), false, true);
 		} else {
 			queryResultList = dataHandler.query(true);
 		}
@@ -424,7 +420,6 @@ public abstract class Command {
 	public static void resetDisplayIndex() {
 		firstIndexDisplayed = 0;
 		indexDisplayedStack.clear();
-		firstTimeDisplay = true;
 	}
 
 	/**
@@ -435,17 +430,17 @@ public abstract class Command {
 	 * @return
 	 */
 	public static String createTaskListHtml(List<Task> taskList, int limit) {
+		if (taskList == null) {
+			return MESSAGE_NO_TASKS_TO_DISPLAY;
+		}
 		if (taskList.size() == 0) {
-			return "No tasks to display";
+			return MESSAGE_NO_TASKS_TO_DISPLAY;
 		}
 		limit = setBounds(limit, taskList);
 		String taskListHtml = getTasksHtml(taskList, limit);
-		forwardToCurrentTime(taskList);
 		String pagination = createPagination(taskList);
 		taskListHtml += HtmlCreator.NEW_LINE;
 		taskListHtml += pagination;
-
-		firstTimeDisplay = false;
 		return taskListHtml;
 	}
 
@@ -539,30 +534,6 @@ public abstract class Command {
 		return taskListHtml;
 	}
 
-	private static void forwardToCurrentTime(List<Task> taskList) {
-		if (firstTimeDisplay) {
-			while (true) {
-				if (firstIndexDisplayed > taskList.size()) {
-					firstIndexDisplayed = taskList.size() - 2;
-					break;
-				}
-				Task task = taskList.get(firstIndexDisplayed);
-				if (task.isFloating()) {
-					break;
-				} else if (isPastToday(task.getEndDateTime())) {
-					break;
-				}
-				firstIndexDisplayed++;
-			}
-		}
-	}
-
-	private static boolean isPastToday(DateTime date1) {
-		long todayMillis = DateTime.now().getMillis()
-				- DateTime.now().getMillisOfDay();
-		return date1.getMillis() > todayMillis;
-	}
-
 	private static int setBounds(int limit, List<Task> taskList) {
 		if (limit < 0) {
 			limit = 1;
@@ -640,33 +611,94 @@ public abstract class Command {
 			switch (lastQueryType) {
 			case QUERY_BY_COMMANDINFO:
 				resultList = queryTask(lastQueryCommandInfo);
-				boolean name = isTaskNameInitialized(lastQueryCommandInfo);
-				boolean startDate = isStartDateInitialized(lastQueryCommandInfo);
-				boolean endDate = isEndDateInitialized(lastQueryCommandInfo);
-				lastStateString = getFormattedSearchParams(lastStateString,
-						name, startDate, endDate);
+				lastStateString = populateStateForQueryByCommandInfo(lastStateString);
 				break;
 			case QUERY_BY_NAME:
 				resultList = queryTask(lastQueryCommandInfo);
-				lastStateString = MESSAGE_SHOWING_RESULTS
-						+ lastQueryCommandInfo.getTaskName()
-						+ HtmlCreator.NEW_LINE;
+				lastStateString = populateStateForQueryByName();
 				break;
 			case QUERY_BY_CATEGORY:
-				lastStateString = MESSAGE_SHOWING_RESULTS + lastQueryCategory
-						+ HtmlCreator.NEW_LINE;
+				lastStateString = populateStateForQueryByCategory();
 				resultList = queryTaskByCategory(lastQueryCategory);
 				break;
 			default:
-				lastStateString = MESSAGE_SHOWING_HOME + HtmlCreator.NEW_LINE;
+				lastStateString = populateStateForHome();
 				resultList = queryHome();
 			}
 			matchedTasks = resultList;
-			lastStateString += displayListOfTasks(resultList);
+			lastStateString = populateFormattedState(lastStateString,
+					resultList);
 			return lastStateString;
 		} catch (IOException e) {
 			return MESSAGE_ERROR_IO;
 		}
+	}
+
+	/**
+	 * Formats and returns the final screen state
+	 * 
+	 * @param lastStateString
+	 * @param resultList
+	 * @return
+	 */
+	private static String populateFormattedState(String lastStateString,
+			List<Task> resultList) {
+		lastStateString = lastStateString.toUpperCase();
+		lastStateString = htmlCreator.color(lastStateString, HtmlCreator.GRAY);
+		lastStateString = htmlCreator.smallFont(lastStateString);
+		lastStateString += displayListOfTasks(resultList);
+		return lastStateString;
+	}
+
+	/**
+	 * Populates the state for last query - home
+	 * 
+	 * @return
+	 */
+	private static String populateStateForHome() {
+		String lastStateString;
+		lastStateString = MESSAGE_SHOWING_HOME + HtmlCreator.NEW_LINE;
+		return lastStateString;
+	}
+
+	/**
+	 * Populates state for last query - by category
+	 * 
+	 * @return
+	 */
+	private static String populateStateForQueryByCategory() {
+		String lastStateString;
+		lastStateString = MESSAGE_SHOWING_RESULTS + lastQueryCategory
+				+ HtmlCreator.NEW_LINE;
+		return lastStateString;
+	}
+
+	/**
+	 * Populates state for last query - by name
+	 * 
+	 * @return
+	 */
+	private static String populateStateForQueryByName() {
+		String lastStateString;
+		lastStateString = MESSAGE_SHOWING_RESULTS
+				+ lastQueryCommandInfo.getTaskName() + HtmlCreator.NEW_LINE;
+		return lastStateString;
+	}
+
+	/**
+	 * Populates state for last query by Command Info params
+	 * 
+	 * @param lastStateString
+	 * @return
+	 */
+	private static String populateStateForQueryByCommandInfo(
+			String lastStateString) {
+		boolean name = isTaskNameInitialized(lastQueryCommandInfo);
+		boolean startDate = isStartDateInitialized(lastQueryCommandInfo);
+		boolean endDate = isEndDateInitialized(lastQueryCommandInfo);
+		lastStateString = getFormattedSearchParams(lastStateString, name,
+				startDate, endDate);
+		return lastStateString;
 	}
 
 	/**
@@ -683,7 +715,7 @@ public abstract class Command {
 		DateTimeHelper helper = new DateTimeHelper();
 		lastStateString = MESSAGE_SHOWING_RESULTS;
 		if (name)
-			lastStateString += lastQueryCommandInfo.getTaskName();
+			lastStateString += lastQueryCommandInfo.getTaskName() + " ";
 		if (startDate) {
 			lastStateString += helper
 					.formatDateTimeToString(lastQueryCommandInfo.getStartDate())
@@ -708,7 +740,6 @@ public abstract class Command {
 		if (task.isDeadline()) {
 			String dueTime = dateTimeHelper.formatDateTimeToString(task
 					.getStartDateTime());
-			System.out.println("due " + dueTime);
 			timeString = String.format(CONNECTOR_DEADLINE, dueTime);
 		} else if (task.isTimed()) {
 			String startTime = dateTimeHelper.formatDateTimeToString(task
