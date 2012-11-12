@@ -23,7 +23,8 @@ import mhs.src.storage.persistence.task.Task;
 public class CommandMark extends Command {
 
 	private static final String MESSAGE_TASK_NOT_MARKED = "Error occured. Task not marked.";
-	private static final String CONFIRM_TASK_MARKED = "Good Job. I have marked '%1$s' as DONE";
+	private static final String CONFIRM_TASK_MARKED = "Good Job. I have marked: %1$s";
+	protected static final String MESSAGE_MULTIPLE_MATCHES_MARK = "Multiple matches found.<br/>Enter task index to mark as done.";
 
 	private static final Logger logger = MhsLogger.getLogger();
 
@@ -73,22 +74,32 @@ public class CommandMark extends Command {
 		else if (matchedTasks.size() == 1) {
 			lastTask = matchedTasks.get(0).clone();
 			Task editedTask = markDone(matchedTasks.get(0));
-			try {
-				updateTask(editedTask);
-				newTask = editedTask;
-				outputString = String.format(CONFIRM_TASK_MARKED,
-						editedTask.getTaskName());
-				commandFeedback = outputString;
-			} catch (Exception e) {
-				outputString = MESSAGE_TASK_NOT_MARKED;
-			}
+			updateTaskInDatabase(editedTask);
 		}
 		// if multiple matches are found display the list
 		else {
 			indexExpected = true;
-			commandFeedback = MESSAGE_MULTIPLE_MATCHES;
+			commandFeedback = MESSAGE_MULTIPLE_MATCHES_MARK;
 		}
 		logExitMethod("executeCommand");
+	}
+
+	/**
+	 * Updates the marked task in database.
+	 * 
+	 * @param editedTask
+	 */
+	private void updateTaskInDatabase(Task editedTask) {
+		String outputString;
+		try {
+			updateTask(editedTask);
+			newTask = editedTask;
+			outputString = String.format(CONFIRM_TASK_MARKED,
+					editedTask.getTaskName());
+			commandFeedback = outputString;
+		} catch (Exception e) {
+			outputString = MESSAGE_TASK_NOT_MARKED;
+		}
 	}
 
 	private void updateTask(Task editedTask) throws IOException,
@@ -108,27 +119,6 @@ public class CommandMark extends Command {
 		editedTask.setDone(true);
 		logExitMethod("markDone");
 		return editedTask;
-	}
-
-	/**
-	 * Unmarks a task
-	 */
-	public String undo() {
-		logEnterMethod("undo");
-		String outputString = new String();
-		if (isUndoable()) {
-			try {
-				dataHandler.update(lastTask);
-				outputString = MESSAGE_UNDO_CONFIRM;
-			} catch (Exception e) {
-				outputString = MESSAGE_UNDO_FAIL;
-			}
-		} else {
-			outputString = MESSAGE_UNDO_FAIL;
-		}
-		logExitMethod("undo");
-		commandFeedback = outputString;
-		return outputString;
 	}
 
 	/**
