@@ -24,9 +24,10 @@ import java.util.Stack;
  * 
  */
 public class CommandCreator {
+	private static final String MESSAGE_HOME_PAGE = "Displaying home page";
 	private static final String MESSAGE_INVALID_COMMAND = "Invalid Command";
-	// private static final String MESSAGE_NOTHING_TO_UNDO = "Nothing to undo";
-	// private static final String MESSAGE_NOTHING_TO_REDO = "Nothing to redo";
+	private static final String MESSAGE_NOTHING_TO_UNDO = "Nothing to undo";
+	private static final String MESSAGE_NOTHING_TO_REDO = "Nothing to redo";
 
 	private static CommandCreator commandCreator;
 	private Command currentCommand;
@@ -123,36 +124,28 @@ public class CommandCreator {
 		String userOutputString = new String();
 		switch (userCommand.getCommandEnum()) {
 		case add:
-			currentCommand = new CommandAdd(userCommand);
-			currentCommand.executeCommand();
+			executeAdd(userCommand);
 			break;
 		case remove:
-			currentCommand = new CommandRemove(userCommand);
-			currentCommand.executeCommand();
+			executeRemove(userCommand);
 			break;
 		case edit:
-			currentCommand = new CommandEdit(userCommand);
-			currentCommand.executeCommand();
+			executeEdit(userCommand);
 			break;
 		case search:
-			currentCommand = new CommandSearch(userCommand);
-			currentCommand.executeCommand();
+			executeSearch(userCommand);
 			break;
 		case floating:
-			currentCommand = new CommandSearch(userCommand);
-			currentCommand.executeCommand();
+			executeSearch(userCommand);
 			break;
 		case deadline:
-			currentCommand = new CommandSearch(userCommand);
-			currentCommand.executeCommand();
+			executeSearch(userCommand);
 			break;
 		case timed:
-			currentCommand = new CommandSearch(userCommand);
-			currentCommand.executeCommand();
+			executeSearch(userCommand);
 			break;
 		case home:
-			currentCommand = new CommandSearch(userCommand);
-			currentCommand.executeCommand();
+			executeSearch(userCommand);
 			break;
 		case undo:
 			undoLastCommand();
@@ -161,16 +154,13 @@ public class CommandCreator {
 			redoLastCommand();
 			break;
 		case mark:
-			currentCommand = new CommandMark(userCommand);
-			currentCommand.executeCommand();
+			executeMark(userCommand);
 			break;
 		case unmark:
-			currentCommand = new CommandUnmark(userCommand);
-			currentCommand.executeCommand();
+			executeUnmark(userCommand);
 			break;
 		case rename:
-			currentCommand = new CommandRename(userCommand);
-			currentCommand.executeCommand();
+			executeRename(userCommand);
 			break;
 		case next:
 			Command.displayNext();
@@ -179,14 +169,95 @@ public class CommandCreator {
 			Command.displayPrev();
 			break;
 		default:
-			userOutputString = MESSAGE_INVALID_COMMAND;
+			commandFeedback = MESSAGE_INVALID_COMMAND;
 			break;
 		}
 		updateDisplayIndex(userCommand);
 		pushToUndoStack(currentCommand);
-		updateDisplay(currentCommand);
 		logExitMethod("executeCommand");
 		return userOutputString;
+	}
+
+	/**
+	 * executes Rename
+	 * 
+	 * @param userCommand
+	 */
+	private void executeRename(CommandInfo userCommand) {
+		currentCommand = new CommandRename(userCommand);
+		currentCommand.executeCommand();
+		updateDisplay(currentCommand);
+	}
+
+	/**
+	 * executes Unmark
+	 * 
+	 * @param userCommand
+	 */
+	private void executeUnmark(CommandInfo userCommand) {
+		currentCommand = new CommandUnmark(userCommand);
+		currentCommand.executeCommand();
+		updateDisplay(currentCommand);
+	}
+
+	/**
+	 * executes Mark
+	 * 
+	 * @param userCommand
+	 */
+	private void executeMark(CommandInfo userCommand) {
+		currentCommand = new CommandMark(userCommand);
+		currentCommand.executeCommand();
+		updateDisplay(currentCommand);
+	}
+
+	/**
+	 * executes Search
+	 * 
+	 * @param userCommand
+	 */
+	private void executeSearch(CommandInfo userCommand) {
+		currentCommand = new CommandSearch(userCommand);
+		currentCommand.executeCommand();
+		if (userCommand.getCommandEnum() == CommandKeyWords.home) {
+			currentState = currentCommand.getCurrentState();
+			commandFeedback = MESSAGE_HOME_PAGE;
+			return;
+		}
+		updateDisplay(currentCommand);
+	}
+
+	/**
+	 * executes Edit
+	 * 
+	 * @param userCommand
+	 */
+	private void executeEdit(CommandInfo userCommand) {
+		currentCommand = new CommandEdit(userCommand);
+		currentCommand.executeCommand();
+		updateDisplay(currentCommand);
+	}
+
+	/**
+	 * executes Remove
+	 * 
+	 * @param userCommand
+	 */
+	private void executeRemove(CommandInfo userCommand) {
+		currentCommand = new CommandRemove(userCommand);
+		currentCommand.executeCommand();
+		updateDisplay(currentCommand);
+	}
+
+	/**
+	 * executes Add
+	 * 
+	 * @param userCommand
+	 */
+	private void executeAdd(CommandInfo userCommand) {
+		currentCommand = new CommandAdd(userCommand);
+		currentCommand.executeCommand();
+		updateDisplay(currentCommand);
 	}
 
 	/**
@@ -197,12 +268,21 @@ public class CommandCreator {
 	private void redoLastCommand() {
 		logEnterMethod("redoLastCommand");
 		if (redoListCommands.isEmpty()) {
-			// MESSAGE_NOTHING_TO_REDO;
+			updateRedoDisplay();
 		} else {
 			Command redoCommand = redoListCommands.pop();
 			redoCommand.redo();
+			updateDisplay(currentCommand);
 		}
 		logExitMethod("redoLastCommand");
+	}
+
+	/**
+	 * Refreshes display for redo
+	 */
+	private void updateRedoDisplay() {
+		currentState = currentCommand.getCurrentState();
+		commandFeedback = MESSAGE_NOTHING_TO_REDO;
 	}
 
 	/**
@@ -242,13 +322,22 @@ public class CommandCreator {
 	private void undoLastCommand() {
 		logEnterMethod("undoLastCommand");
 		if (undoListCommands.isEmpty()) {
-			// MESSAGE_NOTHING_TO_UNDO;
+			updateUndoDisplay();
 		} else {
 			Command undoCommand = undoListCommands.pop();
 			redoListCommands.push(undoCommand);
 			undoCommand.undo();
+			updateDisplay(currentCommand);
 		}
 		logExitMethod("undoLastCommand");
+	}
+
+	/**
+	 * refreshes display for undo
+	 */
+	private void updateUndoDisplay() {
+		currentState = currentCommand.getCurrentState();
+		commandFeedback = MESSAGE_NOTHING_TO_UNDO;
 	}
 
 	/**
