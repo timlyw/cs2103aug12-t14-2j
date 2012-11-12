@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<project name="Build Project cs2103-MHS"  default="main" basedir=".">
+  <!-- The value of a property is accessed via ${} -->
+  <property name="src.dir" location="src" />
+  <property name="bin.dir" location="bin" />
+  <property name="build.dir" location="build" />
+  <property name="dist.dir" location="dist" />
+  <property name="docs.dir" location="javadocs" />
+  <property name="libs.dir" location="libs" />
+
+  <!-- libs dependencies -->
+  <path id="build.classpath">
+    <fileset dir="${libs.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+  </path>
+  
+  <!-- Deletes the existing build, docs and dist directory-->
+  <target name="clean">
+    <delete dir="${build.dir}" />
+    <delete dir="${docs.dir}" />
+    <delete dir="${dist.dir}" />
+  </target>
+
+  <!-- Creates the  build, docs and dist directory-->
+  <target name="makedir">
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${docs.dir}" />
+    <mkdir dir="${dist.dir}" />
+  </target>
+
+  <!-- Compiles the java code (including the usage of library for JUnit -->
+  <target name="compile" depends="clean, makedir">
+    <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="build.classpath" includeantruntime="false">
+    </javac>
+  </target>
+
+  <!-- Creates Javadoc -->
+  <target name="docs" depends="compile">
+    <javadoc packagenames="mhs.*" sourcepath="${src.dir}" destdir="${docs.dir}">
+      <!-- Define which files / directory should get included, we include all -->
+       <fileset dir="${src.dir}">
+                <include name="**.java" />
+           </fileset>
+    </javadoc>
+  </target>
+  
+  <!-- combine jars --> 
+  <target name="combine_dependencies">
+  	<zip destfile="${libs.dir}/combined/mhs-dependencies.jar">
+  		<zipgroupfileset excludes="META-INF/*.SF" dir="${libs.dir}" includes="*.jar"/>
+  	</zip>
+  </target>  
+  
+  <!--Creates the deployable jar file  -->
+  <target name="create_run_jar" depends="compile,combine_dependencies">
+    <jar destfile="${dist.dir}\mhs.jar" basedir="${build.dir}" filesetmanifest="mergewithoutmain">
+      <manifest>
+        <attribute name="Main-Class" value="mhs.src.Mhs" />
+        <attribute name="Class-Path" value="."/>
+      </manifest>
+        
+	    <fileset dir="${bin.dir}"/>
+	
+		<!-- add combined jars -->	    
+	    <zipfileset excludes="META-INF/*.SF" src="${libs.dir}/combined/mhs-dependencies.jar"/>
+    </jar>
+  </target>
+
+  <target name="main" depends="compile, create_run_jar, docs">
+    <description>Main target</description>
+  </target>
+
+</project> 
