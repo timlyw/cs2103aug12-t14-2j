@@ -563,7 +563,6 @@ public class DatabaseTest {
 
 		queryList = database.query(false);
 
-		System.out.println("after deleting task 1 and 2");
 		database.delete(1);
 		database.delete(2);
 
@@ -668,7 +667,7 @@ public class DatabaseTest {
 		Iterator<Task> iterator = queryList.iterator();
 		while (iterator.hasNext()) {
 			Task matchedTask = iterator.next();
-			System.out.println(matchedTask.toString());
+			System.out.println(matchedTask.toJson());
 		}
 
 		// Google Calendar

@@ -33,6 +33,10 @@ public class Task {
 	protected Boolean isDone;
 	protected Boolean isDeleted;
 
+	protected String gTaskId;
+	protected String gCalTaskId;
+	protected String gCalTaskUid;
+
 	/**
 	 * Default Constructor
 	 */
@@ -110,7 +114,6 @@ public class Task {
 	/**
 	 * Getters and Setters
 	 */
-
 	public int getTaskId() {
 		return taskId;
 	}
@@ -205,28 +208,34 @@ public class Task {
 		// do nothing
 	}
 
+	/**
+	 * Getter for Google Task Id
+	 */
+	public String getGTaskId() {
+		return gTaskId;
+	}
+
+	/**
+	 * Setter for Google Task Id
+	 */
+	public void setGTaskId(String gTaskId) {
+		this.gTaskId = gTaskId;
+	}
+
 	public String getgCalTaskId() {
-		return null;
+		return gCalTaskId;
 	}
 
 	public void setGcalTaskId(String gCalTaskId) {
-		// do nothing
+		this.gCalTaskId = gCalTaskId;
 	}
 
 	public String getgCalTaskUid() {
-		return null;
+		return gCalTaskUid;
 	}
 
 	public void setGcalTaskUid(String gCalTaskUid) {
-		// do nothing
-	}
-
-	public String getGTaskId() {
-		return null;
-	}
-
-	public void setGTaskId(String gTaskId) {
-		// do nothing
+		this.gCalTaskUid = gCalTaskUid;
 	}
 
 	/**

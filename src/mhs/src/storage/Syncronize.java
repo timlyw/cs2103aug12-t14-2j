@@ -1023,13 +1023,28 @@ class Syncronize {
 			throws NullPointerException, IOException, ServiceException,
 			TaskNotFoundException, InvalidTaskFormatException {
 		logExitMethod("pushSyncFloatingTask");
-		// push unsynced tasks
+		deleteGoogleCalendarEventIfFloatingTaskIsPreviouslySynced(localTask);
 		if (TaskValidator.isUnsyncedTask(localTask)) {
 			pushSyncNewFloatingTask(localTask);
 		} else {
 			performPushSyncForExistingFloatingTask(localTask);
 		}
 		logExitMethod("pushSyncFloatingTask");
+	}
+
+	/**
+	 * Delete Google Calendar Event If Floating Task Is Previously Synced
+	 * 
+	 * @param localTask
+	 */
+	protected void deleteGoogleCalendarEventIfFloatingTaskIsPreviouslySynced(
+			Task localTask) {
+		logEnterMethod("deleteGoogleCalendarEventIfFloatingTaskIsPreviouslySynced");
+		if (isGoogleCalendarSyncedTask(localTask)) {
+			System.out.println("Deleting old google cal task");
+			Database.googleCalendar.deleteEvent(localTask.getgCalTaskId());
+		}
+		logExitMethod("deleteGoogleCalendarEventIfFloatingTaskIsPreviouslySynced");
 	}
 
 	/**
@@ -1058,13 +1073,10 @@ class Syncronize {
 			Database.googleTasks.deleteTask(localTask.getGTaskId());
 		} catch (NullPointerException e) {
 			logger.log(Level.FINER, e.getMessage());
-			e.printStackTrace();
 		} catch (ResourceNotFoundException e) {
 			logger.log(Level.FINER, e.getMessage());
-			e.printStackTrace();
 		} catch (IOException e) {
 			logger.log(Level.FINER, e.getMessage());
-			e.printStackTrace();
 		}
 		logExitMethod("deleteExistingFloatingSyncTask");
 	}
@@ -1096,12 +1108,33 @@ class Syncronize {
 			throws IOException, ServiceException, TaskNotFoundException,
 			InvalidTaskFormatException {
 		logEnterMethod("pushSyncTimedAndDeadlineTask");
+		deleteGoogleEventIfTimedOrDeadlineTaskIsPreviouslySynced(localTask);
 		if (TaskValidator.isUnsyncedTask(localTask)) {
 			performPushSyncForUnsyncedTimedAndDeadlineTask(localTask);
 		} else {
 			performPushSyncForSyncedTimedAndDeadlineTask(localTask);
 		}
 		logExitMethod("pushSyncTimedAndDeadlineTask");
+	}
+
+	/**
+	 * Delete Google Task If Timed Or Deadline Task is Previously Synced
+	 * 
+	 * @param localTask
+	 */
+	protected void deleteGoogleEventIfTimedOrDeadlineTaskIsPreviouslySynced(
+			Task localTask) {
+		logEnterMethod("deleteGoogleTaskEventIfTimedOrDeadlineTaskIsPreviouslySynced");
+		if (isGoogleTaskSyncedTask(localTask)) {
+			try {
+				Database.googleTasks.deleteTask(localTask.getGTaskId());
+			} catch (ResourceNotFoundException e) {
+				logger.log(Level.FINER, e.getMessage());
+			} catch (IOException e) {
+				logger.log(Level.FINER, e.getMessage());
+			}
+		}
+		logExitMethod("deleteGoogleTaskEventIfTimedOrDeadlineTaskIsPreviouslySynced");
 	}
 
 	/**
@@ -1186,7 +1219,6 @@ class Syncronize {
 		logEnterMethod("pushSyncNewFloatingTask");
 		logger.log(Level.INFO,
 				"Pushing new floating sync task : " + localTask.getTaskName());
-		// adds event to google tasks
 		com.google.api.services.tasks.model.Task addedGTask = Database.googleTasks
 				.createTask(localTask.getTaskName(), localTask.isDone());
 		updateSyncTask(localTask, addedGTask);
@@ -1203,9 +1235,6 @@ class Syncronize {
 		// update remote task
 		com.google.api.services.tasks.model.Task updatedGTask;
 		try {
-			if (isGoogleCalendarSyncedTask(localTask)) {
-				Database.googleCalendar.deleteEvent(localTask.getgCalTaskId());
-			}
 			updatedGTask = Database.googleTasks.updateTask(
 					localTask.getGTaskId(), localTask.getTaskName(),
 					localTask.isDone());
@@ -1249,12 +1278,8 @@ class Syncronize {
 		// update remote task
 		Event updatedGcalEvent;
 		try {
-			if (isGoogleTaskSyncedTask(localTask)) {
-				Database.googleTasks.deleteTask(localTask.getGTaskId());
-			}
 			updatedGcalEvent = Database.googleCalendar.updateEvent(localTask
 					.clone());
-
 			updateSyncTask(localTask, updatedGcalEvent);
 		} catch (ResourceNotFoundException | IOException e) {
 			logger.log(Level.FINER, e.getMessage());

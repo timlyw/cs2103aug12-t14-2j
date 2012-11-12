@@ -104,6 +104,7 @@ public class TaskListsTest {
 	public void TaskListTestUpdate() throws TaskNotFoundException {
 		taskList.clear();
 		taskLists = new TaskLists(taskList);
+
 		// Test add task
 		taskLists.updateTaskInTaskLists(task);
 		assertEquals(1, taskLists.getTaskList().size());

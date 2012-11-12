@@ -26,8 +26,6 @@ public class TimedTask extends Task {
 
 	private DateTime startDateTime;
 	private DateTime endDateTime;
-	private String gCalTaskId;
-	private String gCalTaskUid;
 
 	static final Logger logger = MhsLogger.getLogger();
 
@@ -94,22 +92,6 @@ public class TimedTask extends Task {
 
 	public void setEndDateTime(DateTime endDateTime) {
 		this.endDateTime = endDateTime;
-	}
-
-	public String getgCalTaskId() {
-		return gCalTaskId;
-	}
-
-	public void setGcalTaskId(String gCalTaskId) {
-		this.gCalTaskId = gCalTaskId;
-	}
-
-	public String getgCalTaskUid() {
-		return gCalTaskUid;
-	}
-
-	public void setGcalTaskUid(String gCalTaskUid) {
-		this.gCalTaskUid = gCalTaskUid;
 	}
 
 	public String toString() {
@@ -225,7 +207,6 @@ public class TimedTask extends Task {
 		} else {
 			timeString = date.toString("h.mm aa");
 		}
-
 
 		return timeString;
 	}
