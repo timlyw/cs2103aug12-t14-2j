@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
-import mhs.src.storage.persistence.local.ConfigFile;
+import mhs.src.common.ConfigFile;
 
 import org.junit.Before;
 import org.junit.Test;
