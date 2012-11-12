@@ -14,7 +14,7 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 
 @RunWith(Suite.class)
-@SuiteClasses({ DatabaseFactoryTest.class, DatabaseSyncTest.class, DatabaseTest.class,
+@SuiteClasses({ DatabaseFactoryTest.class, DatabaseTest.class,
 		ConfigFileTest.class, TaskRecordFileTest.class,
 		CommandParserTest.class, TaskListsTest.class })
 public class AllTests {

@@ -46,6 +46,7 @@ import com.google.gdata.util.ServiceException;
 
 public class Database {
 
+	private static final int REMOTE_SERVICE_CONNECTION_REACHABLE_TIMEOUT = 30;
 	static GoogleTasks googleTasks;
 	static GoogleCalendarMhs googleCalendar;
 	static TaskLists taskLists;
@@ -170,7 +171,9 @@ public class Database {
 	private void initializeGoogleOAuth2() {
 		try {
 			MhsGoogleOAuth2.getInstance();
-			authenticateOAuth2WithDefaultUser();
+			if (isRemoteServiceConnectionActive()) {
+				authenticateOAuth2WithDefaultUser();
+			}
 		} catch (Exception e) {
 			// Connectivity Errors
 		}
@@ -218,7 +221,7 @@ public class Database {
 	public void syncronizeDatabases() throws ServiceException, IOException,
 			NoActiveCredentialException {
 		logEnterMethod("syncronizeDatabases");
-		if (!isRemoteServiceConnectivityActive()) {
+		if (!isRemoteServiceConnectionActive()) {
 			syncronize.disableRemoteSync();
 			throw new UnknownHostException(
 					EXCEPTION_MESSAGE_NO_CONNECTIVITY_WITH_REMOTE_STORAGE);
@@ -241,17 +244,21 @@ public class Database {
 	 * 
 	 * @return true if connection if active
 	 */
-	private boolean isRemoteServiceConnectivityActive() {
-		logEnterMethod("isRemoteServiceConnectivityActive");
+	private boolean isRemoteServiceConnectionActive() {
+		logEnterMethod("isRemoteServiceConnectionActive");
 		try {
-			URL remoteStorageServiceUrl = new URL(URL_REMOTE_SERVICE_GOOGLE);
-			remoteStorageServiceUrl.openConnection();
-		} catch (Exception e) {
-			logExitMethod("isRemoteServiceConnectivityActive");
+			URL googleUrl = new URL(URL_REMOTE_SERVICE_GOOGLE);
+			googleUrl.openConnection();
+			googleUrl.getContent();
+			logExitMethod("isRemoteServiceConnectionActive");
+			return true;
+		} catch (UnknownHostException e) {
+			logExitMethod("isRemoteServiceConnectionActive");
+			return false;
+		} catch (IOException e) {
+			logExitMethod("isRemoteServiceConnectionActive");
 			return false;
 		}
-		logExitMethod("isRemoteServiceConnectivityActive");
-		return true;
 	}
 
 	/**
@@ -323,7 +330,6 @@ public class Database {
 		logExitMethod("initializeGoogleCalendarService");
 		return true;
 	}
-	
 
 	/**
 	 * Logs in user google account with user details and starts Syncronize
@@ -336,6 +342,10 @@ public class Database {
 	 */
 	public void loginUserGoogleAccount(String userName) throws Exception {
 		logEnterMethod("loginUserGoogleAccount");
+		if (!isRemoteServiceConnectionActive()) {
+			throw new UnknownHostException(
+					EXCEPTION_MESSAGE_NO_CONNECTIVITY_WITH_REMOTE_STORAGE);
+		}
 		try {
 			MhsGoogleOAuth2.setupUserId(userName);
 			MhsGoogleOAuth2.authorizeCredentialAndStoreInCredentialStore();
@@ -382,6 +392,7 @@ public class Database {
 
 	protected void disableGoogleServices() {
 		googleCalendar = null;
+		googleTasks = null;
 	}
 
 	/**
