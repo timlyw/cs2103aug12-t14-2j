@@ -132,23 +132,6 @@ public class Task {
 		return taskCategory;
 	}
 
-	public void setTaskCategory(String taskCategory) {
-		switch (taskCategory.toLowerCase()) {
-		case "timed":
-			this.taskCategory = TaskCategory.TIMED;
-			break;
-		case "deadline":
-			this.taskCategory = TaskCategory.DEADLINE;
-			break;
-		case "floating":
-			this.taskCategory = TaskCategory.FLOATING;
-			break;
-		default:
-			this.taskCategory = TaskCategory.FLOATING;
-			break;
-		}
-	}
-
 	public void setTaskCategory(TaskCategory taskCategory) {
 		this.taskCategory = taskCategory;
 	}
